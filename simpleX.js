@@ -1,9 +1,4 @@
-            //if you don't have a canvas, this adds it
-            if(document.getElementsByTagName('canvas').length == 0) {
-                var canvas = "<canvas id='canvas' width='800' height='500'></canvas>"
-                document.body.innerHTML += canvas;
-            }
-            
+          
             //variable declaration
             var keys = [];
             var ctx = document.getElementById('canvas').getContext('2d');
@@ -38,7 +33,7 @@
             var ground = {
                 x: 0,
                 y: 470,
-                width: 800,
+                width: maxWidth,
                 height: 30,
                 color: '#155261'
             };
@@ -46,7 +41,7 @@
             var ceiling = {
                 x: 0,
                 y: 0,
-                width: 800,
+                width: maxWidth,
                 height: 30,
                 color: '#155261'
             };
@@ -56,15 +51,15 @@
                 x: 0,
                 y: 0,
                 width: 30,
-                height: 600,
+                height: maxHeight,
                 color: '#155261'
             };
             
             var rightWall = {
-                x: 770,
+                x: maxWidth-rightWall.width,
                 y: 0,
                 width: 30,
-                height: 600,
+                height: maxHeight,
                 color: '#155261'
             };
             
@@ -76,8 +71,17 @@
                 color: '#155261'
             }
             
+            var maxHeight= 500;
+            var maxWidth= 2000;
+            
             //this pushes all of the static objects into the level
             level.push(ground, leftWall, rightWall, ceilingBlock, ceiling);
+            
+            //if you don't have a canvas, this adds it
+            if(document.getElementsByTagName('canvas').length == 0) {
+                var canvas = "";
+                document.body.innerHTML += canvas.concat("<canvas id='canvas' width=" , level.maxWidth.toString() , " height=" , level.maxHeight.toString() , "></canvas>");
+            }
             
             //start the engine
             window.onload = start;
@@ -101,7 +105,7 @@
             
             //this function draws the player
             function drawPlayer() {
-                ctx.clearRect(0, 0, 800, 500);
+                ctx.clearRect(0, 0, 2000, 500);
                 ctx.fillStyle = player.color;
                 ctx.fillRect(player.x, player.y, player.width, player.height);
             }
