@@ -1,12 +1,8 @@
-//dimensioni livello - però voglio farle diventare level.maxHeight e level.maxWidth ma il level.push() non va...
-			var max = {
-			 height : 500,
-             width : 2000,
-			}
-
 			//variable declaration
             var keys = [];
             var level = [];
+            level['maxHeight'] = 720;
+            level['maxWidth'] = 1280;
             
             //variabili dei tasti
             var jumpkey = 90;         //default z
@@ -30,23 +26,23 @@
                 xv: 0,
                 slope: 0,
                 width: 25,
-                height: 25,
+                height: 40,
                 color: '#0400f8'
             };
 
             
             var ground = {
                 x: 0,
-                y: 470,
-                width: max.width,
+                //y: level.maxHeight-30,
+                width: level.maxWidth,
                 height: 30,
                 color: '#155261'
-            };
+            }; ground['y']=level.maxHeight-ground.height;
             
             var ceiling = {
                 x: 0,
                 y: 0,
-                width: max.width,
+                width: level.maxWidth,
                 height: 30,
                 color: '#155261'
             };
@@ -56,18 +52,18 @@
                 x: 0,
                 y: 0,
                 width: 30,
-                height: max.height,
+                height: level.maxHeight,
                 color: '#155261'
             };
             
             var rightWall = {
                
-                x: 1970,
+                x: 0,
                 y: 0,
                 width: 30,
-                height: max.height,
+                height: level.maxHeight,
                 color: '#155261'
-            };  rightWall.x= max.width-rightWall.width;
+            };  rightWall.x= level.maxWidth-rightWall.width;
             
             var ceilingBlock = {
                 x: 100,
@@ -78,13 +74,13 @@
             }           
             
             //this pushes all of the static objects into the level
-            level.push(ground, leftWall, rightWall, ceilingBlock, ceiling, max);
-            
+            level.push(ground, leftWall, rightWall, ceilingBlock, ceiling);
+
 
 
             //if you don't have a canvas, this adds it
             if(document.getElementsByTagName('canvas').length == 0) {
-                document.body.innerHTML += "".concat("<canvas id='canvas' width=" , level.max.width.toString() , " height=" , level.max.height.toString() , "></canvas>");
+                document.body.innerHTML += "".concat("<canvas id='canvas' width=" , level.maxWidth.toString() , " height=" , level.maxHeight.toString() , "></canvas>");
             }   var ctx = document.getElementById('canvas').getContext('2d');
 
 
@@ -94,7 +90,7 @@
             //this function is called at the start
             function start() {
                 player.x = 50;
-                player.y = 400;
+                player.y = level.maxHeight-80;
                 update();
             }
             
@@ -110,7 +106,7 @@
             
             //this function draws the player
             function drawPlayer() {
-                ctx.clearRect(0, 0, level.max.width, level.max.height);
+                ctx.clearRect(0, 0, level.maxWidth, level.maxHeight);
                 ctx.fillStyle = player.color;
                 ctx.fillRect(player.x, player.y, player.width, player.height);
             }
