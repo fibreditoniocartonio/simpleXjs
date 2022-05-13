@@ -1,7 +1,10 @@
-          
-            //variable declaration
+//dimensioni livello - però voglio farle diventare level.maxHeight e level.maxWidth ma il level.push() non va...
+ 			var maxHeight = 500;
+            var maxWidth = 2000;
+
+
+      		//variable declaration
             var keys = [];
-            var ctx = document.getElementById('canvas').getContext('2d');
             var level = [];
             
             //variabili dei tasti
@@ -29,6 +32,7 @@
                 height: 25,
                 color: '#0400f8'
             };
+
             
             var ground = {
                 x: 0,
@@ -56,7 +60,8 @@
             };
             
             var rightWall = {
-                x: maxWidth-rightWall.width,
+               // x: maxWidth-rightWall.width,
+                x: 1970,
                 y: 0,
                 width: 30,
                 height: maxHeight,
@@ -69,20 +74,19 @@
                 width: 50,
                 height: 20,
                 color: '#155261'
-            }
-            
-            var maxHeight= 500;
-            var maxWidth= 2000;
+            }           
             
             //this pushes all of the static objects into the level
             level.push(ground, leftWall, rightWall, ceilingBlock, ceiling, maxHeight , maxWidth);
             
+
+
             //if you don't have a canvas, this adds it
             if(document.getElementsByTagName('canvas').length == 0) {
-                var canvas = "";
-                document.body.innerHTML += canvas.concat("<canvas id='canvas' width=" , level.maxWidth.toString() , " height=" , level.maxHeight.toString() , "></canvas>");
-            }
-            
+                document.body.innerHTML += "".concat("<canvas id='canvas' width=" , maxWidth.toString() , " height=" , maxHeight.toString() , "></canvas>");
+            }   var ctx = document.getElementById('canvas').getContext('2d');
+
+
             //start the engine
             window.onload = start;
             
