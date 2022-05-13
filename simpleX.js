@@ -75,7 +75,7 @@
             var maxWidth= 2000;
             
             //this pushes all of the static objects into the level
-            level.push(ground, leftWall, rightWall, ceilingBlock, ceiling);
+            level.push(ground, leftWall, rightWall, ceilingBlock, ceiling, maxHeight , maxWidth);
             
             //if you don't have a canvas, this adds it
             if(document.getElementsByTagName('canvas').length == 0) {
@@ -105,7 +105,7 @@
             
             //this function draws the player
             function drawPlayer() {
-                ctx.clearRect(0, 0, 2000, 500);
+                ctx.clearRect(0, 0, level.maxWidth, level.maxHeight);
                 ctx.fillStyle = player.color;
                 ctx.fillRect(player.x, player.y, player.width, player.height);
             }
