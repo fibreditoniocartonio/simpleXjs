@@ -1,9 +1,10 @@
 //dimensioni livello - però voglio farle diventare level.maxHeight e level.maxWidth ma il level.push() non va...
- 			var maxHeight = 500;
-            var maxWidth = 2000;
+			var max = {
+			 height : 500,
+             width : 2000,
+			}
 
-
-      		//variable declaration
+			//variable declaration
             var keys = [];
             var level = [];
             
@@ -37,7 +38,7 @@
             var ground = {
                 x: 0,
                 y: 470,
-                width: maxWidth,
+                width: max.width,
                 height: 30,
                 color: '#155261'
             };
@@ -45,7 +46,7 @@
             var ceiling = {
                 x: 0,
                 y: 0,
-                width: maxWidth,
+                width: max.width,
                 height: 30,
                 color: '#155261'
             };
@@ -55,18 +56,18 @@
                 x: 0,
                 y: 0,
                 width: 30,
-                height: maxHeight,
+                height: max.height,
                 color: '#155261'
             };
             
             var rightWall = {
-               // x: maxWidth-rightWall.width,
+               
                 x: 1970,
                 y: 0,
                 width: 30,
-                height: maxHeight,
+                height: max.height,
                 color: '#155261'
-            };
+            };  rightWall.x= max.width-rightWall.width;
             
             var ceilingBlock = {
                 x: 100,
@@ -77,13 +78,13 @@
             }           
             
             //this pushes all of the static objects into the level
-            level.push(ground, leftWall, rightWall, ceilingBlock, ceiling, maxHeight , maxWidth);
+            level.push(ground, leftWall, rightWall, ceilingBlock, ceiling, max);
             
 
 
             //if you don't have a canvas, this adds it
             if(document.getElementsByTagName('canvas').length == 0) {
-                document.body.innerHTML += "".concat("<canvas id='canvas' width=" , maxWidth.toString() , " height=" , maxHeight.toString() , "></canvas>");
+                document.body.innerHTML += "".concat("<canvas id='canvas' width=" , level.max.width.toString() , " height=" , level.max.height.toString() , "></canvas>");
             }   var ctx = document.getElementById('canvas').getContext('2d');
 
 
@@ -109,7 +110,7 @@
             
             //this function draws the player
             function drawPlayer() {
-                ctx.clearRect(0, 0, level.maxWidth, level.maxHeight);
+                ctx.clearRect(0, 0, level.max.width, level.max.height);
                 ctx.fillStyle = player.color;
                 ctx.fillRect(player.x, player.y, player.width, player.height);
             }
