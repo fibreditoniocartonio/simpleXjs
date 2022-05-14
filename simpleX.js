@@ -3,12 +3,14 @@
             var level = [];
             level['maxHeight'] = 720;
             level['maxWidth'] = 1280;
-            
+            level['gravity'] = 0.62;
+            level['friction'] = 0.85;
+					            
             //variabili dei tasti
-            var jumpkey = 90;         //default z
-            var giasaltato = false;
-            var destrakey = 39;       //default freccia destra
-            var sinistrakey = 37;     //default freccia sinistra
+            var jumpkey = 90;         //salta - default z
+            var destrakey = 39;       //muovi sinistra - default freccia destra
+            var sinistrakey = 37;     //muovi destra - default freccia sinistra
+			var dashkey = 88;			  //dash - default x	
             
             //events
             document.body.addEventListener("keydown", function(e) {
@@ -27,17 +29,20 @@
                 slope: 0,
                 width: 25,
                 height: 40,
-                color: '#0400f8'
+                color: '#0400f8',
+                speed: 0.9,
+                defaultspeed: 0.9,
+                jumpheight: 10.5,
+                giasaltato : false,
             };
 
             
             var ground = {
                 x: 0,
-                //y: level.maxHeight-30,
                 width: level.maxWidth,
                 height: 30,
                 color: '#155261'
-            }; ground['y']=level.maxHeight-ground.height;
+            };  ground['y']=level.maxHeight-ground.height;
             
             var ceiling = {
                 x: 0,
@@ -57,13 +62,11 @@
             };
             
             var rightWall = {
-               
-                x: 0,
                 y: 0,
                 width: 30,
                 height: level.maxHeight,
                 color: '#155261'
-            };  rightWall.x= level.maxWidth-rightWall.width;
+            };  rightWall['x']= level.maxWidth-rightWall.width;
             
             var ceilingBlock = {
                 x: 100,
@@ -76,13 +79,10 @@
             //this pushes all of the static objects into the level
             level.push(ground, leftWall, rightWall, ceilingBlock, ceiling);
 
-
-
             //if you don't have a canvas, this adds it
             if(document.getElementsByTagName('canvas').length == 0) {
                 document.body.innerHTML += "".concat("<canvas id='canvas' width=" , level.maxWidth.toString() , " height=" , level.maxHeight.toString() , "></canvas>");
             }   var ctx = document.getElementById('canvas').getContext('2d');
-
 
             //start the engine
             window.onload = start;
@@ -99,14 +99,27 @@
                 requestAnimationFrame(update);
                 drawPlayer();
                 drawLvl();
-                //this function takes in the following:
-                //the player | the level | the player speed | the player gravity //the player friction | the player jump height
-                physics(player, level, 0.9, 0.62, 0.85, 10.5);
+                playerPhysics(player, level);
             }
             
             //this function draws the player
             function drawPlayer() {
-                ctx.clearRect(0, 0, level.maxWidth, level.maxHeight);
+                ctx.clearRect(0, 0, level.maxWidth, level.maxHeight);	//pulisci tutto
+		    		//ombre del dash
+                if (player.speed>player.defaultspeed){
+                	if (player.xv < -10){
+                		ctx.fillStyle ='#b0aefd';
+                		ctx.fillRect(player.x-50, player.y+3, player.width-3, player.height-6);
+                		ctx.fillStyle ='#7573ff';
+                		ctx.fillRect(player.x-26, player.y+1, player.width-1, player.height-2);
+                	}else if (player.xv > 10){
+                		ctx.fillStyle ='#b0aefd';
+                		ctx.fillRect(player.x+50, player.y+3, player.width-3, player.height-6);
+                		ctx.fillStyle ='#7573ff';
+                		ctx.fillRect(player.x+26, player.y+1, player.width-1, player.height-2);
+                	}
+                }
+	     			//ora disegna effetticamente il player
                 ctx.fillStyle = player.color;
                 ctx.fillRect(player.x, player.y, player.width, player.height);
             }
@@ -119,38 +132,45 @@
                 }
             }
 
-            //this function handles the platformer physics
-            function physics(p1, lvl, speed, gravity, friction, jumpheight) {
+            //this function handles the platformer physics - in realta' solo del player
+            function playerPhysics(p1, lvl) {
                 //gravity
-                p1.yv += gravity;
+                p1.yv += lvl.gravity;
                 p1.y += p1.yv;
                 
                 //y collision
                 for(var i = 0; i < lvl.length; i++) {
                     if(collisionBetween(p1, lvl[i])) {
                         p1.y += -p1.yv;
+                        //dash
+                        if(keys[dashkey]) {
+                        	   p1.speed=p1.defaultspeed*3.2;
+                          }else{
+                        		p1.speed=player.defaultspeed;
+                        }
+                        //jump
                         if(keys[jumpkey]) {
-                          if(!giasaltato) {
-                            p1.yv = -jumpheight;
-                            giasaltato = true;
+                          if(!p1.giasaltato) {
+                            p1.yv = -p1.jumpheight;
+                            p1.giasaltato = true;
                           } else {
                            p1.yv = 0; 
                           }
                         } else {
                             p1.yv = 0;
-                            giasaltato = false;
+                            p1.giasaltato = false;
                         }
-                    }
+                    }	
                 }
                 
                 //x movement
                 if(keys[destrakey]) {
-                    p1.xv -= speed;
+                    p1.xv -= p1.speed;
                 }
                 if(keys[sinistrakey]) {
-                    p1.xv += speed;
+                    p1.xv += p1.speed;
                 }
-                p1.xv *= friction;
+                p1.xv *= lvl.friction;
                 p1.x += -p1.xv;
                 
                 //slopes
@@ -169,38 +189,31 @@
                     if(collisionBetween(p1, lvl[i])) {
                         p1.y += p1.slope;
                         p1.x -= -p1.xv;
-                        
+                        //wall dash
+                        if(keys[dashkey]) {
+                        	   p1.speed=p1.defaultspeed*3.2;
+                          }else{
+                        		p1.speed=player.defaultspeed;
+                        }
                         //wall jumping
                         if(keys[jumpkey]) {
-                         if(!giasaltato) { 
-                            p1.yv = -jumpheight + 1;
+                         if(!p1.giasaltato) { 
+                            p1.yv = -p1.jumpheight + 1;
                             if(p1.xv > 0) {
                                 p1.xv = -10;
                             } else {
                                 p1.xv = 10;
                             }
-                            giasaltato = true;
+                            p1.giasaltato = true;
                          } else {
                             p1.xv = 0;
                          }
                        } else {
                             p1.xv = 0;
-                            giasaltato = false;
+                            p1.giasaltato = false;
                        }   
                     }
                 }
-            }
-            
-            //this function detects the collision between the two given objects
-            function collisionBetween(p1, lvl) {
-                if (lvl.x < p1.x + p1.width &&
-                    lvl.x + lvl.width > p1.x &&
-                    lvl.y < p1.y + p1.height &&
-                    lvl.y + lvl.height > p1.y) {
-                    return true;
-                } else {
-                    return false;
-                } 
             }
             
             //this function detects the collision between the two given objects
