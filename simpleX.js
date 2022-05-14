@@ -31,9 +31,9 @@
                 height: 40,
                 color: '#0400f8',
                 speed: 0.9,
+                defaultspeed: 0.9,
                 jumpheight: 10.5,
                 giasaltato : false,
-				giadashato : false,
             };
 
             
@@ -79,13 +79,10 @@
             //this pushes all of the static objects into the level
             level.push(ground, leftWall, rightWall, ceilingBlock, ceiling);
 
-
-
             //if you don't have a canvas, this adds it
             if(document.getElementsByTagName('canvas').length == 0) {
                 document.body.innerHTML += "".concat("<canvas id='canvas' width=" , level.maxWidth.toString() , " height=" , level.maxHeight.toString() , "></canvas>");
             }   var ctx = document.getElementById('canvas').getContext('2d');
-
 
             //start the engine
             window.onload = start;
@@ -102,14 +99,14 @@
                 requestAnimationFrame(update);
                 drawPlayer();
                 drawLvl();
-                physics(player, level);
+                playerPhysics(player, level);
             }
             
             //this function draws the player
             function drawPlayer() {
                 ctx.clearRect(0, 0, level.maxWidth, level.maxHeight);	//pulisci tutto
-				//ombre del dash
-                if (player.giadashato){
+		    		//ombre del dash
+                if (player.speed>player.defaultspeed){
                 	if (player.xv < -10){
                 		ctx.fillStyle ='#b0aefd';
                 		ctx.fillRect(player.x-50, player.y+3, player.width-3, player.height-6);
@@ -122,7 +119,7 @@
                 		ctx.fillRect(player.x+26, player.y+1, player.width-1, player.height-2);
                 	}
                 }
-				//ora disegna effetticamente il player
+	     			//ora disegna effetticamente il player
                 ctx.fillStyle = player.color;
                 ctx.fillRect(player.x, player.y, player.width, player.height);
             }
@@ -135,8 +132,8 @@
                 }
             }
 
-            //this function handles the platformer physics
-            function physics(p1, lvl) {
+            //this function handles the platformer physics - in realta' solo del player
+            function playerPhysics(p1, lvl) {
                 //gravity
                 p1.yv += lvl.gravity;
                 p1.y += p1.yv;
@@ -146,14 +143,10 @@
                     if(collisionBetween(p1, lvl[i])) {
                         p1.y += -p1.yv;
                         //dash
-                        if(keys[dashkey] & !p1.giadashato) {
-                        	p1.speed=p1.speed*3.2;
-                        	p1.giadashato=true;
-                        }else{
-                        	if (p1.giadashato){
-                        		p1.speed=player.speed/3.2;
-                        		p1.giadashato=false;
-                        	}
+                        if(keys[dashkey]) {
+                        	   p1.speed=p1.defaultspeed*3.2;
+                          }else{
+                        		p1.speed=player.defaultspeed;
                         }
                         //jump
                         if(keys[jumpkey]) {
@@ -196,7 +189,12 @@
                     if(collisionBetween(p1, lvl[i])) {
                         p1.y += p1.slope;
                         p1.x -= -p1.xv;
-                        
+                        //wall dash
+                        if(keys[dashkey]) {
+                        	   p1.speed=p1.defaultspeed*3.2;
+                          }else{
+                        		p1.speed=player.defaultspeed;
+                        }
                         //wall jumping
                         if(keys[jumpkey]) {
                          if(!p1.giasaltato) { 
