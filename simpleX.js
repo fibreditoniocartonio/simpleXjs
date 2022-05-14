@@ -1,8 +1,15 @@
+            //crea il canvas
+            var canvasWidth = 1280;
+            var canvasHeight = 720;
+            if(document.getElementsByTagName('canvas').length == 0) {
+                document.body.innerHTML += "".concat("<canvas id='canvas' width=" , canvasWidth , " height=" , canvasHeight , "></canvas>");
+            }   var ctx = document.getElementById('canvas').getContext('2d');
+
 			//variable declaration
             var keys = [];
             var level = [];
-            level['maxHeight'] = 720;
-            level['maxWidth'] = 2280;
+            level['maxWidth'] = 1500;
+            level['maxHeight'] = 1000;
             level['gravity'] = 0.62;
             level['friction'] = 0.85;
 					            
@@ -10,7 +17,7 @@
             var jumpkey = 90;         //salta - default z
             var destrakey = 39;       //muovi sinistra - default freccia destra
             var sinistrakey = 37;     //muovi destra - default freccia sinistra
-			var dashkey = 88;			  //dash - default x	
+			var dashkey = 88;		  //dash - default x	
             
             //events
             document.body.addEventListener("keydown", function(e) {
@@ -68,23 +75,16 @@
                 color: '#155261'
             };  rightWall['x']= level.maxWidth-rightWall.width;
             
-            var ceilingBlock = {
-                x: 100,
+            var floatingBlock = {
+                x: 200,
                 y: 400,
-                width: 50,
-                height: 20,
+                width: 700,
+                height: 100,
                 color: '#155261'
             }           
             
             //this pushes all of the static objects into the level
-            level.push(ground, leftWall, rightWall, ceilingBlock, ceiling);
-
-            //if you don't have a canvas, this adds it
-            var canvasWidth = 800;
-            var canvasHeight = 720;
-            if(document.getElementsByTagName('canvas').length == 0) {
-                document.body.innerHTML += "".concat("<canvas id='canvas' width=" , canvasWidth , " height=" , canvasHeight , "></canvas>");
-            }   var ctx = document.getElementById('canvas').getContext('2d');
+            level.push(ground, ceiling, leftWall, rightWall, floatingBlock);
 
             //start the engine
             window.onload = start;
@@ -102,53 +102,83 @@
                 drawPlayer();
                 drawLvl();
                 playerPhysics(player, level);
-                console.log("".concat("x: ",player.x, " y:", player.y));
+                //console.log(player.y);
             }
             
             //this function draws the player
             function drawPlayer() {
                 ctx.clearRect(0, 0, level.maxWidth, level.maxHeight);	//pulisci tutto
-                var xdisegnata=0;
-                if (player.x < canvasWidth-player.width-rightWall.width-20) {
+				//variabili che praticamente gestiscono la visuale
+                var xdisegnata=0;	//mi serve per semplificare le scritture dopo, praticamente gestisce la visuale sull asse x
+                if (player.x < canvasWidth/2) {	//se la x del player è minore di mezzo canvas la tiene com'è
                     xdisegnata=player.x;
                 }else{
-                    xdisegnata=canvasWidth-player.width-rightWall.width-20;
+                	if (player.x > level.maxWidth-canvasWidth/2){ //altrimenti controlla: se è in mezzo al livello disegna il player al centro del canvas, altrimenti lo lascia scorrere dal centro verso la fine
+						xdisegnata=canvasWidth-level.maxWidth+player.x;
+                	}else{
+                		xdisegnata=canvasWidth/2;	
+                	}
+                }
+
+				var ydisegnata=0;	//mi serve per semplificare le scritture dopo, praticamente gestisce la visuale sull'asse y
+                if (player.y < canvasHeight/2) {	//se la y del player è minore di mezzo canvas la tiene com'è
+                    ydisegnata=player.y;
+                }else{
+                	if (player.y > level.maxHeight-canvasHeight/2){ //altrimenti controlla: se è in mezzo al livello disegna il player al centro del canvas, altrimenti lo lascia scorrere dal centro verso la fine
+						ydisegnata=canvasHeight-level.maxHeight+player.y;
+                	}else{
+                		ydisegnata=canvasHeight/2;	
+                	}
                 }
 		    		    //ombre del dash
                 if (player.speed>player.defaultspeed){
                 	if (player.xv < -10){
                 		ctx.fillStyle ='#b0aefd';
-                		ctx.fillRect(xdisegnata-50, player.y+3, player.width-3, player.height-6);
+                		ctx.fillRect(xdisegnata-50, ydisegnata+3, player.width-3, player.height-6);
                 		ctx.fillStyle ='#7573ff';
-                		ctx.fillRect(xdisegnata-26, player.y+1, player.width-1, player.height-2);
+                		ctx.fillRect(xdisegnata-26, ydisegnata+1, player.width-1, player.height-2);
                 	}else if (player.xv > 10){
                 		ctx.fillStyle ='#b0aefd';
-                		ctx.fillRect(xdisegnata+50, player.y+3, player.width-3, player.height-6);
+                		ctx.fillRect(xdisegnata+50, ydisegnata+3, player.width-3, player.height-6);
                 		ctx.fillStyle ='#7573ff';
-                		ctx.fillRect(xdisegnata+26, player.y+1, player.width-1, player.height-2);
+                		ctx.fillRect(xdisegnata+26, ydisegnata+1, player.width-1, player.height-2);
                 	}
                 }
 	     			    //ora disegna effettivamente il player
                 ctx.fillStyle = player.color;
-                if (player.x < canvasWidth-player.width-rightWall.width-20) {
-                    ctx.fillRect(player.x, player.y, player.width, player.height);
-                }else{
-                    ctx.fillRect(canvasWidth-player.width-rightWall.width-20, player.y, player.width, player.height);
-                }                
+                ctx.fillRect(xdisegnata, ydisegnata, player.width, player.height);                
             }
             
             //this function draws the level
             function drawLvl() {
                 for (var i = 0; i < level.length; i++) {
                     ctx.fillStyle = level[i].color;
-                    if (player.x < canvasWidth){
-                        ctx.fillRect(level[i].x, level[i].y, level[i].width, level[i].height);
+                    //variabili per disegnare il livello rispetto alla posizione di x (rispetto ai bordi del canvas) - visuale
+                    var xdisegnata=0
+                    if (player.x < canvasWidth/2){
+                        xdisegnata=level[i].x;
                     }else{
-                        ctx.fillRect(level[i].x-player.x+canvasWidth-player.width-rightWall.width-20, level[i].y, level[i].width, level[i].height);
+                    	if (player.x > level.maxWidth-canvasWidth/2){
+                        	xdisegnata=level[i].x-level.maxWidth+canvasWidth;
+                        }else{
+                        	xdisegnata=level[i].x-player.x+canvasWidth/2;
+                        }
                     }
+					var ydisegnata=0
+                    if (player.y < canvasHeight/2){
+                        ydisegnata=level[i].y;
+                    }else{
+                    	if (player.y > level.maxHeight-canvasHeight/2){
+                        	ydisegnata=level[i].y-level.maxHeight+canvasHeight;
+                        }else{
+                        	ydisegnata=level[i].y-player.y+canvasHeight/2;
+                        }
+                    }
+                    //ora disegno il livello                    
+                    ctx.fillRect(xdisegnata, ydisegnata, level[i].width, level[i].height);
                 }
             }
-
+            
             //this function handles the platformer physics - in realta' solo del player
             function playerPhysics(p1, lvl) {
                 //gravity
