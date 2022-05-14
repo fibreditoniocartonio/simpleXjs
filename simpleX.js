@@ -2,7 +2,7 @@
             var keys = [];
             var level = [];
             level['maxHeight'] = 720;
-            level['maxWidth'] = 1280;
+            level['maxWidth'] = 2280;
             level['gravity'] = 0.62;
             level['friction'] = 0.85;
 					            
@@ -80,8 +80,10 @@
             level.push(ground, leftWall, rightWall, ceilingBlock, ceiling);
 
             //if you don't have a canvas, this adds it
+            var canvasWidth = 800;
+            var canvasHeight = 720;
             if(document.getElementsByTagName('canvas').length == 0) {
-                document.body.innerHTML += "".concat("<canvas id='canvas' width=" , level.maxWidth.toString() , " height=" , level.maxHeight.toString() , "></canvas>");
+                document.body.innerHTML += "".concat("<canvas id='canvas' width=" , canvasWidth , " height=" , canvasHeight , "></canvas>");
             }   var ctx = document.getElementById('canvas').getContext('2d');
 
             //start the engine
@@ -100,35 +102,50 @@
                 drawPlayer();
                 drawLvl();
                 playerPhysics(player, level);
+                console.log("".concat("x: ",player.x, " y:", player.y));
             }
             
             //this function draws the player
             function drawPlayer() {
                 ctx.clearRect(0, 0, level.maxWidth, level.maxHeight);	//pulisci tutto
-		    		//ombre del dash
+                var xdisegnata=0;
+                if (player.x < canvasWidth-player.width-rightWall.width-20) {
+                    xdisegnata=player.x;
+                }else{
+                    xdisegnata=canvasWidth-player.width-rightWall.width-20;
+                }
+		    		    //ombre del dash
                 if (player.speed>player.defaultspeed){
                 	if (player.xv < -10){
                 		ctx.fillStyle ='#b0aefd';
-                		ctx.fillRect(player.x-50, player.y+3, player.width-3, player.height-6);
+                		ctx.fillRect(xdisegnata-50, player.y+3, player.width-3, player.height-6);
                 		ctx.fillStyle ='#7573ff';
-                		ctx.fillRect(player.x-26, player.y+1, player.width-1, player.height-2);
+                		ctx.fillRect(xdisegnata-26, player.y+1, player.width-1, player.height-2);
                 	}else if (player.xv > 10){
                 		ctx.fillStyle ='#b0aefd';
-                		ctx.fillRect(player.x+50, player.y+3, player.width-3, player.height-6);
+                		ctx.fillRect(xdisegnata+50, player.y+3, player.width-3, player.height-6);
                 		ctx.fillStyle ='#7573ff';
-                		ctx.fillRect(player.x+26, player.y+1, player.width-1, player.height-2);
+                		ctx.fillRect(xdisegnata+26, player.y+1, player.width-1, player.height-2);
                 	}
                 }
-	     			//ora disegna effetticamente il player
+	     			    //ora disegna effettivamente il player
                 ctx.fillStyle = player.color;
-                ctx.fillRect(player.x, player.y, player.width, player.height);
+                if (player.x < canvasWidth-player.width-rightWall.width-20) {
+                    ctx.fillRect(player.x, player.y, player.width, player.height);
+                }else{
+                    ctx.fillRect(canvasWidth-player.width-rightWall.width-20, player.y, player.width, player.height);
+                }                
             }
             
             //this function draws the level
             function drawLvl() {
                 for (var i = 0; i < level.length; i++) {
                     ctx.fillStyle = level[i].color;
-                    ctx.fillRect(level[i].x, level[i].y, level[i].width, level[i].height);
+                    if (player.x < canvasWidth){
+                        ctx.fillRect(level[i].x, level[i].y, level[i].width, level[i].height);
+                    }else{
+                        ctx.fillRect(level[i].x-player.x+canvasWidth-player.width-rightWall.width-20, level[i].y, level[i].width, level[i].height);
+                    }
                 }
             }
 
