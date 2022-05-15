@@ -1,19 +1,12 @@
             //crea il canvas
-            var canvasWidth = 1280;
-            var canvasHeight = 720;
+            var canvasWidth = 1300;
+            var canvasHeight = 750;
             if(document.getElementsByTagName('canvas').length == 0) {
                 document.body.innerHTML += "".concat("<canvas id='canvas' width=" , canvasWidth , " height=" , canvasHeight , "></canvas>");
             }   var ctx = document.getElementById('canvas').getContext('2d');
 
-			//variable declaration
+			//variabili dei tasti
             var keys = [];
-            var level = [];
-            level['maxWidth'] = 1500;
-            level['maxHeight'] = 1000;
-            level['gravity'] = 0.62;
-            level['friction'] = 0.85;
-					            
-            //variabili dei tasti
             var jumpkey = 90;         //salta - default z
             var destrakey = 39;       //muovi sinistra - default freccia destra
             var sinistrakey = 37;     //muovi destra - default freccia sinistra
@@ -27,14 +20,14 @@
                 keys[e.keyCode] = false;
             });
             
-            //make the level and player
+            //make the player
             var player = {
                 x: 0,
                 y: 0,
                 yv: 0,
                 xv: 0,
                 slope: 0,
-                width: 25,
+                width: 24.4,
                 height: 40,
                 color: '#0400f8',
                 speed: 0.9,
@@ -43,71 +36,153 @@
                 giasaltato : false,
             };
 
-            
-            var ground = {
-                x: 0,
-                width: level.maxWidth,
-                height: 30,
-                color: '#155261'
-            };  ground['y']=level.maxHeight-ground.height;
-            
-            var ceiling = {
-                x: 0,
-                y: 0,
-                width: level.maxWidth,
-                height: 30,
-                color: '#155261'
-            };
-            
-            
-            var leftWall = {
-                x: 0,
-                y: 0,
-                width: 30,
-                height: level.maxHeight,
-                color: '#155261'
-            };
-            
-            var rightWall = {
-                y: 0,
-                width: 30,
-                height: level.maxHeight,
-                color: '#155261'
-            };  rightWall['x']= level.maxWidth-rightWall.width;
-            
-            var floatingBlock = {
-                x: 200,
-                y: 400,
-                width: 700,
-                height: 100,
-                color: '#155261'
-            }           
-            
-            //this pushes all of the static objects into the level
-            level.push(ground, ceiling, leftWall, rightWall, floatingBlock);
+			//caricare il livello
+			var level = []; //create the level array
+			var lvlNumber=0;			
 
+            //prendo lvlNumber e carico il livello scelto - sadly non ancora da file perchè siamo a corto di budget
+			function leggiLivelloDaFile() {	//funz che carica il livello scelto - i livello sono salvati come stringhe
+				switch (lvlNumber) {
+					case 0: stringToLevel("tttttttttttttttttttttttttttttttttttttttttttttttttttl..................................................l..................................................l..................................................l..................................................l..................................................l..................................................l..................................................l..................................................l..................................................l..................................................l..................................................l..................................................l..................................................l..................................................l..................................................l..................................................l..................................................l..................................................l..................................................l..................................................l..................................................l..................................................l..................................................l..................................................l..................................................l..................................................l..................................................l..................................................f");
+					break;
+
+					case 1: stringToLevel("tttttttttttttttttttttttttttttttttttttttttttttttttttttttttttl..........................................................l..........................................................l..bbbbbbb.................................................l..........................................................l..........................................................l..........................................................l..........................................................l..........................................................l..........................................................l..........................................................l..........................................................l..........................................................l..........................................................l..........................................................l..........................................................l..........................................................l..........................................................l..........................................................l..........................................................l..........................................................l..................................bbbbbbbbbb..............l..........................................................l..........................................................l..........................................................l..........................................................l....................bb....................................l................bb........................................l............bb............................................l........bb................................................l....bb....................................................f");
+					break;
+
+					case 2: stringToLevel("ttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttl...................................................................................................................................................................................................................l...................................................................................................................................................................................................................l...b...b.bbb.bbb.b.bbb...bbb.bbb.bbb.bbb...b...b.bbb.bbb...bbb...b.....bbb...b.....................................................................................................................................l...bb.bb.b.b.b.b.b.b.b...b.b.b.b.b.b.b.....bb..b.b...b.....b.b..bb.....b.b..bb.....................................................................................................................................l...b.b.b.bbb.bbb.b.b.b...bb..bbb.b.b.bbb...b.b.b.bbb.bbb...b.b.b.b.b.b.b.b.b.b.....................................................................................................................................l...b...b.b.b.bb..b.b.b...b.b.bb..b.b...b...b..bb.b.....b...b.b...b..b..b.b...b.....................................................................................................................................l...b...b.b.b.b.b.b.bbb...bbb.b.b.bbb.bbb...b...b.bbb.bbb...bbb...b.b.b.bbb...b.....................................................................................................................................l...................................................................................................................................................................................................................l...................................................................................................................................................................................................................l...................................................................................................................................................................................................................l.........................................................................................................................................................................................................b.........l.........................................................................................................................................................................................................b.........l.........................................................................................................................................................................................................b.........l................................................................................................................................................................................................bb.......b.........l...............................................................................................................................................................................................bbb.......b.........l......................b.........................................................bbbbbbbb...bbbb................b............bbb....bbbb.......................................................bbbb.......b.........l.............................................................................................................................................................................................bbbbb.......b...b.b.b.l..............................................bb.........bb.................................................................................b..b..........bb..b.............................bbbbbb.......b...bbbbb.l...............b....bbbbb.............bb......bb.........bb..................bbb..............b......bb.....b..b..b.....b...........bb.....bb..bb........bbb..bb...........bbbb............bbbbbbb.......b...bbbbb.l............................bb........bb......bb.........bb...............................................................................bbb..bbb......bbbb..bbb.....bb..............bb..bbbbbbbb.......b...bb.bb.l............................bb........bb......bb.........bb..............................................................................bbbb..bbbb....bbbbb..bbbb....bb..............bb.bbbbbbbbb......bbb..bb.bb.lbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb..bbbbbbbbbbbbbbb...bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb..bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbblbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb..bbbbbbbbbbbbbbb...bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb..bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbblbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb..bbbbbbbbbbbbbbb...bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb..bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbblbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb..bbbbbbbbbbbbbbb...bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb..bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbblbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb..bbbbbbbbbbbbbbb...bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb..bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbblbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb..bbbbbbbbbbbbbbb...bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb..bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbblbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb..bbbbbbbbbbbbbbb...bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb..bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbf");
+					break;
+										
+					default:
+					alert("Errore nel caricamento del livello - Carico level 0")
+					lvlNumber=0;
+					leggiLivelloDaFile() 
+				}
+				return
+			}
+
+			function stringToLevel(lvlString){
+				level = [];
+				var widthTot=0;
+				var heightTot=1;
+				for (let i = 0; i < lvlString.length; i++) { //ciclo la stringa livello per trasformarlo da stringa a livello vero
+				switch (lvlString[i]){
+						case 't': // t è il top floor/ceiling
+							widthTot++;
+							break;
+					
+						case 'l': // l è il left floor
+							heightTot++;
+							break;
+					
+						case 'b': // b indica un blocco da 25px*25px
+							var blocco = {
+           	    				x: (i%widthTot)*25,
+                				y: (heightTot-1)*25,
+                				width: 26,
+      		    				height: 26,
+            					color: '#155261'								
+							}
+							level.push(blocco);
+							break;
+											
+						case 'f': // f è il bottom floor, è una sola e indica la fine del livello (legge la lunghezza da t). Da qui inizializzo le robe					
+							widthTot++;
+							heightTot++;
+							break;
+					
+						case '.': // . è vuoto
+							break;															
+					}
+				}
+				level['maxWidth'] = widthTot*25;
+				level['maxHeight'] = heightTot*25;
+				level['gravity'] = 0.62;
+            	level['friction'] = 0.85;
+				level['xStartingPos']=50;
+			//	level['yStartingPos']=level.maxHeight-80;
+				level['yStartingPos']=280;
+
+				var ground = {
+               		x: 0,
+               		width: level.maxWidth,
+               		height: 26,
+               		color: '#155261'
+            	};  ground['y']=level.maxHeight-ground.height;
+
+            	var ceiling = {
+           	    	x: 0,
+                	y: 0,
+                	width: level.maxWidth,
+      		    	height: 26,
+            		color: '#155261'
+            	};
+            	            
+            	var leftWall = {
+               		x: 0,
+               		y: 0,
+               		width: 26,
+               		height: level.maxHeight,
+               		color: '#155261'
+           		 };
+            
+            	var rightWall = {
+               		y: 0,
+               		width: 26,
+               		height: level.maxHeight,
+               		color: '#155261'
+            	};  rightWall['x']= level.maxWidth-rightWall.width;	
+            				
+				level.push(ground, ceiling, leftWall, rightWall); //this pushes all of the static objects into the level
+				   
+				ctx.clearRect(0, 0, canvasHeight, canvasWidth); //pulisce tutto per evitare dubbi
+				nuovoLivello();				
+			}
+			
+			leggiLivelloDaFile(); //chiama le funzioni di sopra
+
+			//bottone per scegli il livello
+			const buttonLvl0 = document.createElement('button')
+			buttonLvl0.innerText = 'level--'
+			buttonLvl0.addEventListener('click', () => {
+			  lvlNumber--;
+			  leggiLivelloDaFile();
+			})
+			const buttonLvl1 = document.createElement('button')
+			buttonLvl1.innerText = 'level++'
+			buttonLvl1.addEventListener('click', () => {
+			  lvlNumber++;
+			  leggiLivelloDaFile();
+			})
+			document.body.appendChild(buttonLvl0)
+			document.body.appendChild(buttonLvl1)
+			
             //start the engine
             window.onload = start;
             
             //this function is called at the start
             function start() {
-                player.x = 50;
-                player.y = level.maxHeight-80;
+				nuovoLivello();
                 update();
             }
-            
+
+			function nuovoLivello(){	//azzera i dati del player
+                player.x = level.xStartingPos;
+                player.y = level.yStartingPos;
+                player.speed = player.defaultspeed;
+			}
+                            
             //this function is called every frame
             function update() {
                 requestAnimationFrame(update);
                 drawPlayer();
                 drawLvl();
                 playerPhysics(player, level);
-                //console.log(player.y);
             }
             
             //this function draws the player
             function drawPlayer() {
                 ctx.clearRect(0, 0, level.maxWidth, level.maxHeight);	//pulisci tutto
+
 				//variabili che praticamente gestiscono la visuale
                 var xdisegnata=0;	//mi serve per semplificare le scritture dopo, praticamente gestisce la visuale sull asse x
                 if (player.x < canvasWidth/2) {	//se la x del player è minore di mezzo canvas la tiene com'è
