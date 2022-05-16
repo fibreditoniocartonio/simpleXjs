@@ -256,10 +256,8 @@
         drawPlayer(); 
         playerPhysics(player, level);
       }
-            
-      function drawPlayer() {
-			  //variabili che praticamente gestiscono la visuale      
-        var xdisegnata=0;	//mi serve per semplificare le scritture dopo, praticamente gestisce la visuale sull asse x
+
+	  function xDisegnata(){
         if (player.x < canvasWidth/2) {	//se la x del player è minore di mezzo canvas la tiene com'è
           xdisegnata=player.x;
         }else{
@@ -269,8 +267,10 @@
               xdisegnata=canvasWidth/2;	
           }
         }
-        var ydisegnata=0;	//mi serve per semplificare le scritture dopo, praticamente gestisce la visuale sull'asse y
-        if (player.y < canvasHeight/2) {	//se la y del player è minore di mezzo canvas la tiene com'è
+        return xdisegnata;	
+	  }
+	  function yDisegnata(){
+       if (player.y < canvasHeight/2) {	//se la y del player è minore di mezzo canvas la tiene com'è
            ydisegnata=player.y;
         }else{
             if (player.y > level.maxHeight-canvasHeight/2){ //altrimenti controlla: se è in mezzo al livello disegna il player al centro del canvas, altrimenti lo lascia scorrere dal centro verso la fine
@@ -279,7 +279,22 @@
               ydisegnata=canvasHeight/2;	
             }
         }
-      
+        return ydisegnata;
+	  }
+            
+      function drawPlayer() {
+			  //variabili che praticamente gestiscono la visuale      
+        var xdisegnata=xDisegnata();	//mi serve per semplificare le scritture dopo, praticamente gestisce la visuale sull asse x
+        var ydisegnata=yDisegnata();	//mi serve per semplificare le scritture dopo, praticamente gestisce la visuale sull'asse y
+        if (player.y < canvasHeight/2) {	//se la y del player è minore di mezzo canvas la tiene com'è
+           ydisegnata=player.y;
+        }else{
+            if (player.y > level.maxHeight-canvasHeight/2){ //altrimenti controlla: se è in mezzo al livello disegna il player al centro del canvas, altrimenti lo lascia scorrere dal centro verso la fine
+              ydisegnata=canvasHeight-level.maxHeight+player.y;
+            }else{
+              ydisegnata=canvasHeight/2;	
+            }
+        }      
         //ombre del dash
         if (player.speed>player.defaultspeed){
             if (player.xv < (-10*scala)){
@@ -413,10 +428,12 @@
             player.giasparato = true;
           }else{
             player.carica++;
-            if (player.carica > 25){
-              player.color=player.charge1color ;
-            }else{
-              player.color=player.defaultColor ;
+            if (player.carica > 25){ //disegna i pallini del colore della carica intorno al player
+              var xdisegnata=xDisegnata(); var ydisegnata=yDisegnata();
+              var xrandom=((-player.width/4)+Math.floor(Math.random() * (player.width/2)))*scala; var yrandom=((-player.height/4)+Math.floor(Math.random() * (player.height/2)))*scala;
+              ctx.fillStyle = player.charge1color;
+        	  ctx.fillRect(xdisegnata+(player.width/2)+xrandom, ydisegnata+(player.height/2)+yrandom, 7*scala, 7*scala);
+            }else{// la seconda carica sarà a 100
             }   
           }
         }else{
@@ -477,7 +494,7 @@
         }
       } //fine della funzione playerPhysics - se riesco la faccio diventare un metodo di player invece che una funzione sestante
       
-      //this function detects the collision between the two given objects
+      //this function detects the collision between the two given objects - la uso anche con le entità lol
       function collisionBetween(p1, lvl) {
         if (lvl.x < p1.x + p1.width &&
             lvl.x + lvl.width > p1.x &&
