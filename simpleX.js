@@ -25,7 +25,8 @@
       var jumpkey = 90;         //salta - default z
       var destrakey = 39;       //muovi sinistra - default freccia destra
       var sinistrakey = 37;     //muovi destra - default freccia sinistra
-			var dashkey = 88;		      //dash - default x	
+			var dashkey = 88;		      //dash - default x
+      var sparokey = 65;	
             
       //events
       document.body.addEventListener("keydown", function(e) {
@@ -45,10 +46,16 @@
         width: (25*scala)-0.5,
         height: 40*scala,
         color: '#0400f8',
+        defaultColor: '#0400f8',
+        charge0color: '#ffc000',
+        charge1color: '#49ff37',
         speed: 0.9*scala,
         defaultspeed: 0.9*scala,
         jumpheight: 10.5*scala,
         giasaltato : false,
+        giasparato : false,
+        facingRight : true,
+        carica: 0, //carica dei colpi
       };
 
 			//caricare il livello
@@ -164,9 +171,54 @@
 				   
         ctx.clearRect(0, 0, canvas.width, canvas.height); //pulisce tutto per evitare dubbi
 				nuovoLivello();				
-			}
-			
-			leggiLivelloDaFile(); //chiama le funzioni di sopra
+			} 
+      
+      var entity = []; //create the level array. Ogni entità deve avere: x, y, width, height e il metodo physics che determinerà come si comporta l'entità
+      function newSparo() {
+        this.life= 1;
+        this.damage= 1;
+        this.x= player.x;
+        this.y= player.y+(10*scala);
+        this.xv= 0;
+        this.width= 20*scala;
+        this.height= 10*scala;
+        this.color= player.charge0color;
+        this.speed= 3.9*scala;
+        this.facingRight= player.facingRight;
+        this.perforation= false;
+        this.physics= function( xdisegnata, ydisegnata, indiceDiQuestaEntity){
+          //movimento dello sparo
+          if (this.facingRight){
+            this.xv -= this.speed;
+          }else{
+            this.xv += this.speed;
+          }
+          this.xv *= level.friction;
+          this.x += -this.xv;    
+          //collisione dello sparo con level
+          for (i=0; i<level.length;i++){
+            if (collisionBetween(this,level[i])){
+              this.life--;
+            }
+          }
+          //collisione dello sparo con altre entita'
+          for (i=0; i<entity.length;i++){
+            if (!(i == indiceDiQuestaEntity)){
+              if (collisionBetween(this,entity[i])){
+                entity[i].life-=this.damage;
+                if (!(entity[i].life < 1 && this.perforation)){
+                  this.life--;
+                }
+              }
+            }
+          }
+          //la sposta fuori dallo schermo se muore
+          if (this.life < 1){
+            this.x=0;
+            this.y=0;
+          }
+        }
+      }
 
 			//bottone per scegli il livello
 			const buttonLvl0 = document.createElement('button')
@@ -185,6 +237,7 @@
 			document.body.appendChild(buttonLvl1)
 			
       //start the engine
+      leggiLivelloDaFile(); //chiama le funzioni per leggere il livello
       window.onload = start;
             
       //this function is called at the start
@@ -203,7 +256,8 @@
       function update() {
         requestAnimationFrame(update);
         drawLvl();
-        drawPlayer();
+        drawEntity(); //in questa funzione viene chiamata anche il metodo entity[i].physics per le entità che vengono disegnate su schermo (le uniche che carico)
+        drawPlayer(); 
         playerPhysics(player, level);
       }
             
@@ -279,6 +333,38 @@
           ctx.fillRect(xdisegnata, ydisegnata, level[i].width, level[i].height);
         }
       }
+      
+      function drawEntity(){   //disegna le entità a schermo e chiama la entity[i].physics
+          for (var i = 0; i < entity.length; i++) {
+          if (entity[i].life > 0){ //calcola la entita solo se la sua vita è maggiore di zero
+            ctx.fillStyle = entity[i].color;
+            //variabili per disegnare il livello rispetto alla posizione di x (rispetto ai bordi del canvas) - visuale
+            var xdisegnata=0
+            if (player.x < canvasWidth/2){
+              xdisegnata=entity[i].x;
+            }else{
+              if (player.x > level.maxWidth-canvasWidth/2){
+                xdisegnata=entity[i].x-level.maxWidth+canvasWidth;
+              }else{
+                xdisegnata=entity[i].x-player.x+canvasWidth/2;
+              }
+            }
+					 var ydisegnata=0
+            if (player.y < canvasHeight/2){
+              ydisegnata=entity[i].y;
+            }else{
+              if (player.y > level.maxHeight-canvasHeight/2){
+                ydisegnata=entity[i].y-level.maxHeight+canvasHeight;
+              }else{
+                ydisegnata=entity[i].y-player.y+canvasHeight/2;
+              }
+            }
+            //ora disegno il livello                    
+            ctx.fillRect(xdisegnata, ydisegnata, entity[i].width, entity[i].height);
+            entity[i].physics(xdisegnata,ydisegnata, i);
+          }
+        }
+      }
             
       //this function handles the platformer physics - in realta' solo del player
       function playerPhysics(p1, lvl) {
@@ -292,7 +378,7 @@
             p1.y += -p1.yv;
             //dash
             if(keys[dashkey]) {
-              p1.speed=p1.defaultspeed*3.2;
+              p1.speed=p1.defaultspeed*2.5;
             }else{
               p1.speed=player.defaultspeed;
             }
@@ -314,12 +400,43 @@
         //x movement
         if(keys[destrakey]) {
           p1.xv -= p1.speed;
+          player.facingRight = true;
         }
         if(keys[sinistrakey]) {
           p1.xv += p1.speed;
+          player.facingRight = false;
         }
         p1.xv *= lvl.friction;
         p1.x += -p1.xv;
+                
+        //shooting
+        if(keys[sparokey]) {
+          if(!player.giasparato){
+            var sparo = new newSparo();
+            entity.push(sparo);
+            player.giasparato = true;
+          }else{
+            player.carica++;
+            if (player.carica > 25){
+              player.color=player.charge1color ;
+            }else{
+              player.color=player.defaultColor ;
+            }   
+          }
+        }else{
+          if (player.giasparato){
+            if (player.carica > 25){   //per ora un solo livello di carica
+              var sparo = new newSparo();
+              sparo.width= 35*scala;
+              sparo.height= 15*scala;
+              sparo.color= player.charge1color;
+              entity.push(sparo);
+            }
+            player.color=player.defaultColor ;
+            player.carica=0;
+            player.giasparato=false;
+          }
+        }
                 
         //slopes
         p1.slope = 0;
@@ -339,7 +456,7 @@
             p1.x -= -p1.xv;
             //wall dash
             if(keys[dashkey]) {
-              p1.speed=p1.defaultspeed*3.2;
+              p1.speed=p1.defaultspeed*2.5;
             }else{
               p1.speed=player.defaultspeed;
             }
@@ -363,7 +480,7 @@
           }
         }
       } //fine della funzione playerPhysics - se riesco la faccio diventare un metodo di player invece che una funzione sestante
-            
+      
       //this function detects the collision between the two given objects
       function collisionBetween(p1, lvl) {
         if (lvl.x < p1.x + p1.width &&
