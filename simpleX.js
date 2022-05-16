@@ -430,9 +430,9 @@
             player.carica++;
             if (player.carica > 25){ //disegna i pallini del colore della carica intorno al player
               var xdisegnata=xDisegnata(); var ydisegnata=yDisegnata();
-              var xrandom=((-player.width/4)+Math.floor(Math.random() * (player.width/2)))*scala; var yrandom=((-player.height/4)+Math.floor(Math.random() * (player.height/2)))*scala;
+              var xrandom=((-player.width/4)-4+Math.floor(Math.random() * (player.width/2)))*scala; var yrandom=((-player.height/4)-4+Math.floor(Math.random() * (player.height/2)))*scala;
               ctx.fillStyle = player.charge1color;
-        	  ctx.fillRect(xdisegnata+(player.width/2)+xrandom, ydisegnata+(player.height/2)+yrandom, 7*scala, 7*scala);
+        	  ctx.fillRect(xdisegnata+(player.width/2)+xrandom, ydisegnata+(player.height/2)+yrandom, 8*scala, 8*scala);
             }else{// la seconda carica sarà a 100
             }   
           }
