@@ -25,7 +25,7 @@
       var jumpkey = 90;         //salta - default z
       var destrakey = 39;       //muovi sinistra - default freccia destra
       var sinistrakey = 37;     //muovi destra - default freccia sinistra
-			var dashkey = 88;		      //dash - default x
+	  var dashkey = 88;		    //dash - default x
       var sparokey = 65;	
             
       //events
@@ -176,6 +176,7 @@
       var entity = []; //create the level array. Ogni entità deve avere: x, y, width, height e il metodo physics che determinerà come si comporta l'entità
       function newSparo() {
         this.life= 1;
+        this.type= "sparoDelPlayer";
         this.damage= 1;
         this.x= player.x;
         this.y= player.y+(10*scala);
@@ -204,18 +205,13 @@
           //collisione dello sparo con altre entita'
           for (i=0; i<entity.length;i++){
             if (!(i == indiceDiQuestaEntity)){
-              if (collisionBetween(this,entity[i])){
+              if ( entity[i].life > 0 && !(this.type == entity[i].type)  && collisionBetween(this,entity[i]) ){	//controlla che l'entita da colpire sia viva, che non siano lo stesso proiettile e infine se c'è una collisione
                 entity[i].life-=this.damage;
                 if (!(entity[i].life < 1 && this.perforation)){
                   this.life--;
                 }
               }
             }
-          }
-          //la sposta fuori dallo schermo se muore
-          if (this.life < 1){
-            this.x=0;
-            this.y=0;
           }
         }
       }
