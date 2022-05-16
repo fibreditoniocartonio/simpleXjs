@@ -1,7 +1,21 @@
       //crea il canvas
-      const widthRes = 16;  const heightRes = 9;  //costanti che indicano la risoluzione - 16:9      
-      var canvasWidth = document.documentElement.clientWidth-30;    //prendo la larghezza massima del client e la imposto come larghezza del canvas (tolgo 30 pixel nel caso ci sia la barra laterale/altre cose)
-      var canvasHeight = (canvasWidth/widthRes)*heightRes;          //scalo l'altezza del canvas in base alla larghezza per mantenere la risoluzione che ho indicato
+      const widthRes = 720;  const heightRes = 540;  //costanti che indicano la risoluzione - 4:3      
+      var scala=0;
+      for (scala=1; ;scala++){    //calcola quante volte riesco a farci stare nella schermata la risoluzione di cui sopra, poi salva la variabile scala che moltiplica tutto
+          if(widthRes*scala > document.documentElement.clientWidth){
+            scala--;
+            if(heightRes*scala > document.documentElement.clientHeight){
+              scala--;
+              break;
+            }else{
+              break;
+            }
+          }
+      }
+      if (scala < 1){alert("Your screen is too small... Try to zoom out your browser page a little (Usually Ctrl and -)");}
+      var canvasWidth = widthRes*scala;
+      var canvasHeight = heightRes*scala;
+
       if(document.getElementsByTagName('canvas').length == 0) {     //crea il canvas con le variabili che ho creato
           document.body.innerHTML += "".concat("<canvas id='canvas' width=" , canvasWidth , " height=" , canvasHeight , "></canvas>");
       }   var ctx = document.getElementById('canvas').getContext('2d');
@@ -11,7 +25,7 @@
       var jumpkey = 90;         //salta - default z
       var destrakey = 39;       //muovi sinistra - default freccia destra
       var sinistrakey = 37;     //muovi destra - default freccia sinistra
-			var dashkey = 88;		  //dash - default x	
+			var dashkey = 88;		      //dash - default x	
             
       //events
       document.body.addEventListener("keydown", function(e) {
@@ -28,12 +42,12 @@
         yv: 0,
         xv: 0,
         slope: 0,
-        width: 24.4,
-        height: 40,
+        width: (25*scala)-0.5,
+        height: 40*scala,
         color: '#0400f8',
-        speed: 0.9,
-        defaultspeed: 0.9,
-        jumpheight: 10.5,
+        speed: 0.9*scala,
+        defaultspeed: 0.9*scala,
+        jumpheight: 10.5*scala,
         giasaltato : false,
       };
 
@@ -77,10 +91,10 @@
 					
 						case 'b': // b indica un blocco da 25px*25px
 							var blocco = {
-           	    			x: (i%widthTot)*25,
-                			y: (heightTot-1)*25,
-                			width: 26,
-      		    				height: 26,
+           	    			x: (i%widthTot)*25*scala,
+                			y: (heightTot-1)*25*scala,
+                			width: (25*scala)+1,
+      		    				height: (25*scala)+1,
             					color: '#155261'								
 							}
 							level.push(blocco);
@@ -96,8 +110,8 @@
 					}
 				}
         
-				level['maxWidth'] = widthTot*25;
-				level['maxHeight'] = heightTot*25;
+				level['maxWidth'] = widthTot*25*scala;
+				level['maxHeight'] = heightTot*25*scala;
         if (level.maxWidth < canvas.width){    //controlla che il livello non sia piu piccolo del canvas, che se no si bugga tutto - le x
             canvasWidth=level.maxWidth;
         }else{
@@ -110,16 +124,16 @@
         }         
         
         //qui carico delle cose io ma saranno dati contenuti nei vari livelli, dopo il carattere 'f'        
-				level['gravity'] = 0.62;
+				level['gravity'] = 0.62*scala;
         level['friction'] = 0.85;
-				level['xStartingPos']=50;
+				level['xStartingPos']=50*scala;
 	  //	level['yStartingPos']=level.maxHeight-80;
-				level['yStartingPos']=280;
+				level['yStartingPos']=280*scala;
 
 				var ground = {
                		x: 0,
                		width: level.maxWidth,
-               		height: 26,
+               		height: (25*scala)+1,
                		color: '#155261'
             	};  ground['y']=level.maxHeight-ground.height;
 
@@ -127,21 +141,21 @@
            	    	x: 0,
                 	y: 0,
                 	width: level.maxWidth,
-      		    	height: 26,
+      		    	height: (25*scala)+1,
             		color: '#155261'
             	};
             	            
             	var leftWall = {
                		x: 0,
                		y: 0,
-               		width: 26,
+               		width: (25*scala)+1,
                		height: level.maxHeight,
                		color: '#155261'
            		 };
             
             	var rightWall = {
                		y: 0,
-               		width: 26,
+               		width: (25*scala)+1,
                		height: level.maxHeight,
                		color: '#155261'
             	};  rightWall['x']= level.maxWidth-rightWall.width;	
@@ -180,9 +194,9 @@
       }
 
 			function nuovoLivello(){	//azzera i dati del player
-                player.x = level.xStartingPos;
-                player.y = level.yStartingPos;
-                player.speed = player.defaultspeed;
+        player.x = level.xStartingPos;
+        player.y = level.yStartingPos;
+        player.speed = player.defaultspeed;
 			}
                             
       //this function is called every frame
@@ -218,16 +232,16 @@
       
         //ombre del dash
         if (player.speed>player.defaultspeed){
-            if (player.xv < -10){
+            if (player.xv < (-10*scala)){
                 ctx.fillStyle ='#b0aefd';
-                ctx.fillRect(xdisegnata-50, ydisegnata+3, player.width-3, player.height-6);
+                ctx.fillRect(xdisegnata-(50*scala), ydisegnata+(3*scala), player.width-(3*scala), player.height-(6*scala));
                 ctx.fillStyle ='#7573ff';
-                ctx.fillRect(xdisegnata-26, ydisegnata+1, player.width-1, player.height-2);
-            }else if (player.xv > 10){
+                ctx.fillRect(xdisegnata-(26*scala), ydisegnata+(1*scala), player.width-(1*scala), player.height-(2*scala));
+            }else if (player.xv > (10*scala)){
                ctx.fillStyle ='#b0aefd';
-               ctx.fillRect(xdisegnata+50, ydisegnata+3, player.width-3, player.height-6);
+               ctx.fillRect(xdisegnata+(50*scala), ydisegnata+(3*scala), player.width-(3*scala), player.height-(6*scala));
                ctx.fillStyle ='#7573ff';
-               ctx.fillRect(xdisegnata+26, ydisegnata+1, player.width-1, player.height-2);
+               ctx.fillRect(xdisegnata+(26*scala), ydisegnata+(1*scala), player.width-(1*scala), player.height-(2*scala));
             }
         }
 	     //ora disegna effettivamente il player
@@ -334,9 +348,9 @@
               if(!p1.giasaltato) { 
                 p1.yv = -p1.jumpheight + 1;
                 if(p1.xv > 0) {
-                  p1.xv = -10;
+                  p1.xv = -10*scala;
                 } else {
-                  p1.xv = 10;
+                  p1.xv = 10*scala;
                 }
                 p1.giasaltato = true;
               } else {
