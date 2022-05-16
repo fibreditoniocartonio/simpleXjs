@@ -15,20 +15,19 @@
       if (scala < 1){alert("Your screen is too small... Try to zoom out your browser page a little (Usually Ctrl and -)");}
       var canvasWidth = widthRes*scala;
       var canvasHeight = heightRes*scala;
-
       if(document.getElementsByTagName('canvas').length == 0) {     //crea il canvas con le variabili che ho creato
           document.body.innerHTML += "".concat("<canvas id='canvas' width=" , canvasWidth , " height=" , canvasHeight , "></canvas>");
       }   var ctx = document.getElementById('canvas').getContext('2d');
            
-			//variabili dei tasti
+	  //variabili dei tasti
       var keys = [];
       var jumpkey = 90;         //salta - default z
       var destrakey = 39;       //muovi sinistra - default freccia destra
       var sinistrakey = 37;     //muovi destra - default freccia sinistra
 	  var dashkey = 88;		    //dash - default x
-      var sparokey = 65;	
+      var sparokey = 65;		//shoot - default a
             
-      //events
+      //events - leggi tasti schiacciati
       document.body.addEventListener("keydown", function(e) {
           keys[e.keyCode] = true;
       });
@@ -49,6 +48,7 @@
         defaultColor: '#0400f8',
         charge0color: '#ffc000',
         charge1color: '#49ff37',
+        charge2color: '#14dfff',        
         speed: 0.9*scala,
         defaultspeed: 0.9*scala,
         jumpheight: 10.5*scala,
@@ -132,9 +132,8 @@
         
         //qui carico delle cose io ma saranno dati contenuti nei vari livelli, dopo il carattere 'f'        
 				level['gravity'] = 0.62*scala;
-        level['friction'] = 0.85;
+        		level['friction'] = 0.85;
 				level['xStartingPos']=50*scala;
-	  //	level['yStartingPos']=level.maxHeight-80;
 				level['yStartingPos']=280*scala;
 
 				var ground = {
@@ -169,7 +168,7 @@
             				
 				level.push(ground, ceiling, leftWall, rightWall); //this pushes all of the static objects into the level
 				   
-        ctx.clearRect(0, 0, canvas.width, canvas.height); //pulisce tutto per evitare dubbi
+        		ctx.clearRect(0, 0, canvas.width, canvas.height); //pulisce tutto per evitare dubbi
 				nuovoLivello();				
 			} 
       
@@ -237,16 +236,16 @@
       window.onload = start;
             
       //this function is called at the start
-      function start() {
-				nuovoLivello();
-        update();
-      }
+		function start() {
+			nuovoLivello();
+        	update();
+		}
 
-			function nuovoLivello(){	//azzera i dati del player
-        player.x = level.xStartingPos;
-        player.y = level.yStartingPos;
-        player.speed = player.defaultspeed;
-			}
+		function nuovoLivello(){	//azzera i dati del player
+        	player.x = level.xStartingPos;
+        	player.y = level.yStartingPos;
+        	player.speed = player.defaultspeed;
+		}
                             
       //this function is called every frame
       function update() {
@@ -330,7 +329,7 @@
               xdisegnata=level[i].x-player.x+canvasWidth/2;
             }
           }
-					var ydisegnata=0
+		  var ydisegnata=0
           if (player.y < canvasHeight/2){
             ydisegnata=level[i].y;
           }else{
@@ -360,7 +359,7 @@
                 xdisegnata=entity[i].x-player.x+canvasWidth/2;
               }
             }
-					 var ydisegnata=0
+			var ydisegnata=0
             if (player.y < canvasHeight/2){
               ydisegnata=entity[i].y;
             }else{
@@ -428,22 +427,37 @@
             player.giasparato = true;
           }else{
             player.carica++;
-            if (player.carica > 25){ //disegna i pallini del colore della carica intorno al player
+            if (player.carica > 100){ //disegna i pallini del colore della carica intorno al player
+              var xdisegnata=xDisegnata(); var ydisegnata=yDisegnata();
+              var xrandom=((-player.width/4)-4+Math.floor(Math.random() * (player.width/2)))*scala; var yrandom=((-player.height/4)-4+Math.floor(Math.random() * (player.height/2)))*scala;
+              ctx.fillStyle = player.charge0color;
+        	  ctx.fillRect(xdisegnata+(player.width/2)+xrandom, ydisegnata+(player.height/2)+yrandom, 8*scala, 8*scala);
+            }else if(player.carica > 25){
               var xdisegnata=xDisegnata(); var ydisegnata=yDisegnata();
               var xrandom=((-player.width/4)-4+Math.floor(Math.random() * (player.width/2)))*scala; var yrandom=((-player.height/4)-4+Math.floor(Math.random() * (player.height/2)))*scala;
               ctx.fillStyle = player.charge1color;
         	  ctx.fillRect(xdisegnata+(player.width/2)+xrandom, ydisegnata+(player.height/2)+yrandom, 8*scala, 8*scala);
-            }else{// la seconda carica sarà a 100
             }   
           }
         }else{
           if (player.giasparato){
-            if (player.carica > 25){   //per ora un solo livello di carica
-              var sparo = new newSparo();
-              sparo.width= 35*scala;
-              sparo.height= 15*scala;
-              sparo.color= player.charge1color;
-              entity.push(sparo);
+            if (player.carica > 100){
+            	var sparo = new newSparo();
+                sparo.width= 50*scala;
+                sparo.height= 25*scala;
+                if (!sparo.facingRight){
+                	sparo.x= sparo.x-player.width;
+                }
+                sparo.y= player.y+(5*scala);
+                sparo.color= player.charge2color;
+                sparo.perforation=true;
+                entity.push(sparo);
+            }else if (player.carica > 25){
+            	var sparo = new newSparo();
+            	sparo.width= 35*scala;
+            	sparo.height= 15*scala;
+            	sparo.color= player.charge1color;
+            	entity.push(sparo);
             }
             player.color=player.defaultColor ;
             player.carica=0;
@@ -451,7 +465,7 @@
           }
         }
                 
-        //slopes
+        //slopes - non ho ancora capito cos e'
         p1.slope = 0;
         for(var i = 0; i < lvl.length; i++) {
           if(collisionBetween(p1, lvl[i])) {
