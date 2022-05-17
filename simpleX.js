@@ -37,6 +37,8 @@
             
       //make the player
       var player = {
+      	life:16,
+      	lifeMax:16,
         x: 0,
         y: 0,
         yv: 0,
@@ -46,6 +48,7 @@
         height: 40*scala,
         color: '#0400f8',
         defaultColor: '#0400f8',
+        damagedColor: '#990003',
         charge0color: '#ffc000',
         charge1color: '#49ff37',
         charge2color: '#14dfff',        
@@ -55,6 +58,7 @@
         giasaltato : false,
         giasparato : false,
         facingRight : true,
+        invulnerability : 0,
         carica: 0, //carica dei colpi
       };
 
@@ -62,10 +66,10 @@
 			var level = []; //create the level array
 			var lvlNumber=0;			
 
-      //prendo lvlNumber e carico il livello scelto - sadly non ancora da file perchè siamo a corto di budget
+      		//prendo lvlNumber e carico il livello scelto - sadly non ancora da file perchè siamo a corto di budget
 			function leggiLivelloDaFile() {	//funz che carica il livello scelto - i livello sono salvati come stringhe
 				switch (lvlNumber) {
-					case 0: stringToLevel("tttttttttttttttttttttttttttttttttttttttttttttttttttl..................................................l..................................................l..................................................l..................................................l......................................P...........l..................................................l..................................................l..................................................l..................................................l..................................................l..................................................l..................................................l..................................................l..................................................l..................................................l..................................................l..................................................l..................................................l..................................................l..................................................l..................................................l..................................................l..................................................l..................................................l..................................................l..................................................l..................................................l..................................................f");
+					case 0: stringToLevel("tttttttttttttttttttttttttttttttttttttttttttttttttttl..................................................l..................................................l..................................................l..................................................l......................................P...........l..................................................l..................................................l..................................................l..................................................l..................................................l..................................................l..................................................l..................................................l..................................................l..................................................l..................................................l..................................................l..................................................l..................................................l..................................................l..................................................l..................................................l..................................................l..................................................l..................................................l..............................P...................l....................................P.............l..................................................f");
 					break;
 
 					case 1: stringToLevel("tttttttttttttttttttttttttttttttttttttttttttttttttttttttttttl..........................................................l..........................................................l..bbbbbbb.................................................l..........................................................l..........................................................l..........................................................l..........................................................l..........................................................l..........................................................l..........................................................l..........................................................l..........................................................l..........................................................l..........................................................l..........................................................l..........................................................l..........................................................l..........................................................l..........................................................l..........................................................l..................................bbbbbbbbbb..............l..........................................................l..........................................................l..........................................................l..........................................................l....................bb....................................l................bb........................................l............bb............................................l........bb................................................l....bb....................................................f");
@@ -83,7 +87,8 @@
 			}
 
 			function stringToLevel(lvlString){
-				level = [];
+				level = []; //azzera level
+				entity = []; //azzera entity
 				var widthTot=0;
 				var heightTot=1;
 				for (let i = 0; i < lvlString.length; i++) { //ciclo la stringa livello per trasformarlo da stringa a livello vero
@@ -115,11 +120,11 @@
 						case '.': // . è vuoto/aria
 							break;
               
-            //ora le entita' (lettere maiuscole) entity.push(sparo);
-            case 'P': // P indica un pipistrello
-              var pipistrello = new newPipistrello();
-              pipistrello.x= (i%widthTot)*25*scala;
-              pipistrello.y= (heightTot-1)*25*scala;
+           				//ora le entita' (lettere maiuscole)
+            			case 'P': // P indica un pipistrello
+             			 	var pipistrello = new newPipistrello();
+             			 	pipistrello.x= (i%widthTot)*25*scala;
+             				pipistrello.y= (heightTot-1)*25*scala;
 							entity.push(pipistrello);
 							break;  															
 					}
@@ -127,20 +132,20 @@
         
 				level['maxWidth'] = widthTot*25*scala;
 				level['maxHeight'] = heightTot*25*scala;
-        if (level.maxWidth < canvas.width){    //controlla che il livello non sia piu piccolo del canvas, che se no si bugga tutto - le x
-            canvasWidth=level.maxWidth;
-        }else{
-            canvasWidth=canvas.width;
-        }
-        if (level.maxHeight < canvas.height){    //controlla che il livello non sia piu piccolo del canvas, che se no si bugga tutto - le y
-            canvasHeight=level.maxHeight;
-        }else{
-            canvasHeight=canvas.height;
-        }         
+        		if (level.maxWidth < canvas.width){    //controlla che il livello non sia piu piccolo del canvas, che se no si bugga tutto - le x
+            		canvasWidth=level.maxWidth;
+        		}else{
+            		canvasWidth=canvas.width;
+        		}
+        		if (level.maxHeight < canvas.height){    //controlla che il livello non sia piu piccolo del canvas, che se no si bugga tutto - le y
+            		canvasHeight=level.maxHeight;
+        		}else{
+            		canvasHeight=canvas.height;
+        		}     
         
-        //qui carico delle cose io ma saranno dati contenuti nei vari livelli, dopo il carattere 'f'        
+        		//qui carico delle cose io ma saranno dati contenuti nei vari livelli, dopo il carattere 'f'        
 				level['gravity'] = 0.62*scala;
-        level['friction'] = 0.85;
+        		level['friction'] = 0.85;
 				level['xStartingPos']=50*scala;
 				level['yStartingPos']=280*scala;
 
@@ -278,7 +283,18 @@
               this.y += -this.yv;
               this.yv = 0;
             }
-          }	
+          }
+          //other entity mostro collision - e' un po buggata
+          for(var i = 0; i < entity.length; i++) {
+          	if (entity[i].life > 0 && entity[i].type=="mostro" && !(i==indiceDiQuestaEntity)){
+            	if(collisionBetween(this, entity[i])) {
+              		this.x -= -this.xv;
+              		this.y += -this.yv;
+              		this.xv = 0;
+              		this.yv = 0;
+            	}   
+            }
+          }
         }              
       }
       
@@ -311,6 +327,7 @@
 		function nuovoLivello(){	//azzera i dati del player
         	player.x = level.xStartingPos;
         	player.y = level.yStartingPos;
+        	player.life = player.lifeMax;
         	player.speed = player.defaultspeed;
 		}
                             
@@ -318,6 +335,7 @@
       function update() {
         requestAnimationFrame(update);
         drawLvl();
+        drawHUD();
         drawEntity(); //in questa funzione viene chiamata anche il metodo entity[i].physics per le entità che vengono disegnate su schermo (le uniche che carico)
         drawPlayer(); 
         playerPhysics(player, level);
@@ -409,6 +427,23 @@
           //ora disegno il livello                    
           ctx.fillRect(xdisegnata, ydisegnata, level[i].width, level[i].height);
         }
+      }
+
+      function drawHUD(){
+      	ctx.fillStyle = '#9e9e9e';
+		ctx.fillRect(8*scala, 8*scala, (player.lifeMax*6+39)*scala, 29*scala);
+		ctx.fillStyle = '#3d3b3b';
+		ctx.fillRect(10*scala, 10*scala, (player.lifeMax*6+40)*scala, 30*scala);
+		ctx.fillStyle = player.color; //ora disegno la x che sara' del colore del player attivo
+		ctx.fillRect(13*scala, 13*scala, 8*scala, 8*scala);ctx.fillRect(29*scala, 13*scala, 8*scala, 8*scala);ctx.fillRect(13*scala, 29*scala, 8*scala, 8*scala);ctx.fillRect(29*scala, 29*scala, 8*scala, 8*scala);ctx.fillRect(21*scala, 21*scala, 8*scala, 8*scala);
+		for (i=0; i < player.lifeMax; i++) {
+			if (i < player.life){
+				ctx.fillStyle = player.charge0color;
+			}else{
+				ctx.fillStyle = '#797979';
+			}
+			ctx.fillRect((i*6+43)*scala, 15*scala, 5*scala, 20*scala);
+		}
       }
       
       function drawEntity(){   //disegna le entità a schermo e chiama la entity[i].physics
@@ -575,6 +610,31 @@
             }   
           }
         }
+
+        //entity collison
+        if (player.invulnerability < 1){
+			for(var i = 0; i < entity.length; i++) {
+				if(entity[i].life > 0 && !(entity[i].type=="sparoDelPlayer")) {
+          			if(collisionBetween(player, entity[i])) {
+						player.color=player.damagedColor;
+						player.life=player.life-entity[i].damage;
+						player.invulnerability=50;
+            		}
+        		}
+        	}
+       	}else{
+       		player.invulnerability--;
+       		if (player.invulnerability < 40){
+       			player.color=player.defaultColor;
+       		}	
+       	}
+
+      	//gameover
+      	if(player.life==0){
+      		drawHUD();
+      		alert("Gameover");
+      		nuovoLivello();
+      	} 
       } //fine della funzione playerPhysics - se riesco la faccio diventare un metodo di player invece che una funzione sestante
       
       //this function detects the collision between the two given objects - la uso anche con le entità lol
