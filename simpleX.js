@@ -35,32 +35,33 @@
           keys[e.keyCode] = false;
       });
             
-      //make the player
-      var player = {
-      	life:16,
-      	lifeMax:16,
-        x: 0,
-        y: 0,
-        yv: 0,
-        xv: 0,
-        slope: 0,
-        width: (25*scala)-0.5,
-        height: 40*scala,
-        color: '#0400f8',
-        defaultColor: '#0400f8',
-        damagedColor: '#990003',
-        charge0color: '#ffc000',
-        charge1color: '#49ff37',
-        charge2color: '#14dfff',        
-        speed: 0.9*scala,
-        defaultspeed: 0.9*scala,
-        jumpheight: 10.5*scala,
-        giasaltato : false,
-        giasparato : false,
-        facingRight : true,
-        invulnerability : 0,
-        carica: 0, //carica dei colpi
-      };
+      //prototipo del player
+      function Player() {
+      	this.life=16;
+      	this.lifeMax=16;
+        this.x= 0;
+        this.y= 0;
+        this.yv= 0;
+        this.xv= 0;
+        this.slope= 0;
+        this.width= (25*scala)-0.5;
+        this.height= 40*scala;
+        this.color= '#0400f8';
+        this.defaultColor= '#0400f8';
+        this.damagedColor= '#990003';
+        this.charge0color= '#ffc000';
+        this.charge1color= '#49ff37';
+        this.charge2color= '#14dfff';        
+        this.speed= 0.9*scala;
+        this.defaultspeed= 0.9*scala;
+        this.jumpheight= 10.5*scala;
+        this.giasaltato = false;
+        this.giasparato = false;
+        this.facingRight = true;
+        this.invulnerability = 0;
+        carica= 0; //carica dei colpi
+      }
+      var player = new Player(); //creo il player
 
 			//caricare il livello
 			var level = []; //create the level array
@@ -181,8 +182,7 @@
             				
 				level.push(ground, ceiling, leftWall, rightWall); //this pushes all of the static objects into the level
 				   
-        		ctx.clearRect(0, 0, canvas.width, canvas.height); //pulisce tutto per evitare dubbi
-				nuovoLivello();				
+        		ctx.clearRect(0, 0, canvas.width, canvas.height); //pulisce tutto per evitare dubbi				
 			} 
       
       var entity = []; //create the level array. Ogni entità deve avere: x, y, width, height e il metodo physics che determinerà come si comporta l'entità
@@ -257,10 +257,10 @@
           this.xv *= level.friction;
           this.yv *= level.friction;
           this.x += -this.xv;
-          this.y += -this.yv;    
+          this.y += -this.yv;   
           //collisione con level
-          //slopes - non ho ancora capito cos e' ma serve a collision level
-          this.slope = 0;
+
+          this.slope = 0;	//serve per i bordi tipo
           for(var i = 0; i < level.length; i++) {
             if(collisionBetween(this, level[i])) {
               if(this.slope != -8) {
@@ -269,32 +269,30 @@
               }
             }
           }
-          // x collision
+          // level collision
           for(var i = 0; i < level.length; i++) {
             if(collisionBetween(this, level[i])) {
               this.y += this.slope;
-              this.x -= -this.xv;
+              this.x += this.xv*2;
               this.xv = 0;
-              }   
-          }
-          //y collision
-          for(var i = 0; i < level.length; i++) {
+            } 
             if(collisionBetween(this, level[i])) {
-              this.y += -this.yv;
+              this.y += this.yv*2;
               this.yv = 0;
-            }
+            }   
           }
+
           //other entity mostro collision - e' un po buggata
           for(var i = 0; i < entity.length; i++) {
           	if (entity[i].life > 0 && entity[i].type=="mostro" && !(i==indiceDiQuestaEntity)){
             	if(collisionBetween(this, entity[i])) {
-              		this.x -= -this.xv;
-              		this.y += -this.yv;
+              		this.x += this.xv*1.95;
               		this.xv = 0;
-              		this.yv = 0;
-            	}   
+					this.y += this.yv*1.95;
+					this.yv = 0;
+            	}  
             }
-          }
+          } 
         }              
       }
       
@@ -303,39 +301,38 @@
 			buttonLvl0.innerText = 'level--'
 			buttonLvl0.addEventListener('click', () => {
 			  lvlNumber--;
-			  leggiLivelloDaFile();
+			  nuovoLivello();
 			})
 			const buttonLvl1 = document.createElement('button')
 			buttonLvl1.innerText = 'level++'
 			buttonLvl1.addEventListener('click', () => {
 			  lvlNumber++;
-			  leggiLivelloDaFile();
+			  nuovoLivello();
 			})
 			document.body.appendChild(buttonLvl0)
 			document.body.appendChild(buttonLvl1)
 			
       //start the engine
-      leggiLivelloDaFile(); //chiama le funzioni per leggere il livello
       window.onload = start;
             
       //this function is called at the start
 		function start() {
-			nuovoLivello();
+			nuovoLivello()
         	update();
 		}
 
 		function nuovoLivello(){	//azzera i dati del player
+			player = new Player();
+			leggiLivelloDaFile();
         	player.x = level.xStartingPos;
         	player.y = level.yStartingPos;
-        	player.life = player.lifeMax;
-        	player.speed = player.defaultspeed;
 		}
                             
       //this function is called every frame
       function update() {
-        requestAnimationFrame(update);
+        requestAnimationFrame(update); //credo che sia la roba che crea il ciclo del gioco
         drawLvl();
-        drawHUD();
+        drawHUD();		//if you move drawHUD() under playerPhysics() the HUD will always be drawn on top of everything, but i like it this way. Entities and the player are more important then the hud lol
         drawEntity(); //in questa funzione viene chiamata anche il metodo entity[i].physics per le entità che vengono disegnate su schermo (le uniche che carico)
         drawPlayer(); 
         playerPhysics(player, level);
@@ -569,8 +566,7 @@
           }
         }
                 
-        //slopes - non ho ancora capito cos e'
-        p1.slope = 0;
+        p1.slope = 0;	//serve per i bordi tipo
         for(var i = 0; i < lvl.length; i++) {
           if(collisionBetween(p1, lvl[i])) {
             if(p1.slope != -8) {
@@ -619,12 +615,16 @@
 						player.color=player.damagedColor;
 						player.life=player.life-entity[i].damage;
 						player.invulnerability=50;
+						break;
             		}
         		}
         	}
        	}else{
        		player.invulnerability--;
-       		if (player.invulnerability < 40){
+       		if (player.invulnerability < 45){
+       			player.color='#4b48ff';
+       		}
+       		if (player.invulnerability < 5){
        			player.color=player.defaultColor;
        		}	
        	}
@@ -632,19 +632,19 @@
       	//gameover
       	if(player.life==0){
       		drawHUD();
-      		alert("Gameover");
+      		//alert("Gameover");
       		nuovoLivello();
       	} 
       } //fine della funzione playerPhysics - se riesco la faccio diventare un metodo di player invece che una funzione sestante
       
       //this function detects the collision between the two given objects - la uso anche con le entità lol
       function collisionBetween(p1, lvl) {
-        if (lvl.x < p1.x + p1.width &&
-            lvl.x + lvl.width > p1.x &&
-            lvl.y < p1.y + p1.height &&
-            lvl.y + lvl.height > p1.y) {
+        if (lvl.x < p1.x + p1.width 
+        && lvl.x + lvl.width > p1.x 
+        && lvl.y < p1.y + p1.height 
+        && lvl.y + lvl.height > p1.y) {
                 return true;
         } else {
                 return false;
         } 
-      }
+      }    
