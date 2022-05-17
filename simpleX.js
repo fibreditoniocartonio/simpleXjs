@@ -24,7 +24,7 @@
       var jumpkey = 90;         //salta - default z
       var destrakey = 39;       //muovi sinistra - default freccia destra
       var sinistrakey = 37;     //muovi destra - default freccia sinistra
-	  var dashkey = 88;		    //dash - default x
+      var dashkey = 88;		    //dash - default x
       var sparokey = 65;		//shoot - default a
             
       //events - leggi tasti schiacciati
@@ -65,7 +65,7 @@
       //prendo lvlNumber e carico il livello scelto - sadly non ancora da file perchè siamo a corto di budget
 			function leggiLivelloDaFile() {	//funz che carica il livello scelto - i livello sono salvati come stringhe
 				switch (lvlNumber) {
-					case 0: stringToLevel("tttttttttttttttttttttttttttttttttttttttttttttttttttl..................................................l..................................................l..................................................l..................................................l..................................................l..................................................l..................................................l..................................................l..................................................l..................................................l..................................................l..................................................l..................................................l..................................................l..................................................l..................................................l..................................................l..................................................l..................................................l..................................................l..................................................l..................................................l..................................................l..................................................l..................................................l..................................................l..................................................l..................................................f");
+					case 0: stringToLevel("tttttttttttttttttttttttttttttttttttttttttttttttttttl..................................................l..................................................l..................................................l..................................................l......................................P...........l..................................................l..................................................l..................................................l..................................................l..................................................l..................................................l..................................................l..................................................l..................................................l..................................................l..................................................l..................................................l..................................................l..................................................l..................................................l..................................................l..................................................l..................................................l..................................................l..................................................l..................................................l..................................................l..................................................f");
 					break;
 
 					case 1: stringToLevel("tttttttttttttttttttttttttttttttttttttttttttttttttttttttttttl..........................................................l..........................................................l..bbbbbbb.................................................l..........................................................l..........................................................l..........................................................l..........................................................l..........................................................l..........................................................l..........................................................l..........................................................l..........................................................l..........................................................l..........................................................l..........................................................l..........................................................l..........................................................l..........................................................l..........................................................l..........................................................l..................................bbbbbbbbbb..............l..........................................................l..........................................................l..........................................................l..........................................................l....................bb....................................l................bb........................................l............bb............................................l........bb................................................l....bb....................................................f");
@@ -113,7 +113,15 @@
 							break;
 					
 						case '.': // . è vuoto/aria
-							break;															
+							break;
+              
+            //ora le entita' (lettere maiuscole) entity.push(sparo);
+            case 'P': // P indica un pipistrello
+              var pipistrello = new newPipistrello();
+              pipistrello.x= (i%widthTot)*25*scala;
+              pipistrello.y= (heightTot-1)*25*scala;
+							entity.push(pipistrello);
+							break;  															
 					}
 				}
         
@@ -132,7 +140,7 @@
         
         //qui carico delle cose io ma saranno dati contenuti nei vari livelli, dopo il carattere 'f'        
 				level['gravity'] = 0.62*scala;
-        		level['friction'] = 0.85;
+        level['friction'] = 0.85;
 				level['xStartingPos']=50*scala;
 				level['yStartingPos']=280*scala;
 
@@ -173,7 +181,8 @@
 			} 
       
       var entity = []; //create the level array. Ogni entità deve avere: x, y, width, height e il metodo physics che determinerà come si comporta l'entità
-      function newSparo() {
+      //adesso inizio i prototipi delle entita'
+      function newSparo() {//lo sparo creato dal player
         this.life= 1;
         this.type= "sparoDelPlayer";
         this.damage= 1;
@@ -215,6 +224,64 @@
         }
       }
 
+      function newPipistrello() {//mostro pipistrello
+        this.life= 1;
+        this.type= "mostro";
+        this.damage= 1;
+        this.x= 0;
+        this.y= 0;
+        this.xv= 0;
+        this.yv= 0;
+        this.slope = 0;
+        this.width= 30*scala;
+        this.height= 30*scala;
+        this.color= '#a400ff';
+        this.speed= 0.5*scala;
+        this.physics= function( xdisegnata, ydisegnata, indiceDiQuestaEntity){
+          //movimento
+          if (this.x < player.x){
+            this.xv -= this.speed;
+          }else{
+            this.xv += this.speed;
+          }
+          if (this.y < player.y){
+            this.yv -= this.speed;
+          }else{
+            this.yv += this.speed;
+          }
+          this.xv *= level.friction;
+          this.yv *= level.friction;
+          this.x += -this.xv;
+          this.y += -this.yv;    
+          //collisione con level
+          //slopes - non ho ancora capito cos e' ma serve a collision level
+          this.slope = 0;
+          for(var i = 0; i < level.length; i++) {
+            if(collisionBetween(this, level[i])) {
+              if(this.slope != -8) {
+                this.y -= 1;
+                this.slope += 1;
+              }
+            }
+          }
+          // x collision
+          for(var i = 0; i < level.length; i++) {
+            if(collisionBetween(this, level[i])) {
+              this.y += this.slope;
+              this.x -= -this.xv;
+              this.xv = 0;
+              }   
+          }
+          //y collision
+          for(var i = 0; i < level.length; i++) {
+            if(collisionBetween(this, level[i])) {
+              this.y += -this.yv;
+              this.yv = 0;
+            }
+          }	
+        }              
+      }
+      
 			//bottone per scegli il livello
 			const buttonLvl0 = document.createElement('button')
 			buttonLvl0.innerText = 'level--'
@@ -345,7 +412,7 @@
       }
       
       function drawEntity(){   //disegna le entità a schermo e chiama la entity[i].physics
-          for (var i = 0; i < entity.length; i++) {
+        for (var i = 0; i < entity.length; i++) {
           if (entity[i].life > 0){ //calcola la entita solo se la sua vita è maggiore di zero
             ctx.fillStyle = entity[i].color;
             //variabili per disegnare il livello rispetto alla posizione di x (rispetto ai bordi del canvas) - visuale
@@ -359,7 +426,7 @@
                 xdisegnata=entity[i].x-player.x+canvasWidth/2;
               }
             }
-			var ydisegnata=0
+			      var ydisegnata=0
             if (player.y < canvasHeight/2){
               ydisegnata=entity[i].y;
             }else{
@@ -369,9 +436,11 @@
                 ydisegnata=entity[i].y-player.y+canvasHeight/2;
               }
             }
-            //ora disegno il livello                    
-            ctx.fillRect(xdisegnata, ydisegnata, entity[i].width, entity[i].height);
-            entity[i].physics(xdisegnata,ydisegnata, i);
+            //ora disegno l'entita e chiamo physics se e' dentro il canvas disegnato+unQuartoDiCanvas (questa roba non si applica se è uno sparo del player - se no si bugga tutto)                    
+            if ( (xdisegnata > (-canvasWidth/4) && xdisegnata < (canvasWidth+(canvasWidth/4))) && (ydisegnata > (-canvasHeight/4) && ydisegnata < (canvasHeight+(canvasHeight/4))) || entity[i].type=="sparoDelPlayer") { //questo if fa i controlli spiegati sopra 
+              ctx.fillRect(xdisegnata, ydisegnata, entity[i].width, entity[i].height);
+              entity[i].physics(xdisegnata,ydisegnata, i);
+            }
           }
         }
       }
