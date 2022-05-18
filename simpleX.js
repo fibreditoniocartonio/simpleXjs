@@ -24,8 +24,11 @@
       var jumpkey = 90;         //salta - default z
       var destrakey = 39;       //muovi sinistra - default freccia destra
       var sinistrakey = 37;     //muovi destra - default freccia sinistra
-      var dashkey = 88;		    //dash - default x
-      var sparokey = 65;		//shoot - default a
+      var sukey = 38;           //default freccia su
+      var giukey = 40;          //default freccia giu
+      var dashkey = 88;		      //dash - default x
+      var sparokey = 65;		    //shoot - default a
+      var startkey = 13;		    //start - default INVIO/ENTER
             
       //events - leggi tasti schiacciati
       document.body.addEventListener("keydown", function(e) {
@@ -65,7 +68,8 @@
 
 			//caricare il livello
 			var level = []; //create the level array
-			var lvlNumber=0;			
+			var lvlNumber=0;
+      var stageSelection=true;			
 
       		//prendo lvlNumber e carico il livello scelto - sadly non ancora da file perchè siamo a corto di budget
 			function leggiLivelloDaFile() {	//funz che carica il livello scelto - i livello sono salvati come stringhe
@@ -317,25 +321,28 @@
             
       //this function is called at the start
 		function start() {
-			nuovoLivello()
-        	update();
+      update();
 		}
 
 		function nuovoLivello(){	//azzera i dati del player
 			player = new Player();
 			leggiLivelloDaFile();
-        	player.x = level.xStartingPos;
-        	player.y = level.yStartingPos;
+      player.x = level.xStartingPos;
+      player.y = level.yStartingPos;
 		}
                             
       //this function is called every frame
       function update() {
         requestAnimationFrame(update); //credo che sia la roba che crea il ciclo del gioco
-        drawLvl();
-        drawHUD();		//if you move drawHUD() under playerPhysics() the HUD will always be drawn on top of everything, but i like it this way. Entities and the player are more important then the hud lol
-        drawEntity(); //in questa funzione viene chiamata anche il metodo entity[i].physics per le entità che vengono disegnate su schermo (le uniche che carico)
-        drawPlayer(); 
-        playerPhysics(player, level);
+        if (!stageSelection){
+          drawLvl();
+          drawHUD();		//if you move drawHUD() under playerPhysics() the HUD will always be drawn on top of everything, but i like it this way. Entities and the player are more important then the hud lol
+          drawEntity(); //in questa funzione viene chiamata anche il metodo entity[i].physics per le entità che vengono disegnate su schermo (le uniche che carico)
+          drawPlayer(); 
+          playerPhysics(player, level);
+        }else{
+          stageSelect();
+        }
       }
 
 	  function xDisegnata(){
@@ -632,8 +639,8 @@
       	//gameover
       	if(player.life==0){
       		drawHUD();
-      		//alert("Gameover");
-      		nuovoLivello();
+      		alert("Gameover");
+      		stageSelection=true;
       	} 
       } //fine della funzione playerPhysics - se riesco la faccio diventare un metodo di player invece che una funzione sestante
       
@@ -648,3 +655,29 @@
                 return false;
         } 
       }    
+
+
+      function stageSelect(){
+          var img = document.getElementById("stageselect");
+          ctx.drawImage(img, 0, 0, canvasWidth,canvasHeight);
+            if (keys[startkey] || keys[dashkey]){
+              stageSelection=false;
+              nuovoLivello();
+            }
+            if (keys[sukey]){
+              showSelectScreenImage(img);
+            }
+            if (keys[giukey]){
+              showSelectScreenImage(img);          
+            }
+            if (keys[sinistrakey]){
+              showSelectScreenImage(img);            
+            }
+            if (keys[destrakey]){
+              showSelectScreenImage(img);           
+            }
+      } 
+      function showSelectScreenImage(img){
+              ctx.clearRect(0, 0, canvas.width, canvas.height);	//pulisci tutto il canvas
+              ctx.drawImage(img, 0, 0, canvasWidth,canvasHeight);
+      }
