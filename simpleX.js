@@ -12,7 +12,8 @@
             }
           }
       }
-      if (scala < 1){alert("Your screen is too small... Try to zoom out your browser page a little (Usually Ctrl and -)");}
+//      if (scala < 1){alert("Your screen is too small... Try to zoom out your browser page a little (Usually Ctrl and -)");}
+      if (scala < 1){scala=1;}
       var canvasWidth = widthRes*scala;
       var canvasHeight = heightRes*scala;
       if(document.getElementsByTagName('canvas').length == 0) {     //crea il canvas con le variabili che ho creato
@@ -20,12 +21,16 @@
       }   var ctx = document.getElementById('canvas').getContext('2d');
            
 	  //variabili dei tasti
-      var keys = [];
+      var keys = [];            //vettore tasti
+      var tastoGiaSchiacciato = false; //mi serve per alcune funzioni tipo selectScreen()
       var jumpkey = 90;         //salta - default z
       var destrakey = 39;       //muovi sinistra - default freccia destra
       var sinistrakey = 37;     //muovi destra - default freccia sinistra
-      var dashkey = 88;		    //dash - default x
-      var sparokey = 65;		//shoot - default a
+      var sukey = 38;           //default freccia su
+      var giukey = 40;          //default freccia giu
+      var dashkey = 88;		      //dash - default x
+      var sparokey = 65;		    //shoot - default a
+      var startkey = 13;		    //start - default INVIO/ENTER
             
       //events - leggi tasti schiacciati
       document.body.addEventListener("keydown", function(e) {
@@ -54,7 +59,7 @@
         this.charge2color= '#14dfff';        
         this.speed= 0.9*scala;
         this.defaultspeed= 0.9*scala;
-        this.jumpheight= 10.5*scala;
+        this.jumpheight= 11.5*scala;
         this.giasaltato = false;
         this.giasparato = false;
         this.facingRight = true;
@@ -65,24 +70,25 @@
 
 			//caricare il livello
 			var level = []; //create the level array
-			var lvlNumber=0;			
+			var lvlNumber=1;
+      var stageSelection=true;			
 
       		//prendo lvlNumber e carico il livello scelto - sadly non ancora da file perchè siamo a corto di budget
 			function leggiLivelloDaFile() {	//funz che carica il livello scelto - i livello sono salvati come stringhe
 				switch (lvlNumber) {
-					case 0: stringToLevel("tttttttttttttttttttttttttttttttttttttttttttttttttttl..................................................l..................................................l..................................................l..................................................l......................................P...........l..................................................l..................................................l..................................................l..................................................l..................................................l..................................................l..................................................l..................................................l..................................................l..................................................l..................................................l..................................................l..................................................l..................................................l..................................................l..................................................l..................................................l..................................................l..................................................l..................................................l..............................P...................l....................................P.............l..................................................f");
+					case 1: stringToLevel("tttttttttttttttttttttttttttttttttttttttttttttttttttl..................................................l..................................................l..................................................l..................................................l......................................P...........l..................................................l..................................................l..................................................l..................................................l..................................................l..................................................l..................................................l..................................................l..................................................l..................................................l..................................................l..................................................l..................................................l..................................................l..................................................l..................................................l..................................................l..................................................l..................................................l..................................................l..............................P...................l....................................P.............l..................................................f");
 					break;
 
-					case 1: stringToLevel("tttttttttttttttttttttttttttttttttttttttttttttttttttttttttttl..........................................................l..........................................................l..bbbbbbb.................................................l..........................................................l..........................................................l..........................................................l..........................................................l..........................................................l..........................................................l..........................................................l..........................................................l..........................................................l..........................................................l..........................................................l..........................................................l..........................................................l..........................................................l..........................................................l..........................................................l..........................................................l..................................bbbbbbbbbb..............l..........................................................l..........................................................l..........................................................l..........................................................l....................bb....................................l................bb........................................l............bb............................................l........bb................................................l....bb....................................................f");
+					case 2: stringToLevel("tttttttttttttttttttttttttttttttttttttttttttttttttttttttttttl..........................................................l..........................................................l..bbbbbbb.................................................l..........................................................l..........................................................l..........................................................l..........................................................l..........................................................l..........................................................l..........................................................l..........................................................l..........................................................l..........................................................l..........................................................l..........................................................l..........................................................l..........................................................l..........................................................l..........................................................l..........................................................l..................................bbbbbbbbbb..............l..........................................................l..........................................................l..........................................................l..........................................................l....................bb....................................l................bb........................................l............bb............................................l........bb................................................l....bb....................................................f");
 					break;
 
-					case 2: stringToLevel("ttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttl...................................................................................................................................................................................................................l...................................................................................................................................................................................................................l...b...b.bbb.bbb.b.bbb...bbb.bbb.bbb.bbb...b...b.bbb.bbb...bbb...b.....bbb...b.....................................................................................................................................l...bb.bb.b.b.b.b.b.b.b...b.b.b.b.b.b.b.....bb..b.b...b.....b.b..bb.....b.b..bb.....................................................................................................................................l...b.b.b.bbb.bbb.b.b.b...bb..bbb.b.b.bbb...b.b.b.bbb.bbb...b.b.b.b.b.b.b.b.b.b.....................................................................................................................................l...b...b.b.b.bb..b.b.b...b.b.bb..b.b...b...b..bb.b.....b...b.b...b..b..b.b...b.....................................................................................................................................l...b...b.b.b.b.b.b.bbb...bbb.b.b.bbb.bbb...b...b.bbb.bbb...bbb...b.b.b.bbb...b.....................................................................................................................................l...................................................................................................................................................................................................................l...................................................................................................................................................................................................................l...................................................................................................................................................................................................................l.........................................................................................................................................................................................................b.........l.........................................................................................................................................................................................................b.........l.........................................................................................................................................................................................................b.........l................................................................................................................................................................................................bb.......b.........l...............................................................................................................................................................................................bbb.......b.........l......................b.........................................................bbbbbbbb...bbbb................b............bbb....bbbb.......................................................bbbb.......b.........l.............................................................................................................................................................................................bbbbb.......b...b.b.b.l..............................................bb.........bb.................................................................................b..b..........bb..b.............................bbbbbb.......b...bbbbb.l...............b....bbbbb.............bb......bb.........bb..................bbb..............b......bb.....b..b..b.....b...........bb.....bb..bb........bbb..bb...........bbbb............bbbbbbb.......b...bbbbb.l............................bb........bb......bb.........bb...............................................................................bbb..bbb......bbbb..bbb.....bb..............bb..bbbbbbbb.......b...bb.bb.l............................bb........bb......bb.........bb..............................................................................bbbb..bbbb....bbbbb..bbbb....bb..............bb.bbbbbbbbb......bbb..bb.bb.lbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb..bbbbbbbbbbbbbbb...bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb..bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbblbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb..bbbbbbbbbbbbbbb...bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb..bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbblbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb..bbbbbbbbbbbbbbb...bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb..bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbblbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb..bbbbbbbbbbbbbbb...bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb..bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbblbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb..bbbbbbbbbbbbbbb...bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb..bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbblbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb..bbbbbbbbbbbbbbb...bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb..bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbblbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb..bbbbbbbbbbbbbbb...bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb..bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbf");
+					case 3: stringToLevel("ttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttl...................................................................................................................................................................................................................l...................................................................................................................................................................................................................l...b...b.bbb.bbb.b.bbb...bbb.bbb.bbb.bbb...b...b.bbb.bbb...bbb...b.....bbb...b.....................................................................................................................................l...bb.bb.b.b.b.b.b.b.b...b.b.b.b.b.b.b.....bb..b.b...b.....b.b..bb.....b.b..bb.....................................................................................................................................l...b.b.b.bbb.bbb.b.b.b...bb..bbb.b.b.bbb...b.b.b.bbb.bbb...b.b.b.b.b.b.b.b.b.b.....................................................................................................................................l...b...b.b.b.bb..b.b.b...b.b.bb..b.b...b...b..bb.b.....b...b.b...b..b..b.b...b.....................................................................................................................................l...b...b.b.b.b.b.b.bbb...bbb.b.b.bbb.bbb...b...b.bbb.bbb...bbb...b.b.b.bbb...b.....................................................................................................................................l...................................................................................................................................................................................................................l...................................................................................................................................................................................................................l...................................................................................................................................................................................................................l.........................................................................................................................................................................................................b.........l.........................................................................................................................................................................................................b.........l.........................................................................................................................................................................................................b.........l................................................................................................................................................................................................bb.......b.........l...............................................................................................................................................................................................bbb.......b.........l......................b.........................................................bbbbbbbb...bbbb................b............bbb....bbbb.......................................................bbbb.......b.........l.............................................................................................................................................................................................bbbbb.......b...b.b.b.l..............................................bb.........bb.................................................................................b..b..........bb..b.............................bbbbbb.......b...bbbbb.l...............b....bbbbb.............bb......bb.........bb..................bbb..............b......bb.....b..b..b.....b...........bb.....bb..bb........bbb..bb...........bbbb............bbbbbbb.......b...bbbbb.l............................bb........bb......bb.........bb...............................................................................bbb..bbb......bbbb..bbb.....bb..............bb..bbbbbbbb.......b...bb.bb.l............................bb........bb......bb.........bb..............................................................................bbbb..bbbb....bbbbb..bbbb....bb..............bb.bbbbbbbbb......bbb..bb.bb.lbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb..bbbbbbbbbbbbbbb...bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb..bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbblbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb..bbbbbbbbbbbbbbb...bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb..bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbblbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb..bbbbbbbbbbbbbbb...bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb..bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbblbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb..bbbbbbbbbbbbbbb...bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb..bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbblbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb..bbbbbbbbbbbbbbb...bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb..bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbblbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb..bbbbbbbbbbbbbbb...bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb..bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbblbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb..bbbbbbbbbbbbbbb...bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb..bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbf");
 					break;
 										
 					default:
-					alert("Errore nel caricamento del livello - Carico level 0")
-					lvlNumber=0;
-					leggiLivelloDaFile() 
+					alert("Errore nel caricamento del livello - carico il level 1")
+					lvlNumber=1;
+					leggiLivelloDaFile();
 				}
 				return
 			}
@@ -146,7 +152,7 @@
         
         		//qui carico delle cose io ma saranno dati contenuti nei vari livelli, dopo il carattere 'f'        
 				level['gravity'] = 0.62*scala;
-        		level['friction'] = 0.85;
+        level['friction'] = 0.85;
 				level['xStartingPos']=50*scala;
 				level['yStartingPos']=280*scala;
 
@@ -296,7 +302,7 @@
         }              
       }
       
-			//bottone per scegli il livello
+/*
 			const buttonLvl0 = document.createElement('button')
 			buttonLvl0.innerText = 'level--'
 			buttonLvl0.addEventListener('click', () => {
@@ -311,31 +317,34 @@
 			})
 			document.body.appendChild(buttonLvl0)
 			document.body.appendChild(buttonLvl1)
-			
+*/			
       //start the engine
       window.onload = start;
             
       //this function is called at the start
 		function start() {
-			nuovoLivello()
-        	update();
+      update();
 		}
 
 		function nuovoLivello(){	//azzera i dati del player
 			player = new Player();
 			leggiLivelloDaFile();
-        	player.x = level.xStartingPos;
-        	player.y = level.yStartingPos;
+      player.x = level.xStartingPos;
+      player.y = level.yStartingPos;
 		}
                             
       //this function is called every frame
       function update() {
         requestAnimationFrame(update); //credo che sia la roba che crea il ciclo del gioco
-        drawLvl();
-        drawHUD();		//if you move drawHUD() under playerPhysics() the HUD will always be drawn on top of everything, but i like it this way. Entities and the player are more important then the hud lol
-        drawEntity(); //in questa funzione viene chiamata anche il metodo entity[i].physics per le entità che vengono disegnate su schermo (le uniche che carico)
-        drawPlayer(); 
-        playerPhysics(player, level);
+        if (!stageSelection){
+          drawLvl();
+          drawHUD();		//if you move drawHUD() under playerPhysics() the HUD will always be drawn on top of everything, but i like it this way. Entities and the player are more important then the hud lol
+          drawEntity(); //in questa funzione viene chiamata anche il metodo entity[i].physics per le entità che vengono disegnate su schermo (le uniche che carico)
+          drawPlayer(); 
+          playerPhysics(player, level);
+        }else{
+          stageSelect();
+        }
       }
 
 	  function xDisegnata(){
@@ -530,12 +539,12 @@
             player.carica++;
             if (player.carica > 100){ //disegna i pallini del colore della carica intorno al player
               var xdisegnata=xDisegnata(); var ydisegnata=yDisegnata();
-              var xrandom=((-player.width/4)-4+Math.floor(Math.random() * (player.width/2)))*scala; var yrandom=((-player.height/4)-4+Math.floor(Math.random() * (player.height/2)))*scala;
+              var xrandom=((-player.width/4)+Math.floor(Math.random() * (player.width/2)))*3; var yrandom=((-player.height/4)+Math.floor(Math.random() * (player.height/2)))*2;
               ctx.fillStyle = player.charge0color;
         	  ctx.fillRect(xdisegnata+(player.width/2)+xrandom, ydisegnata+(player.height/2)+yrandom, 8*scala, 8*scala);
             }else if(player.carica > 25){
               var xdisegnata=xDisegnata(); var ydisegnata=yDisegnata();
-              var xrandom=((-player.width/4)-4+Math.floor(Math.random() * (player.width/2)))*scala; var yrandom=((-player.height/4)-4+Math.floor(Math.random() * (player.height/2)))*scala;
+              var xrandom=((-player.width/4)+Math.floor(Math.random() * (player.width/2)))*3; var yrandom=((-player.height/4)+Math.floor(Math.random() * (player.height/2)))*2;
               ctx.fillStyle = player.charge1color;
         	  ctx.fillRect(xdisegnata+(player.width/2)+xrandom, ydisegnata+(player.height/2)+yrandom, 8*scala, 8*scala);
             }   
@@ -609,14 +618,14 @@
 
         //entity collison
         if (player.invulnerability < 1){
-			for(var i = 0; i < entity.length; i++) {
-				if(entity[i].life > 0 && !(entity[i].type=="sparoDelPlayer")) {
-          			if(collisionBetween(player, entity[i])) {
-						player.color=player.damagedColor;
-						player.life=player.life-entity[i].damage;
-						player.invulnerability=50;
-						break;
-            		}
+			    for(var i = 0; i < entity.length; i++) {
+				    if(entity[i].life > 0 && !(entity[i].type=="sparoDelPlayer")) {
+              if(collisionBetween(player, entity[i])) {
+						    player.color=player.damagedColor;
+						    player.life=player.life-entity[i].damage;
+						    player.invulnerability=50;
+						    break;
+            	}
         		}
         	}
        	}else{
@@ -632,8 +641,8 @@
       	//gameover
       	if(player.life==0){
       		drawHUD();
-      		//alert("Gameover");
-      		nuovoLivello();
+      		alert("Gameover");
+      		stageSelection=true;
       	} 
       } //fine della funzione playerPhysics - se riesco la faccio diventare un metodo di player invece che una funzione sestante
       
@@ -648,3 +657,109 @@
                 return false;
         } 
       }    
+
+
+      function stageSelect(){
+          var img = document.getElementById("stageselect");
+          ctx.drawImage(img, 0, 0, canvasWidth,canvasHeight);
+            //leggo che tasto viene schiacciato. Con invio o dash si inizia a giocare, con le freccie si cicla tra i livelli
+            if (keys[startkey] || keys[dashkey]){
+              stageSelection=false;
+              nuovoLivello();
+            }
+            if (keys[sukey] && !tastoGiaSchiacciato){
+             if(lvlNumber==4){lvlNumber=3; 
+             }else if(lvlNumber==5){lvlNumber=2;
+             }else if(lvlNumber==6){lvlNumber=1;
+             }else if(lvlNumber==7){lvlNumber=8;
+             }else if(lvlNumber==3){lvlNumber=2;
+             }else if(lvlNumber==8){lvlNumber=1;}             
+            }
+            if (keys[giukey] && !tastoGiaSchiacciato){
+             if(lvlNumber==1){lvlNumber=6;
+             }else if(lvlNumber==2){lvlNumber=5;
+             }else if(lvlNumber==3){lvlNumber=4;
+             }else if(lvlNumber==8){lvlNumber=7;
+             }else if(lvlNumber==7){lvlNumber=6;
+             }else if(lvlNumber==4){lvlNumber=5;}                      
+            }
+            if (keys[sinistrakey] && !tastoGiaSchiacciato){
+             if(lvlNumber==2){lvlNumber=1;
+             }else if(lvlNumber==3){lvlNumber=8;
+             }else if(lvlNumber==4){lvlNumber=7;
+             }else if(lvlNumber==5){lvlNumber=6;
+             }else if(lvlNumber==1){lvlNumber=8;
+             }else if(lvlNumber==6){lvlNumber=7;}                 
+            }
+            if (keys[destrakey] && !tastoGiaSchiacciato){
+             if(lvlNumber==1){lvlNumber=2;
+             }else if(lvlNumber==2){lvlNumber=3;
+             }else if(lvlNumber==5){lvlNumber=4;
+             }else if(lvlNumber==6){lvlNumber=5;
+             }else if(lvlNumber==7){lvlNumber=4;
+             }else if(lvlNumber==8){lvlNumber=3;} 
+            }            
+            if(keys[destrakey] || keys[sinistrakey] || keys[giukey] || keys[sukey]){ //serve per evitare che in un attimo ti sposti di un bordello di livelli 
+                   tastoGiaSchiacciato=true;
+            }else{ tastoGiaSchiacciato=false;}
+            
+            //ora disegno un quadrato intorno al livello selezionato
+            ctx.fillStyle = player.charge0color;
+            switch (lvlNumber){
+              case 1:
+                ctx.fillRect( (9+128)*scala, (10)*scala, 135*scala, 10*scala );
+                ctx.fillRect( (9+128)*scala, (10)*scala, 10*scala, 135*scala );
+                ctx.fillRect( (9+128)*scala, (135)*scala, 135*scala, 10*scala );
+                ctx.fillRect( (135+128)*scala, (10)*scala, 10*scala, 135*scala );
+                break;
+                
+              case 2:
+                ctx.fillRect( (9+256)*scala, (10)*scala, 135*scala, 10*scala );
+                ctx.fillRect( (9+256)*scala, (10)*scala, 10*scala, 135*scala );
+                ctx.fillRect( (9+256)*scala, (135)*scala, 135*scala, 10*scala );
+                ctx.fillRect( (135+256)*scala, (10)*scala, 10*scala, 135*scala );
+                break;
+                
+              case 3:
+                ctx.fillRect( (9+386)*scala, (10+130)*scala, 135*scala, 10*scala );
+                ctx.fillRect( (9+386)*scala, (10+130)*scala, 10*scala, 135*scala );
+                ctx.fillRect( (9+386)*scala, (135+130)*scala, 135*scala, 10*scala );
+                ctx.fillRect( (135+386)*scala, (10+130)*scala, 10*scala, 135*scala );              
+                break;
+                
+              case 4:
+                ctx.fillRect( (9+386)*scala, (10+260)*scala, 135*scala, 10*scala );
+                ctx.fillRect( (9+386)*scala, (10+260)*scala, 10*scala, 135*scala );
+                ctx.fillRect( (9+386)*scala, (135+260)*scala, 135*scala, 10*scala );
+                ctx.fillRect( (135+386)*scala, (10+260)*scala, 10*scala, 135*scala );               
+                break;
+                
+              case 5:
+                ctx.fillRect( (9+256)*scala, (10+386)*scala, 135*scala, 10*scala );
+                ctx.fillRect( (9+256)*scala, (10+386)*scala, 10*scala, 135*scala );
+                ctx.fillRect( (9+256)*scala, (135+386)*scala, 135*scala, 10*scala );
+                ctx.fillRect( (135+256)*scala, (10+386)*scala, 10*scala, 135*scala );            
+                break;
+                
+              case 6:
+                ctx.fillRect( (9+128)*scala, (10+386)*scala, 135*scala, 10*scala );
+                ctx.fillRect( (9+128)*scala, (10+386)*scala, 10*scala, 135*scala );
+                ctx.fillRect( (9+128)*scala, (135+386)*scala, 135*scala, 10*scala );
+                ctx.fillRect( (135+128)*scala, (10+386)*scala, 10*scala, 135*scala );                
+                break;
+                
+              case 7:
+                ctx.fillRect( (9)*scala, (10+260)*scala, 135*scala, 10*scala );
+                ctx.fillRect( (9)*scala, (10+260)*scala, 10*scala, 135*scala );
+                ctx.fillRect( (9)*scala, (135+260)*scala, 135*scala, 10*scala );
+                ctx.fillRect( (135)*scala, (10+260)*scala, 10*scala, 135*scala );              
+                break;
+                
+              case 8:
+                ctx.fillRect( (9)*scala, (10+130)*scala, 135*scala, 10*scala );
+                ctx.fillRect( (9)*scala, (10+130)*scala, 10*scala, 135*scala );
+                ctx.fillRect( (9)*scala, (135+130)*scala, 135*scala, 10*scala );
+                ctx.fillRect( (135)*scala, (10+130)*scala, 10*scala, 135*scala );               
+                break;                                                                                                                
+            }
+      } 
