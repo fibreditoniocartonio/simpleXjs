@@ -1,7 +1,7 @@
       //crea il canvas
-      const widthRes = 720;  const heightRes = 540;  //costanti che indicano la risoluzione - 4:3      
-      var scala=0;
-      for (scala=1; ;scala++){    //calcola quante volte riesco a farci stare nella schermata la risoluzione di cui sopra, poi salva la variabile scala che moltiplica tutto
+      const widthRes = 720;  const heightRes = 540;  //costanti che indicano la risoluzione - 4:3
+      var scala=1;
+/*      for (scala=1; ;scala++){    //calcola quante volte riesco a farci stare nella schermata la risoluzione di cui sopra, poi salva la variabile scala che moltiplica tutto
           if(widthRes*scala > document.documentElement.clientWidth){
             scala--;
             if(heightRes*scala > document.documentElement.clientHeight){
@@ -11,7 +11,7 @@
               break;
             }
           }
-      }
+      }*/
 //    if (scala < 1){alert("Your screen is too small... Try to zoom out your browser page a little (Usually Ctrl and -)");}
       if (scala < 1){scala=1;}
       var canvasWidth = widthRes*scala;
