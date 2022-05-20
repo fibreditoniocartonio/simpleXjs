@@ -1,21 +1,6 @@
       //crea il canvas
-      const widthRes = 720;  const heightRes = 540;  //costanti che indicano la risoluzione - 4:3
-      var scala=1;
-/*      for (scala=1; ;scala++){    //calcola quante volte riesco a farci stare nella schermata la risoluzione di cui sopra, poi salva la variabile scala che moltiplica tutto
-          if(widthRes*scala > document.documentElement.clientWidth){
-            scala--;
-            if(heightRes*scala > document.documentElement.clientHeight){
-              scala--;
-              break;
-            }else{
-              break;
-            }
-          }
-      }*/
-//    if (scala < 1){alert("Your screen is too small... Try to zoom out your browser page a little (Usually Ctrl and -)");}
-      if (scala < 1){scala=1;}
-      var canvasWidth = widthRes*scala;
-      var canvasHeight = heightRes*scala;
+      var canvasWidth = 720;
+      var canvasHeight = 540;
       if(document.getElementsByTagName('canvas').length == 0) {     //crea il canvas con le variabili che ho creato
           document.body.innerHTML += "".concat("<canvas id='canvas' width=" , canvasWidth , " height=" , canvasHeight , "></canvas>");
       }   var ctx = document.getElementById('canvas').getContext('2d');
@@ -49,17 +34,17 @@
         this.yv= 0;
         this.xv= 0;
         this.slope= 0;
-        this.width= (25*scala)-0.5;
-        this.height= 40*scala;
+        this.width= 25-0.5;
+        this.height= 40;
         this.color= '#0400f8';
         this.defaultColor= '#0400f8';
         this.damagedColor= '#990003';
         this.charge0color= '#ffc000';
         this.charge1color= '#49ff37';
         this.charge2color= '#14dfff';        
-        this.speed= 0.9*scala;
-        this.defaultspeed= 0.9*scala;
-        this.jumpheight= 11.5*scala;
+        this.speed= 0.9;
+        this.defaultspeed= 0.9;
+        this.jumpheight= 11.5;
         this.giasaltato = false;
         this.giasparato = false;
         this.facingRight = true;
@@ -118,8 +103,8 @@
            			//ora le entita' (lettere maiuscole)
             			case 'P': // P indica un pipistrello
              				var pipistrello = new newPipistrello();
-             			 	pipistrello.x= (i%widthTot)*25*scala;
-             				pipistrello.y= (heightTot-1)*25*scala;
+             			 	pipistrello.x= (i%widthTot)*25;
+             				pipistrello.y= (heightTot-1)*25;
 					entity.push(pipistrello);
 					break;							
 
@@ -129,7 +114,7 @@
 					var blocco = new Blocco(i,widthTot,heightTot);
 					for (n=1; ;n++){	//controllo che se le lettere dopo sono uguali a questo blocco. Se lo sono non sto a creare tanti blocchetti ma ne faccio solo uno piu' largo per ottimizzare
 							if(lvlString[i+n]==lvlString[i]){
-								blocco.width=blocco.width+(25*scala);
+								blocco.width=blocco.width+(25);
 							}else{
 								i=i+n-1;
 								break; //del for
@@ -142,17 +127,17 @@
 				case 'z': // 'z' indica la fine del livello. Da qui in poi non sto leggendo piu blocchi e entita' ma le caratteristiche del livello come gravita', posizione iniziale del player e colore dei blocchi del livello
 					widthTot++;
 					heightTot++;
-					level['gravity'] = readNumber()*scala;
-					level['friction'] = readNumber(); //friction non deve essere moltiplicata per scala. Si bugga tutto se lo faccio
-					level['xStartingPos']=readNumber()*scala;
-					level['yStartingPos']=readNumber()*scala;
+					level['gravity'] = readNumber();
+					level['friction'] = readNumber();
+					level['xStartingPos']=readNumber();
+					level['yStartingPos']=readNumber();
 					break;
 			}//fine dello switch case															
 		}//fine del for
 					        
 		//imposto la grandezza del livello e lo confronto con la grandezza del canvas
-		level['maxWidth'] = widthTot*25*scala;
-		level['maxHeight'] = heightTot*25*scala;
+		level['maxWidth'] = widthTot*25;
+		level['maxHeight'] = heightTot*25;
         	if (level.maxWidth < canvas.width){ //controlla che il livello non sia piu piccolo del canvas, che se no si bugga tutto - le x
             		canvasWidth=level.maxWidth;
         	}else{
@@ -165,10 +150,10 @@
         	}     
 
         	//ora inizializzo i bordi    
-		var ground = {x: 0, width: level.maxWidth, height: (25*scala)+1, color: '#155261'};  ground['y']=level.maxHeight-ground.height;
-            	var ceiling = {x: 0, y: 0, width: level.maxWidth, height: (25*scala)+1, color: '#155261'};        	            
-            	var leftWall = {x: 0, y: 0, width: (25*scala)+1, height: level.maxHeight, color: '#155261'};
-            	var rightWall = {y: 0, width: (25*scala)+1, height: level.maxHeight, color: '#155261'}; rightWall['x']= level.maxWidth-rightWall.width;	            				
+		var ground = {x: 0, width: level.maxWidth, height: (25)+1, color: '#155261'};  ground['y']=level.maxHeight-ground.height;
+            	var ceiling = {x: 0, y: 0, width: level.maxWidth, height: (25)+1, color: '#155261'};        	            
+            	var leftWall = {x: 0, y: 0, width: (25)+1, height: level.maxHeight, color: '#155261'};
+            	var rightWall = {y: 0, width: (25)+1, height: level.maxHeight, color: '#155261'}; rightWall['x']= level.maxWidth-rightWall.width;	            				
 		level.push(ground, ceiling, leftWall, rightWall); //this pushes all of the static objects into the level				   
         	ctx.clearRect(0, 0, canvas.width, canvas.height); //pulisce tutto il canvas per evitare dubbi				
 
@@ -195,10 +180,10 @@
 			}
 		}					
 		function Blocco(i,widthTot,heightTot) { //funzione interna di stringToLevel() che definisce i blocchi
-           		this.x= (i%widthTot)*25*scala;
-            		this.y= (heightTot-1)*25*scala;
-            		this.width= (25*scala);
-      			this.height= (25*scala)+1;
+           		this.x= (i%widthTot)*25;
+            		this.y= (heightTot-1)*25;
+            		this.width= 25;
+      			this.height= 25+1;
             		this.color= '#155261';            													
 		}					
 	}//fine di stringToLevel()
@@ -210,12 +195,12 @@
         this.type= "sparoDelPlayer";
         this.damage= 1;
         this.x= player.x;
-        this.y= player.y+(10*scala);
+        this.y= player.y+10;
         this.xv= 0;
-        this.width= 20*scala;
-        this.height= 10*scala;
+        this.width= 20;
+        this.height= 10;
         this.color= player.charge0color;
-        this.speed= 3.9*scala;
+        this.speed= 3.9;
         this.facingRight= player.facingRight;
         this.perforation= false;
         this.physics= function( xdisegnata, ydisegnata, indiceDiQuestaEntity){
@@ -256,10 +241,10 @@
         this.xv= 0;
         this.yv= 0;
         this.slope = 0;
-        this.width= 30*scala;
-        this.height= 30*scala;
+        this.width= 30;
+        this.height= 30;
         this.color= '#a400ff';
-        this.speed= 0.5*scala;
+        this.speed= 0.5;
         this.physics= function( xdisegnata, ydisegnata, indiceDiQuestaEntity){
           //movimento
           if (this.x < player.x-1){
@@ -385,16 +370,16 @@
         }      
         //ombre del dash
         if (player.speed>player.defaultspeed){
-            if (player.xv < (-10*scala)){
+            if (player.xv < (-10)){
                 ctx.fillStyle ='#b0aefd';
-                ctx.fillRect(xdisegnata-(50*scala), ydisegnata+(3*scala), player.width-(3*scala), player.height-(6*scala));
+                ctx.fillRect(xdisegnata-50, ydisegnata+3, player.width-3, player.height-6);
                 ctx.fillStyle ='#7573ff';
-                ctx.fillRect(xdisegnata-(26*scala), ydisegnata+(1*scala), player.width-(1*scala), player.height-(2*scala));
-            }else if (player.xv > (10*scala)){
+                ctx.fillRect(xdisegnata-26, ydisegnata+1, player.width-1, player.height-2);
+            }else if (player.xv > 10){
                ctx.fillStyle ='#b0aefd';
-               ctx.fillRect(xdisegnata+(50*scala), ydisegnata+(3*scala), player.width-(3*scala), player.height-(6*scala));
+               ctx.fillRect(xdisegnata+50, ydisegnata+3, player.width-3, player.height-6);
                ctx.fillStyle ='#7573ff';
-               ctx.fillRect(xdisegnata+(26*scala), ydisegnata+(1*scala), player.width-(1*scala), player.height-(2*scala));
+               ctx.fillRect(xdisegnata+26, ydisegnata+1, player.width-1, player.height-2);
             }
         }
 	//ora disegna effettivamente il player
@@ -435,18 +420,18 @@
 
       function drawHUD(){
       	ctx.fillStyle = '#9e9e9e';
-		ctx.fillRect(8*scala, 8*scala, (player.lifeMax*6+39)*scala, 29*scala);
+		ctx.fillRect(8, 8, player.lifeMax*6+39, 29);
 		ctx.fillStyle = '#3d3b3b';
-		ctx.fillRect(10*scala, 10*scala, (player.lifeMax*6+40)*scala, 30*scala);
+		ctx.fillRect(10, 10, player.lifeMax*6+40, 30);
 		ctx.fillStyle = player.color; //ora disegno la x che sara' del colore del player attivo
-		ctx.fillRect(13*scala, 13*scala, 8*scala, 8*scala);ctx.fillRect(29*scala, 13*scala, 8*scala, 8*scala);ctx.fillRect(13*scala, 29*scala, 8*scala, 8*scala);ctx.fillRect(29*scala, 29*scala, 8*scala, 8*scala);ctx.fillRect(21*scala, 21*scala, 8*scala, 8*scala);
+		ctx.fillRect(13, 13, 8, 8);ctx.fillRect(29, 13, 8, 8);ctx.fillRect(13, 29, 8, 8);ctx.fillRect(29, 29, 8, 8);ctx.fillRect(21, 21, 8, 8);
 		for (i=0; i < player.lifeMax; i++) {
 			if (i < player.life){
 				ctx.fillStyle = player.charge0color;
 			}else{
 				ctx.fillStyle = '#797979';
 			}
-			ctx.fillRect((i*6+43)*scala, 15*scala, 5*scala, 20*scala);
+			ctx.fillRect(i*6+43, 15, 5, 20);
 		}
       }
       
@@ -533,31 +518,31 @@
               var xdisegnata=xDisegnata(); var ydisegnata=yDisegnata();
               var xrandom=((-player.width/4)+Math.floor(Math.random() * (player.width/2)))*3; var yrandom=((-player.height/4)+Math.floor(Math.random() * (player.height/2)))*2;
               ctx.fillStyle = player.charge0color;
-              ctx.fillRect(xdisegnata+(player.width/2)+xrandom, ydisegnata+(player.height/2)+yrandom, 8*scala, 8*scala);
+              ctx.fillRect(xdisegnata+(player.width/2)+xrandom, ydisegnata+(player.height/2)+yrandom, 8, 8);
             }else if(player.carica > 25){ //level 1 charge
               var xdisegnata=xDisegnata(); var ydisegnata=yDisegnata();
               var xrandom=((-player.width/4)+Math.floor(Math.random() * (player.width/2)))*3; var yrandom=((-player.height/4)+Math.floor(Math.random() * (player.height/2)))*2;
               ctx.fillStyle = player.charge1color;
-              ctx.fillRect(xdisegnata+(player.width/2)+xrandom, ydisegnata+(player.height/2)+yrandom, 8*scala, 8*scala);
+              ctx.fillRect(xdisegnata+(player.width/2)+xrandom, ydisegnata+(player.height/2)+yrandom, 8, 8);
             }   
           }
         }else{
           if (player.giasparato){
             if (player.carica > 80){
             	var sparo = new newSparo();
-                sparo.width= 50*scala;
-                sparo.height= 25*scala;
+                sparo.width= 50;
+                sparo.height= 25;
                 if (!sparo.facingRight){
                 	sparo.x= sparo.x-player.width;
                 }
-                sparo.y= player.y+(5*scala);
+                sparo.y= player.y+5;
                 sparo.color= player.charge2color;
                 sparo.perforation=true;
                 entity.push(sparo);
             }else if (player.carica > 25){
             	var sparo = new newSparo();
-            	sparo.width= 35*scala;
-            	sparo.height= 15*scala;
+            	sparo.width= 35;
+            	sparo.height= 15;
             	sparo.color= player.charge1color;
             	entity.push(sparo);
             }
@@ -590,9 +575,9 @@
               if(!p1.giasaltato) { 
                 p1.yv = -p1.jumpheight + 1;
                 if(p1.xv > 0) {
-                  p1.xv = -10*scala;
+                  p1.xv = -10;
                 } else {
-                  p1.xv = 10*scala;
+                  p1.xv = 10;
                 }
                 p1.giasaltato = true;
               } else {
@@ -697,59 +682,59 @@
             ctx.fillStyle = player.charge0color;
             switch (lvlNumber){
               case 1:
-                ctx.fillRect( (9+128)*scala, (10)*scala, 135*scala, 10*scala );
-                ctx.fillRect( (9+128)*scala, (10)*scala, 10*scala, 135*scala );
-                ctx.fillRect( (9+128)*scala, (135)*scala, 135*scala, 10*scala );
-                ctx.fillRect( (135+128)*scala, (10)*scala, 10*scala, 135*scala );
+                ctx.fillRect( 9+128, 10, 135, 10);
+                ctx.fillRect( 9+128, 10, 10, 135);
+                ctx.fillRect( 9+128, 135, 135, 10);
+                ctx.fillRect( 135+128, 10, 10, 135);
                 break;
                 
               case 2:
-                ctx.fillRect( (9+256)*scala, (10)*scala, 135*scala, 10*scala );
-                ctx.fillRect( (9+256)*scala, (10)*scala, 10*scala, 135*scala );
-                ctx.fillRect( (9+256)*scala, (135)*scala, 135*scala, 10*scala );
-                ctx.fillRect( (135+256)*scala, (10)*scala, 10*scala, 135*scala );
+                ctx.fillRect( 9+256, 10, 135, 10);
+                ctx.fillRect( 9+256, 10, 10, 135);
+                ctx.fillRect( 9+256, 135, 135, 10);
+                ctx.fillRect( 135+256, 10, 10, 135);
                 break;
                 
               case 3:
-                ctx.fillRect( (9+386)*scala, (10+130)*scala, 135*scala, 10*scala );
-                ctx.fillRect( (9+386)*scala, (10+130)*scala, 10*scala, 135*scala );
-                ctx.fillRect( (9+386)*scala, (135+130)*scala, 135*scala, 10*scala );
-                ctx.fillRect( (135+386)*scala, (10+130)*scala, 10*scala, 135*scala );              
+                ctx.fillRect( 9+386, 10+130, 135, 10);
+                ctx.fillRect( 9+386, 10+130, 10, 135);
+                ctx.fillRect( 9+386, 135+130, 135, 10);
+                ctx.fillRect( 135+386, 10+130, 10, 135);              
                 break;
                 
               case 4:
-                ctx.fillRect( (9+386)*scala, (10+260)*scala, 135*scala, 10*scala );
-                ctx.fillRect( (9+386)*scala, (10+260)*scala, 10*scala, 135*scala );
-                ctx.fillRect( (9+386)*scala, (135+260)*scala, 135*scala, 10*scala );
-                ctx.fillRect( (135+386)*scala, (10+260)*scala, 10*scala, 135*scala );               
+                ctx.fillRect( 9+386, 10+260, 135, 10);
+                ctx.fillRect( 9+386, 10+260, 10, 135);
+                ctx.fillRect( 9+386, 135+260, 135, 10);
+                ctx.fillRect( 135+386, 10+260, 10, 135);               
                 break;
                 
               case 5:
-                ctx.fillRect( (9+256)*scala, (10+386)*scala, 135*scala, 10*scala );
-                ctx.fillRect( (9+256)*scala, (10+386)*scala, 10*scala, 135*scala );
-                ctx.fillRect( (9+256)*scala, (135+386)*scala, 135*scala, 10*scala );
-                ctx.fillRect( (135+256)*scala, (10+386)*scala, 10*scala, 135*scala );            
+                ctx.fillRect( 9+256, 10+386, 135, 10);
+                ctx.fillRect( 9+256, 10+386, 10, 135);
+                ctx.fillRect( 9+256, 135+386, 135, 10);
+                ctx.fillRect( 135+256, 10+386, 10, 135);            
                 break;
                 
               case 6:
-                ctx.fillRect( (9+128)*scala, (10+386)*scala, 135*scala, 10*scala );
-                ctx.fillRect( (9+128)*scala, (10+386)*scala, 10*scala, 135*scala );
-                ctx.fillRect( (9+128)*scala, (135+386)*scala, 135*scala, 10*scala );
-                ctx.fillRect( (135+128)*scala, (10+386)*scala, 10*scala, 135*scala );                
+                ctx.fillRect( 9+128, 10+386, 135, 10);
+                ctx.fillRect( 9+128, 10+386, 10, 135);
+                ctx.fillRect( 9+128, 135+386, 135, 10);
+                ctx.fillRect( 135+128, 10+386, 10, 135);                
                 break;
                 
               case 7:
-                ctx.fillRect( (9)*scala, (10+260)*scala, 135*scala, 10*scala );
-                ctx.fillRect( (9)*scala, (10+260)*scala, 10*scala, 135*scala );
-                ctx.fillRect( (9)*scala, (135+260)*scala, 135*scala, 10*scala );
-                ctx.fillRect( (135)*scala, (10+260)*scala, 10*scala, 135*scala );              
+                ctx.fillRect( 9, 10+260, 135, 10);
+                ctx.fillRect( 9, 10+260, 10, 135);
+                ctx.fillRect( 9, 135+260, 135, 10);
+                ctx.fillRect( 135, 10+260, 10, 135);              
                 break;
                 
               case 8:
-                ctx.fillRect( (9)*scala, (10+130)*scala, 135*scala, 10*scala );
-                ctx.fillRect( (9)*scala, (10+130)*scala, 10*scala, 135*scala );
-                ctx.fillRect( (9)*scala, (135+130)*scala, 135*scala, 10*scala );
-                ctx.fillRect( (135)*scala, (10+130)*scala, 10*scala, 135*scala );               
+                ctx.fillRect( 9, 10+130, 135, 10);
+                ctx.fillRect( 9, 10+130, 10, 135);
+                ctx.fillRect( 9, 135+130, 135, 10);
+                ctx.fillRect( 135, 10+130, 10, 135);               
                 break;                                                                                                                
             }
       } 
