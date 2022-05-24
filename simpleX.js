@@ -54,10 +54,13 @@
       }
       var player = new Player(); //creo il player
 
+  //gamestate - se tutto i gamestate sono false lo stato e' "in gioco"
+  var stageSelection=true; //stato: selezione del livello
+  var menuDiPausa=false; var objMenuDiPausa=new newMenuDiPausa(); //stato: menu di pausa - inoltre inizializza l'oggetto che lo gestisce
+
 	//caricare il livello
 	var level = []; //create the level array
 	var lvlNumber=1;
-    var stageSelection=true;
       					
     //prendo lvlNumber e carico il livello scelto - sadly non ancora da file perchè siamo a corto di budget
 	function leggiLivelloDaFile() {	//funz che carica il livello scelto - i livello sono salvati come stringhe
@@ -220,14 +223,14 @@
 				case 'r': level.background[i].color=level.background.color[2]; break;
 			}
 		}				
-        //ora inizializzo i bordi - ho schiacciato il codice perche' occupava righe inutili. e' molto simile al prototipo di blocco    
+    //ora inizializzo i bordi - ho schiacciato il codice perche' occupava righe inutili. e' molto simile al prototipo di blocco    
 		var ground = {x: 0, width: level.maxWidth, height: (20)+1, color: level.color[0]};  ground['y']=level.maxHeight-ground.height;
-        var ceiling = {x: 0, y: 0, width: level.maxWidth, height: (20)+1, color: level.color[0]};        	            
-        var leftWall = {x: 0, y: 0, width: (20)+1, height: level.maxHeight, color: level.color[0]};
-        var rightWall = {y: 0, width: (20)+1, height: level.maxHeight, color: level.color[0]}; rightWall['x']= level.maxWidth-rightWall.width;	            				
+    var ceiling = {x: 0, y: 0, width: level.maxWidth, height: (20)+1, color: level.color[0]};        	            
+    var leftWall = {x: 0, y: 0, width: (20)+1, height: level.maxHeight, color: level.color[0]};
+    var rightWall = {y: 0, width: (20)+1, height: level.maxHeight, color: level.color[0]}; rightWall['x']= level.maxWidth-rightWall.width;	            				
 		level.push(ground, ceiling, leftWall, rightWall); //this pushes all of the static objects into the level				   
 
-       	// ora definisco le funzioni interne di stringToLevel()
+    // ora definisco le funzioni interne di stringToLevel()
 		function readNumber(){//compone i vari caratteri di una stringa in numero. Esempio traduce "10.91;" in numeroLetto=10.91
 			var numeroLetto=0;
 			var isDecimale=false;
@@ -471,41 +474,43 @@
         this.color= '#bcbcbc';
         this.selfDraw= function( xdisegnata, ydisegnata, indiceDiQuestaEntity){
           //funzione per disegnare la spina
-        	ctx.beginPath();//ora inizio a disegnare la x che sara' del colore del player attivo
+        	ctx.beginPath();
 		      ctx.lineWidth = "1";
 		      ctx.fillStyle = this.color;
 		      ctx.moveTo(xdisegnata, ydisegnata+this.height);
 		      ctx.lineTo(xdisegnata+this.width, ydisegnata+this.height);
           ctx.lineTo(xdisegnata+(this.width/2), ydisegnata-2);
           ctx.lineTo(xdisegnata, ydisegnata+this.height);
-		      ctx.fill(); // Disegna la prima meta'della X
+		      ctx.fill();
         }              
       }      
       			
-    //start the engine
-    window.onload = start;
+  //start the engine
+  window.onload = start;
             
-    //this function is called at the start
+  //this function is called at the start
 	function start() {
-      update();
+    update();
 	}
-	function nuovoLivello(){	//azzera i dati del player e carica un nuovo livello (da stringa e non da file...)
+	
+  function nuovoLivello(){	//azzera i dati del player e carica un nuovo livello (da stringa e non da file...)
 		player = new Player();
 		leggiLivelloDaFile();
-     	player.x = level.xStartingPos;
-      	player.y = level.yStartingPos;
+    player.x = level.xStartingPos;
+    player.y = level.yStartingPos;
 	}
-                            
-      //this function is called every frame
-      function update() {
-        requestAnimationFrame(update); //credo che sia la roba che crea il ciclo del gioco
-        if (stageSelection){
-          stageSelect();
-        }else{
-          disegnaSchermoDiGioco(true); //ATTENZIONE: se le viene passato true oltre a disegnare le entita' calcola anche le lore physics
-          playerPhysics(player, level); //chiama la funzione physics del player
-        }
-      }
+                                
+  function update() {//this function is called every frame
+    requestAnimationFrame(update); //credo che sia la roba che crea il ciclo del gioco
+    if (stageSelection){
+      stageSelect();
+    }else if (menuDiPausa){
+      objMenuDiPausa.drawMenuDiPausa();
+    }else{
+      disegnaSchermoDiGioco(true); //ATTENZIONE: se le viene passato true oltre a disegnare le entita' calcola anche le lore physics
+      playerPhysics(player, level); //chiama la funzione physics del player
+    }
+  }
       
       function disegnaSchermoDiGioco(doEntityPhysics){
           ctx.clearRect(0, 0, canvas.width, canvas.height);	//pulisci tutto il canvas
@@ -719,7 +724,7 @@
               p1.giasaltato = false;
             }
           }	
-        }
+        }        
                        
         if(keys[destrakey] && player.canMove) {//x movement
           p1.xv -= p1.speed;
@@ -844,7 +849,14 @@
       		disegnaSchermoDiGioco(false);
       		alert("Gameover");
       		stageSelection=true;
-      	} 
+      	}
+        
+        if(keys[startkey]) {//menu di pausa
+          objMenuDiPausa=new newMenuDiPausa();
+          disegnaSchermoDiGioco(false);
+          menuDiPausa=true;
+        }
+         
       } //fine della funzione playerPhysics - se riesco la faccio diventare un metodo di player invece che una funzione sestante
           
       function collisionBetween(p1, lvl) {//this function detects the collision between the two given objects - la uso anche con le entità lol
@@ -894,5 +906,41 @@
               case 7:ctx.fillRect(9, 270, 135, 10);ctx.fillRect(9, 270, 10, 135);ctx.fillRect(9, 395, 135, 10);ctx.fillRect(135, 270, 10, 135);break;                
               case 8:ctx.fillRect(9, 140, 135, 10);ctx.fillRect(9, 140, 10, 135);ctx.fillRect(9, 265, 135, 10);ctx.fillRect(135, 140, 10, 135);break;                                                                                                                
             }
+      }
+      
+      function newMenuDiPausa(){
+        this.width=0;
+        this.height=0;
+        this.widthMax=canvasWidth-150;
+        this.heightMax=canvasHeight-150;
+        this.isOpen=false;
+        this.isClosing=false;
+        this.drawMenuDiPausa = function (){
+          if (!this.isOpen && !this.isClosing){
+            if (this.width < this.widthMax){this.width+=10;}
+            if (this.height < this.heightMax){this.height+=15;}
+            if (this.height > this.heightMax-1 && this.width > this.widthMax-1){this.isOpen=true;}
+          }
+          ctx.clearRect((canvasWidth/2)-this.width/2-15,(canvasHeight/2)-this.height/2-15, this.width+30, this.height+30);	//pulisci la parte dove viene mostrato il menu
+          ctx.fillStyle = "#d2d2d2"; ctx.fillRect((canvasWidth/2)-this.width/2-15,(canvasHeight/2)-this.height/2-15, this.width+30, this.height+30); //disegna il bordo grigio 
+          ctx.fillStyle = "#52b58b"; ctx.fillRect((canvasWidth/2)-this.width/2,(canvasHeight/2)-this.height/2, this.width, this.height); //disegna lo sfondo verde
+          if (this.isOpen){ //qui dentro devo mostrare il testo del menu e gestire cosa succede quando schiaccio i tasti
+              if(keys[startkey] || keys[jumpkey]) {//esci dal menu di pausa
+                this.isClosing=true;
+                this.isOpen=false;
+              }
+          }
+          if(this.isClosing){
+              if (this.width > 0){this.width-=20;}
+              if (this.height > 0){this.height-=20;}
+              ctx.clearRect((canvasWidth/2)-this.width/2-15,(canvasHeight/2)-this.height/2-15, this.width+30, this.height+30);	//pulisci la parte dove viene mostrato il menu
+              disegnaSchermoDiGioco(false);
+              ctx.fillStyle = "#d2d2d2"; ctx.fillRect((canvasWidth/2)-this.width/2-15,(canvasHeight/2)-this.height/2-15, this.width+30, this.height+30); //disegna il bordo grigio 
+              ctx.fillStyle = "#52b58b"; ctx.fillRect((canvasWidth/2)-this.width/2,(canvasHeight/2)-this.height/2, this.width, this.height); //disegna lo sfondo verde
+              if (this.height-1 < 0 && this.width-1 < 0){
+                  menuDiPausa=false;
+              }             
+          }
+        }     
       }
        
