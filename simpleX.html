@@ -1,22 +1,23 @@
 <!DOCTYPE html>
 <html>
-<!--Uso un po' di css per scalare il canvas fullscreen -->
+<!--Uso un po' di css per scalare il canvas fullscreen - non sono ancora riuscito a centrarlo porco*** -->
 <style>
-body {background-color:black;}
+body {background-color:black; overflow: hidden;}
 #canvas {
 	background-color: white;
-    position:absolute;
-    top:0;
-    left:12.5%; 
-    height:100%;
+  display: block;
+  top:0;
+  position:absolute;
+  height:100%;
 }
 </style>
 <body>
 <title>Simple X Js</title>
-<script src = "simpleX.js"> </script> <!--Questo avvia lo script di gioco  left:12.5%;-->
+<script src = "simpleX.js"></script> <!--Questo avvia lo script di gioco  left:12.5%;-->
 </body>
 <!--Carico le immagini che usera' il js - La width e' a 0% se no le mostrava-->
 <img id='stageselect' src='imgs/stageselect.jpg' width=0%></img> <!--Prende l'immagine e la nasconde, ci pensera' il canvas del .js a usarla. Per avere un'esperienza piu' realistica si puo' ritagliare lo stage select screen di mmx1 e ingrandirlo a 600x600. Poi estendi l'immagine lasciando il bordo bianco a 800x600 e la rinomini stageselect.jpg. La metti nella cartella di gioco e enjoy :D  -->
 <img id='sunnySky.png' src='imgs/sunnySky.png' width=0%></img>
 <img id='moon.jpg' src='imgs/moon.jpg' width=0%></img>
+<img id='ice.png' src='imgs/ice.png' width=0%></img>
 </html>
