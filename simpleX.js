@@ -852,9 +852,14 @@
       	}
         
         if(keys[startkey]) {//menu di pausa
-          objMenuDiPausa=new newMenuDiPausa();
-          disegnaSchermoDiGioco(false);
-          menuDiPausa=true;
+          if (!tastoGiaSchiacciato && !(player.life<1)){//ho dovuto fare il check della vita se no era possibile far aprire il menu dopo essere morti se si schiacciava INVIO nello stesso frame in cui si moriva
+            objMenuDiPausa=new newMenuDiPausa();
+            disegnaSchermoDiGioco(false);
+            tastoGiaSchiacciato=true;
+            menuDiPausa=true;
+          }
+        }else if(tastoGiaSchiacciato && !keys[startkey]){
+          tastoGiaSchiacciato=false;
         }
          
       } //fine della funzione playerPhysics - se riesco la faccio diventare un metodo di player invece che una funzione sestante
@@ -890,7 +895,7 @@
             if (keys[destrakey] && !tastoGiaSchiacciato){
              if(lvlNumber==1){lvlNumber=2;}else if(lvlNumber==2){lvlNumber=3;}else if(lvlNumber==5){lvlNumber=4;}else if(lvlNumber==6){lvlNumber=5;}else if(lvlNumber==7){lvlNumber=4;}else if(lvlNumber==8){lvlNumber=3;} 
             }            
-            if(keys[destrakey] || keys[sinistrakey] || keys[giukey] || keys[sukey]){ //serve per evitare che in un attimo ti sposti di un bordello di livelli 
+            if(keys[destrakey] || keys[sinistrakey] || keys[giukey] || keys[sukey] || keys[startkey] || keys[dashkey]){ //serve per evitare che in un attimo ti sposti di un bordello di livelli 
                    tastoGiaSchiacciato=true;
             }else{ tastoGiaSchiacciato=false;}
             
