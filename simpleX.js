@@ -59,11 +59,11 @@
         {usageMax: 32, usage:32, color:'#990003', nome:'Potere 4'},
         {usageMax: 32, usage:32, color:'#990003', nome:'Potere 5'},
         {usageMax: 32, usage:31, color:'#990003', nome:'Potere 6'},
-        {usageMax: 32, usage:1, color:'#990003', nome:'Potere 7'},
+        {usageMax: 32, usage:10, color:'#990003', nome:'Potere 7'},
         {usageMax: 32, usage:0, color:'#0400f8', nome:'Potere 8'},
         ];
       }
-      levelDefeated = [false, true, false, false, false, true, false, false]; //vettore che tiene quanti livelli sono stati superati
+      levelDefeated = [false, true, false, false, false, true, true, false]; //vettore che tiene quanti livelli sono stati superati
 //      levelDefeated = [true, true, true, true, true, true, true, true]; //vettore che tiene quanti livelli sono stati superati
       heartAcquired = [false, false, false, false, false, false, false, false]; //vettore che tiene quanti cuori sono stati trovati
 //    heartAcquired = [true, true, true, true, true, true, true, true]; //quando sono tutti true la vitaMax sale al massimo possibile (32)
@@ -990,22 +990,21 @@
                 this.isOpen=false;
               }
               if(keys[giukey] && !tastoGiaSchiacciato) {
-                for (i=1; i<9-this.indice; i++){
+                for (i=1; i < 10; i++){
                   if(levelDefeated[this.indice+i-1]){
                     this.indice+=i;
                     break;
-                  }
+                  }else if(i == 9){ this.indice=0; break;}
                 }
-                if(this.indice > 8){ this.indice=0; }
               }
               if(keys[sukey] && !tastoGiaSchiacciato) { //questo non va, devo sistemarlo
-                for (i=0; i < -9; i--){
-                  if(levelDefeated[this.indice+i]){
-                    this.indice+=i;
+                if(this.indice == 0){ this.indice=9; }
+                for (i=1; i < this.indice+1; i++){
+                  if(levelDefeated[this.indice-i-1]){
+                    this.indice-=i;
                     break;
-                  }
+                  }else if(i == this.indice){ this.indice=0; break;}
                 }                
-                if(this.indice < 0){ this.indice=8; }
               }
               if(keys[destrakey] && !tastoGiaSchiacciato) {
                 this.indice=0;
