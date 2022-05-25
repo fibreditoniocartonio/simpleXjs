@@ -26,8 +26,9 @@
 
       //prototipo del player
       function Player() {
-      	this.life=16;
       	this.lifeMax=16;
+        for(i=0; i<8; i++){if(heartAcquired[i]){this.lifeMax+=2;}} //aumenta la vita massima di 2 per ogni cuore trovato
+        this.life=this.lifeMax;
         this.x= 0;
         this.y= 0;
         this.yv= 0;
@@ -51,8 +52,23 @@
         this.invulnerability = 0;
         this.canMove = true;
         this.carica = 0;
+        this.power = [ //vettore dei poteri
+        {usageMax: 32, usage:32, color:'#990003', nome:'Potere 1'},
+        {usageMax: 32, usage:32, color:'#990003', nome:'Potere 2'},
+        {usageMax: 32, usage:32, color:'#990003', nome:'Potere 3'},
+        {usageMax: 32, usage:32, color:'#990003', nome:'Potere 4'},
+        {usageMax: 32, usage:32, color:'#990003', nome:'Potere 5'},
+        {usageMax: 32, usage:31, color:'#990003', nome:'Potere 6'},
+        {usageMax: 32, usage:1, color:'#990003', nome:'Potere 7'},
+        {usageMax: 32, usage:0, color:'#0400f8', nome:'Potere 8'},
+        ];
       }
-      var player = new Player(); //creo il player
+      levelDefeated = [false, true, false, false, false, true, false, false]; //vettore che tiene quanti livelli sono stati superati
+//      levelDefeated = [true, true, true, true, true, true, true, true]; //vettore che tiene quanti livelli sono stati superati
+      heartAcquired = [false, false, false, false, false, false, false, false]; //vettore che tiene quanti cuori sono stati trovati
+//    heartAcquired = [true, true, true, true, true, true, true, true]; //quando sono tutti true la vitaMax sale al massimo possibile (32)
+      subtankAcquired = [false, false, false, false]; //vettore che tiene quante subtank sono state trovate
+
 
   //gamestate - se tutto i gamestate sono false lo stato e' "in gioco"
   var stageSelection=true; //stato: selezione del livello
@@ -490,6 +506,7 @@
             
   //this function is called at the start
 	function start() {
+    var player = new Player(); //creo il player
     update();
 	}
 	
@@ -900,7 +917,7 @@
             }else{ tastoGiaSchiacciato=false;}
             
             //ora disegno un quadrato intorno al livello selezionato
-            ctx.fillStyle = player.charge0color;
+            ctx.fillStyle = "#ffc000";
             switch (lvlNumber){
               case 1:ctx.fillRect(137, 10, 135, 10);ctx.fillRect(137, 10, 10, 135);ctx.fillRect(137, 135, 135, 10);ctx.fillRect(263, 10, 10, 135);break;                
               case 2:ctx.fillRect(265, 10, 135, 10);ctx.fillRect(265, 10, 10, 135);ctx.fillRect(265, 135, 135, 10);ctx.fillRect(391, 10, 10, 135);break;                
@@ -920,8 +937,10 @@
         this.heightMax=canvasHeight-150;
         this.isOpen=false;
         this.isClosing=false;
+        this.indice=0;
+        this.settore=0;
         this.drawMenuDiPausa = function (){
-          if (!this.isOpen && !this.isClosing){
+          if (!this.isOpen && !this.isClosing){//animazione di apertura del menu
             if (this.width < this.widthMax){this.width+=10;}
             if (this.height < this.heightMax){this.height+=15;}
             if (this.height > this.heightMax-1 && this.width > this.widthMax-1){this.isOpen=true;}
@@ -930,12 +949,79 @@
           ctx.fillStyle = "#d2d2d2"; ctx.fillRect((canvasWidth/2)-this.width/2-15,(canvasHeight/2)-this.height/2-15, this.width+30, this.height+30); //disegna il bordo grigio 
           ctx.fillStyle = "#52b58b"; ctx.fillRect((canvasWidth/2)-this.width/2,(canvasHeight/2)-this.height/2, this.width, this.height); //disegna lo sfondo verde
           if (this.isOpen){ //qui dentro devo mostrare il testo del menu e gestire cosa succede quando schiaccio i tasti
-              if(keys[startkey] || keys[jumpkey]) {//esci dal menu di pausa
+              ctx.fillStyle = "#d2d2d2"; ctx.fillRect((canvasWidth/2)+this.width/2-250,(canvasHeight/2)-this.height/2, 15, this.height); ctx.fillRect((canvasWidth/2)+this.width/2-250,(canvasHeight/2), 250, 15); //disegna i settori del menu
+              for(i=0;i<9;i++){ //disegna le scritte del settore 0 (xbuster e poteri di X)
+                ctx.fillStyle = "#d2d2d2";
+                var xdisegnata = (canvasWidth/2)-this.width/2+13;
+                var ydisegnata = ((canvasHeight/2)-this.height/2)+(44*i)-7;
+                ctx.font = "small-caps bold 20px Lucida Console";
+                if (i-1 < 0){ 
+                 ctx.fillText("X Buster", xdisegnata, ydisegnata+33);
+                }else{
+                  if(levelDefeated[i-1]){//qui dovro' fare uno switchcase con i nomi dei poteri sbloccati dai vari livelli
+                    ctx.fillStyle = player.power[i-1].color;
+                    ctx.fillText(player.power[i-1].nome, xdisegnata, ydisegnata+21);
+                    for (j=0; j<player.power[i-1].usageMax; j++){
+                      if(player.power[i-1].usage < j+1){ctx.fillStyle = '#797979'; }
+                      ctx.fillRect(j*9+xdisegnata+2, ydisegnata+25, 8, 12);
+                    }
+                  }
+                }
+              }
+              if(this.settore == 0){
+                ctx.fillStyle = "#ffc000";
+                var xdisegnata = (canvasWidth/2)-this.width/2+13;
+                var ydisegnata = ((canvasHeight/2)-this.height/2)+(44*this.indice)-7;
+                if (this.indice==0){
+                ctx.fillRect((canvasWidth/2)-this.width/2, ydisegnata+5, (canvasWidth/2)+this.width/2-325, 8);
+                ctx.fillRect((canvasWidth/2)-this.width/2, ydisegnata+40, (canvasWidth/2)+this.width/2-325, 8);
+                ctx.fillRect((canvasWidth/2)-this.width/2, ydisegnata+5, 8, 40);
+                ctx.fillRect((canvasWidth/2)+this.width/2-258, ydisegnata+5, 8, 40);
+                }else{
+                ctx.fillRect((canvasWidth/2)-this.width/2, ydisegnata-5, (canvasWidth/2)+this.width/2-325, 8);
+                ctx.fillRect((canvasWidth/2)-this.width/2, ydisegnata+42, (canvasWidth/2)+this.width/2-325, 8);
+                ctx.fillRect((canvasWidth/2)-this.width/2, ydisegnata-5, 8, 51);
+                ctx.fillRect((canvasWidth/2)+this.width/2-258, ydisegnata-5, 8, 51);
+                }
+              }              
+              //cosa succede quando vengono schiacciati i tasti
+              if((keys[startkey] || keys[jumpkey]) && !tastoGiaSchiacciato) {//esci dal menu di pausa
                 this.isClosing=true;
                 this.isOpen=false;
               }
+              if(keys[giukey] && !tastoGiaSchiacciato) {
+                for (i=1; i<9-this.indice; i++){
+                  if(levelDefeated[this.indice+i-1]){
+                    this.indice+=i;
+                    break;
+                  }
+                }
+                if(this.indice > 8){ this.indice=0; }
+              }
+              if(keys[sukey] && !tastoGiaSchiacciato) { //questo non va, devo sistemarlo
+                for (i=0; i < -9; i--){
+                  if(levelDefeated[this.indice+i]){
+                    this.indice+=i;
+                    break;
+                  }
+                }                
+                if(this.indice < 0){ this.indice=8; }
+              }
+              if(keys[destrakey] && !tastoGiaSchiacciato) {
+                this.indice=0;
+                this.settore=1;
+              }
+              if(keys[sinistrakey] && !tastoGiaSchiacciato) {
+                this.indice=0;
+                this.settore=0;
+              }
+              if(keys[startkey] || keys[sukey] || keys[giukey] || keys[sinistrakey] || keys[destrakey] || keys[dashkey] || keys[jumpkey]){
+                tastoGiaSchiacciato=true;
+              }else{
+                tastoGiaSchiacciato=false;
+              }              
           }
-          if(this.isClosing){
+          if(this.isClosing){//animazione di chiusura del menu
               if (this.width > 0){this.width-=20;}
               if (this.height > 0){this.height-=20;}
               ctx.clearRect((canvasWidth/2)-this.width/2-15,(canvasHeight/2)-this.height/2-15, this.width+30, this.height+30);	//pulisci la parte dove viene mostrato il menu
