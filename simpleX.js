@@ -2,10 +2,10 @@
       var canvasWidth = 720;
       var canvasHeight = 540;
       if(document.getElementsByTagName('canvas').length == 0) {     //crea il canvas con le variabili che ho creato
-          document.body.innerHTML += "".concat("<canvas id='canvas' width=" , canvasWidth , " height=" , canvasHeight , "></canvas>");
+          document.body.innerHTML += "".concat("<div class='canvasDiv'><canvas id='canvas' width=" , canvasWidth , " height=" , canvasHeight , "></canvas></div>");
       }   var ctx = document.getElementById('canvas').getContext('2d');
 
-	  //variabili dei tasti
+	  //variabili dei tasti - prima o poi faro' un'opzione nel menu per poterli cambiare ingame
       var keys = [];            //vettore tasti
       var tastoGiaSchiacciato = false; //mi serve per alcune funzioni tipo selectScreen()
       var jumpkey = 90;         //salta - default z
