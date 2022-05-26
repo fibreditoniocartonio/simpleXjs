@@ -66,10 +66,19 @@
 //      levelDefeated = [false, true, false, false, false, true, true, false]; //vettore che tiene quanti livelli sono stati superati
       levelDefeated = [true, true, true, true, true, true, true, true]; //vettore che tiene quanti livelli sono stati superati
       heartAcquired = [false, false, false, false, false, false, false, false]; //vettore che tiene quanti cuori sono stati trovati
-//    heartAcquired = [true, true, true, true, true, true, true, true]; //quando sono tutti true la vitaMax sale al massimo possibile (32)
-      subtankAcquired = [false, false, false, false]; //vettore che tiene quante subtank sono state trovate
-
-
+//      heartAcquired = [true, true, true, true, true, true, true, true]; //quando sono tutti true la vitaMax sale al massimo possibile (32)
+/*      subtank = [//vettore di subtanks - e' scollegata dal player almeno non si resetta al cambio del livello
+		{lifeMax: 20, life:20, acquired:false},
+		{lifeMax: 20, life:20, acquired:false},
+		{lifeMax: 20, life:20, acquired:false},
+		{lifeMax: 20, life:20, acquired:false},
+      ];
+*/		subtank = [//vettore di subtanks - e' scollegata dal player almeno non si resetta al cambio del livello
+		{lifeMax: 20, life:20, acquired:true},
+		{lifeMax: 20, life:15, acquired:true},
+		{lifeMax: 20, life:00, acquired:true},
+		{lifeMax: 20, life:00, acquired:false},
+      ];
   //gamestate - se tutto i gamestate sono false lo stato e' "in gioco"
   var stageSelection=true; //stato: selezione del livello
   var menuDiPausa=false; var objMenuDiPausa=new newMenuDiPausa(); //stato: menu di pausa - inoltre inizializza l'oggetto che lo gestisce
@@ -944,6 +953,7 @@ i livelli sono disposti cosi in realta':1 8
         this.indice=0;
         this.settore=0;
         this.drawMenuDiPausa = function (){
+          ctx.font = "small-caps bold 20px Lucida Console"; //tipo di font per le scritte
           if (!this.isOpen && !this.isClosing){//animazione di apertura del menu
             if (this.width < this.widthMax){this.width+=10;}
             if (this.height < this.heightMax){this.height+=15;}
@@ -953,19 +963,18 @@ i livelli sono disposti cosi in realta':1 8
           ctx.fillStyle = "#d2d2d2"; ctx.fillRect((canvasWidth/2)-this.width/2-15,(canvasHeight/2)-this.height/2-15, this.width+30, this.height+30); //disegna il bordo grigio 
           ctx.fillStyle = "#52b58b"; ctx.fillRect((canvasWidth/2)-this.width/2,(canvasHeight/2)-this.height/2, this.width, this.height); //disegna lo sfondo verde
           if (this.isOpen){ //qui dentro devo mostrare il testo del menu e gestire cosa succede quando schiaccio i tasti
-              ctx.fillStyle = "#d2d2d2"; ctx.fillRect((canvasWidth/2)+this.width/2-250,(canvasHeight/2)-this.height/2, 15, this.height); ctx.fillRect((canvasWidth/2)+this.width/2-250,(canvasHeight/2), 250, 15); //disegna i settori del menu
+              ctx.fillStyle = "#d2d2d2"; 
+              ctx.fillRect((canvasWidth/2)+this.width/2-250,(canvasHeight/2)-this.height/2, 15, this.height); ctx.fillRect((canvasWidth/2)+this.width/2-250,(canvasHeight/2), 250, 15); //disegna i settori del menu
               for(i=0;i<9;i++){ //disegna le scritte del settore 0 (xbuster e poteri di X)
-                ctx.fillStyle = "#d2d2d2";
                 var xdisegnata = (canvasWidth/2)-this.width/2+13;
                 var ydisegnata = ((canvasHeight/2)-this.height/2)+(44*i)-7;
-                ctx.font = "small-caps bold 20px Lucida Console";
-                if (i-1 < 0){
+                if (i-1 < 0){ //scrive xbuster
                 	ctx.fillStyle = "#000000";//fa il bordino nero
                 	ctx.fillText("X Buster", xdisegnata-1, ydisegnata+32);ctx.fillText("X Buster", xdisegnata-1, ydisegnata+34);ctx.fillText("X Buster", xdisegnata+1, ydisegnata+32);ctx.fillText("X Buster", xdisegnata+1, ydisegnata+34);
                 	ctx.fillStyle = "#d2d2d2";//scrive il testo effettivo 
                 	ctx.fillText("X Buster", xdisegnata, ydisegnata+33);
                 }else{
-                  if(levelDefeated[i-1]){//qui dovro' fare uno switchcase con i nomi dei poteri sbloccati dai vari livelli
+                  if(levelDefeated[i-1]){//disegna i poteri e le loro barre
                   	ctx.fillStyle = "#000000";//fa il bordino nero
                   	ctx.fillText(player.power[i-1].nome, xdisegnata-1, ydisegnata+20);ctx.fillText(player.power[i-1].nome, xdisegnata-1, ydisegnata+22);ctx.fillText(player.power[i-1].nome, xdisegnata+1, ydisegnata+22);ctx.fillText(player.power[i-1].nome, xdisegnata+1, ydisegnata+20);
                     ctx.fillStyle = player.power[i-1].color;//scrive il testo effettivo
@@ -976,6 +985,35 @@ i livelli sono disposti cosi in realta':1 8
                     }
                   }
                 }
+              }
+              for(i=0;i<5;i++){
+              	var xdisegnata=(canvasWidth/2)+this.width/2-250+15;
+              	var ydisegnata=((canvasHeight/2)-this.height/2)+(40*i)-6;
+                if (i < 1){ //scrive Subtanks
+                	ctx.textAlign = "center";
+                	ctx.fillStyle = "#000000";//fa il bordino nero
+                	ctx.fillText("Subtanks", (xdisegnata+(250-15)/2)-1, ydisegnata+29);
+                	ctx.fillText("Subtanks", (xdisegnata+(250-15)/2)-1, ydisegnata+31);
+                	ctx.fillText("Subtanks", (xdisegnata+(250-15)/2)+1, ydisegnata+29);
+                	ctx.fillText("Subtanks", (xdisegnata+(250-15)/2)+1, ydisegnata+31);
+                	ctx.fillStyle = "#d2d2d2";//scrive il testo effettivo 
+                	ctx.fillText("Subtanks", xdisegnata+(250-15)/2, ydisegnata+30);
+                }else{ //disegna le barre delle subtanks
+                	ctx.textAlign = "left";
+                	if (subtank[i-1].acquired){
+                		ctx.fillStyle = "#000000";
+                		ctx.fillText("S",xdisegnata+14,ydisegnata+27);
+                		ctx.fillText("S",xdisegnata+14,ydisegnata+29);
+                		ctx.fillText("S",xdisegnata+16,ydisegnata+27);
+                		ctx.fillText("S",xdisegnata+16,ydisegnata+29);
+                		ctx.fillStyle = "#ffc000";
+                		ctx.fillText("S",xdisegnata+15,ydisegnata+28);
+                    	for (j=0; j<subtank[i-1].lifeMax; j++){
+                      		if(subtank[i-1].life < j+1){ctx.fillStyle = '#a7a7a7'; }
+                      		ctx.fillRect(j*9+xdisegnata+39, ydisegnata+12, 8, 17);
+                      	}
+                    }                	
+                }              	
               }
               if(this.settore == 0){
                 ctx.fillStyle = "#ffc000";
@@ -992,6 +1030,22 @@ i livelli sono disposti cosi in realta':1 8
                 ctx.fillRect((canvasWidth/2)-this.width/2, ydisegnata-5, 8, 51);
                 ctx.fillRect((canvasWidth/2)+this.width/2-258, ydisegnata-5, 8, 51);
                 }
+              }else if(this.settore == 1){
+              	if (this.indice < 4){
+              		ctx.fillStyle = "#ffc000";
+              		var xdisegnata=(canvasWidth/2)+this.width/2-250+15;
+              		var ydisegnata=((canvasHeight/2)-this.height/2)+(40*(this.indice+1))-6;
+                	ctx.fillRect(xdisegnata, ydisegnata, 235, 9);
+                	ctx.fillRect(xdisegnata, ydisegnata+32, 235, 9);
+                	ctx.fillRect(xdisegnata, ydisegnata, 9, 40);
+                	ctx.fillRect(xdisegnata+235-9, ydisegnata, 9, 40);              	
+                }else{
+                	ctx.fillStyle = "#ffc000";
+                	ctx.fillText("Qui sotto non c'è",(canvasWidth/2)+55,((canvasHeight/2)+50));
+                	ctx.fillText("nulla da vedere",(canvasWidth/2)+55,((canvasHeight/2)+80));
+                	ctx.fillText("minchione",(canvasWidth/2)+55,((canvasHeight/2)+110));
+                	ctx.fillText("(premi sinistra)",(canvasWidth/2)+55,((canvasHeight/2)+140));
+                }
               }              
               //cosa succede quando vengono schiacciati i tasti
               if((keys[startkey] || keys[jumpkey]) && !tastoGiaSchiacciato) {//esci dal menu di pausa
@@ -999,24 +1053,49 @@ i livelli sono disposti cosi in realta':1 8
                 this.isOpen=false;
               }
               if(keys[giukey] && !tastoGiaSchiacciato) {
-                for (i=1; i < 10; i++){
-                  if(levelDefeated[this.indice+i-1]){
-                    this.indice+=i;
-                    break;
-                  }else if(i == 9){ this.indice=0; break;}
+              	if (this.settore==0){//se sei nella parte a sinistra
+                	for (i=1; i < 10; i++){
+                  		if(levelDefeated[this.indice+i-1]){
+                    		this.indice+=i;
+                    		break;
+                  		}else if(i == 9){ this.indice=0; break;}
+                	}
+                }else if (this.settore==1){//se sei nella parte a destra
+                	if (this.indice<4){//se sei nella parte delle subtank
+						if(subtank[this.indice+1].acquired){
+							this.indice++;
+						}else{
+							this.indice=4;
+						}
+                	}
                 }
               }
               if(keys[sukey] && !tastoGiaSchiacciato) {
-                if(this.indice == 0){ this.indice=9; }
-                for (i=1; i < this.indice+1; i++){
-                  if(levelDefeated[this.indice-i-1]){
-                    this.indice-=i;
-                    break;
-                  }else if(i == this.indice){ this.indice=0; break;}
-                }                
+              	if (this.settore==0){
+                	if(this.indice == 0){ this.indice=9; }
+                	for (i=1; i < this.indice+1; i++){
+                  		if(levelDefeated[this.indice-i-1]){
+                    		this.indice-=i;
+                    		break;
+                  		}else if(i == this.indice){ this.indice=0; break;}
+                	}
+                }else if (this.settore==1){//se sei nella parte a destra
+                	if (this.indice<4){//se sei nella parte delle subtank
+						if(this.indice>0){
+							this.indice--
+						}
+                	}
+                }                                
               }
               if(keys[destrakey] && !tastoGiaSchiacciato) {
-                this.indice=0;
+				for (i=0; i<4; i++){
+					if(subtank[i].acquired){
+						this.indice=i;
+						break;
+					}else{
+						this.indice=4;
+					}
+				}
                 this.settore=1;
               }
               if(keys[sinistrakey] && !tastoGiaSchiacciato) {
@@ -1041,5 +1120,4 @@ i livelli sono disposti cosi in realta':1 8
               }             
           }
         }     
-      }
-       
+      }       
