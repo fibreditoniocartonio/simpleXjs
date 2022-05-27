@@ -63,10 +63,10 @@
         {usageMax: 32, usage:12, color:'#05e9ff', nome:'Shotgun Ice'},
         ];
       }
-//      levelDefeated = [false, true, false, false, false, true, true, false]; //vettore che tiene quanti livelli sono stati superati
+//      levelDefeated = [false, false, false, false, false, false, false, false]; //vettore che tiene quanti livelli sono stati superati
       levelDefeated = [true, true, true, true, true, true, true, true]; //vettore che tiene quanti livelli sono stati superati
-      heartAcquired = [false, false, false, false, false, false, false, false]; //vettore che tiene quanti cuori sono stati trovati
-//      heartAcquired = [true, true, true, true, true, true, true, true]; //quando sono tutti true la vitaMax sale al massimo possibile (32)
+//      heartAcquired = [false, false, false, false, false, false, false, false]; //vettore che tiene quanti cuori sono stati trovati
+      heartAcquired = [true, true, true, true, true, true, true, true]; //quando sono tutti true la vitaMax sale al massimo possibile (32)
 /*      subtank = [//vettore di subtanks - e' scollegata dal player almeno non si resetta al cambio del livello
 		{lifeMax: 20, life:20, acquired:false},
 		{lifeMax: 20, life:20, acquired:false},
@@ -74,10 +74,10 @@
 		{lifeMax: 20, life:20, acquired:false},
       ];
 */		subtank = [//vettore di subtanks - e' scollegata dal player almeno non si resetta al cambio del livello
-		{lifeMax: 20, life:20, acquired:true},
+		{lifeMax: 20, life:18, acquired:true},
 		{lifeMax: 20, life:15, acquired:true},
-		{lifeMax: 20, life:00, acquired:true},
-		{lifeMax: 20, life:00, acquired:false},
+		{lifeMax: 20, life:9, acquired:true},
+		{lifeMax: 20, life:20, acquired:true},
       ];
   //gamestate - se tutto i gamestate sono false lo stato e' "in gioco"
   var stageSelection=true; //stato: selezione del livello
@@ -157,7 +157,7 @@ i livelli sono disposti cosi in realta':1 8
          	pipistrello.x= (i%widthTot)*20;
         	pipistrello.y= (heightTot-1)*20+10;
 					entity.push(pipistrello);
-					if(lvlString[i-1]=='p' || lvlString[i-1]=='q' || lvlString[i-1]=='r' ){blockBackground(lvlString[i-1]);} //se il blocco prima era un background lo carica sotto la entita' letta
+					if(lvlString[i-1]=='p' || lvlString[i-1]=='q' || lvlString[i-1]=='r' ){leggiBlocco(background,lvlString[i-1]);} //se il blocco prima era un background lo carica sotto la entita' letta
 					break;
           
         case 'S': //S sono le spike (le spine che instaKillano)
@@ -169,27 +169,16 @@ i livelli sono disposti cosi in realta':1 8
 
 				//i blocchi
 				case 'a': case 'b': case 'c': case 'd': case 'e': case 'f': case 'g': case 'h': case 'i': case 'j': case 'k': 
-					// le lettere dalla a alla k indicano un blocco da 25px*25px di colori diversi
-					var blocco = new Blocco(i,widthTot,heightTot);
-					for (n=1; ;n++){	//controllo che se le lettere dopo sono uguali a questo blocco. Se lo sono non sto a creare tanti blocchetti ma ne faccio solo uno piu' largo per ottimizzare
-							if(lvlString[i+n]==lvlString[i]){
-								blocco.width=blocco.width+(20);
-							}else{
-								i=i+n-1;
-								break; //del for
-							}
-					}
-					blocco.width=blocco.width+1;
-					blocco['lettera'] = lvlString[i];
-					level.push(blocco);
+					// le lettere dalla a alla k indicano un blocco da 20px*20px di colori diversi
+					leggiBlocco(level,lvlString[i]);
 					break;
 
 				case 'm': case 'n': case 'o'://foreground
-					blockForeground(lvlString[i]);
+					leggiBlocco(foreground,lvlString[i]);
 					break;
 
 				case 'p': case 'q': case 'r'://background 
-					blockBackground(lvlString[i]);
+					leggiBlocco(background,lvlString[i]);
 					break;	
 											
 				case 'z': // 'z' indica la fine del livello. Da qui in poi non sto leggendo piu blocchi e entita' ma le caratteristiche del livello come gravita', posizione iniziale del player e colore dei blocchi del livello
@@ -197,12 +186,12 @@ i livelli sono disposti cosi in realta':1 8
 					heightTot++;
 					level['gravity'] = readNumber();
 					level['friction'] = readNumber();
-          level['gravityWater'] = level.gravity*4/7;
-          level['frictionWater'] = level.friction*9/10;
+          			level['gravityWater'] = level.gravity*4/7;
+          			level['frictionWater'] = level.friction*9/10;
 					level['backGroundImg'] = readBackground();
-					blocksColors();//this will push color[] to level, it will contain the blocks colors
-					foregroundColors();
-					backgroundColors();
+					blocksColors(level,11);//this will push color[] to level, it will contain the blocks colors
+					blocksColors(foreground,3);
+					blocksColors(background,3);
 					level['foreground'] = foreground;
 					level['background'] = background;
 					break;
@@ -254,9 +243,9 @@ i livelli sono disposti cosi in realta':1 8
 		}				
     //ora inizializzo i bordi - ho schiacciato il codice perche' occupava righe inutili. e' molto simile al prototipo di blocco    
 		var ground = {x: 0, width: level.maxWidth, height: (20)+1, color: level.color[0]};  ground['y']=level.maxHeight-ground.height;
-    var ceiling = {x: 0, y: 0, width: level.maxWidth, height: (20)+1, color: level.color[0]};        	            
-    var leftWall = {x: 0, y: 0, width: (20)+1, height: level.maxHeight, color: level.color[0]};
-    var rightWall = {y: 0, width: (20)+1, height: level.maxHeight, color: level.color[0]}; rightWall['x']= level.maxWidth-rightWall.width;	            				
+    	var ceiling = {x: 0, y: 0, width: level.maxWidth, height: (20)+1, color: level.color[0]};        	            
+    	var leftWall = {x: 0, y: 0, width: (20)+1, height: level.maxHeight, color: level.color[0]};
+    	var rightWall = {y: 0, width: (20)+1, height: level.maxHeight, color: level.color[0]}; rightWall['x']= level.maxWidth-rightWall.width;	            				
 		level.push(ground, ceiling, leftWall, rightWall); //this pushes all of the static objects into the level				   
 
     // ora definisco le funzioni interne di stringToLevel()
@@ -316,55 +305,27 @@ i livelli sono disposti cosi in realta':1 8
 				return coloreLetto;
 			}						
 		}
-		function blocksColors(){
+		function blocksColors(vettore,numeroDiLetture){
 			var color = [];
-			for (n=0; n<11; n++){
+			for (n=0; n<numeroDiLetture; n++){
 				color[n]=readColor();	
 			}
-			level['color']=color;
+			vettore['color']=color;
 		}
-		function foregroundColors(){
-			var color = [];
-			for (n=0; n<3; n++){
-				color[n]=readColor();
+		function leggiBlocco(vettore,lettera){
+			var blocco = new Blocco(i,widthTot,heightTot);
+			for (n=1; ;n++){	//controllo che se le lettere dopo sono uguali a questo blocco. Se lo sono non sto a creare tanti blocchetti ma ne faccio solo uno piu' largo per ottimizzare
+					if(lvlString[i+n]==lettera){
+						blocco.width=blocco.width+(20);
+					}else{
+						i=i+n-1;
+						break; //del for
+					}
 			}
-			foreground['color']=color;
-		}
-		function backgroundColors(){
-			var color = [];
-			for (n=0; n<3; n++){
-				color[n]=readColor();	
-			}
-			background['color']=color;
+			blocco.width=blocco.width+1;
+			blocco['lettera'] = lettera;
+			vettore.push(blocco);
 		}				
-		function blockForeground(lettera){
-			var blocco = new Blocco(i,widthTot,heightTot);
-			for (n=1; ;n++){	//controllo che se le lettere dopo sono uguali a questo blocco. Se lo sono non sto a creare tanti blocchetti ma ne faccio solo uno piu' largo per ottimizzare
-					if(lvlString[i+n]==lettera){
-						blocco.width=blocco.width+(20);
-					}else{
-						i=i+n-1;
-						break; //del for
-					}
-			}
-			blocco.width=blocco.width+1;
-			blocco['lettera'] = lettera;
-			foreground.push(blocco);
-		}
-		function blockBackground(lettera){
-			var blocco = new Blocco(i,widthTot,heightTot);
-			for (n=1; ;n++){	//controllo che se le lettere dopo sono uguali a questo blocco. Se lo sono non sto a creare tanti blocchetti ma ne faccio solo uno piu' largo per ottimizzare
-					if(lvlString[i+n]==lettera){
-						blocco.width=blocco.width+(20);
-					}else{
-						i=i+n-1;
-						break; //del for
-					}
-			}
-			blocco.width=blocco.width+1;
-			blocco['lettera'] = lettera;
-			background.push(blocco);			
-		}					
 		function Blocco(i,widthTot,heightTot) { //prototipo di blocco
            	this.x= (i%widthTot)*20;
             this.y= (heightTot-1)*20;
@@ -526,8 +487,8 @@ i livelli sono disposti cosi in realta':1 8
   function nuovoLivello(){	//azzera i dati del player e carica un nuovo livello (da stringa e non da file...)
 		player = new Player();
 		leggiLivelloDaFile();
-    player.x = level.xStartingPos;
-    player.y = level.yStartingPos;
+    	player.x = level.xStartingPos;
+    	player.y = level.yStartingPos;
 	}
                                 
   function update() {//this function is called every frame
@@ -909,7 +870,7 @@ i livelli sono disposti cosi in realta':1 8
           var img = document.getElementById("stageselect");
           ctx.drawImage(img, 0, 0, canvasWidth,canvasHeight);
             //leggo che tasto viene schiacciato. Con invio o dash si inizia a giocare, con le freccie si cicla tra i livelli
-            if (keys[startkey] || keys[dashkey]){
+            if ((keys[startkey] || keys[dashkey]) && !tastoGiaSchiacciato){
               stageSelection=false;
               nuovoLivello();
             }
@@ -942,6 +903,16 @@ i livelli sono disposti cosi in realta':1 8
               case 3:ctx.fillRect(9, 140, 135, 10);ctx.fillRect(9, 140, 10, 135);ctx.fillRect(9, 265, 135, 10);ctx.fillRect(135, 140, 10, 135);break;                                                                                                                
             }
       }
+
+      function disegnaTestoConBordino(stringaDiTesto, xdisegnata, ydisegnata, coloreTesto, coloreBordino){
+      	ctx.fillStyle = coloreBordino;
+      	ctx.fillText(stringaDiTesto, xdisegnata+1, ydisegnata+1);
+      	ctx.fillText(stringaDiTesto, xdisegnata+1, ydisegnata-1);
+      	ctx.fillText(stringaDiTesto, xdisegnata-1, ydisegnata+1);
+      	ctx.fillText(stringaDiTesto, xdisegnata-1, ydisegnata-1);
+      	ctx.fillStyle = coloreTesto;
+      	ctx.fillText(stringaDiTesto, xdisegnata, ydisegnata);
+      }
       
       function newMenuDiPausa(){
         this.width=0;
@@ -950,14 +921,23 @@ i livelli sono disposti cosi in realta':1 8
         this.heightMax=canvasHeight-150;
         this.isOpen=false;
         this.isClosing=false;
+        this.canInput=true;
+        this.tornaStageSelection=false;
         this.indice=0;
         this.settore=0;
+        this.usingSubtank=4; //4 vuol dire che non sto usando la subtank (da 0 a 3 e' l'indice della subtank usata)
+        this.lastSubtankAcquired=4;//se rimane uguale a 4 vuol dire che non e' stata acquisita nessuna subtank
         this.drawMenuDiPausa = function (){
           ctx.font = "small-caps bold 20px Lucida Console"; //tipo di font per le scritte
-          if (!this.isOpen && !this.isClosing){//animazione di apertura del menu
+          if (!this.isOpen && !this.isClosing){//animazione di apertura del menu + lettura subtank acquisite
             if (this.width < this.widthMax){this.width+=10;}
             if (this.height < this.heightMax){this.height+=15;}
-            if (this.height > this.heightMax-1 && this.width > this.widthMax-1){this.isOpen=true;}
+            if (this.height > this.heightMax-1 && this.width > this.widthMax-1){//quando il menu e' tutto aperto:
+            	this.isOpen=true;
+            	for(var j=0; j<4; j++){//legge l'indice dell'ultima subtank acquisita
+            		if(subtank[j].acquired){this.lastSubtankAcquired=j;}
+            	}
+            }
           }
           ctx.clearRect((canvasWidth/2)-this.width/2-15,(canvasHeight/2)-this.height/2-15, this.width+30, this.height+30);	//pulisci la parte dove viene mostrato il menu
           ctx.fillStyle = "#d2d2d2"; ctx.fillRect((canvasWidth/2)-this.width/2-15,(canvasHeight/2)-this.height/2-15, this.width+30, this.height+30); //disegna il bordo grigio 
@@ -969,16 +949,10 @@ i livelli sono disposti cosi in realta':1 8
                 var xdisegnata = (canvasWidth/2)-this.width/2+13;
                 var ydisegnata = ((canvasHeight/2)-this.height/2)+(44*i)-7;
                 if (i-1 < 0){ //scrive xbuster
-                	ctx.fillStyle = "#000000";//fa il bordino nero
-                	ctx.fillText("X Buster", xdisegnata-1, ydisegnata+32);ctx.fillText("X Buster", xdisegnata-1, ydisegnata+34);ctx.fillText("X Buster", xdisegnata+1, ydisegnata+32);ctx.fillText("X Buster", xdisegnata+1, ydisegnata+34);
-                	ctx.fillStyle = "#d2d2d2";//scrive il testo effettivo 
-                	ctx.fillText("X Buster", xdisegnata, ydisegnata+33);
+                	disegnaTestoConBordino("X Buster", xdisegnata, ydisegnata+33,"#d2d2d2","#000000");
                 }else{
                   if(levelDefeated[i-1]){//disegna i poteri e le loro barre
-                  	ctx.fillStyle = "#000000";//fa il bordino nero
-                  	ctx.fillText(player.power[i-1].nome, xdisegnata-1, ydisegnata+20);ctx.fillText(player.power[i-1].nome, xdisegnata-1, ydisegnata+22);ctx.fillText(player.power[i-1].nome, xdisegnata+1, ydisegnata+22);ctx.fillText(player.power[i-1].nome, xdisegnata+1, ydisegnata+20);
-                    ctx.fillStyle = player.power[i-1].color;//scrive il testo effettivo
-                    ctx.fillText(player.power[i-1].nome, xdisegnata, ydisegnata+21);
+                  	disegnaTestoConBordino(player.power[i-1].nome, xdisegnata, ydisegnata+21,player.power[i-1].color,"#000000");
                     for (j=0; j<player.power[i-1].usageMax; j++){
                       if(player.power[i-1].usage < j+1){ctx.fillStyle = '#a7a7a7'; }
                       ctx.fillRect(j*9+xdisegnata+2, ydisegnata+25, 8, 12);
@@ -986,52 +960,60 @@ i livelli sono disposti cosi in realta':1 8
                   }
                 }
               }
-              for(i=0;i<5;i++){
+              for(i=0;i<5;i++){//disegna le subtank
               	var xdisegnata=(canvasWidth/2)+this.width/2-250+15;
               	var ydisegnata=((canvasHeight/2)-this.height/2)+(40*i)-6;
                 if (i < 1){ //scrive Subtanks
                 	ctx.textAlign = "center";
-                	ctx.fillStyle = "#000000";//fa il bordino nero
-                	ctx.fillText("Subtanks", (xdisegnata+(250-15)/2)-1, ydisegnata+29);
-                	ctx.fillText("Subtanks", (xdisegnata+(250-15)/2)-1, ydisegnata+31);
-                	ctx.fillText("Subtanks", (xdisegnata+(250-15)/2)+1, ydisegnata+29);
-                	ctx.fillText("Subtanks", (xdisegnata+(250-15)/2)+1, ydisegnata+31);
-                	ctx.fillStyle = "#d2d2d2";//scrive il testo effettivo 
-                	ctx.fillText("Subtanks", xdisegnata+(250-15)/2, ydisegnata+30);
+                	disegnaTestoConBordino("Subtanks", xdisegnata+(250-15)/2, ydisegnata+30,"#d2d2d2","#000000");
                 }else{ //disegna le barre delle subtanks
                 	ctx.textAlign = "left";
                 	if (subtank[i-1].acquired){
-                		ctx.fillStyle = "#000000";
-                		ctx.fillText("S",xdisegnata+14,ydisegnata+27);
-                		ctx.fillText("S",xdisegnata+14,ydisegnata+29);
-                		ctx.fillText("S",xdisegnata+16,ydisegnata+27);
-                		ctx.fillText("S",xdisegnata+16,ydisegnata+29);
-                		ctx.fillStyle = "#ffc000";
-                		ctx.fillText("S",xdisegnata+15,ydisegnata+28);
+                		disegnaTestoConBordino("S", xdisegnata+15,ydisegnata+28,"#ffc000","#000000");
                     	for (j=0; j<subtank[i-1].lifeMax; j++){
                       		if(subtank[i-1].life < j+1){ctx.fillStyle = '#a7a7a7'; }
                       		ctx.fillRect(j*9+xdisegnata+39, ydisegnata+12, 8, 17);
-                      	}
+                      	}	
                     }                	
                 }              	
               }
-              if(this.settore == 0){
+              for(i=0;i<3;i++){//ora disegno la parte sotto le subtanks
+              	ctx.textAlign = "left";
+              	var xdisegnata=(canvasWidth/2)+this.width/2-250+15+10;
+              	var ydisegnata=((canvasHeight/2)+15+((canvasHeight-this.height+30)/3*(i+1)))-1;
+				switch (i){
+					case 0:
+						disegnaTestoConBordino("resume game", xdisegnata+5,ydisegnata+7-((canvasHeight-this.height+30)/3)/2,"#d2d2d2","#000000");
+						break;
+
+					case 1:
+						disegnaTestoConBordino("options", xdisegnata+5,ydisegnata+7-((canvasHeight-this.height+30)/3)/2,"#d2d2d2","#000000");
+						break;
+
+					case 2:
+						disegnaTestoConBordino("return to the", xdisegnata+5,ydisegnata-2-((canvasHeight-this.height+30)/3)/2,"#d2d2d2","#000000");
+						disegnaTestoConBordino("level selection", xdisegnata+5,ydisegnata+15-((canvasHeight-this.height+30)/3)/2,"#d2d2d2","#000000");
+						break;												
+				}
+			  }
+                            
+              if(this.settore == 0){//disegna i quadrati intorno alla scritta scelta - parte poteri
                 ctx.fillStyle = "#ffc000";
                 var xdisegnata = (canvasWidth/2)-this.width/2+13;
                 var ydisegnata = ((canvasHeight/2)-this.height/2)+(44*this.indice)-7;
                 if (this.indice==0){
-                ctx.fillRect((canvasWidth/2)-this.width/2, ydisegnata+5, (canvasWidth/2)+this.width/2-325, 8);
-                ctx.fillRect((canvasWidth/2)-this.width/2, ydisegnata+40, (canvasWidth/2)+this.width/2-325, 8);
-                ctx.fillRect((canvasWidth/2)-this.width/2, ydisegnata+5, 8, 40);
-                ctx.fillRect((canvasWidth/2)+this.width/2-258, ydisegnata+5, 8, 40);
+                	ctx.fillRect((canvasWidth/2)-this.width/2, ydisegnata+5, (canvasWidth/2)+this.width/2-325, 8);
+                	ctx.fillRect((canvasWidth/2)-this.width/2, ydisegnata+40, (canvasWidth/2)+this.width/2-325, 8);
+                	ctx.fillRect((canvasWidth/2)-this.width/2, ydisegnata+5, 8, 40);
+                	ctx.fillRect((canvasWidth/2)+this.width/2-258, ydisegnata+5, 8, 40);
                 }else{
-                ctx.fillRect((canvasWidth/2)-this.width/2, ydisegnata-5, (canvasWidth/2)+this.width/2-325, 8);
-                ctx.fillRect((canvasWidth/2)-this.width/2, ydisegnata+42, (canvasWidth/2)+this.width/2-325, 8);
-                ctx.fillRect((canvasWidth/2)-this.width/2, ydisegnata-5, 8, 51);
-                ctx.fillRect((canvasWidth/2)+this.width/2-258, ydisegnata-5, 8, 51);
+                	ctx.fillRect((canvasWidth/2)-this.width/2, ydisegnata-5, (canvasWidth/2)+this.width/2-325, 8);
+                	ctx.fillRect((canvasWidth/2)-this.width/2, ydisegnata+42, (canvasWidth/2)+this.width/2-325, 8);
+                	ctx.fillRect((canvasWidth/2)-this.width/2, ydisegnata-5, 8, 51);
+                	ctx.fillRect((canvasWidth/2)+this.width/2-258, ydisegnata-5, 8, 51);
                 }
-              }else if(this.settore == 1){
-              	if (this.indice < 4){
+              }else if(this.settore == 1){//disegna i quadrati intorno alla scritta scelta - parte subtank e sotto subtank
+              	if (this.indice < 4){//disegna quadrati del settore subtank
               		ctx.fillStyle = "#ffc000";
               		var xdisegnata=(canvasWidth/2)+this.width/2-250+15;
               		var ydisegnata=((canvasHeight/2)-this.height/2)+(40*(this.indice+1))-6;
@@ -1039,19 +1021,59 @@ i livelli sono disposti cosi in realta':1 8
                 	ctx.fillRect(xdisegnata, ydisegnata+32, 235, 9);
                 	ctx.fillRect(xdisegnata, ydisegnata, 9, 40);
                 	ctx.fillRect(xdisegnata+235-9, ydisegnata, 9, 40);              	
-                }else{
+                }else{//disegna quadrati della parte sotto le subtank
                 	ctx.fillStyle = "#ffc000";
-                	ctx.fillText("Qui sotto non c'è",(canvasWidth/2)+55,((canvasHeight/2)+50));
-                	ctx.fillText("nulla da vedere",(canvasWidth/2)+55,((canvasHeight/2)+80));
-                	ctx.fillText("minchione",(canvasWidth/2)+55,((canvasHeight/2)+110));
-                	ctx.fillText("(premi sinistra)",(canvasWidth/2)+55,((canvasHeight/2)+140));
+					var xdisegnata=(canvasWidth/2)+this.width/2-250+15;
+              		var ydisegnata=((canvasHeight/2)+15+((canvasHeight-this.height+30)/3*(this.indice-4)))-1;
+                	ctx.fillRect(xdisegnata, ydisegnata, 235, 9);
+                	ctx.fillRect(xdisegnata, ydisegnata+((canvasHeight-this.height+30)/3-8), 235, 9);
+                	ctx.fillRect(xdisegnata, ydisegnata, 9, ((canvasHeight-this.height+30)/3-8));
+                	ctx.fillRect(xdisegnata+235-9, ydisegnata, 9, ((canvasHeight-this.height+30)/3-8));              		
                 }
+              }
+              if(this.usingSubtank < 4){//se il menu e' impostato nell'usare una subtank:
+              	if(subtank[this.usingSubtank].life > 0){
+              		subtank[this.usingSubtank].life-=0.5;
+              		if(player.life<player.lifeMax){
+              			player.life+=0.5; drawHUD();
+              		}
+              	}else{//esce dallo stato di depleting della subtank
+              		this.usingSubtank=4;
+              		this.canInput=true;
+              	}
               }              
-              //cosa succede quando vengono schiacciati i tasti
-              if((keys[startkey] || keys[jumpkey]) && !tastoGiaSchiacciato) {//esci dal menu di pausa
+             if(this.canInput){//cosa succede quando vengono schiacciati i tasti (solo se this e' in lettura di input - this.canInput)
+              if((keys[startkey] || keys[sparokey]) && !tastoGiaSchiacciato) {//attiva la voce selezionata
+              	if (this.settore==0){ // se e' nella sezione poteri, attiva il potere selezionato e chiude il menu(per il momento chiude solo il menu)
+					this.isClosing=true;
+                	this.isOpen=false;
+              	}else{ //se e' nell'altro settore fa delle cose in base all'indice
+              		if(this.indice<4){//hai scelto una subtank
+              			if(player.life<player.lifeMax){
+              				this.usingSubtank=this.indice;
+              				this.canInput=false;
+              			}
+              		}else{
+              			switch (this.indice){
+              				case 4://ritorna al gioco - chiude il menu
+								this.isClosing=true;
+                				this.isOpen=false;              				
+                				break;
+                			case 5://opzioni - non l'ho ancora implementato
+                				break;
+                			case 6://torna alla selezione del livello
+								this.tornaStageSelection=true; lvlNumber=1;
+								this.isClosing=true;
+								this.isOpen=false;
+                				break;
+              			}
+              		}
+              	}
+              }
+              if(keys[jumpkey] && !tastoGiaSchiacciato) {//esci dal menu di pausa
                 this.isClosing=true;
                 this.isOpen=false;
-              }
+              }              
               if(keys[giukey] && !tastoGiaSchiacciato) {
               	if (this.settore==0){//se sei nella parte a sinistra
                 	for (i=1; i < 10; i++){
@@ -1061,12 +1083,19 @@ i livelli sono disposti cosi in realta':1 8
                   		}else if(i == 9){ this.indice=0; break;}
                 	}
                 }else if (this.settore==1){//se sei nella parte a destra
-                	if (this.indice<4){//se sei nella parte delle subtank
-						if(subtank[this.indice+1].acquired){
-							this.indice++;
-						}else{
-							this.indice=4;
+                	if (this.indice<this.lastSubtankAcquired){//se sei nella parte delle subtank-1
+                		for(var k=1; k<(4-this.indice); k++){
+							if(subtank[this.indice+k].acquired){
+								this.indice+=k;
+								break;
+							}
 						}
+                	}else if(this.indice==this.lastSubtankAcquired && this.lastSubtankAcquired!=4){//se hai selezionato l'ultima subtank disponibile e schiacci giu'
+                		this.indice=4;
+                	}else{//se sei nella parte sotto le subtank
+                		if (this.indice<6){
+                			this.indice++;
+                		}
                 	}
                 }
               }
@@ -1082,15 +1111,26 @@ i livelli sono disposti cosi in realta':1 8
                 }else if (this.settore==1){//se sei nella parte a destra
                 	if (this.indice<4){//se sei nella parte delle subtank
 						if(this.indice>0){
-							this.indice--
+							for(var k=1; k<this.indice+1;k++){
+								if(subtank[this.indice-k].acquired){
+									this.indice-=k;
+									break;
+								}
+							}
 						}
+                	}else{
+                		if (this.indice>4){//se sei nel menu tutto ok
+                			this.indice--;
+                		}else{//schiacci su e ti stai spostando nelle subtank - devo vedere che io ne possegga almeno una
+							this.indice=this.lastSubtankAcquired;
+                		}
                 	}
                 }                                
               }
               if(keys[destrakey] && !tastoGiaSchiacciato) {
-				for (i=0; i<4; i++){
-					if(subtank[i].acquired){
-						this.indice=i;
+				for (var j=0; j<4; j++){
+					if(subtank[j].acquired){
+						this.indice=j;
 						break;
 					}else{
 						this.indice=4;
@@ -1106,18 +1146,37 @@ i livelli sono disposti cosi in realta':1 8
                 tastoGiaSchiacciato=true;
               }else{
                 tastoGiaSchiacciato=false;
-              }              
-          }
-          if(this.isClosing){//animazione di chiusura del menu
+              }
+          }              
+         }
+          if(this.isClosing){//animazione di chiusura del menu + regolazione delle subtanks
               if (this.width > 0){this.width-=20;}
               if (this.height > 0){this.height-=20;}
               ctx.clearRect((canvasWidth/2)-this.width/2-15,(canvasHeight/2)-this.height/2-15, this.width+30, this.height+30);	//pulisci la parte dove viene mostrato il menu
               disegnaSchermoDiGioco(false);
               ctx.fillStyle = "#d2d2d2"; ctx.fillRect((canvasWidth/2)-this.width/2-15,(canvasHeight/2)-this.height/2-15, this.width+30, this.height+30); //disegna il bordo grigio 
               ctx.fillStyle = "#52b58b"; ctx.fillRect((canvasWidth/2)-this.width/2,(canvasHeight/2)-this.height/2, this.width, this.height); //disegna lo sfondo verde
-              if (this.height-1 < 0 && this.width-1 < 0){
-                  menuDiPausa=false;
-              }             
+              if (this.height-1 < 0 && this.width-1 < 0){//quando il menu e' tutto chiuso:
+              	menuDiPausa=false;
+              	if(this.tornaStageSelection){stageSelection=true;}
+              	var sommaSubtank=0;//aggiusto la vita delle subtank (la metto tutta nelle prime subtank disponibili)
+				for (var j=0; j<4; j++){//azzero tutte le subtank e carico tutta la vita per ridistribuirla nel prossimo for
+					if (subtank[j].acquired){
+						sommaSubtank+=subtank[j].life;
+						subtank[j].life=0;
+					}
+				}
+				for (var j=0; j<4; ){//ridistribuisco la vita alle subtank dalla prima all'ultima
+					if (subtank[j].acquired){
+						if (subtank[j].life<subtank[j].lifeMax && sommaSubtank>0){
+							subtank[j].life++;
+							sommaSubtank--;	
+						}else{
+							j++;
+						}
+					}					
+				}
+             }             
           }
         }     
       }       
