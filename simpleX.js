@@ -84,10 +84,12 @@
 		{lifeMax: 20, life:20, acquired:true},
       ];
   //gamestate - se tutto i gamestate sono false lo stato e' "in gioco"
-  var stageSelection=true; //stato: selezione del livello
+  var stageSelection=false; //stato: selezione del livello
   var menuDiPausa=false; //stato: menu di pausa
   var nelMenuOpzioni=false; //stato: menu opzioni
-
+  var nelMenuPrincipale=true; //stato: nel menu principale
+  var objMenuPrincipale= new newMenuPrincipale(); //inizializza il menu principale
+  
 	//caricare il livello
 	var level = []; //create the level array
 	var lvlNumber=1;
@@ -503,7 +505,9 @@ i livelli sono disposti cosi in realta':1 8
     }else if (menuDiPausa){
       objMenuDiPausa.drawMenuDiPausa();
     }else if(nelMenuOpzioni){
-      objMenuOpzioni.drawMenuOpzioni();	
+      objMenuOpzioni.drawMenuOpzioni();
+    }else if(nelMenuPrincipale){
+      objMenuPrincipale.drawMenuPrincipale(true);
     }else{
       disegnaSchermoDiGioco(true); //ATTENZIONE: se le viene passato true oltre a disegnare le entita' calcola anche le lore physics
       playerPhysics(player, level); //chiama la funzione physics del player
@@ -1258,7 +1262,7 @@ i livelli sono disposti cosi in realta':1 8
 						ctx.textAlign = "left"; disegnaTestoConBordino("   "+tasto(rkey.toLowerCase()), canvasWidth/2, ydisegnata+7+((this.heightMax+75-17-128)/10)/2,"#d2d2d2","#000000");
 						break;						
 					case 9:
-						ctx.textAlign = "right"; disegnaTestoConBordino("open menu & start :   ", canvasWidth/2, ydisegnata+7+((this.heightMax+75-17-128)/10)/2,"#d2d2d2","#000000");
+						ctx.textAlign = "right"; disegnaTestoConBordino("menu & start :   ", canvasWidth/2, ydisegnata+7+((this.heightMax+75-17-128)/10)/2,"#d2d2d2","#000000");
 						ctx.textAlign = "left"; disegnaTestoConBordino("   "+tasto(startkey.toLowerCase()), canvasWidth/2, ydisegnata+7+((this.heightMax+75-17-128)/10)/2,"#d2d2d2","#000000");
 						break;
 
@@ -1329,10 +1333,11 @@ i livelli sono disposti cosi in realta':1 8
 			}          	
           }//fine di if(is.Open)
           
-          if(this.isClosing){//animazione di chiusura del menu + regolazione delle subtanks
+          if(this.isClosing){//animazione di chiusura del menu
               if (this.width > widthPassata){this.width-=20;}
               if (this.height > heightPassata){this.height-=20;}
               ctx.clearRect((canvasWidth/2)-this.width/2-15,(canvasHeight/2)-this.height/2-15, this.width+30, this.height+30);	//pulisci la parte dove viene mostrato il menu
+              if (!apertoDalMenuDiPausa){objMenuPrincipale.drawMenuPrincipale(false);}           
               ctx.fillStyle = "#d2d2d2"; ctx.fillRect((canvasWidth/2)-this.width/2-15,(canvasHeight/2)-this.height/2-15, this.width+30, this.height+30); //disegna il bordo grigio 
               ctx.fillStyle = "#52b58b"; ctx.fillRect((canvasWidth/2)-this.width/2,(canvasHeight/2)-this.height/2, this.width, this.height); //disegna lo sfondo verde
               if (this.height-1 < heightPassata && this.width-1 < widthPassata){//quando il menu e' tutto chiuso:
@@ -1340,9 +1345,88 @@ i livelli sono disposti cosi in realta':1 8
               	if(apertoDalMenuDiPausa){
               		menuDiPausa=true;
               	}else{//se viene aperto dal menu principale - devo ancora crearlo pero' lol
-              		
+              		nelMenuPrincipale=true;
               	}
               }
           }//fine di if(is.Closing)
      }
+	}
+
+
+
+	function newMenuPrincipale(){
+		this.width=canvasWidth;
+		this.height=canvasHeight;
+		this.indice=0;
+		this.isClosing=false;
+		this.closingIndex=0;
+		this.isGoingToStageSelection=false;
+		this.drawMenuPrincipale = function (canInput){
+			ctx.clearRect(0,0,canvasWidth,canvasHeight);//pulisce tutto
+			ctx.fillStyle = "#020219"; ctx.fillRect(0,0,canvasWidth+1,canvasHeight+1);//sfondo nero
+			ctx.textAlign = "left";
+			ctx.font = "small-caps bold oblique 250px Lucida Console";
+			disegnaTestoConBordino("X",73+canvasWidth/2,243,"#ff9200","#ffd600");
+			ctx.font = "small-caps bold oblique 125px Lucida Console";
+			disegnaTestoConBordino("simple",17+canvasWidth/20,200,"#0001cb","#02b0ef");
+			ctx.font = "small-caps bold oblique 75px Lucida Console";
+			disegnaTestoConBordino("js",234+canvasWidth/2,245,"#0001cb","#02b0ef");
+			ctx.font = "small-caps bold 30px Lucida Console"; ctx.textAlign = "center";
+			if(this.indice==0){disegnaTestoConBordino("new game",canvasWidth/2,350,"#ff9200","#f9c065");}else{disegnaTestoConBordino("new game",canvasWidth/2,350,"#0001cb","#02b0ef");}
+			if(this.indice==1){disegnaTestoConBordino("load game",canvasWidth/2,400,"#ff9200","#f9c065");}else{disegnaTestoConBordino("load game",canvasWidth/2,400,"#0001cb","#02b0ef");}
+			if(this.indice==2){disegnaTestoConBordino("options",canvasWidth/2,450,"#ff9200","#f9c065");}else{disegnaTestoConBordino("options",canvasWidth/2,450,"#0001cb","#02b0ef");}
+			if(canInput && !this.isClosing){//input dei tasti
+            	if(keys[sukey] && !tastoGiaSchiacciato) {
+					if(this.indice > 0){
+						this.indice--;
+					}else{
+						this.indice=2;
+					}
+            	}
+            	if(keys[giukey] && !tastoGiaSchiacciato) {
+					if(this.indice < 2){
+						this.indice++;
+					}else{
+						this.indice=0;
+					}
+            	}
+            	if((keys[startkey]||keys[dashkey]) && !tastoGiaSchiacciato) {
+					switch(this.indice){
+						case 0: this.isClosing=true;
+							this.isGoingToStageSelection=true;
+							break;
+						case 1: alert("Mi spiace, non l'ho ancora implementato");
+							break;
+						case 2: 
+            				objMenuOpzioni=new newMenuOpzioni(0, 0, false);
+            				tastoGiaSchiacciato=true;
+            				nelMenuPrincipale=false;
+            				nelMenuOpzioni=true;                				
+                			break;													
+					}	
+            	}                        
+            	if(keys[startkey] || keys[sukey] || keys[giukey] || keys[sinistrakey] || keys[destrakey] || keys[dashkey] || keys[jumpkey]){
+                	tastoGiaSchiacciato=true;
+            	}else{
+                	tastoGiaSchiacciato=false;
+            	}				
+			}
+        	if(this.isClosing){//animazione di chiusura del menu
+        		ctx.fillStyle = "#000000";
+        		this.closingIndex+=13;
+        		ctx.fillRect(0,0,canvasWidth,this.closingIndex);
+        		ctx.fillRect(0,canvasHeight-this.closingIndex,canvasWidth,this.closingIndex);
+				ctx.fillRect(0,0,this.closingIndex,canvasHeight);
+				ctx.fillRect(canvasWidth-this.closingIndex,0,canvasWidth-this.closingIndex,canvasHeight);
+        		if ( this.closingIndex > ((canvasWidth/2)-1) ){//quando e' tutto chiuso
+        			ctx.textAlign = "left";// se no si bugga della roba
+              		nelMenuPrincipale=false;//disattiva lo stato menu principale
+              		if(this.isGoingToStageSelection){
+              			stageSelection=true;
+              		}else{
+              		
+              		}
+              	}
+          	}		
+	    }
 	}
