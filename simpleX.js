@@ -6,22 +6,26 @@
       }   var ctx = document.getElementById('canvas').getContext('2d');
 
 	  //variabili dei tasti - prima o poi faro' un'opzione nel menu per poterli cambiare ingame
-      var keys = [];            //vettore tasti
-      var tastoGiaSchiacciato = false; //mi serve per alcune funzioni tipo selectScreen()
-      var jumpkey = 90;         //salta - default z
-      var destrakey = 39;       //muovi sinistra - default freccia destra
-      var sinistrakey = 37;     //muovi destra - default freccia sinistra
-      var sukey = 38;           //default freccia su
-      var giukey = 40;          //default freccia giu
-      var dashkey = 88;		    //dash - default x
-      var sparokey = 65;		//shoot - default a
-      var startkey = 13;		//start - default INVIO/ENTER
+      var keys = []; //vettore associativo dei tasti (tiene dentro dei bool)
+      var tastoGiaSchiacciato = false;  //mi serve per alcune funzioni tipo selectScreen()
+      var jumpkey = "z";         		//salta - default z
+      var destrakey = "ArrowRight";     //muovi sinistra - default freccia destra
+      var sinistrakey = "ArrowLeft";    //muovi destra - default freccia sinistra
+      var sukey = "ArrowUp";           	//default freccia su
+      var giukey = "ArrowDown";         //default freccia giu
+      var dashkey = "x";		    	//dash - default x
+      var sparokey = "a";				//shoot - default a
+      var startkey = "Enter";			//start - default INVIO/ENTER
+      var lkey = "d";					//power+ - default e
+      var rkey = "c";					//power- - default c
 
+      var ultimoTastoLetto="";
       document.body.addEventListener("keydown", function(e) {//events - leggi tasti schiacciati
-          keys[e.keyCode] = true;
+          keys[e.key] = true;
+          ultimoTastoLetto=e.key;
       });
-          document.body.addEventListener("keyup", function(e) {//events - leggi tasti rilasciati
-          keys[e.keyCode] = false;
+      document.body.addEventListener("keyup", function(e) {//events - leggi tasti rilasciati
+          keys[e.key] = false;
       });
 
       //prototipo del player
@@ -81,7 +85,8 @@
       ];
   //gamestate - se tutto i gamestate sono false lo stato e' "in gioco"
   var stageSelection=true; //stato: selezione del livello
-  var menuDiPausa=false; var objMenuDiPausa=new newMenuDiPausa(); //stato: menu di pausa - inoltre inizializza l'oggetto che lo gestisce
+  var menuDiPausa=false; //stato: menu di pausa
+  var nelMenuOpzioni=false; //stato: menu opzioni
 
 	//caricare il livello
 	var level = []; //create the level array
@@ -497,6 +502,8 @@ i livelli sono disposti cosi in realta':1 8
       stageSelect();
     }else if (menuDiPausa){
       objMenuDiPausa.drawMenuDiPausa();
+    }else if(nelMenuOpzioni){
+      objMenuOpzioni.drawMenuOpzioni();	
     }else{
       disegnaSchermoDiGioco(true); //ATTENZIONE: se le viene passato true oltre a disegnare le entita' calcola anche le lore physics
       playerPhysics(player, level); //chiama la funzione physics del player
@@ -1043,7 +1050,7 @@ i livelli sono disposti cosi in realta':1 8
               	}
               }              
              if(this.canInput){//cosa succede quando vengono schiacciati i tasti (solo se this e' in lettura di input - this.canInput)
-              if((keys[startkey] || keys[sparokey]) && !tastoGiaSchiacciato) {//attiva la voce selezionata
+              if((keys[startkey] || keys[dashkey]) && !tastoGiaSchiacciato) {//attiva la voce selezionata
               	if (this.settore==0){ // se e' nella sezione poteri, attiva il potere selezionato e chiude il menu(per il momento chiude solo il menu)
 					this.isClosing=true;
                 	this.isOpen=false;
@@ -1060,6 +1067,10 @@ i livelli sono disposti cosi in realta':1 8
                 				this.isOpen=false;              				
                 				break;
                 			case 5://opzioni - non l'ho ancora implementato
+            					objMenuOpzioni=new newMenuOpzioni(this.width, this.height, true);
+            					tastoGiaSchiacciato=true;
+            					menuDiPausa=false;
+            					nelMenuOpzioni=true;                				
                 				break;
                 			case 6://torna alla selezione del livello
 								this.tornaStageSelection=true; lvlNumber=1;
@@ -1180,3 +1191,158 @@ i livelli sono disposti cosi in realta':1 8
           }
         }     
       }       
+
+	function newMenuOpzioni(widthPassata, heightPassata, apertoDalMenuDiPausa){
+	    this.isOpen=false;
+        this.isClosing=false;
+        this.width=widthPassata;
+        this.height=heightPassata;
+        this.widthMax=canvasWidth-150;
+        this.heightMax=canvasHeight-150;
+        this.indice=0;
+        this.contatoreAnimazione=0;
+        this.staCambiandoTasto=false;
+        this.drawMenuOpzioni = function (){
+          if (!this.isOpen && !this.isClosing){//animazione di apertura del menu
+            if (this.width < this.widthMax){this.width+=10;}
+            if (this.height < this.heightMax){this.height+=15;}
+            if (this.height > this.heightMax-1 && this.width > this.widthMax-1){//quando il menu e' tutto aperto:
+            	this.isOpen=true;
+            }
+          }
+          ctx.clearRect((canvasWidth/2)-this.width/2-15,(canvasHeight/2)-this.height/2-15, this.width+30, this.height+30);	//pulisci la parte dove viene mostrato il menu
+		  ctx.fillStyle = "#d2d2d2"; ctx.fillRect((canvasWidth/2)-this.width/2-15,(canvasHeight/2)-this.height/2-15, this.width+30, this.height+30); //disegna il bordo grigio 
+          ctx.fillStyle = "#52b58b"; ctx.fillRect((canvasWidth/2)-this.width/2,(canvasHeight/2)-this.height/2, this.width, this.height); //disegna lo sfondo verde
+
+          if(this.isOpen){ //quando il menu e' tutto aperto
+          	ctx.font = "small-caps bold 23px Lucida Console"; ctx.textAlign = "center"; disegnaTestoConBordino("OPTIONS",canvasWidth/2, 110,"#d2d2d2","#000000"); //scrive la scritta OPTIONS al centro in alto
+          	ctx.font = "small-caps bold 20px Lucida Console"; //tipo di font per le scritte
+            for(i=0;i<10;i++){//disegno tutte le scritte
+              	var xdisegnata=75;
+              	var ydisegnata=(128+(this.heightMax+75-17-128)/10*(i));
+				switch (i){//scrive le varie impostazioni dei tasti
+					case 0:
+						ctx.textAlign = "right"; disegnaTestoConBordino("move up :   ", canvasWidth/2, ydisegnata+7+((this.heightMax+75-17-128)/10)/2,"#d2d2d2","#000000");
+						ctx.textAlign = "left"; disegnaTestoConBordino("   "+tasto(sukey.toLowerCase()), canvasWidth/2, ydisegnata+7+((this.heightMax+75-17-128)/10)/2,"#d2d2d2","#000000");
+						break;
+					case 1:
+						ctx.textAlign = "right"; disegnaTestoConBordino("move down :   ", canvasWidth/2, ydisegnata+7+((this.heightMax+75-17-128)/10)/2,"#d2d2d2","#000000");
+						ctx.textAlign = "left"; disegnaTestoConBordino("   "+tasto(giukey.toLowerCase()), canvasWidth/2, ydisegnata+7+((this.heightMax+75-17-128)/10)/2,"#d2d2d2","#000000");
+						break;
+					case 2:
+						ctx.textAlign = "right"; disegnaTestoConBordino("move left :   ", canvasWidth/2, ydisegnata+7+((this.heightMax+75-17-128)/10)/2,"#d2d2d2","#000000");
+						ctx.textAlign = "left"; disegnaTestoConBordino("   "+tasto(sinistrakey.toLowerCase()), canvasWidth/2, ydisegnata+7+((this.heightMax+75-17-128)/10)/2,"#d2d2d2","#000000");
+						break;	
+					case 3:
+						ctx.textAlign = "right"; disegnaTestoConBordino("move right :   ", canvasWidth/2, ydisegnata+7+((this.heightMax+75-17-128)/10)/2,"#d2d2d2","#000000");
+						ctx.textAlign = "left"; disegnaTestoConBordino("   "+tasto(destrakey.toLowerCase()), canvasWidth/2, ydisegnata+7+((this.heightMax+75-17-128)/10)/2,"#d2d2d2","#000000");
+						break;
+					case 4:
+						ctx.textAlign = "right"; disegnaTestoConBordino("confirm & dash :   ", canvasWidth/2, ydisegnata+7+((this.heightMax+75-17-128)/10)/2,"#d2d2d2","#000000");
+						ctx.textAlign = "left"; disegnaTestoConBordino("   "+tasto(dashkey.toLowerCase()), canvasWidth/2, ydisegnata+7+((this.heightMax+75-17-128)/10)/2,"#d2d2d2","#000000");
+						break;
+					case 5:
+						ctx.textAlign = "right"; disegnaTestoConBordino("cancel & jump :   ", canvasWidth/2, ydisegnata+7+((this.heightMax+75-17-128)/10)/2,"#d2d2d2","#000000");
+						ctx.textAlign = "left"; disegnaTestoConBordino("   "+tasto(jumpkey.toLowerCase()), canvasWidth/2, ydisegnata+7+((this.heightMax+75-17-128)/10)/2,"#d2d2d2","#000000");
+						break;
+					case 6:
+						ctx.textAlign = "right"; disegnaTestoConBordino("shoot :   ", canvasWidth/2, ydisegnata+7+((this.heightMax+75-17-128)/10)/2,"#d2d2d2","#000000");
+						ctx.textAlign = "left"; disegnaTestoConBordino("   "+tasto(sparokey.toLowerCase()), canvasWidth/2, ydisegnata+7+((this.heightMax+75-17-128)/10)/2,"#d2d2d2","#000000");
+						break;						
+					case 7:
+						ctx.textAlign = "right"; disegnaTestoConBordino("previous power :   ", canvasWidth/2, ydisegnata+7+((this.heightMax+75-17-128)/10)/2,"#d2d2d2","#000000");
+						ctx.textAlign = "left"; disegnaTestoConBordino("   "+tasto(lkey.toLowerCase()), canvasWidth/2, ydisegnata+7+((this.heightMax+75-17-128)/10)/2,"#d2d2d2","#000000");
+						break;																																									
+					case 8:
+						ctx.textAlign = "right"; disegnaTestoConBordino("next power :   ", canvasWidth/2, ydisegnata+7+((this.heightMax+75-17-128)/10)/2,"#d2d2d2","#000000");
+						ctx.textAlign = "left"; disegnaTestoConBordino("   "+tasto(rkey.toLowerCase()), canvasWidth/2, ydisegnata+7+((this.heightMax+75-17-128)/10)/2,"#d2d2d2","#000000");
+						break;						
+					case 9:
+						ctx.textAlign = "right"; disegnaTestoConBordino("open menu & start :   ", canvasWidth/2, ydisegnata+7+((this.heightMax+75-17-128)/10)/2,"#d2d2d2","#000000");
+						ctx.textAlign = "left"; disegnaTestoConBordino("   "+tasto(startkey.toLowerCase()), canvasWidth/2, ydisegnata+7+((this.heightMax+75-17-128)/10)/2,"#d2d2d2","#000000");
+						break;
+
+					function tasto(key){
+						if (key==" "){return "space bar"}
+						return key
+					}											
+				}
+			}
+			
+			{//disegno il quadrato intorno all'opzione selezionata - uso le {} per ridurre lo scope di xdisegnata e ydisegnata
+            	ctx.fillStyle = "#ffc000";
+            	var xdisegnata = 75;
+            	var ydisegnata = (128+(this.heightMax+75-17-128)/10*(this.indice));
+            	ctx.fillRect(xdisegnata, ydisegnata-2, this.width, 9);
+            	ctx.fillRect(xdisegnata, ydisegnata+((this.heightMax+75-17-128)/10)-5, this.width, 9);
+            	ctx.fillRect(xdisegnata, ydisegnata, 9, ((this.heightMax+75-17-128)/10)-5);
+            	ctx.fillRect(xdisegnata+this.width-9, ydisegnata, 9, ((this.heightMax+75-17-128)/10)-5);			
+			}
+			
+			if(this.staCambiandoTasto){//da qui in giu determino cosa succede in base a che tasto viene schiacciato. le due grosse distinzioni sono se staCambiandoTasto oppure se siamo nel menu e basta 
+				if(this.contatoreAnimazione < 40){//fa l'animazione del testo che appare e disappare
+					ctx.fillStyle = "#52b58b"; ctx.fillRect(canvasWidth/2,(128+(this.heightMax+75-17-128)/10*(this.indice))+7, this.width/2-9, ((this.heightMax+75-17-128)/10)-12);
+					this.contatoreAnimazione++;
+				}else{
+					this.contatoreAnimazione++;
+					if(this.contatoreAnimazione>79){
+						this.contatoreAnimazione=0;
+					}
+				}
+				if(ultimoTastoLetto!=""){//se viene schiacciato un tasto qualsiasi
+					switch(this.indice){
+						case 0: sukey=ultimoTastoLetto; break;
+						case 1: giukey=ultimoTastoLetto; break;
+						case 2: sinistrakey=ultimoTastoLetto; break;
+						case 3: destrakey=ultimoTastoLetto; break;
+						case 4: dashkey=ultimoTastoLetto; break;
+						case 5: jumpkey=ultimoTastoLetto; break;
+						case 6: sparokey=ultimoTastoLetto; break;
+						case 7: lkey=ultimoTastoLetto; break;
+						case 8: rkey=ultimoTastoLetto; break;
+						case 9: startkey=ultimoTastoLetto; break;
+					}
+					this.staCambiandoTasto=false;	
+				}
+			}else{
+              if(keys[sukey] && !tastoGiaSchiacciato) {
+				if(this.indice > 0){ this.indice--;
+				}else{ this.indice=9;}
+              }
+              if(keys[giukey] && !tastoGiaSchiacciato) {
+				if(this.indice < 9){ this.indice++;
+				}else{ this.indice=0;}
+              }
+              if((keys[dashkey] || keys[startkey]) && !tastoGiaSchiacciato) {
+              	ultimoTastoLetto="";
+                this.staCambiandoTasto=true;
+              }                            			
+              if(keys[jumpkey] && !tastoGiaSchiacciato) {//chiude il menu
+                this.isOpen=false;
+                this.isClosing=true;
+              }
+              if(keys[startkey] || keys[sukey] || keys[giukey] || keys[sinistrakey] || keys[destrakey] || keys[dashkey] || keys[jumpkey]){
+                tastoGiaSchiacciato=true;
+              }else{
+                tastoGiaSchiacciato=false;
+              }				
+			}          	
+          }//fine di if(is.Open)
+          
+          if(this.isClosing){//animazione di chiusura del menu + regolazione delle subtanks
+              if (this.width > widthPassata){this.width-=20;}
+              if (this.height > heightPassata){this.height-=20;}
+              ctx.clearRect((canvasWidth/2)-this.width/2-15,(canvasHeight/2)-this.height/2-15, this.width+30, this.height+30);	//pulisci la parte dove viene mostrato il menu
+              ctx.fillStyle = "#d2d2d2"; ctx.fillRect((canvasWidth/2)-this.width/2-15,(canvasHeight/2)-this.height/2-15, this.width+30, this.height+30); //disegna il bordo grigio 
+              ctx.fillStyle = "#52b58b"; ctx.fillRect((canvasWidth/2)-this.width/2,(canvasHeight/2)-this.height/2, this.width, this.height); //disegna lo sfondo verde
+              if (this.height-1 < heightPassata && this.width-1 < widthPassata){//quando il menu e' tutto chiuso:
+              	nelMenuOpzioni=false;
+              	if(apertoDalMenuDiPausa){
+              		menuDiPausa=true;
+              	}else{//se viene aperto dal menu principale - devo ancora crearlo pero' lol
+              		
+              	}
+              }
+          }//fine di if(is.Closing)
+     }
+	}
