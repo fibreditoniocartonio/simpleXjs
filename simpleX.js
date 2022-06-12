@@ -5,6 +5,8 @@
           document.body.innerHTML += "".concat("<div class='canvasDiv'><canvas id='canvas' width=" , canvasWidth , " height=" , canvasHeight , "></canvas></div>");
       }   var ctx = document.getElementById('canvas').getContext('2d');
 
+    var stringaSalvataggio="";
+
 	  //variabili dei tasti - prima o poi faro' un'opzione nel menu per poterli cambiare ingame
       var keys = []; //vettore associativo dei tasti (tiene dentro dei bool)
       var tastoGiaSchiacciato = false;  //mi serve per alcune funzioni tipo selectScreen()
@@ -72,10 +74,10 @@
 //      heartAcquired = [false, false, false, false, false, false, false, false]; //vettore che tiene quanti cuori sono stati trovati
       heartAcquired = [true, true, true, true, true, true, true, true]; //quando sono tutti true la vitaMax sale al massimo possibile (32)
 /*      subtank = [//vettore di subtanks - e' scollegata dal player almeno non si resetta al cambio del livello
-		{lifeMax: 20, life:20, acquired:false},
-		{lifeMax: 20, life:20, acquired:false},
-		{lifeMax: 20, life:20, acquired:false},
-		{lifeMax: 20, life:20, acquired:false},
+		{lifeMax: 20, life:0, acquired:false},
+		{lifeMax: 20, life:0, acquired:false},
+		{lifeMax: 20, life:0, acquired:false},
+		{lifeMax: 20, life:0, acquired:false},
       ];
 */		subtank = [//vettore di subtanks - e' scollegata dal player almeno non si resetta al cambio del livello
 		{lifeMax: 20, life:18, acquired:true},
@@ -87,6 +89,7 @@
   var stageSelection=false; //stato: selezione del livello
   var menuDiPausa=false; //stato: menu di pausa
   var nelMenuOpzioni=false; //stato: menu opzioni
+  var nelleOpzioniStageSelect=false; //stato: opzioni nelle stage selection
   var nelMenuPrincipale=true; //stato: nel menu principale
   var objMenuPrincipale= new newMenuPrincipale(); //inizializza il menu principale
   
@@ -508,6 +511,8 @@ i livelli sono disposti cosi in realta':1 8
       objMenuOpzioni.drawMenuOpzioni();
     }else if(nelMenuPrincipale){
       objMenuPrincipale.drawMenuPrincipale(true);
+    }else if (nelleOpzioniStageSelect){
+      objMenuOpzioniStageSelect.drawMenu(); 
     }else{
       disegnaSchermoDiGioco(true); //ATTENZIONE: se le viene passato true oltre a disegnare le entita' calcola anche le lore physics
       playerPhysics(player, level); //chiama la funzione physics del player
@@ -881,10 +886,16 @@ i livelli sono disposti cosi in realta':1 8
           var img = document.getElementById("stageselect");
           ctx.drawImage(img, 0, 0, canvasWidth,canvasHeight);
             //leggo che tasto viene schiacciato. Con invio o dash si inizia a giocare, con le freccie si cicla tra i livelli
-            if ((keys[startkey] || keys[dashkey]) && !tastoGiaSchiacciato){
+            if ((keys[dashkey]) && !tastoGiaSchiacciato){//avvia il livello selezionato
               stageSelection=false;
               nuovoLivello();
             }
+            if ((keys[startkey]) && !tastoGiaSchiacciato){//apre le opzioni di scelta livello
+              stageSelection=false;
+              objMenuOpzioniStageSelect=new newMenuOpzioniStageSelect();
+              tastoGiaSchiacciato=true;
+              nelleOpzioniStageSelect=true;
+            }                                       
             if (keys[sukey] && !tastoGiaSchiacciato){
              if(lvlNumber==4){lvlNumber=8; }else if(lvlNumber==5){lvlNumber=3;}else if(lvlNumber==6){lvlNumber=1;}else if(lvlNumber==7){lvlNumber=4;}else if(lvlNumber==3){lvlNumber=1;}else if(lvlNumber==2){lvlNumber=8;}             
             }
@@ -902,7 +913,11 @@ i livelli sono disposti cosi in realta':1 8
             }else{ tastoGiaSchiacciato=false;}
             
             //ora disegno un quadrato intorno al livello selezionato
-            ctx.fillStyle = "#ffc000";
+            if (levelDefeated[lvlNumber-1]){
+                 ctx.fillStyle = "#b7a4a6";    //se il livello selezionato e' stato battuto fa il quadrato rosso
+            }else{
+                ctx.fillStyle = "#ffc000";    //se il livello selezionato non e' stato battuto fa il quadrato giallo
+            }            
             switch (lvlNumber){
               case 1:ctx.fillRect(137, 10, 135, 10);ctx.fillRect(137, 10, 10, 135);ctx.fillRect(137, 135, 135, 10);ctx.fillRect(263, 10, 10, 135);break;                
               case 8:ctx.fillRect(265, 10, 135, 10);ctx.fillRect(265, 10, 10, 135);ctx.fillRect(265, 135, 135, 10);ctx.fillRect(391, 10, 10, 135);break;                
@@ -1195,6 +1210,174 @@ i livelli sono disposti cosi in realta':1 8
           }
         }     
       }       
+	
+  function newMenuOpzioniStageSelect(){
+	      this.isOpen=false;
+        this.isClosing=false;
+        this.apriLivello=false;
+        this.confermaUscita=false;
+        this.width=0;
+        this.height=0;
+        this.widthMax=canvasWidth-440;
+        this.heightMax=canvasHeight-400;
+        this.indice=0;
+        this.indiceUscita=0;
+        this.numeroDiVoci=3;
+        this.staCambiandoTasto=false;
+        this.drawMenu = function (){
+          if (!this.isOpen && !this.isClosing){//animazione di apertura del menu
+            if (this.width < this.widthMax){this.width+=10;}
+            if (this.height < this.heightMax){this.height+=15;}
+            if (this.height > this.heightMax-1 && this.width > this.widthMax-1){//quando il menu e' tutto aperto:
+            	this.isOpen=true;
+            }
+          }
+          ctx.clearRect((canvasWidth/2)-this.width/2-15,(canvasHeight/2)-this.height/2-15, this.width+30, this.height+30);	//pulisci la parte dove viene mostrato il menu
+		      ctx.fillStyle = "#d2d2d2"; ctx.fillRect((canvasWidth/2)-this.width/2-15,(canvasHeight/2)-this.height/2-15, this.width+30, this.height+30); //disegna il bordo grigio 
+          ctx.fillStyle = "#52b58b"; ctx.fillRect((canvasWidth/2)-this.width/2,(canvasHeight/2)-this.height/2, this.width, this.height); //disegna lo sfondo verde
+
+          if(this.isOpen){ //quando il menu e' tutto aperto
+            if (!this.confermaUscita){//se non e' attivo il conferma uscita - caso del menu normale
+                ctx.font = "small-caps bold 20px Lucida Console"; //tipo di font per le scritte
+                for(var i=0;i<this.numeroDiVoci;i++){//disegno tutte le scritte
+                  var ydisegnata=6+((canvasHeight/2)-(this.height/2))+(((this.height)/this.numeroDiVoci)*i)+(this.height/(this.numeroDiVoci*2));
+                  ctx.textAlign = "center";
+          				switch (i){//scrive le scritte
+          					case 0:
+          						disegnaTestoConBordino("open the level selected", canvasWidth/2, ydisegnata,"#d2d2d2","#000000");
+          						break;
+          					case 1:
+          						disegnaTestoConBordino("save game", canvasWidth/2, ydisegnata,"#d2d2d2","#000000");
+          						break;
+          					case 2:
+          						disegnaTestoConBordino("back to the main menu", canvasWidth/2, ydisegnata,"#d2d2d2","#000000");
+                      break;									
+          				}
+                  ctx.textAlign = "left"; //lo reimposto left se no si bugga tutto
+          			}		
+          			{//disegno il quadrato intorno all'opzione selezionata - uso le {} per ridurre lo scope di xdisegnata e ydisegnata
+                        ctx.fillStyle = "#ffc000";
+                      	var xdisegnata = (canvasWidth/2)-(this.width/2);
+                      	var ydisegnata = (((canvasHeight/2)-(this.height/2))+(((this.height)/this.numeroDiVoci)*this.indice));
+                      	ctx.fillRect(xdisegnata, ydisegnata, this.width, 9);
+                      	ctx.fillRect(xdisegnata, ydisegnata-9+(this.height)/this.numeroDiVoci, this.width, 9);
+                      	ctx.fillRect(xdisegnata, ydisegnata, 9, (this.height)/this.numeroDiVoci-8);
+                      	ctx.fillRect(xdisegnata+this.width-9, ydisegnata, 9, (this.height)/this.numeroDiVoci-8);			
+          			}
+                //ora gestisco gli input
+                if(keys[sukey] && !tastoGiaSchiacciato) {
+        				  if(this.indice > 0){ this.indice--;
+        				  }else{ this.indice=this.numeroDiVoci-1;}
+                }
+                if(keys[giukey] && !tastoGiaSchiacciato) {
+        				    if(this.indice < this.numeroDiVoci-1){ this.indice++;
+        				    }else{ this.indice=0;}
+                }
+                if((keys[dashkey] || keys[startkey]) && !tastoGiaSchiacciato) {
+                  switch (this.indice){
+                    case 0: //apri livello selezionato
+                      this.apriLivello=true;
+                      this.isClosing=true;
+                      this.isOpen=false;
+                      break;
+                    case 1: //salva la partita
+                      SalvaPartita();
+                      break;
+                    case 2: //chiedi conferma uscita
+                      this.confermaUscita=true;
+                      break;
+                  }
+                }                            			
+                if(keys[jumpkey] && !tastoGiaSchiacciato) {//chiude il menu
+                  this.isOpen=false;
+                  this.isClosing=true;
+                }
+                if(keys[startkey] || keys[sukey] || keys[giukey] || keys[sinistrakey] || keys[destrakey] || keys[dashkey] || keys[jumpkey]){
+                  tastoGiaSchiacciato=true;
+                }else{
+                  tastoGiaSchiacciato=false;
+                }
+            }else{ //se e' attivo il conferma uscita
+                ctx.textAlign = "center"; ctx.font = "small-caps bold 20px Lucida Console"; //tipo di font per le scritte
+                disegnaTestoConBordino("do you want to go back", (canvasWidth/2), ((canvasHeight/2)+15-this.heightMax/2),"#d2d2d2","#000000");
+                disegnaTestoConBordino("to the main menu?", (canvasWidth/2), ((canvasHeight/2)+35-this.heightMax/2),"#d2d2d2","#000000");
+                disegnaTestoConBordino("every progress not", (canvasWidth/2), ((canvasHeight/2)+55-this.heightMax/2),"#d2d2d2","#000000");
+                disegnaTestoConBordino("saved will be lost", (canvasWidth/2), ((canvasHeight/2)+75-this.heightMax/2),"#d2d2d2","#000000");
+                ctx.font = "small-caps bold 28px Lucida Console"; //tipo di font per le scritte
+                for(var j=0;j<2;j++){//disegno tutte le scritte
+                  ctx.textAlign = "center";
+                  var ydisegnata=57+canvasHeight/2;
+          				switch (j){//scrive le scritte
+          					case 0:
+                      var xdisegnata=(canvasWidth/2)-((this.width/4));
+          						disegnaTestoConBordino("no", xdisegnata, ydisegnata,"#d2d2d2","#000000");
+          						break;
+          					case 1:
+                      var xdisegnata=(canvasWidth/2)+((this.width/4));
+          						disegnaTestoConBordino("yes", xdisegnata, ydisegnata,"#d2d2d2","#000000");
+          						break;								
+          				}
+                  ctx.textAlign = "left"; //lo reimposto left se no si bugga tutto
+          			}		
+          			{//disegno il quadrato intorno all'opzione selezionata - uso le {} per ridurre lo scope di xdisegnata e ydisegnata
+                        ctx.fillStyle = "#ffc000";
+                        var ydisegnata = 25+canvasHeight/2;
+                        switch (this.indiceUscita){
+                          case 0: xdisegnata = (canvasWidth/2)-(this.width/2); break;
+                          case 1: xdisegnata = (canvasWidth/2); break;
+                        }
+                      	ctx.fillRect(xdisegnata, ydisegnata, this.width/2, 9);
+                      	ctx.fillRect(xdisegnata, ydisegnata-9+(this.height)/this.numeroDiVoci, this.width/2, 9);
+                      	ctx.fillRect(xdisegnata, ydisegnata, 9, (this.height)/this.numeroDiVoci-8);
+                      	ctx.fillRect(xdisegnata+(this.width/2)-9, ydisegnata, 9, (this.height)/this.numeroDiVoci-8);			
+          			}
+                //ora gestisco gli input
+                if(keys[destrakey] && !tastoGiaSchiacciato) {
+                    this.indiceUscita=1;
+                }
+                if(keys[sinistrakey] && !tastoGiaSchiacciato) {
+                    this.indiceUscita=0;
+                }
+                if((keys[dashkey] || keys[startkey]) && !tastoGiaSchiacciato) {
+                  switch (this.indiceUscita){
+                    case 0: //no
+                      this.confermaUscita=false;
+                      break;
+                    case 1: //si
+                      nelleOpzioniStageSelect=false;
+                      objMenuPrincipale= new newMenuPrincipale(); 
+                      nelMenuPrincipale=true;                       
+                      break;
+                  }
+                }                            			
+                if(keys[jumpkey] && !tastoGiaSchiacciato) {//chiude il menu
+                  this.confermaUscita=false;
+                }
+                if(keys[startkey] || keys[sukey] || keys[giukey] || keys[sinistrakey] || keys[destrakey] || keys[dashkey] || keys[jumpkey]){
+                  tastoGiaSchiacciato=true;
+                }else{
+                  tastoGiaSchiacciato=false;
+                }                
+            }				          	
+        }//fine di if(is.Open)
+          
+        if(this.isClosing){//animazione di chiusura del menu
+            stageSelect(); //disegna stageSelect() - serve per pulire lo schermo disegnando quello che sara' lo sfondo sotto il menu
+            if (this.width > 0){this.width-=20;}
+            if (this.height > 0){this.height-=20;}           
+            ctx.fillStyle = "#d2d2d2"; ctx.fillRect((canvasWidth/2)-this.width/2-15,(canvasHeight/2)-this.height/2-15, this.width+30, this.height+30); //disegna il bordo grigio 
+            ctx.fillStyle = "#52b58b"; ctx.fillRect((canvasWidth/2)-this.width/2,(canvasHeight/2)-this.height/2, this.width, this.height); //disegna lo sfondo verde
+            if (this.height-1 < 0 && this.width-1 < 0){//quando il menu e' tutto chiuso:
+            	nelleOpzioniStageSelect=false;
+            	if(this.apriLivello){
+            	  nuovoLivello();
+            	}else{
+                stageSelection=true;
+              }
+            }
+        }//fine di if(is.Closing)
+     }
+	}
 
 	function newMenuOpzioni(widthPassata, heightPassata, apertoDalMenuDiPausa){
 	    this.isOpen=false;
@@ -1274,7 +1457,7 @@ i livelli sono disposti cosi in realta':1 8
 			}
 			
 			{//disegno il quadrato intorno all'opzione selezionata - uso le {} per ridurre lo scope di xdisegnata e ydisegnata
-            	ctx.fillStyle = "#ffc000";
+              ctx.fillStyle = "#ffc000";
             	var xdisegnata = 75;
             	var ydisegnata = (128+(this.heightMax+75-17-128)/10*(this.indice));
             	ctx.fillRect(xdisegnata, ydisegnata-2, this.width, 9);
@@ -1352,8 +1535,6 @@ i livelli sono disposti cosi in realta':1 8
      }
 	}
 
-
-
 	function newMenuPrincipale(){
 		this.width=canvasWidth;
 		this.height=canvasHeight;
@@ -1395,7 +1576,8 @@ i livelli sono disposti cosi in realta':1 8
 						case 0: this.isClosing=true;
 							this.isGoingToStageSelection=true;
 							break;
-						case 1: alert("Mi spiace, non l'ho ancora implementato");
+						case 1:
+              CaricaPartita(); 
 							break;
 						case 2: 
             				objMenuOpzioni=new newMenuOpzioni(0, 0, false);
@@ -1430,3 +1612,26 @@ i livelli sono disposti cosi in realta':1 8
           	}		
 	    }
 	}
+
+  function SalvaPartita(){
+    stringaSalvataggio=jumpkey+"|"+destrakey+"|"+sinistrakey+"|"+sukey+"|"+giukey+"|"+dashkey+"|"+sparokey+"|"+startkey+"|"+lkey+"|"+rkey+"|"+levelDefeated+"|"+heartAcquired;
+    for (i=0; i<4; i++){
+        stringaSalvataggio+="|"+subtank[i].life+"|"+subtank[i].acquired;
+    }
+    {//creo il file simpleXjs.savegame da scaricare
+        var element = document.createElement('a');
+        element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(stringaSalvataggio));
+        element.setAttribute('download', "simpleXjs.savegame");
+        element.style.display = 'none';
+        document.body.appendChild(element);
+        element.click();
+        document.body.removeChild(element);
+        alert("Downloading the save file...");
+        return;
+    }
+  }
+  
+  function CaricaPartita(){
+      alert("Mi spiace, non l'ho ancora implementato");
+  }
+  
