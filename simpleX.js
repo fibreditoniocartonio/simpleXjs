@@ -2,8 +2,10 @@
       var canvasWidth = 720;
       var canvasHeight = 540;
       if(document.getElementsByTagName('canvas').length == 0) {     //crea il canvas con le variabili che ho creato
-          document.body.innerHTML += "".concat("<div class='canvasDiv'><canvas id='canvas' width=" , canvasWidth , " height=" , canvasHeight , "></canvas></div>");
+          document.body.innerHTML += "".concat("<div class='caricaPartitaDiv' id='caricaPartitaDiv'><input type='file' id='fileCaricaPartita' disabled></div><div class='canvasDiv'><canvas id='canvas' width=" , canvasWidth , " height=" , canvasHeight , "></canvas></div>");
       }   var ctx = document.getElementById('canvas').getContext('2d');
+
+    var stringaSalvataggio="";
 
 	  //variabili dei tasti - prima o poi faro' un'opzione nel menu per poterli cambiare ingame
       var keys = []; //vettore associativo dei tasti (tiene dentro dei bool)
@@ -57,37 +59,32 @@
         this.canMove = true;
         this.carica = 0;
         this.power = [ //vettore dei poteri
-        {usageMax: 32, usage:20, color:'#8e8363', nome:'Homing Torpedo'},
-        {usageMax: 32, usage:28, color:'#00af3b', nome:'Chameleon Sting'},
+        {usageMax: 32, usage:32, color:'#8e8363', nome:'Homing Torpedo'},
+        {usageMax: 32, usage:32, color:'#00af3b', nome:'Chameleon Sting'},
         {usageMax: 32, usage:32, color:'#ff6666', nome:'Rolling Shield'},
         {usageMax: 32, usage:32, color:'#ff5a00', nome:'Fire Wave'},
         {usageMax: 32, usage:32, color:'#e40097', nome:'Storm Tornado'},
-        {usageMax: 32, usage:31, color:'#e5ac00', nome:'Electric Spark'},
-        {usageMax: 32, usage:10, color:'#65766b', nome:'Boomerang Cutter'},
-        {usageMax: 32, usage:12, color:'#05e9ff', nome:'Shotgun Ice'},
+        {usageMax: 32, usage:32, color:'#e5ac00', nome:'Electric Spark'},
+        {usageMax: 32, usage:32, color:'#65766b', nome:'Boomerang Cutter'},
+        {usageMax: 32, usage:32, color:'#05e9ff', nome:'Shotgun Ice'},
         ];
       }
-//      levelDefeated = [false, false, false, false, false, false, false, false]; //vettore che tiene quanti livelli sono stati superati
-      levelDefeated = [true, true, true, true, true, true, true, true]; //vettore che tiene quanti livelli sono stati superati
-//      heartAcquired = [false, false, false, false, false, false, false, false]; //vettore che tiene quanti cuori sono stati trovati
-      heartAcquired = [true, true, true, true, true, true, true, true]; //quando sono tutti true la vitaMax sale al massimo possibile (32)
-/*      subtank = [//vettore di subtanks - e' scollegata dal player almeno non si resetta al cambio del livello
-		{lifeMax: 20, life:20, acquired:false},
-		{lifeMax: 20, life:20, acquired:false},
-		{lifeMax: 20, life:20, acquired:false},
-		{lifeMax: 20, life:20, acquired:false},
+      levelDefeated = [false, false, false, false, false, false, false, false]; //vettore che tiene quanti livelli sono stati superati
+      heartAcquired = [false, false, false, false, false, false, false, false]; //vettore che tiene quanti cuori sono stati trovati
+      subtank = [//vettore di subtanks - e' scollegata dal player almeno non si resetta al cambio del livello
+    		{lifeMax: 20, life:parseInt(0,10), acquired:false},
+    		{lifeMax: 20, life:parseInt(0,10), acquired:false},
+    		{lifeMax: 20, life:parseInt(0,10), acquired:false},
+    		{lifeMax: 20, life:parseInt(0,10), acquired:false},
       ];
-*/		subtank = [//vettore di subtanks - e' scollegata dal player almeno non si resetta al cambio del livello
-		{lifeMax: 20, life:18, acquired:true},
-		{lifeMax: 20, life:15, acquired:true},
-		{lifeMax: 20, life:9, acquired:true},
-		{lifeMax: 20, life:20, acquired:true},
-      ];
+      
   //gamestate - se tutto i gamestate sono false lo stato e' "in gioco"
   var stageSelection=false; //stato: selezione del livello
   var menuDiPausa=false; //stato: menu di pausa
   var nelMenuOpzioni=false; //stato: menu opzioni
+  var nelleOpzioniStageSelect=false; //stato: opzioni nelle stage selection
   var nelMenuPrincipale=true; //stato: nel menu principale
+  var nelMenuCaricaPartita=false; //stato: nel menu carica partita
   var objMenuPrincipale= new newMenuPrincipale(); //inizializza il menu principale
   
 	//caricare il livello
@@ -508,6 +505,10 @@ i livelli sono disposti cosi in realta':1 8
       objMenuOpzioni.drawMenuOpzioni();
     }else if(nelMenuPrincipale){
       objMenuPrincipale.drawMenuPrincipale(true);
+    }else if (nelleOpzioniStageSelect){
+      objMenuOpzioniStageSelect.drawMenu(); 
+    }else if (nelMenuCaricaPartita){
+      objMenuCaricaPartita.drawMenu();
     }else{
       disegnaSchermoDiGioco(true); //ATTENZIONE: se le viene passato true oltre a disegnare le entita' calcola anche le lore physics
       playerPhysics(player, level); //chiama la funzione physics del player
@@ -881,10 +882,16 @@ i livelli sono disposti cosi in realta':1 8
           var img = document.getElementById("stageselect");
           ctx.drawImage(img, 0, 0, canvasWidth,canvasHeight);
             //leggo che tasto viene schiacciato. Con invio o dash si inizia a giocare, con le freccie si cicla tra i livelli
-            if ((keys[startkey] || keys[dashkey]) && !tastoGiaSchiacciato){
+            if ((keys[dashkey]) && !tastoGiaSchiacciato){//avvia il livello selezionato
               stageSelection=false;
               nuovoLivello();
             }
+            if ((keys[startkey]) && !tastoGiaSchiacciato){//apre le opzioni di scelta livello
+              stageSelection=false;
+              objMenuOpzioniStageSelect=new newMenuOpzioniStageSelect();
+              tastoGiaSchiacciato=true;
+              nelleOpzioniStageSelect=true;
+            }                                       
             if (keys[sukey] && !tastoGiaSchiacciato){
              if(lvlNumber==4){lvlNumber=8; }else if(lvlNumber==5){lvlNumber=3;}else if(lvlNumber==6){lvlNumber=1;}else if(lvlNumber==7){lvlNumber=4;}else if(lvlNumber==3){lvlNumber=1;}else if(lvlNumber==2){lvlNumber=8;}             
             }
@@ -902,7 +909,11 @@ i livelli sono disposti cosi in realta':1 8
             }else{ tastoGiaSchiacciato=false;}
             
             //ora disegno un quadrato intorno al livello selezionato
-            ctx.fillStyle = "#ffc000";
+            if (levelDefeated[lvlNumber-1]){
+                 ctx.fillStyle = "#b7a4a6";    //se il livello selezionato e' stato battuto fa il quadrato rosso
+            }else{
+                ctx.fillStyle = "#ffc000";    //se il livello selezionato non e' stato battuto fa il quadrato giallo
+            }            
             switch (lvlNumber){
               case 1:ctx.fillRect(137, 10, 135, 10);ctx.fillRect(137, 10, 10, 135);ctx.fillRect(137, 135, 135, 10);ctx.fillRect(263, 10, 10, 135);break;                
               case 8:ctx.fillRect(265, 10, 135, 10);ctx.fillRect(265, 10, 10, 135);ctx.fillRect(265, 135, 135, 10);ctx.fillRect(391, 10, 10, 135);break;                
@@ -939,6 +950,7 @@ i livelli sono disposti cosi in realta':1 8
         this.usingSubtank=4; //4 vuol dire che non sto usando la subtank (da 0 a 3 e' l'indice della subtank usata)
         this.lastSubtankAcquired=4;//se rimane uguale a 4 vuol dire che non e' stata acquisita nessuna subtank
         this.drawMenuDiPausa = function (){
+          ctx.textAlign = "left";
           ctx.font = "small-caps bold 20px Lucida Console"; //tipo di font per le scritte
           if (!this.isOpen && !this.isClosing){//animazione di apertura del menu + lettura subtank acquisite
             if (this.width < this.widthMax){this.width+=10;}
@@ -992,20 +1004,20 @@ i livelli sono disposti cosi in realta':1 8
               	ctx.textAlign = "left";
               	var xdisegnata=(canvasWidth/2)+this.width/2-250+15+10;
               	var ydisegnata=((canvasHeight/2)+15+((canvasHeight-this.height+30)/3*(i+1)))-1;
-				switch (i){
-					case 0:
-						disegnaTestoConBordino("resume game", xdisegnata+5,ydisegnata+7-((canvasHeight-this.height+30)/3)/2,"#d2d2d2","#000000");
-						break;
-
-					case 1:
-						disegnaTestoConBordino("options", xdisegnata+5,ydisegnata+7-((canvasHeight-this.height+30)/3)/2,"#d2d2d2","#000000");
-						break;
-
-					case 2:
-						disegnaTestoConBordino("return to the", xdisegnata+5,ydisegnata-2-((canvasHeight-this.height+30)/3)/2,"#d2d2d2","#000000");
-						disegnaTestoConBordino("level selection", xdisegnata+5,ydisegnata+15-((canvasHeight-this.height+30)/3)/2,"#d2d2d2","#000000");
-						break;												
-				}
+  				switch (i){
+  					case 0:
+  						disegnaTestoConBordino("resume game", xdisegnata+5,ydisegnata+7-((canvasHeight-this.height+30)/3)/2,"#d2d2d2","#000000");
+  						break;
+  
+  					case 1:
+  						disegnaTestoConBordino("options", xdisegnata+5,ydisegnata+7-((canvasHeight-this.height+30)/3)/2,"#d2d2d2","#000000");
+  						break;
+  
+  					case 2:
+  						disegnaTestoConBordino("return to the", xdisegnata+5,ydisegnata-2-((canvasHeight-this.height+30)/3)/2,"#d2d2d2","#000000");
+  						disegnaTestoConBordino("level selection", xdisegnata+5,ydisegnata+15-((canvasHeight-this.height+30)/3)/2,"#d2d2d2","#000000");
+  						break;												
+  				}
 			  }
                             
               if(this.settore == 0){//disegna i quadrati intorno alla scritta scelta - parte poteri
@@ -1097,6 +1109,7 @@ i livelli sono disposti cosi in realta':1 8
                     		break;
                   		}else if(i == 9){ this.indice=0; break;}
                 	}
+                  if(this.indice==9){this.indice=0;}
                 }else if (this.settore==1){//se sei nella parte a destra
                 	if (this.indice<this.lastSubtankAcquired){//se sei nella parte delle subtank-1
                 		for(var k=1; k<(4-this.indice); k++){
@@ -1175,26 +1188,197 @@ i livelli sono disposti cosi in realta':1 8
               	menuDiPausa=false;
               	if(this.tornaStageSelection){stageSelection=true;}
               	var sommaSubtank=0;//aggiusto la vita delle subtank (la metto tutta nelle prime subtank disponibili)
-				for (var j=0; j<4; j++){//azzero tutte le subtank e carico tutta la vita per ridistribuirla nel prossimo for
-					if (subtank[j].acquired){
-						sommaSubtank+=subtank[j].life;
-						subtank[j].life=0;
-					}
-				}
-				for (var j=0; j<4; ){//ridistribuisco la vita alle subtank dalla prima all'ultima
-					if (subtank[j].acquired){
-						if (subtank[j].life<subtank[j].lifeMax && sommaSubtank>0){
-							subtank[j].life++;
-							sommaSubtank--;	
-						}else{
-							j++;
-						}
-					}					
-				}
+        				for (var j=0; j<4; j++){//azzero tutte le subtank e carico tutta la vita per ridistribuirla nel prossimo for
+        					if (subtank[j].acquired){
+        						sommaSubtank+=subtank[j].life;
+        						subtank[j].life=0;
+        					}
+        				}
+                if(sommaSubtank>0){//ridistribuisco la vita alle subtank dalla prima all'ultima
+          				for (var j=0; j<4; j++){
+                    if(subtank[j].life<subtank[j].lifeMax && subtank[j].acquired){
+  			              if (sommaSubtank>(subtank[j].lifeMax-subtank[j].life)){
+                        sommaSubtank-=(subtank[j].lifeMax-subtank[j].life);
+                        subtank[j].life=subtank[j].lifeMax;
+                      }else{
+                        subtank[j].life+=sommaSubtank;
+                        sommaSubtank=0;
+                      }
+            				}
+                  }
+                }
              }             
           }
         }     
-      }       
+      }//fine menu di pausa       
+	
+  function newMenuOpzioniStageSelect(){
+	      this.isOpen=false;
+        this.isClosing=false;
+        this.apriLivello=false;
+        this.confermaUscita=false;
+        this.width=0;
+        this.height=0;
+        this.widthMax=canvasWidth-440;
+        this.heightMax=canvasHeight-400;
+        this.indice=0;
+        this.indiceUscita=0;
+        this.numeroDiVoci=3;
+        this.staCambiandoTasto=false;
+        this.drawMenu = function (){
+          if (!this.isOpen && !this.isClosing){//animazione di apertura del menu
+            if (this.width < this.widthMax){this.width+=10;}
+            if (this.height < this.heightMax){this.height+=15;}
+            if (this.height > this.heightMax-1 && this.width > this.widthMax-1){//quando il menu e' tutto aperto:
+            	this.isOpen=true;
+            }
+          }
+          ctx.clearRect((canvasWidth/2)-this.width/2-15,(canvasHeight/2)-this.height/2-15, this.width+30, this.height+30);	//pulisci la parte dove viene mostrato il menu
+		      ctx.fillStyle = "#d2d2d2"; ctx.fillRect((canvasWidth/2)-this.width/2-15,(canvasHeight/2)-this.height/2-15, this.width+30, this.height+30); //disegna il bordo grigio 
+          ctx.fillStyle = "#52b58b"; ctx.fillRect((canvasWidth/2)-this.width/2,(canvasHeight/2)-this.height/2, this.width, this.height); //disegna lo sfondo verde
+
+          if(this.isOpen){ //quando il menu e' tutto aperto
+            if (!this.confermaUscita){//se non e' attivo il conferma uscita - caso del menu normale
+                ctx.font = "small-caps bold 20px Lucida Console"; //tipo di font per le scritte
+                for(var i=0;i<this.numeroDiVoci;i++){//disegno tutte le scritte
+                  var ydisegnata=6+((canvasHeight/2)-(this.height/2))+(((this.height)/this.numeroDiVoci)*i)+(this.height/(this.numeroDiVoci*2));
+                  ctx.textAlign = "center";
+          				switch (i){//scrive le scritte
+          					case 0:
+          						disegnaTestoConBordino("open the level selected", canvasWidth/2, ydisegnata,"#d2d2d2","#000000");
+          						break;
+          					case 1:
+          						disegnaTestoConBordino("save game", canvasWidth/2, ydisegnata,"#d2d2d2","#000000");
+          						break;
+          					case 2:
+          						disegnaTestoConBordino("back to the main menu", canvasWidth/2, ydisegnata,"#d2d2d2","#000000");
+                      break;									
+          				}
+                  ctx.textAlign = "left"; //lo reimposto left se no si bugga tutto
+          			}		
+          			{//disegno il quadrato intorno all'opzione selezionata - uso le {} per ridurre lo scope di xdisegnata e ydisegnata
+                        ctx.fillStyle = "#ffc000";
+                      	var xdisegnata = (canvasWidth/2)-(this.width/2);
+                      	var ydisegnata = (((canvasHeight/2)-(this.height/2))+(((this.height)/this.numeroDiVoci)*this.indice));
+                      	ctx.fillRect(xdisegnata, ydisegnata, this.width, 9);
+                      	ctx.fillRect(xdisegnata, ydisegnata-9+(this.height)/this.numeroDiVoci, this.width, 9);
+                      	ctx.fillRect(xdisegnata, ydisegnata, 9, (this.height)/this.numeroDiVoci-8);
+                      	ctx.fillRect(xdisegnata+this.width-9, ydisegnata, 9, (this.height)/this.numeroDiVoci-8);			
+          			}
+                //ora gestisco gli input
+                if(keys[sukey] && !tastoGiaSchiacciato) {
+        				  if(this.indice > 0){ this.indice--;
+        				  }else{ this.indice=this.numeroDiVoci-1;}
+                }
+                if(keys[giukey] && !tastoGiaSchiacciato) {
+        				    if(this.indice < this.numeroDiVoci-1){ this.indice++;
+        				    }else{ this.indice=0;}
+                }
+                if((keys[dashkey] || keys[startkey]) && !tastoGiaSchiacciato) {
+                  switch (this.indice){
+                    case 0: //apri livello selezionato
+                      this.apriLivello=true;
+                      this.isClosing=true;
+                      this.isOpen=false;
+                      break;
+                    case 1: //salva la partita
+                      SalvaPartita();
+                      break;
+                    case 2: //chiedi conferma uscita
+                      this.confermaUscita=true;
+                      break;
+                  }
+                }                            			
+                if(keys[jumpkey] && !tastoGiaSchiacciato) {//chiude il menu
+                  this.isOpen=false;
+                  this.isClosing=true;
+                }
+                if(keys[startkey] || keys[sukey] || keys[giukey] || keys[sinistrakey] || keys[destrakey] || keys[dashkey] || keys[jumpkey]){
+                  tastoGiaSchiacciato=true;
+                }else{
+                  tastoGiaSchiacciato=false;
+                }
+            }else{ //se e' attivo il conferma uscita
+                ctx.textAlign = "center"; ctx.font = "small-caps bold 20px Lucida Console"; //tipo di font per le scritte
+                disegnaTestoConBordino("do you want to go back", (canvasWidth/2), ((canvasHeight/2)+15-this.heightMax/2),"#d2d2d2","#000000");
+                disegnaTestoConBordino("to the main menu?", (canvasWidth/2), ((canvasHeight/2)+35-this.heightMax/2),"#d2d2d2","#000000");
+                disegnaTestoConBordino("every progress not", (canvasWidth/2), ((canvasHeight/2)+55-this.heightMax/2),"#d2d2d2","#000000");
+                disegnaTestoConBordino("saved will be lost", (canvasWidth/2), ((canvasHeight/2)+75-this.heightMax/2),"#d2d2d2","#000000");
+                ctx.font = "small-caps bold 28px Lucida Console"; //tipo di font per le scritte
+                for(var j=0;j<2;j++){//disegno tutte le scritte
+                  ctx.textAlign = "center";
+                  var ydisegnata=57+canvasHeight/2;
+          				switch (j){//scrive le scritte
+          					case 0:
+                      var xdisegnata=(canvasWidth/2)-((this.width/4));
+          						disegnaTestoConBordino("no", xdisegnata, ydisegnata,"#d2d2d2","#000000");
+          						break;
+          					case 1:
+                      var xdisegnata=(canvasWidth/2)+((this.width/4));
+          						disegnaTestoConBordino("yes", xdisegnata, ydisegnata,"#d2d2d2","#000000");
+          						break;								
+          				}
+                  ctx.textAlign = "left"; //lo reimposto left se no si bugga tutto
+          			}		
+          			{//disegno il quadrato intorno all'opzione selezionata - uso le {} per ridurre lo scope di xdisegnata e ydisegnata
+                        ctx.fillStyle = "#ffc000";
+                        var ydisegnata = 25+canvasHeight/2;
+                        switch (this.indiceUscita){
+                          case 0: xdisegnata = (canvasWidth/2)-(this.width/2); break;
+                          case 1: xdisegnata = (canvasWidth/2); break;
+                        }
+                      	ctx.fillRect(xdisegnata, ydisegnata, this.width/2, 9);
+                      	ctx.fillRect(xdisegnata, ydisegnata-9+(this.height)/this.numeroDiVoci, this.width/2, 9);
+                      	ctx.fillRect(xdisegnata, ydisegnata, 9, (this.height)/this.numeroDiVoci-8);
+                      	ctx.fillRect(xdisegnata+(this.width/2)-9, ydisegnata, 9, (this.height)/this.numeroDiVoci-8);			
+          			}
+                //ora gestisco gli input
+                if(keys[destrakey] && !tastoGiaSchiacciato) {
+                    this.indiceUscita=1;
+                }
+                if(keys[sinistrakey] && !tastoGiaSchiacciato) {
+                    this.indiceUscita=0;
+                }
+                if((keys[dashkey] || keys[startkey]) && !tastoGiaSchiacciato) {
+                  switch (this.indiceUscita){
+                    case 0: //no
+                      this.confermaUscita=false;
+                      break;
+                    case 1: //si
+                      nelleOpzioniStageSelect=false;
+                      objMenuPrincipale= new newMenuPrincipale(); 
+                      nelMenuPrincipale=true;                       
+                      break;
+                  }
+                }                            			
+                if(keys[jumpkey] && !tastoGiaSchiacciato) {//chiude il menu
+                  this.confermaUscita=false;
+                }
+                if(keys[startkey] || keys[sukey] || keys[giukey] || keys[sinistrakey] || keys[destrakey] || keys[dashkey] || keys[jumpkey]){
+                  tastoGiaSchiacciato=true;
+                }else{
+                  tastoGiaSchiacciato=false;
+                }                
+            }				          	
+        }//fine di if(is.Open)
+          
+        if(this.isClosing){//animazione di chiusura del menu
+            stageSelect(); //disegna stageSelect() - serve per pulire lo schermo disegnando quello che sara' lo sfondo sotto il menu
+            if (this.width > 0){this.width-=20;}
+            if (this.height > 0){this.height-=20;}           
+            ctx.fillStyle = "#d2d2d2"; ctx.fillRect((canvasWidth/2)-this.width/2-15,(canvasHeight/2)-this.height/2-15, this.width+30, this.height+30); //disegna il bordo grigio 
+            ctx.fillStyle = "#52b58b"; ctx.fillRect((canvasWidth/2)-this.width/2,(canvasHeight/2)-this.height/2, this.width, this.height); //disegna lo sfondo verde
+            if (this.height-1 < 0 && this.width-1 < 0){//quando il menu e' tutto chiuso:
+            	nelleOpzioniStageSelect=false;
+            	if(this.apriLivello){
+            	  nuovoLivello();
+            	}else{
+                stageSelection=true;
+              }
+            }
+        }//fine di if(is.Closing)
+     }
+	}
 
 	function newMenuOpzioni(widthPassata, heightPassata, apertoDalMenuDiPausa){
 	    this.isOpen=false;
@@ -1274,7 +1458,7 @@ i livelli sono disposti cosi in realta':1 8
 			}
 			
 			{//disegno il quadrato intorno all'opzione selezionata - uso le {} per ridurre lo scope di xdisegnata e ydisegnata
-            	ctx.fillStyle = "#ffc000";
+              ctx.fillStyle = "#ffc000";
             	var xdisegnata = 75;
             	var ydisegnata = (128+(this.heightMax+75-17-128)/10*(this.indice));
             	ctx.fillRect(xdisegnata, ydisegnata-2, this.width, 9);
@@ -1352,7 +1536,228 @@ i livelli sono disposti cosi in realta':1 8
      }
 	}
 
+  function newMenuCaricaPartita(){
+	      this.isOpen=false;
+        this.isClosing=false;
+        this.indexAlterato=false;
+        this.fileLetto=false;
+        this.width=0;
+        this.height=0;
+        this.widthMax=canvasWidth-500;
+        this.heightMax=canvasHeight-425;
+        this.indice=0;
+        this.numeroDiVoci=1;
+        this.doingControlloFile=false;
 
+        this.drawMenu = async function (){ //asincrono perche' se viene caricata la partita bisogna aspettare che legga il file
+          if (!this.isOpen && !this.isClosing){//animazione di apertura del menu
+            if (this.width < this.widthMax){this.width+=10;}
+            if (this.height < this.heightMax){this.height+=15;}
+            if (this.height > this.heightMax-1 && this.width > this.widthMax-1){//quando il menu e' tutto aperto:
+            	this.isOpen=true;
+            }
+          }
+          ctx.clearRect((canvasWidth/2)-this.width/2-15,(canvasHeight/2)-this.height/2-15, this.width+30, this.height+30);	//pulisci la parte dove viene mostrato il menu
+		      ctx.fillStyle = "#d2d2d2"; ctx.fillRect((canvasWidth/2)-this.width/2-15,(canvasHeight/2)-this.height/2-15, this.width+30, this.height+30); //disegna il bordo grigio 
+          ctx.fillStyle = "#52b58b"; ctx.fillRect((canvasWidth/2)-this.width/2,(canvasHeight/2)-this.height/2, this.width, this.height); //disegna lo sfondo verde
+
+          if(this.isOpen){ //quando il menu e' tutto aperto
+                if (!this.indexAlterato){
+                  document.getElementById("caricaPartitaDiv").style.zIndex = "10";
+                  document.getElementById("fileCaricaPartita").disabled=false;
+                  this.indexAlterato=true;
+                }
+                ctx.font = "small-caps bold 25px Lucida Console"; //tipo di font per le scritte
+                {//disegno la scritta - {} per diminuire lo scope di ydisegnata
+                  var ydisegnata=((canvasHeight/2)-(this.height/2))+30;
+                  ctx.textAlign = "center";
+                  disegnaTestoConBordino("upload save file", canvasWidth/2, ydisegnata,"#d2d2d2","#000000");
+                  ctx.font = "small-caps bold 20px Lucida Console";
+                  ydisegnata=((canvasHeight/2)+(this.height/2))-30;
+                  disegnaTestoConBordino((dashkey+" to confirm"), canvasWidth/2, ydisegnata,"#d2d2d2","#000000");
+                  if (jumpkey==" "){disegnaTestoConBordino((jumpkey+"spacebar to cancel"), canvasWidth/2, ydisegnata+20,"#d2d2d2","#000000");
+                  }else{ disegnaTestoConBordino((jumpkey+" to cancel"), canvasWidth/2, ydisegnata+20,"#d2d2d2","#000000");}
+                  ctx.textAlign = "left"; //lo reimposto left se no si bugga tutto
+          			}		
+                //ora gestisco gli input
+                if (!this.doingControlloFile){
+                  if((keys[dashkey] || keys[startkey]) && !tastoGiaSchiacciato) { //conferma il caricamento del file
+                    this.fileLetto=await controllaFile();
+                    this.doingControlloFile=true;
+                  }                            			
+                  if(keys[jumpkey] && !tastoGiaSchiacciato) {//chiude il menu
+                    this.isOpen=false;
+                    this.isClosing=true;
+                  }
+                  if(keys[startkey] || keys[sukey] || keys[giukey] || keys[sinistrakey] || keys[destrakey] || keys[dashkey] || keys[jumpkey]){
+                    tastoGiaSchiacciato=true;
+                  }else{
+                    tastoGiaSchiacciato=false;
+                  }
+                }else{
+                  this.doingControlloFile=false;
+                  this.isOpen=false;
+                  this.isClosing=true;
+                }				          	
+        }//fine di if(is.Open)
+          
+        if(this.isClosing){//animazione di chiusura del menu
+            if(this.indexAlterato){
+              document.getElementById("caricaPartitaDiv").style.zIndex = "-1";
+              document.getElementById("fileCaricaPartita").disabled=true;
+              this.indexAlterato=false;
+            }
+            objMenuPrincipale.drawMenuPrincipale(false); //pulisce lo schermo disegnando lo sfondo (menu principale)
+            if (this.width > 0){this.width-=20;}
+            if (this.height > 0){this.height-=20;}           
+            ctx.fillStyle = "#d2d2d2"; ctx.fillRect((canvasWidth/2)-this.width/2-15,(canvasHeight/2)-this.height/2-15, this.width+30, this.height+30); //disegna il bordo grigio 
+            ctx.fillStyle = "#52b58b"; ctx.fillRect((canvasWidth/2)-this.width/2,(canvasHeight/2)-this.height/2, this.width, this.height); //disegna lo sfondo verde
+            if (this.height-1 < 0 && this.width-1 < 0){//quando il menu e' tutto chiuso:
+            	nelMenuCaricaPartita=false;
+              if (this.fileLetto){
+                stageSelection=true;
+              }else{
+                nelMenuPrincipale=true;
+              }
+            }
+        }//fine di if(is.Closing)
+        
+        async function controllaFile(){ //controlla che il file sia caricato correttamente
+            var uploadedFile = document.getElementById("fileCaricaPartita").files[0];
+            var stringaCaricaPartita="";
+            async function readFileAsDataURL(uploadedFile) {
+                let text = await new Promise((resolve) => {
+                    let fileReader = new FileReader();
+                    fileReader.onload = (e) => resolve(fileReader.result);
+                    fileReader.readAsText(uploadedFile);
+                });
+                return text;
+            }          
+            stringaCaricaPartita = await readFileAsDataURL(uploadedFile);
+            return caricaDatiSalvataggio(stringaCaricaPartita);
+            
+            function caricaDatiSalvataggio(stringaCaricaPartita) { //carica effettivamente la partita dal risultato della lettura del file
+                var numeroElemento=0;
+                var stringaElemento="";
+                for(i=0; i<stringaCaricaPartita.length; i++){
+                  if(stringaCaricaPartita[i]=="|"){
+                    caricaElemento();
+                    numeroElemento++;
+                    stringaElemento="";   
+                  }else{
+                    stringaElemento+=stringaCaricaPartita[i];
+                  }
+                }
+                if ((numeroElemento==19) && (stringaElemento!="")){//carica l'ultimo elemento se esiste (che se no verrebbe skippato, facendo poi ritornare false)
+                    caricaElemento();
+                    numeroElemento++;                
+                }
+                if (numeroElemento==20){ //se ha caricato il numero corretto di elementi
+                  return true;
+                }else{
+                  alert("The file is not using the correct format");
+                  return false;
+                }    
+                function caricaElemento(){
+                    switch (numeroElemento){
+                        case 0: //jumpkey
+                          jumpkey=stringaElemento;
+                          break;
+                        case 1: //destrakey
+                          destrakey=stringaElemento;
+                          break;
+                        case 2: //sinistrakey
+                          sinistrakey=stringaElemento;
+                          break;
+                        case 3: //sukey
+                          sukey=stringaElemento;
+                          break;
+                        case 4: //giukey
+                          giukey=stringaElemento;     
+                          break;
+                        case 5: //dashkey
+                          dashkey=stringaElemento;
+                          break;
+                        case 6: //sparokey
+                          sparokey=stringaElemento;
+                          break;
+                        case 7: //startkey
+                          startkey=stringaElemento;
+                          break;
+                        case 8: //lkey
+                          lkey=stringaElemento;
+                          break;
+                        case 9: //rkey
+                          rkey=stringaElemento;
+                          break;
+                        case 10: //levelDefeated
+                          var nuovoElementino="";
+                          for (k=0; k<9; k++){
+                            for(j=0; j<stringaElemento.length;j++){
+                              if(stringaElemento[j]!=","){
+                                nuovoElementino+=stringaElemento[j];
+                                if (nuovoElementino=="true"){
+                                  levelDefeated[k]=true; nuovoElementino=""; k++;
+                                }else if (nuovoElementino=="false"){
+                                  levelDefeated[k]=false; nuovoElementino=""; k++;
+                                }   
+                              }else{
+                                nuovoElementino="";
+                              }                            
+                            }
+                          }
+                          break;
+                        case 11: //heartAcquired
+                          var nuovoElementino="";
+                          for (k=0; k<9; k++){
+                            for(j=0; j<stringaElemento.length;j++){
+                              if(stringaElemento[j]!=","){
+                                nuovoElementino+=stringaElemento[j];
+                                if (nuovoElementino=="true"){
+                                  heartAcquired[k]=true; nuovoElementino=""; k++;
+                                }else if (nuovoElementino=="false"){
+                                  heartAcquired[k]=false; nuovoElementino=""; k++;
+                                }   
+                              }else{
+                                nuovoElementino="";
+                              }                            
+                            }
+                          } 
+                          break;
+                        case 12: //subtank
+                          subtank[0].life=parseInt(stringaElemento,10);
+                          break;
+                        case 13:
+                          if(stringaElemento=="true"){subtank[0].acquired=true;
+                          }else{subtank[0].acquired=false; subtank[0].life=0;}
+                          break;
+                        case 14:
+                          subtank[1].life=parseInt(stringaElemento,10);
+                          break;
+                        case 15:
+                          if(stringaElemento=="true"){subtank[1].acquired=true;
+                          }else{subtank[1].acquired=false; subtank[1].life=0;}    
+                          break;
+                        case 16:
+                          subtank[2].life=parseInt(stringaElemento,10);
+                          break;
+                        case 17:
+                          if(stringaElemento=="true"){subtank[2].acquired=true;
+                          }else{subtank[2].acquired=false; subtank[2].life=0;}
+                          break;
+                        case 18:
+                          subtank[3].life=parseInt(stringaElemento,10);
+                          break;
+                        case 19:
+                          if(stringaElemento=="true"){subtank[3].acquired=true;
+                          }else{subtank[3].acquired=false; subtank[3].life=0;}
+                          break;                                  
+                   }
+                }    
+            } //fine di caricaPartita()                           
+        }//fine di controllaFile()                
+     }//fine di drawMenu()               
+	}//fine di menuCaricaPartita
 
 	function newMenuPrincipale(){
 		this.width=canvasWidth;
@@ -1392,10 +1797,23 @@ i livelli sono disposti cosi in realta':1 8
             	}
             	if((keys[startkey]||keys[dashkey]) && !tastoGiaSchiacciato) {
 					switch(this.indice){
-						case 0: this.isClosing=true;
+						case 0: 
+              this.isClosing=true;
 							this.isGoingToStageSelection=true;
+              //azzero tutto
+              levelDefeated = [false, false, false, false, false, false, false, false]; //vettore che tiene quanti livelli sono stati superati
+              heartAcquired = [false, false, false, false, false, false, false, false]; //vettore che tiene quanti cuori sono stati trovati
+              subtank = [//vettore di subtanks - e' scollegata dal player almeno non si resetta al cambio del livello
+            		{lifeMax: 20, life:parseInt(0,10), acquired:false},
+            		{lifeMax: 20, life:parseInt(0,10), acquired:false},
+            		{lifeMax: 20, life:parseInt(0,10), acquired:false},
+            		{lifeMax: 20, life:parseInt(0,10), acquired:false},
+              ];              
 							break;
-						case 1: alert("Mi spiace, non l'ho ancora implementato");
+						case 1:
+              objMenuCaricaPartita=new newMenuCaricaPartita();
+              nelMenuPrincipale=false;
+              nelMenuCaricaPartita=true;
 							break;
 						case 2: 
             				objMenuOpzioni=new newMenuOpzioni(0, 0, false);
@@ -1416,8 +1834,8 @@ i livelli sono disposti cosi in realta':1 8
         		this.closingIndex+=13;
         		ctx.fillRect(0,0,canvasWidth,this.closingIndex);
         		ctx.fillRect(0,canvasHeight-this.closingIndex,canvasWidth,this.closingIndex);
-				ctx.fillRect(0,0,this.closingIndex,canvasHeight);
-				ctx.fillRect(canvasWidth-this.closingIndex,0,canvasWidth-this.closingIndex,canvasHeight);
+				    ctx.fillRect(0,0,this.closingIndex,canvasHeight);
+				    ctx.fillRect(canvasWidth-this.closingIndex,0,canvasWidth-this.closingIndex,canvasHeight);
         		if ( this.closingIndex > ((canvasWidth/2)-1) ){//quando e' tutto chiuso
         			ctx.textAlign = "left";// se no si bugga della roba
               		nelMenuPrincipale=false;//disattiva lo stato menu principale
@@ -1430,3 +1848,27 @@ i livelli sono disposti cosi in realta':1 8
           	}		
 	    }
 	}
+
+  function SalvaPartita(){
+    stringaSalvataggio=jumpkey+"|"+destrakey+"|"+sinistrakey+"|"+sukey+"|"+giukey+"|"+dashkey+"|"+sparokey+"|"+startkey+"|"+lkey+"|"+rkey+"|"+levelDefeated+"|"+heartAcquired;
+    for (i=0; i<4; i++){
+        stringaSalvataggio+="|"+subtank[i].life+"|"+subtank[i].acquired;
+    }
+    {//creo il file simpleXjs.savegame da scaricare
+        var element = document.createElement('a');
+        element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(stringaSalvataggio));
+        element.setAttribute('download', "simpleXjs.savegame");
+        element.style.display = 'none';
+        document.body.appendChild(element);
+        element.click();
+        document.body.removeChild(element);
+        alert("Downloading the save file...");
+        return;
+    }
+  }
+  
+  function CaricaPartita(){
+      document.getElementById("caricaPartitaDiv").style.zIndex = "10"
+      //alert("Mi spiace, non l'ho ancora implementato");
+  }
+  
