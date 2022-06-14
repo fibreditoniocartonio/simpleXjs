@@ -1,8 +1,9 @@
+      var versioneDiGioco = "v0.20220614"
       //crea il canvas
       var canvasWidth = 720;
       var canvasHeight = 540;
       if(document.getElementsByTagName('canvas').length == 0) {     //crea il canvas con le variabili che ho creato
-          document.body.innerHTML += "".concat("<div class='caricaPartitaDiv' id='caricaPartitaDiv'><input type='file' id='fileCaricaPartita' disabled></div><div class='canvasDiv'><canvas id='canvas' width=" , canvasWidth , " height=" , canvasHeight , "></canvas></div>");
+          document.body.innerHTML += "".concat("<div class='caricaPartitaDiv' id='caricaPartitaDiv'><input type='file' id='fileCaricaPartita' disabled></div><div class='canvasDiv' id='canvasDivId' tabIndex='1'><canvas id='canvas' width=" , canvasWidth , " height=" , canvasHeight , "></canvas></div>");
       }   var ctx = document.getElementById('canvas').getContext('2d');
 
     var stringaSalvataggio="";
@@ -22,11 +23,11 @@
       var rkey = "c";					//power- - default c
 
       var ultimoTastoLetto="";
-      document.body.addEventListener("keydown", function(e) {//events - leggi tasti schiacciati
+      document.addEventListener("keydown", function(e) {//events - leggi tasti schiacciati
           keys[e.key] = true;
           ultimoTastoLetto=e.key;
       });
-      document.body.addEventListener("keyup", function(e) {//events - leggi tasti rilasciati
+      document.addEventListener("keyup", function(e) {//events - leggi tasti rilasciati
           keys[e.key] = false;
       });
 
@@ -1547,7 +1548,6 @@ i livelli sono disposti cosi in realta':1 8
         this.heightMax=canvasHeight-425;
         this.indice=0;
         this.numeroDiVoci=1;
-        this.doingControlloFile=false;
 
         this.drawMenu = async function (){ //asincrono perche' se viene caricata la partita bisogna aspettare che legga il file
           if (!this.isOpen && !this.isClosing){//animazione di apertura del menu
@@ -1580,10 +1580,12 @@ i livelli sono disposti cosi in realta':1 8
                   ctx.textAlign = "left"; //lo reimposto left se no si bugga tutto
           			}		
                 //ora gestisco gli input
-                if (!this.doingControlloFile){
                   if((keys[dashkey] || keys[startkey]) && !tastoGiaSchiacciato) { //conferma il caricamento del file
                     this.fileLetto=await controllaFile();
-                    this.doingControlloFile=true;
+                    if (this.fileLetto){
+                      this.isOpen=false;
+                      this.isClosing=true;
+                    }                                     
                   }                            			
                   if(keys[jumpkey] && !tastoGiaSchiacciato) {//chiude il menu
                     this.isOpen=false;
@@ -1593,19 +1595,15 @@ i livelli sono disposti cosi in realta':1 8
                     tastoGiaSchiacciato=true;
                   }else{
                     tastoGiaSchiacciato=false;
-                  }
-                }else{
-                  this.doingControlloFile=false;
-                  this.isOpen=false;
-                  this.isClosing=true;
-                }				          	
+                  }			          	
         }//fine di if(is.Open)
           
         if(this.isClosing){//animazione di chiusura del menu
-            if(this.indexAlterato){
+            if(this.indexAlterato){//disattiva il tasto "sfoglia file" e riporta il focus sul canvas
               document.getElementById("caricaPartitaDiv").style.zIndex = "-1";
-              document.getElementById("fileCaricaPartita").disabled=true;
-              this.indexAlterato=false;
+              document.getElementById("fileCaricaPartita").disabled=true; //questo comando disattiva il focus sul canvas, devo riattivare il focus se no non legge piu i tasti
+              document.getElementById('canvasDivId').focus(); //riporta il focus sul canvas
+              this.indexAlterato=false;                           
             }
             objMenuPrincipale.drawMenuPrincipale(false); //pulisce lo schermo disegnando lo sfondo (menu principale)
             if (this.width > 0){this.width-=20;}
@@ -1618,6 +1616,7 @@ i livelli sono disposti cosi in realta':1 8
                 stageSelection=true;
               }else{
                 nelMenuPrincipale=true;
+                objMenuPrincipale.drawMenuPrincipale(false);
               }
             }
         }//fine di if(is.Closing)
@@ -1625,6 +1624,10 @@ i livelli sono disposti cosi in realta':1 8
         async function controllaFile(){ //controlla che il file sia caricato correttamente
             var uploadedFile = document.getElementById("fileCaricaPartita").files[0];
             var stringaCaricaPartita="";
+            if(uploadedFile.size > (512)){//controlla la dimensione del file - non deve essere superiore a 512 Byte
+               alert("The file size limit is 512Byte (half a kB). Upload a smaller file.");
+               return false;
+            }
             async function readFileAsDataURL(uploadedFile) {
                 let text = await new Promise((resolve) => {
                     let fileReader = new FileReader();
@@ -1769,7 +1772,11 @@ i livelli sono disposti cosi in realta':1 8
 		this.drawMenuPrincipale = function (canInput){
 			ctx.clearRect(0,0,canvasWidth,canvasHeight);//pulisce tutto
 			ctx.fillStyle = "#020219"; ctx.fillRect(0,0,canvasWidth+1,canvasHeight+1);//sfondo nero
-			ctx.textAlign = "left";
+			ctx.textAlign = "right";
+      ctx.font = "small-caps bold 15px Lucida Console";
+      disegnaTestoConBordino("by lordf", canvasWidth-3, canvasHeight-2,"#d2d2d2bb","#020219");
+      ctx.textAlign = "left";
+      disegnaTestoConBordino(versioneDiGioco, 3, canvasHeight-2,"#d2d2d2bb","#020219");
 			ctx.font = "small-caps bold oblique 250px Lucida Console";
 			disegnaTestoConBordino("X",73+canvasWidth/2,243,"#ff9200","#ffd600");
 			ctx.font = "small-caps bold oblique 125px Lucida Console";
@@ -1797,7 +1804,7 @@ i livelli sono disposti cosi in realta':1 8
             	}
             	if((keys[startkey]||keys[dashkey]) && !tastoGiaSchiacciato) {
 					switch(this.indice){
-						case 0: 
+						case 0://nuovo gioco 
               this.isClosing=true;
 							this.isGoingToStageSelection=true;
               //azzero tutto
@@ -1810,17 +1817,17 @@ i livelli sono disposti cosi in realta':1 8
             		{lifeMax: 20, life:parseInt(0,10), acquired:false},
               ];              
 							break;
-						case 1:
+						case 1://carica partita
               objMenuCaricaPartita=new newMenuCaricaPartita();
               nelMenuPrincipale=false;
               nelMenuCaricaPartita=true;
 							break;
-						case 2: 
+						case 2://opzioni 
             				objMenuOpzioni=new newMenuOpzioni(0, 0, false);
             				tastoGiaSchiacciato=true;
             				nelMenuPrincipale=false;
             				nelMenuOpzioni=true;                				
-                			break;													
+                		break;													
 					}	
             	}                        
             	if(keys[startkey] || keys[sukey] || keys[giukey] || keys[sinistrakey] || keys[destrakey] || keys[dashkey] || keys[jumpkey]){
@@ -1842,7 +1849,7 @@ i livelli sono disposti cosi in realta':1 8
               		if(this.isGoingToStageSelection){
               			stageSelection=true;
               		}else{
-              		
+              		   //boh...
               		}
               	}
           	}		
@@ -1866,9 +1873,3 @@ i livelli sono disposti cosi in realta':1 8
         return;
     }
   }
-  
-  function CaricaPartita(){
-      document.getElementById("caricaPartitaDiv").style.zIndex = "10"
-      //alert("Mi spiace, non l'ho ancora implementato");
-  }
-  
