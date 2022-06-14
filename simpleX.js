@@ -1861,15 +1861,30 @@ i livelli sono disposti cosi in realta':1 8
     for (i=0; i<4; i++){
         stringaSalvataggio+="|"+subtank[i].life+"|"+subtank[i].acquired;
     }
-    {//creo il file simpleXjs.savegame da scaricare
+    {//creo il file simpleXjs.dataDiOggi.savegame da scaricare
+        const dataDiOggi=creaData(); //prende la data di oggi
         var element = document.createElement('a');
         element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(stringaSalvataggio));
-        element.setAttribute('download', "simpleXjs.savegame");
+        element.setAttribute('download', "simpleXjs."+dataDiOggi+".savegame");
         element.style.display = 'none';
         document.body.appendChild(element);
         element.click();
         document.body.removeChild(element);
         alert("Downloading the save file...");
         return;
+        
+        function creaData(){
+          var temp = new Date();
+          var dateStr = padStr(temp.getFullYear()) +
+                        padStr(1 + temp.getMonth()) +
+                        padStr(temp.getDate()) +"."+
+                        padStr(temp.getHours()) +
+                        padStr(temp.getMinutes()) +
+                        padStr(temp.getSeconds());
+          return dateStr;
+          function padStr(i) {//sistema tipo 01 e 11 per avere tutto su due cifre
+              return (i < 10) ? "0" + i : "" + i;
+          }        
+        }
     }
   }
