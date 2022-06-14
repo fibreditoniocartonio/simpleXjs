@@ -1875,12 +1875,11 @@ i livelli sono disposti cosi in realta':1 8
         
         function creaData(){
           var temp = new Date();
-          var dateStr = padStr(temp.getFullYear()) +
-                        padStr(1 + temp.getMonth()) +
-                        padStr(temp.getDate()) +"."+
-                        padStr(temp.getHours()) +
-                        padStr(temp.getMinutes()) +
-                        padStr(temp.getSeconds());
+          var dateStr = padStr(temp.getFullYear()) +"."+
+                        padStr(1 + temp.getMonth()) +"."+
+                        padStr(temp.getDate()) +"-"+
+                        padStr(temp.getHours()) +"."+
+                        padStr(temp.getMinutes());
           return dateStr;
           function padStr(i) {//sistema tipo 01 e 11 per avere tutto su due cifre
               return (i < 10) ? "0" + i : "" + i;
