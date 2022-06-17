@@ -1,4 +1,4 @@
-      var versioneDiGioco = "v0.20220616"
+      var versioneDiGioco = "v0.20220617"
       //crea il canvas
       var canvasWidth = 720;
       var canvasHeight = 540;
@@ -43,8 +43,12 @@
         this.slope= 0;
         this.width= 24;
         this.height= 38;
-        this.color= '#0400f8';
-        this.defaultColor= '#0400f8';
+        this.color1= '#0300d0';
+        this.color2= '#005fbd';
+        this.coloreArmatura= '#c8c8c8';
+        this.defaultColor1= '#0300d0';
+        this.defaultColor2= '#005fbd';
+        this.defaultColoreArmatura= '#c8c8c8';
         this.damagedColor= '#990003';
         this.charge0color= '#ffc000';
         this.charge1color= '#49ff37';
@@ -60,37 +64,84 @@
         this.canMove = true;
         this.carica = 0;
         this.power = [ //vettore dei poteri
-        {usageMax: 32, usage:32, color:'#8e8363', nome:'Homing Torpedo'},
-        {usageMax: 32, usage:32, color:'#00af3b', nome:'Chameleon Sting'},
-        {usageMax: 32, usage:32, color:'#ff6666', nome:'Rolling Shield'},
-        {usageMax: 32, usage:32, color:'#ff5a00', nome:'Fire Wave'},
-        {usageMax: 32, usage:32, color:'#e40097', nome:'Storm Tornado'},
-        {usageMax: 32, usage:32, color:'#e5ac00', nome:'Electric Spark'},
-        {usageMax: 32, usage:32, color:'#65766b', nome:'Boomerang Cutter'},
-        {usageMax: 32, usage:32, color:'#05e9ff', nome:'Shotgun Ice'},
+        {usageMax: 32, usage:32, color1:'#8e8363', color2:'#8e8363', nome:'Homing Torpedo'},
+        {usageMax: 32, usage:32, color1:'#00af3b', color2:'#00af3b', nome:'Chameleon Sting'},
+        {usageMax: 32, usage:32, color1:'#ff6666', color2:'#ff6666', nome:'Rolling Shield'},
+        {usageMax: 32, usage:32, color1:'#ff5a00', color2:'#ff5a00', nome:'Fire Wave'},
+        {usageMax: 32, usage:32, color1:'#e40097', color2:'#e40097', nome:'Storm Tornado'},
+        {usageMax: 32, usage:32, color1:'#e5ac00', color2:'#e5ac00', nome:'Electric Spark'},
+        {usageMax: 32, usage:32, color1:'#65766b', color2:'#65766b', nome:'Boomerang Cutter'},
+        {usageMax: 32, usage:32, color1:'#05e9ff', color2:'#05e9ff', nome:'Shotgun Ice'},
         ];
-        this.disegnaPlayer = function (xdisegnata,ydisegnata,larghezza,altezza){
-          //testa
-          ctx.fillRect(xdisegnata+(larghezza/2)-6, ydisegnata-2, 12, 12);
-          //corpo
-          ctx.beginPath();
-  		    ctx.lineWidth = "0";
-  		    ctx.moveTo(xdisegnata-3, ydisegnata+10);
-  		    ctx.lineTo(xdisegnata+larghezza+3, ydisegnata+10);
-          ctx.lineTo(xdisegnata+(larghezza/2), ydisegnata+(altezza)-5);
-          ctx.lineTo(xdisegnata-3, ydisegnata+10);
-  		    ctx.fill();
-          //gambe
-          ctx.fillRect(xdisegnata+(larghezza/2)-8, ydisegnata+(altezza)-18, 6, 18);
-          ctx.fillRect(xdisegnata+(larghezza/2)+2, ydisegnata+(altezza)-18, 6, 18);
-          //braccia
-          if(player.facingRight){
-            ctx.fillRect(xdisegnata+2-6, ydisegnata+10, 6, 15);
-            ctx.fillRect(xdisegnata+(larghezza)-2, ydisegnata+10, 15, 6);
-          }else{
-            ctx.fillRect(xdisegnata+2-15, ydisegnata+10, 15, 6);
-            ctx.fillRect(xdisegnata+(larghezza)-2, ydisegnata+10, 6, 15);
-          }        
+        this.disegnaPlayer = function (xdisegnata,ydisegnata,larghezza,altezza,dettagli,colore1,colore2,coloreArmatura){
+              ctx.fillStyle = colore1;
+              //testa
+              ctx.fillRect(xdisegnata+(larghezza/2)-6, ydisegnata-2, 12, 12);
+              //gambe
+              ctx.fillRect(xdisegnata+(larghezza/2)-8, ydisegnata+(altezza)-18, 6, 18);
+              ctx.fillRect(xdisegnata+(larghezza/2)+2, ydisegnata+(altezza)-18, 6, 18);
+              //braccia
+              if(player.facingRight){
+                ctx.fillRect(xdisegnata+2-6, ydisegnata+11, 6, 15);
+                ctx.fillRect(xdisegnata+(larghezza)-2, ydisegnata+11, 15, 6);
+              }else{
+                ctx.fillRect(xdisegnata+2-15, ydisegnata+11, 15, 6);
+                ctx.fillRect(xdisegnata+(larghezza)-2, ydisegnata+11, 6, 15);
+              }
+              if(dettagli){
+                if(armaturaAcquired=="true,true,true,true"){
+                    colore2=colore1;
+                }
+                //testa
+                if(armaturaAcquired[0]){
+                  ctx.fillStyle = coloreArmatura;
+                  ctx.fillRect(xdisegnata+(larghezza/2)-6, ydisegnata-2, 12, 3);
+                  ctx.fillRect(xdisegnata+(larghezza/2)-6, ydisegnata-2, 2, 9);
+                  ctx.fillRect(xdisegnata+(larghezza/2)+6-2, ydisegnata-2, 2, 9);
+                }
+                //gambe
+                ctx.fillStyle = colore2;
+                ctx.fillRect(xdisegnata+(larghezza/2)-8, ydisegnata+(altezza)-18, 6, 12);
+                ctx.fillRect(xdisegnata+(larghezza/2)+2, ydisegnata+(altezza)-18, 6, 12);
+                if(armaturaAcquired[1]){
+                  ctx.fillStyle = coloreArmatura;
+                  ctx.fillRect(xdisegnata+(larghezza/2)-8, ydisegnata+(altezza)-6, 6, 6);
+                  ctx.fillRect(xdisegnata+(larghezza/2)+2, ydisegnata+(altezza)-6, 6, 6);                  
+                }
+                //braccia
+                ctx.fillStyle = colore2;                
+                if(player.facingRight){
+                  ctx.fillRect(xdisegnata+2-6, ydisegnata+11, 6, 10);
+                  ctx.fillRect(xdisegnata+(larghezza)-2, ydisegnata+11, 10, 6);
+                  if(armaturaAcquired[2]){
+                    ctx.fillStyle = coloreArmatura;
+                    ctx.fillRect(xdisegnata+2-6, ydisegnata+11+10, 6, 5);
+                    ctx.fillRect(xdisegnata+(larghezza)-2+15-5, ydisegnata+11, 5, 6);                    
+                  }                  
+                }else{
+                  ctx.fillRect(xdisegnata+2-10, ydisegnata+11, 10, 6);
+                  ctx.fillRect(xdisegnata+(larghezza)-2, ydisegnata+11, 6, 10);
+                  if(armaturaAcquired[2]){
+                    ctx.fillStyle = coloreArmatura;
+                    ctx.fillRect(xdisegnata+2-15, ydisegnata+11, 5, 6);
+                    ctx.fillRect(xdisegnata+(larghezza)-2, ydisegnata+11+10, 6, 5);                    
+                  }                     
+                }                
+                //corpo
+                if(armaturaAcquired[3]){
+                  ctx.fillStyle = coloreArmatura;
+                }else{
+                  ctx.fillStyle = colore1;
+                }                
+              }                
+              //corpo
+              ctx.beginPath();
+      		    ctx.lineWidth = "0";
+      		    ctx.moveTo(xdisegnata-3, ydisegnata+10);
+      		    ctx.lineTo(xdisegnata+larghezza+3, ydisegnata+10);
+              ctx.lineTo(xdisegnata+(larghezza/2), ydisegnata+(altezza)-5);
+              ctx.lineTo(xdisegnata-3, ydisegnata+10);
+      		    ctx.fill();                         
         }
       }
       
@@ -102,6 +153,7 @@
     		{lifeMax: 20, life:parseInt(0,10), acquired:false},
     		{lifeMax: 20, life:parseInt(0,10), acquired:false},
       ];
+      armaturaAcquired = [false, false, false, false];//vettore che tiene quante armatura e' stata trovata - 0:testa, 1:gambe, 2:buster, 3:corpo (quando ci sara': 4:aduchen)
       
   //gamestate - se tutti i gamestate sono false lo stato e' "in gioco"
   var stageSelection=false; //stato: selezione del livello
@@ -142,7 +194,7 @@ i livelli sono disposti cosi in realta':1 8
 				break;
 										
 			default:
-				alert("Errore nel caricamento del livello - carico il level 1")
+				alert("Errore nel caricamento del livello - carico il level 1"); keys=[];
 				lvlNumber=1;
 				leggiLivelloDaFile();
 		}
@@ -376,7 +428,7 @@ i livelli sono disposti cosi in realta':1 8
         }else{
          this.x= player.x-6-larghezza; 
         }
-        this.y= player.y+8;
+        this.y= player.y+9;
         this.xv= 0;
         this.width= larghezza;
         this.height= altezza;
@@ -587,21 +639,16 @@ i livelli sono disposti cosi in realta':1 8
         //ombre del dash
         if (player.speed>player.defaultspeed){
             if (player.xv < -10){
-                ctx.fillStyle =player.color+'45';//aggiunge la trasparenza
-                player.disegnaPlayer(xdisegnata-50, ydisegnata+3, player.width-3, player.height-6);
-                ctx.fillStyle =player.color+'90';
-                player.disegnaPlayer(xdisegnata-26, ydisegnata+1, player.width-1, player.height-2);
+                player.disegnaPlayer(xdisegnata-50, ydisegnata+3, player.width-3, player.height-6,false,player.color2+'AA');
+                player.disegnaPlayer(xdisegnata-26, ydisegnata+1, player.width-1, player.height-2,false,player.color2);
             }else if (player.xv > 10){
-               ctx.fillStyle =player.color+'45';
-               player.disegnaPlayer(xdisegnata+50+3, ydisegnata+3, player.width-3, player.height-6);
-               ctx.fillStyle =player.color+'90';
-               player.disegnaPlayer(xdisegnata+26+1, ydisegnata+1, player.width-1, player.height-2);
+               player.disegnaPlayer(xdisegnata+50+3, ydisegnata+3, player.width-3, player.height-6,false,player.color2+'AA');
+               player.disegnaPlayer(xdisegnata+26+1, ydisegnata+1, player.width-1, player.height-2,false,player.color2);
             }
         }
 		//ora disegna effettivamente il player
-        //ctx.fillStyle = player.color+"80"; ctx.fillRect(xdisegnata, ydisegnata, player.width, player.height); //hitbox */
-        ctx.fillStyle = player.color;//colore base delle parti
-        player.disegnaPlayer(xdisegnata,ydisegnata,player.width,player.height);        
+        //ctx.fillStyle = player.color1+"80"; ctx.fillRect(xdisegnata, ydisegnata, player.width, player.height); //hitbox */
+        player.disegnaPlayer(xdisegnata,ydisegnata,player.width,player.height,true,player.color1,player.color2,player.coloreArmatura);        
       }
 
 	function drawBackgroundImage(){//disegna immagine di sfondo
@@ -611,7 +658,7 @@ i livelli sono disposti cosi in realta':1 8
 	}
   
   function drawWater(){  //disegna l'acqua
-      ctx.fillStyle = player.defaultColor + "50";
+      ctx.fillStyle = player.defaultColor1 + "50";
       var ydisegnata=0
       if (player.y < canvasHeight/2){
         ydisegnata=level.waterLevel;
@@ -662,7 +709,7 @@ i livelli sono disposti cosi in realta':1 8
 		ctx.fillRect(10, 10, player.lifeMax*6+40, 30);		
 		ctx.beginPath();//ora inizio a disegnare la x che sara' del colore del player attivo
 		ctx.lineWidth = "7";
-		ctx.strokeStyle = player.color;
+		ctx.strokeStyle = player.color1;
 		ctx.moveTo(15, 15);
 		ctx.lineTo(35, 35);
 		ctx.stroke(); // Disegna la prima meta'della X
@@ -740,7 +787,7 @@ i livelli sono disposti cosi in realta':1 8
         for(var i = 0; i < lvl.length; i++) {//y collision
           if(collisionBetween(p1, lvl[i])) {
             p1.y += -p1.yv;            
-            if(keys[dashkey] && player.canMove) {//dash
+            if(keys[dashkey] && player.canMove && armaturaAcquired[1]) {//dash
               p1.speed=p1.defaultspeed*2.5;
             }else{
               p1.speed=player.defaultspeed;
@@ -803,7 +850,7 @@ i livelli sono disposti cosi in realta':1 8
             	sparo.color= player.charge1color;
             	entity.push(sparo);
             }
-            player.color=player.defaultColor ;
+            player.color1=player.defaultColor1 ;
             player.carica=0;
             player.giasparato=false;
           }
@@ -823,7 +870,7 @@ i livelli sono disposti cosi in realta':1 8
           if(collisionBetween(p1, lvl[i])) {
             p1.y += p1.slope;
             p1.x -= -p1.xv;
-            if(keys[dashkey] && player.canMove) {//wall dash
+            if(keys[dashkey] && player.canMove && armaturaAcquired[1]) {//wall dash
               p1.speed=p1.defaultspeed*2.5;
             }else{
               p1.speed=player.defaultspeed;
@@ -851,8 +898,14 @@ i livelli sono disposti cosi in realta':1 8
 		for(var i = 0; i < entity.length; i++) {
 			if(entity[i].life > 0 && !(entity[i].type=="sparoDelPlayer")) {
               			if(collisionBetween(player, entity[i])) {
-				    player.color=player.damagedColor;
-				    player.life=player.life-entity[i].damage;
+				    player.color1=player.damagedColor;
+            player.color2=player.damagedColor;
+            player.coloreArmatura=player.damagedColor;
+            if(armaturaAcquired[3]&&(entity[i].damage>1)){
+              player.life=player.life-(entity[i].damage-1);
+            }else{
+              player.life=player.life-entity[i].damage;
+            }
 				    player.invulnerability=40;
 				    player.canMove=false;
 				    break;
@@ -862,19 +915,23 @@ i livelli sono disposti cosi in realta':1 8
        	}else{
        		player.invulnerability--;
        		if (player.invulnerability < 30){
-       			player.color=player.defaultColor+'80';
+       			player.color1=player.defaultColor2;
+            player.color2=player.defaultColor2;
+            player.coloreArmatura=player.defaultColor2;
        		}
        		if (player.invulnerability < 20){
        			player.canMove=true;
        		}       		
        		if (player.invulnerability < 5){
-       			player.color=player.defaultColor;    			
+       			player.color1=player.defaultColor1;
+				    player.color2=player.defaultColor2;
+            player.coloreArmatura=player.defaultColoreArmatura;                 			
        		}	
        	}
       	
       	if(player.life<1){//gameover
       		disegnaSchermoDiGioco(false);
-      		alert("Gameover");
+      		alert("Gameover");keys=[];
       		stageSelection=true;
       	}
         
@@ -999,7 +1056,7 @@ i livelli sono disposti cosi in realta':1 8
                 	disegnaTestoConBordino("X Buster", xdisegnata, ydisegnata+33,"#d2d2d2","#000000");
                 }else{
                   if(levelDefeated[i-1]){//disegna i poteri e le loro barre
-                  	disegnaTestoConBordino(player.power[i-1].nome, xdisegnata, ydisegnata+21,player.power[i-1].color,"#000000");
+                  	disegnaTestoConBordino(player.power[i-1].nome, xdisegnata, ydisegnata+21,player.power[i-1].color1,"#000000");
                     for (j=0; j<player.power[i-1].usageMax; j++){
                       if(player.power[i-1].usage < j+1){ctx.fillStyle = '#a7a7a7'; }
                       ctx.fillRect(j*9+xdisegnata+2, ydisegnata+25, 8, 12);
@@ -1674,11 +1731,11 @@ i livelli sono disposti cosi in realta':1 8
                     stringaElemento+=stringaCaricaPartita[i];
                   }
                 }
-                if ((numeroElemento==19) && (stringaElemento!="")){//carica l'ultimo elemento se esiste (che se no verrebbe skippato, facendo poi ritornare false)
+                if ((numeroElemento==20) && (stringaElemento!="")){//carica l'ultimo elemento se esiste (che se no verrebbe skippato, facendo poi ritornare false)
                     caricaElemento();
                     numeroElemento++;                
                 }
-                if (numeroElemento==20){ //se ha caricato il numero corretto di elementi
+                if (numeroElemento==21){ //se ha caricato il numero corretto di elementi
                   return true;
                 }else{
                   alert("The file is not using the correct format");
@@ -1718,7 +1775,7 @@ i livelli sono disposti cosi in realta':1 8
                           break;
                         case 10: //levelDefeated
                           var nuovoElementino="";
-                          for (k=0; k<9; k++){
+                          for (k=0; k<8; k++){
                             for(j=0; j<stringaElemento.length;j++){
                               if(stringaElemento[j]!=","){
                                 nuovoElementino+=stringaElemento[j];
@@ -1735,7 +1792,7 @@ i livelli sono disposti cosi in realta':1 8
                           break;
                         case 11: //heartAcquired
                           var nuovoElementino="";
-                          for (k=0; k<9; k++){
+                          for (k=0; k<8; k++){
                             for(j=0; j<stringaElemento.length;j++){
                               if(stringaElemento[j]!=","){
                                 nuovoElementino+=stringaElemento[j];
@@ -1777,6 +1834,23 @@ i livelli sono disposti cosi in realta':1 8
                         case 19:
                           if(stringaElemento=="true"){subtank[3].acquired=true;
                           }else{subtank[3].acquired=false; subtank[3].life=0;}
+                          break;
+                        case 20: //armaturaAcquired
+                          var nuovoElementino="";
+                          for (k=0; k<4; k++){
+                            for(j=0; j<stringaElemento.length;j++){
+                              if(stringaElemento[j]!=","){
+                                nuovoElementino+=stringaElemento[j];
+                                if (nuovoElementino=="true"){
+                                  armaturaAcquired[k]=true; nuovoElementino=""; k++;
+                                }else if (nuovoElementino=="false"){
+                                  armaturaAcquired[k]=false; nuovoElementino=""; k++;
+                                }   
+                              }else{
+                                nuovoElementino="";
+                              }                            
+                            }
+                          }                        
                           break;                                  
                    }
                 }    
@@ -1884,6 +1958,7 @@ i livelli sono disposti cosi in realta':1 8
     for (i=0; i<4; i++){
         stringaSalvataggio+="|"+subtank[i].life+"|"+subtank[i].acquired;
     }
+    stringaSalvataggio+="|"+armaturaAcquired;    
     {//creo il file simpleXjs.dataDiOggi.savegame da scaricare
         const dataDiOggi=creaData(); //prende la data di oggi
         var element = document.createElement('a');
