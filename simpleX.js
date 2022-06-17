@@ -424,7 +424,7 @@ i livelli sono disposti cosi in realta':1 8
         this.life= 1;
         this.type= "sparoDelPlayer";
         this.damage= 1;
-        this.facingRight= player.facingRight;        
+        this.facingRight=player.facingRight;        
         if(this.facingRight){
          this.x= player.x+player.width+6;
         }else{
@@ -435,78 +435,96 @@ i livelli sono disposti cosi in realta':1 8
         this.width= larghezza;
         this.height= altezza;
         this.lato=this.height/3;
-        this.deltaY=0;
-        this.deltaYGoingUp=false;
-        this.y= player.y+9;
+        this.y=player.y+9;
         this.startingY=this.y+(this.height/2)-(this.lato/2);
-        this.color= player.charge0color;
+        this.movingY=this.startingY;
+        this.firstMovingY=this.startingY;
+        this.goingUp=true;
+        this.color=player.charge0color;
         //this.speed= 3.9;
-        this.speed= 1;
-        this.perforation= false;
+        this.speed=0.5;
+        this.perforation=false;
         this.canPassWall=false;
         this.hasPhysics=true;
+        this.nextGoUp=true;
+        this.nextAnimation=passatoCanSelfDraw;
         this.canSelfDraw=passatoCanSelfDraw;
-        this.selfDraw= function( xdisegnata, ydisegnata, indiceDiQuestaEntity){
-        	/*ctx.fillStyle=this.color+"80";
-        	ctx.fillRect(xdisegnata+this.width, ydisegnata, -this.width*3, this.height);
-        	ctx.fillStyle=this.color;//*/
+        //this.canSelfDraw=false;
+        this.selfDraw= function(xdisegnata, ydisegnata, indiceDiQuestaEntity){
+        	/*ctx.fillStyle=this.color+"80"; //disegna l'hitbox
+        	ctx.fillRect(xdisegnata+this.width, ydisegnata, -this.width, this.height);
+        	ctx.fillStyle=this.color;//*/        	
+        	//ctx.strokeRect(xdisegnata+this.width, ydisegnata, -this.width, this.height);//solo xmax, ymax e ymin
         	if(this.facingRight){
 	        	var xMax=this.startingX;
 	        	xdisegnata+=this.width;
         	}else{
 	        	var xMax=this.startingX-this.width; 
 	        	var xMax=this.startingX;
-        	}
-        	ydisegnata=ydisegnata+(this.height/2)-(this.lato/2);        	
-        	var yMax=ydisegnata-(this.height/2); 
-        	var yMin=ydisegnata+(this.height/2);
-        	//su e giu del primo blocco
-			if((ydisegnata+(this.deltaY*this.lato)/4) > yMin){
-				this.deltaYGoingUp=true;
-			}
-			if((ydisegnata+(this.deltaY*this.lato)/4) < yMax){
-				this.deltaYGoingUp=false;
-			}
-			if(this.deltaYGoingUp){
-				this.deltaY--;
-			}else{
-				this.deltaY++;
-			}
-			ydisegnata=ydisegnata+this.deltaY;
-			//console.log("ydisegnata: "+ydisegnata+", yMin: "+yMin+", yMax: "+yMax+", this.deltaY: "+this.deltaY);        	
-        	//ora disegna
-        	var j=0;
-        	this.goingUp=false;
-			for(i=0; i<10; i++){
+        	}        	
+        	var yMax=this.startingY-(this.height/2)-this.lato; 
+        	var yMin=this.startingY+(this.height/2)-this.lato;        	
+
+        	this.nextAnimation=true;
+			for(i=0; i<12; i++){
+				if(this.nextAnimation){
+		            if (player.y < canvasHeight/2){//calcola da capo la nuova ydisegnata, partendo da this.firstMovingY
+		              ydisegnata=this.firstMovingY;
+		            }else{
+		              if (player.y > level.maxHeight-canvasHeight/2){
+		                ydisegnata=this.firstMovingY-level.maxHeight+canvasHeight;
+		              }else{
+		                ydisegnata=this.firstMovingY-player.y+canvasHeight/2;
+		              }
+		            }
+		            if(i==0){
+		            	if(this.goingUp){
+		            		this.firstMovingY=this.firstMovingY-(this.lato/4);
+		            		if(this.firstMovingY-(this.lato/4)<yMax){this.goingUp=false;}
+		            		this.movingY=this.firstMovingY;
+		            		ydisegnata=ydisegnata-(this.lato/4);
+							if(this.movingY-(this.lato/4)<yMax){
+								this.nextGoUp=false;
+							}		            		
+		            	}else{
+		            		this.firstMovingY=this.firstMovingY+(this.lato/4);
+		            		if(this.firstMovingY+(this.lato/4)>yMin){this.goingUp=true;}
+		            		this.movingY=this.firstMovingY;
+		            		ydisegnata=ydisegnata+(this.lato/4);
+							if(this.movingY+(this.lato/4)>yMin){
+								this.nextGoUp=true;
+							}		            		
+		            	}
+		            }else{				
+						if(this.nextGoUp){
+							this.movingY=this.movingY-(this.lato/4);
+							ydisegnata=ydisegnata-(this.lato/4);
+							if(this.movingY-(this.lato/4)<yMax){
+								this.nextGoUp=false;
+							}
+						}else{
+							this.movingY=this.movingY-(this.lato/4);
+							ydisegnata=ydisegnata+(this.lato/4);
+							if(this.movingY+(this.lato/4)>yMin){
+								this.nextGoUp=true;
+							}					
+						}
+					}
+				}
 				if(this.facingRight){
-					if((ydisegnata+(j*this.lato)/4) > yMin){
-						this.goingUp=true;
-					}
-					if((ydisegnata+(j*this.lato)/4) < yMax){
-						this.goingUp=false;
-					}
-					if(this.goingUp){
-						j--;
-					}else{
-						j++;
-					}
-					ctx.fillRect(xdisegnata-2*i-(i*this.lato), (ydisegnata+(j*this.lato)/4), this.lato, this.lato);
+					ctx.fillRect(xdisegnata-2*i-(i*this.lato), ydisegnata, this.lato, this.lato);
 					if(((this.x+this.width)-2*i-(i*this.lato))<xMax){
 						break;
 					}
 				}else{
-					if(ydisegnata+2+(i*this.lato/4)<yMin){
-						ctx.fillRect(xdisegnata+2*i+(i*this.lato), (ydisegnata+2+(i*this.lato/4)), this.lato, this.lato);	
-					}else{
-						ctx.fillRect(xdisegnata+2*i+(i*this.lato), (ydisegnata-2-(i*this.lato/4)), this.lato, this.lato);	
-					}				
+					ctx.fillRect(xdisegnata-2*i-(i*this.lato), ydisegnata, this.lato, this.lato);				
 					if((this.x-this.width+2*i+(i*this.lato))>xMax){
 						break;
 					}
 					
 				}
 			}
-        }//*/
+        }
         this.physics= function( xdisegnata, ydisegnata, indiceDiQuestaEntity){
           //movimento dello sparo
           if (this.facingRight){
