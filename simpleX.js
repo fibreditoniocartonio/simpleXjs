@@ -447,7 +447,6 @@ i livelli sono disposti cosi in realta':1 8
         this.canPassWall=false;
         this.hasPhysics=true;
         this.nextGoUp=true;
-        this.nextAnimation=passatoCanSelfDraw;
         this.canSelfDraw=passatoCanSelfDraw;
         //this.canSelfDraw=false;
         this.selfDraw= function(xdisegnata, ydisegnata, indiceDiQuestaEntity){
@@ -465,50 +464,44 @@ i livelli sono disposti cosi in realta':1 8
         	var yMax=this.startingY-(this.height/2)-this.lato; 
         	var yMin=this.startingY+(this.height/2)-this.lato;        	
 
-        	this.nextAnimation=true;
+			//ricalcolaYdisegnata(this.firstMovingY);
 			for(i=0; i<12; i++){
-				if(this.nextAnimation){
-		            if (player.y < canvasHeight/2){//calcola da capo la nuova ydisegnata, partendo da this.firstMovingY
-		              ydisegnata=this.firstMovingY;
-		            }else{
-		              if (player.y > level.maxHeight-canvasHeight/2){
-		                ydisegnata=this.firstMovingY-level.maxHeight+canvasHeight;
-		              }else{
-		                ydisegnata=this.firstMovingY-player.y+canvasHeight/2;
-		              }
-		            }
-		            if(i==0){
-		            	if(this.goingUp){
-		            		this.firstMovingY=this.firstMovingY-(this.lato/4);
-		            		if(this.firstMovingY-(this.lato/4)<yMax){this.goingUp=false;}
-		            		this.movingY=this.firstMovingY;
-		            		ydisegnata=ydisegnata-(this.lato/4);
-							if(this.movingY-(this.lato/4)<yMax){
-								this.nextGoUp=false;
-							}		            		
-		            	}else{
-		            		this.firstMovingY=this.firstMovingY+(this.lato/4);
-		            		if(this.firstMovingY+(this.lato/4)>yMin){this.goingUp=true;}
-		            		this.movingY=this.firstMovingY;
-		            		ydisegnata=ydisegnata+(this.lato/4);
-							if(this.movingY+(this.lato/4)>yMin){
-								this.nextGoUp=true;
-							}		            		
-		            	}
-		            }else{				
-						if(this.nextGoUp){
-							this.movingY=this.movingY-(this.lato/4);
-							ydisegnata=ydisegnata-(this.lato/4);
-							if(this.movingY-(this.lato/4)<yMax){
-								this.nextGoUp=false;
-							}
-						}else{
-							this.movingY=this.movingY-(this.lato/4);
-							ydisegnata=ydisegnata+(this.lato/4);
-							if(this.movingY+(this.lato/4)>yMin){
-								this.nextGoUp=true;
-							}					
+	            if(i==0){//se e' il primo quadretto
+	            	if(this.goingUp){
+	            		this.firstMovingY=this.firstMovingY-(this.lato/4);
+	            		if(this.firstMovingY-(this.lato/4)<yMax){this.goingUp=false;}
+	            		this.movingY=this.firstMovingY;
+	            		ricalcolaYdisegnata(this.firstMovingY);
+	            		//ydisegnata=ydisegnata-(this.lato/4);
+						if(this.movingY-(this.lato/4)<yMax){
+							this.nextGoUp=false;
+						}		            		
+	            	}else{
+	            		this.firstMovingY=this.firstMovingY+(this.lato/4);
+	            		if(this.firstMovingY+(this.lato/4)>yMin){this.goingUp=true;}
+	            		this.movingY=this.firstMovingY;
+	            		ricalcolaYdisegnata(this.firstMovingY);
+	            		//ydisegnata=ydisegnata+(this.lato/4);
+						if(this.movingY+(this.lato/4)>yMin){
+							this.nextGoUp=true;
+						}		            		
+	            	}
+	            }else{//dal secondo quadretto in poi           
+	            	//alert("this.movingY:"+this.movingY+", yMax:"+yMax+", yMin:"+yMin+", ydisegnata:"+ydisegnata);				
+					if(this.nextGoUp){
+						this.movingY=this.movingY-(this.lato/4);
+						ricalcolaYdisegnata(this.movingY);
+						//ydisegnata=ydisegnata-(this.lato/4);
+						if(this.movingY-(this.lato/4) < yMax){
+							this.nextGoUp=false;
 						}
+					}else{
+						this.movingY=this.movingY-(this.lato/4);
+						ricalcolaYdisegnata(this.movingY);
+						//ydisegnata=ydisegnata+(this.lato/4);
+						if(this.movingY+(this.lato/4)>yMin){
+							this.nextGoUp=true;
+						}					
 					}
 				}
 				if(this.facingRight){
@@ -523,6 +516,17 @@ i livelli sono disposti cosi in realta':1 8
 					}
 					
 				}
+			}
+			function ricalcolaYdisegnata(realY){
+	            if (player.y < canvasHeight/2){//calcola da capo la nuova ydisegnata, partendo da this.firstMovingY
+	              ydisegnata=realY;
+	            }else{
+	              if (player.y > level.maxHeight-canvasHeight/2){
+	                ydisegnata=realY-level.maxHeight+canvasHeight;
+	              }else{
+	                ydisegnata=realY-player.y+canvasHeight/2;
+	              }
+	            }				
 			}
         }
         this.physics= function( xdisegnata, ydisegnata, indiceDiQuestaEntity){
@@ -541,6 +545,10 @@ i livelli sono disposti cosi in realta':1 8
 	              this.life--;
 	            }
 	          }
+          }else{
+          	if(this.x>level.maxWidth+100 || this.x<-100){
+          		this.life=0;
+          	}
           }
           //collisione dello sparo con altre entita'
           for (i=0; i<entity.length;i++){
