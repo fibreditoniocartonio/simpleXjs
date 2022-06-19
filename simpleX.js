@@ -541,7 +541,7 @@ i livelli sono disposti cosi in realta':1 8
 
       function newSparoCharge3(xPassata,yPassata,larghezza,altezza,indicePassato,faceRight,goUp) {//lo sparo creato dal player - carica 3
       	this.index=indicePassato;
-      	this.numeroFigli=10;
+      	this.numeroFigli=5;
         this.life= 1;
         this.type= "sparoDelPlayer";
         this.damage= 1;
