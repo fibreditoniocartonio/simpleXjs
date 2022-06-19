@@ -155,7 +155,6 @@
     		{lifeMax: 20, life:parseInt(0,10), acquired:false},
       ];
       armaturaAcquired = [false, false, false, false];//vettore che tiene quante armatura e' stata trovata - 0:testa, 1:gambe, 2:buster, 3:corpo (quando ci sara': 4:aduchen)
-      //armaturaAcquired = [true, true, true, true];//vettore che tiene quante armatura e' stata trovata - 0:testa, 1:gambe, 2:buster, 3:corpo (quando ci sara': 4:aduchen)
       
   //gamestate - se tutti i gamestate sono false lo stato e' "in gioco"
   var stageSelection=false; //stato: selezione del livello
@@ -272,7 +271,7 @@ i livelli sono disposti cosi in realta':1 8
 				//caratteri per copiare/incollare:  ⁰ ¹ ² ³ ⁴ ⁵ ⁶ ⁷ ⁸ ⁹
 			        var cuore = new newPickUp_Cuore(lvlString[i]);
 				    cuore.x= (i%widthTot)*20;
-				    cuore.y= (heightTot-1)*20; 
+				    cuore.y= (heightTot-1)*20-1; 
 					entity.push(cuore);
 					if(lvlString[i-1]=='p' || lvlString[i-1]=='q' || lvlString[i-1]=='r' ){leggiBlocco(background,lvlString[i-1]);} //se il blocco prima era un background lo carica sotto la entita' letta
 				    break;				    
@@ -560,7 +559,6 @@ i livelli sono disposti cosi in realta':1 8
         this.startingDirection=goUp;
         this.goingUp=goUp;
         this.color=player.charge0color;
-        //this.speed= 3.9;
         this.speed=2.5;
         this.ySpeed=2.5;//velocita con cui va su e giu
         this.perforation=true;
@@ -579,12 +577,14 @@ i livelli sono disposti cosi in realta':1 8
 	        if (this.goingUp){
 	          this.yv -= this.ySpeed;
 	          if(this.y < this.minY){
+	          	//alert("min.y:"+this.y+"start.y:"+this.startingY);
 	          	this.goingUp=false;
 	          }
 	        }else{
 	          this.yv += this.ySpeed;
 	          if(this.y > this.maxY){
 	          	this.goingUp=true;
+	          	//alert("max.y:"+this.y+"start.y:"+this.startingY);
 	          }	          
 	        }
 	        this.yv *= level.friction;
@@ -853,7 +853,7 @@ i livelli sono disposti cosi in realta':1 8
 			}else{//da qui inizia this.physics vero e proprio
 				if(collisionBetween(this, player)) {//quando il player lo raccoglie
 					this.life=-1;
-					alert("You have found a Heart! Max life augmented(+2)");
+					alert("You have found a Heart! Max life augmented.");
 					keys=[]; tastoGiaSchiacciato=false//per non buggarsi con gli alert()
 					heartAcquired[this.indice]=true;
 					player.lifeMax+=2;
@@ -1224,12 +1224,21 @@ i livelli sono disposti cosi in realta':1 8
 	            	if (player.carica > 150 && armaturaAcquired[2]){//charge 3 shoot
 	            		var latoCubottiSparo=15;
 				        if(player.facingRight){
-				        	var sparo = new newSparoCharge3((player.x+player.width+6),(player.y+3+(latoCubottiSparo/2)),latoCubottiSparo,latoCubottiSparo,0,player.facingRight,true);			        	
+				        	var sparo = new newSparoCharge3((player.x+player.width+6),(player.y+3+(latoCubottiSparo/2)),latoCubottiSparo,latoCubottiSparo,0,player.facingRight,true);
+				        	var sparoInvisibile = new newSparo(1,55);
+				        	sparoInvisibile.x=(player.x+player.width+6);
 				        }else{
 				        	var sparo = new newSparoCharge3((player.x-6-latoCubottiSparo),(player.y+3+(latoCubottiSparo/2)),latoCubottiSparo,latoCubottiSparo,0,player.facingRight,true);
+				        	var sparoInvisibile = new newSparo(1,55);
+				        	sparoInvisibile.x=(player.x-6-latoCubottiSparo);				        	
 				        }
 		                sparo.color= player.charge3color;
+		                sparoInvisibile.color= "#00000000";//sono 8 zeri invece che 6, gli ultimi due indicano il canale alpha(trasparenza)
+		                sparoInvisibile.speed=sparo.speed;
+			        	sparoInvisibile.y=sparo.startingY-20;
+			        	sparoInvisibile.canPassWall=true;		                
 		                entity.push(sparo);
+		                entity.push(sparoInvisibile);
 	            		var latoCubottiSparo=15;
 				        if(player.facingRight){
 				        	var sparo = new newSparoCharge3((player.x+player.width+6),(player.y+3+(latoCubottiSparo/2)),latoCubottiSparo,latoCubottiSparo,0,player.facingRight,false);			        	
@@ -2393,6 +2402,7 @@ i livelli sono disposti cosi in realta':1 8
         element.click();
         document.body.removeChild(element);
         alert("Downloading the save file...");
+        keys=[];//evita i bug dopo gli alert
         return;
         
         function creaData(){
