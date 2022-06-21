@@ -1,4 +1,4 @@
-      var versioneDiGioco = "v0.20220620"
+      var versioneDiGioco = "v0.20220621"
       //crea il canvas
       var canvasWidth = 720;
       var canvasHeight = 540;
