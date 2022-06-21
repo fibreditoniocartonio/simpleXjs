@@ -557,9 +557,9 @@ i livelli sono disposti cosi in realta':1 8
             }
           }
           
-          if(this.active && (this.life<1 || ((this.x > (player.x+player.width+(canvasWidth/2)))||( this.x < (player.x-(canvasWidth/2)))))){
+          if(this.active && (this.life<1 || ((xdisegnata > canvasWidth)||( xdisegnata+this.width < 0)))){
             player.activeShot=player.activeShot-1;
-            this.active=false;       
+            this.active=false;
           }
         }
       }
@@ -647,7 +647,7 @@ i livelli sono disposti cosi in realta':1 8
           
           if(this.main){
             //disattiva colpi su schermo
-            if(this.active && (this.life<1 || ((this.x > (player.x+player.width+(canvasWidth/2)))||( this.x < (player.x-(canvasWidth/2)))))){
+            if(this.active && (this.life<1 || ((xdisegnata > canvasWidth)||( xdisegnata+this.width < 0)))){
               player.activeShot=player.activeShot-1; 
               this.active=false;       
             }
@@ -762,12 +762,12 @@ i livelli sono disposti cosi in realta':1 8
 	        this.speedX2-=0.2;
 			this.speed+=0.2;		  	
           }else{//da qui in poi insegue il player
-          	if(this.x>player.x+player.width){
+          	if(this.x>player.x+(player.width/2)){
           		this.xv += this.speed/2;
           	}else{
           		this.xv -= this.speed/2;	
           	}
-          	if(this.y>player.y+player.height){
+          	if(this.y>player.y+(player.height/2)){
           		this.yv += this.speed/2;
           	}else{
           		this.yv -= this.speed/2;	
@@ -818,7 +818,7 @@ i livelli sono disposti cosi in realta':1 8
           	if(!this.hitSomething){player.power[6].usage++;}
           	this.life=-1;
           }          
-          if(this.active && (this.life<1 || ((this.x > (player.x+player.width+(canvasWidth/2)))||( this.x < (player.x-(canvasWidth/2)))))){
+          if(this.active && (this.life<1 || ((xdisegnata > canvasWidth)||( xdisegnata+this.width < 0)))){
             player.activeShot=player.activeShot-1;
             this.active=false;       
           }
@@ -925,7 +925,7 @@ i livelli sono disposti cosi in realta':1 8
           
           if(this.isFather){
             //disattiva colpi su schermo
-            if(this.active && (this.life<1 || ((this.x > (player.x+player.width+(canvasWidth/2)))||( this.x < (player.x-(canvasWidth/2)))))){
+            if(this.active && (this.life<1 || ((xdisegnata > canvasWidth)||( xdisegnata+this.width < 0)))){
               this.active=false;
               player.activeShot=player.activeShot-3;       
             }
@@ -1512,7 +1512,7 @@ i livelli sono disposti cosi in realta':1 8
           if(collisionBetween(p1, lvl[i])) {
             p1.y += -p1.yv;            
             if(keys[dashkey] && player.canMove && armaturaAcquired[1]) {//dash
-              p1.speed=p1.defaultspeed*2.5;
+              p1.speed=p1.defaultspeed*2.25;
             }else{
               p1.speed=player.defaultspeed;
             }            
@@ -1666,8 +1666,8 @@ i livelli sono disposti cosi in realta':1 8
       	            player.carica=0;
       	            player.giasparato=false;
                 }else{
-                    if (player.carica > 150 && armaturaAcquired[2]){//charge 3 shoot dei poteri
-                        switch(player.activePower){
+                    if (player.carica > 150 && armaturaAcquired[2]){
+                        switch(player.activePower){//poteri caricati
                           case 1: break;
                           case 2: break; 
                           case 3: break;
@@ -1701,7 +1701,7 @@ i livelli sono disposti cosi in realta':1 8
             p1.y += p1.slope;
             p1.x -= -p1.xv;
             if(keys[dashkey] && player.canMove && armaturaAcquired[1]) {//wall dash
-              p1.speed=p1.defaultspeed*2.5;
+              p1.speed=p1.defaultspeed*2.25;
             }else{
               p1.speed=player.defaultspeed;
             }           
@@ -1709,9 +1709,9 @@ i livelli sono disposti cosi in realta':1 8
               if(!p1.giasaltato) { 
                 p1.yv = -p1.jumpheight + 1;
                 if(p1.xv > 0) {
-                  p1.xv = -10;
+                  p1.xv = -9.9;
                 } else {
-                  p1.xv = 10;
+                  p1.xv = 9.9;
                 }
                 p1.giasaltato = true;
               } else {
@@ -2840,8 +2840,7 @@ i livelli sono disposti cosi in realta':1 8
         document.body.appendChild(element);
         element.click();
         document.body.removeChild(element);
-        alert("Downloading the save file...");
-        keys=[];//evita i bug dopo gli alert
+        document.getElementById('canvasDivId').focus();
         return;
         
         function creaData(){
