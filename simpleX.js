@@ -674,6 +674,156 @@ i livelli sono disposti cosi in realta':1 8
 			}//fine di crea figlio
 	      }//fine di this.physics      
       }
+
+      function newBoomerangCutter(larghezza,altezza) {//lo sparo creato dal player
+        this.type= "sparoDelPlayer";
+        this.damage= 1;      
+        this.life= 1;
+        this.active=true;
+        if(player.yv>0){
+        	this.goUp=false;
+        }else{
+        	this.goUp=true;
+        }
+        this.facingRight=player.facingRight;        
+        if(this.facingRight){
+         this.x= player.x+player.width+6;
+        }else{
+         this.x= player.x-6-larghezza; 
+        }
+        this.xv= 0;
+        this.yv= 0;
+        this.rotation=0;
+        this.width= larghezza;
+        this.height= altezza;
+        this.y=player.y+9;
+        this.color=player.charge0color;
+        this.speedX= 2.6;
+        this.speedY= 0;
+        this.speedX2= 0;
+        this.speed= 0;
+        this.entityPickedIndex=-1;
+        this.hitSomething=false;
+        this.perforation=true;
+        this.canPassWall=true;
+        this.hasPhysics=true;
+        this.canSelfDraw=true;
+        this.selfDraw= function (xdisegnata, ydisegnata, indiceDiQuestaEntity){
+          ctx.strokeStyle=player.power[6].color1;
+          ctx.beginPath();
+	      ctx.lineWidth = 8;
+	      ctx.moveTo(xdisegnata, ydisegnata);
+	      ctx.lineTo(xdisegnata+this.width-(ctx.lineWidth/2), ydisegnata);
+          ctx.lineTo(xdisegnata+this.width, ydisegnata+this.height-(ctx.lineWidth/2));
+	      ctx.stroke();
+	      ctx.lineWidth = 4;
+	      ctx.strokeStyle=player.power[6].color2;
+	      ctx.stroke();
+        }        
+        this.physics= function( xdisegnata, ydisegnata, indiceDiQuestaEntity){
+          //movimento dello sparo
+          if(this.speedX>0){
+	        if (this.facingRight){
+	          this.xv -= this.speedX;
+	        }else{
+	          this.xv += this.speedX;
+	        }
+	        if (this.goUp){
+	          this.yv += this.speedY;
+	        }else{
+	          this.yv -= this.speedY;
+	        }	          	          
+	        this.speedX-=0.2;
+			this.speedY+=0.2;
+		  }else if(this.speedY>0){
+	        if (this.facingRight){
+	          this.xv += this.speedX2;
+	        }else{
+	          this.xv -= this.speedX2;
+	        }
+	        if (this.goUp){
+	          this.yv += this.speedY;
+	        }else{
+	          this.yv -= this.speedY;
+	        }          	          
+	        this.speedY-=0.2;
+			this.speedX2+=0.2;
+		  }else if (this.speedX2>0){
+	        if (this.facingRight){
+	          this.xv += this.speedX2;
+	        }else{
+	          this.xv -= this.speedX2;
+	        }
+	        if (this.goUp){
+	          this.yv -= this.speed;
+	        }else{
+	          this.yv += this.speed;
+	        }          	          
+	        this.speedX2-=0.2;
+			this.speed+=0.2;		  	
+          }else{//da qui in poi insegue il player
+          	if(this.x>player.x+player.width){
+          		this.xv += this.speed/2;
+          	}else{
+          		this.xv -= this.speed/2;	
+          	}
+          	if(this.y>player.y+player.height){
+          		this.yv += this.speed/2;
+          	}else{
+          		this.yv -= this.speed/2;	
+          	}          	
+          }
+          this.xv *= level.friction;
+          this.x += -this.xv;
+          this.yv *= level.friction;
+          this.y += -this.yv;
+          	             
+          //collisione dello sparo con level
+          if(!this.canPassWall){
+	          for (i=0; i<level.length;i++){
+	            if (collisionBetween(this,level[i])){
+	              this.life=-1;
+	            }
+	          }
+          }else{
+	        	if((this.x > (player.x+player.width+(canvasWidth*2)))||( this.x < (player.x-(canvasWidth*2)))){
+	        		this.life=-1;
+	        	}          
+          }
+          //collisione dello sparo con altre entita'
+          for (i=0; i<entity.length;i++){
+            if (!(i == indiceDiQuestaEntity)){//danno ai mostri
+              if ( entity[i].life > 0 && !(this.type == entity[i].type || entity[i].type=="pickup" )  && collisionBetween(this,entity[i]) ){	//controlla che l'entita da colpire sia viva, che non siano lo stesso proiettile e infine se c'è una collisione
+                entity[i].life-=this.damage;
+                this.hitSomething=true;
+                if (!(entity[i].life < 1 && this.perforation)){
+                  this.life=-1;
+                }
+              }
+			  if(this.entityPickedIndex==-1){//raccoglie gli oggetti
+			  	if(entity[i].life > 0 && entity[i].type=="pickup"){
+			  		if(collisionBetween(this,entity[i])){
+		              	this.entityPickedIndex=i;
+		              	this.hitSomething=true;			  			
+			  		}
+			  	}
+			  }
+            }
+          }
+          if(this.entityPickedIndex!=-1){
+          	entity[this.entityPickedIndex].x=this.x;
+          	entity[this.entityPickedIndex].y=this.y;
+          }
+          if(collisionBetween(this,player) && this.speedX<0.3){
+          	if(!this.hitSomething){player.power[6].usage++;}
+          	this.life=-1;
+          }          
+          if(this.active && (this.life<1 || ((this.x > (player.x+player.width+(canvasWidth/2)))||( this.x < (player.x-(canvasWidth/2)))))){
+            player.activeShot=player.activeShot-1;
+            this.active=false;       
+          }
+        }
+      }
       
       function newShotgunIce(xPassataR,xPassataL,yPassata,larghezza,altezza,isPadrePassato,xSpeedPassato,ySpeedPassato,facingRightPassato) {//lo sparo creato dal player - shotgun ice charge 0
         this.life= 1;
@@ -1219,47 +1369,6 @@ i livelli sono disposti cosi in realta':1 8
         }
       }
 
-      /*function drawHUD(){
-      	var barLenght=player.lifeMax*6+40;
-      	var barHeight=30;
-		if(player.activePower!=0){//barra potere - la disegno prima cosi' va sotto
-	      	ctx.fillStyle = '#9e9e9e';
-			ctx.fillRect(8, 8+barHeight-5, barLenght-4-1, 16-1);
-			ctx.fillStyle = '#3d3b3b';
-			ctx.fillRect(10, 10+barHeight-5, barLenght-4, 16);
-			lineWidth=((barLenght-10)/player.power[player.activePower-1].usageMax)-1;
-			for (i=0; i < player.power[player.activePower-1].usageMax; i++){ //disegno le barre della vita
-				if (i < player.power[player.activePower-1].usage){
-					ctx.fillStyle = player.power[player.activePower-1].color1;
-				}else{
-					ctx.fillStyle = '#797979';
-				}
-				ctx.fillRect(13+(i*(lineWidth+1)), 15+barHeight-5, lineWidth, 8);
-			}
-		}      	
-      	ctx.fillStyle = '#9e9e9e';
-		ctx.fillRect(8, 8, barLenght-1, barHeight-1);
-		ctx.fillStyle = '#3d3b3b';
-		ctx.fillRect(10, 10, barLenght, barHeight);		
-		ctx.beginPath();//ora inizio a disegnare la x che sara' del colore del player attivo
-		ctx.lineWidth = "7";
-		ctx.strokeStyle = player.color1;
-		ctx.moveTo(15, 15);
-		ctx.lineTo(35, 35);
-		ctx.stroke(); // Disegna la prima meta'della X
-		ctx.moveTo(35, 15);
-		ctx.lineTo(15, 35);
-		ctx.stroke(); // Disegna la seconda meta'della X				
-		for (i=0; i < player.lifeMax; i++){ //disegno le barre della vita
-			if (i < player.life){
-				ctx.fillStyle = player.charge0color;
-			}else{
-				ctx.fillStyle = '#797979';
-			}
-			ctx.fillRect(i*6+43, 15, 5, 20);
-		}
-      }*/
-
       function drawHUD(){
       	var barLenght=16*6+40;
       	var barHeight=30;
@@ -1472,7 +1581,7 @@ i livelli sono disposti cosi in realta':1 8
                   player.activeShot++;
               }else{
                 if(player.power[player.activePower-1].usage>0){
-                  player.power[player.activePower-1].usage-=2; 
+                  player.power[player.activePower-1].usage--;
                   switch(player.activePower){ 
                     /*HomingTorpedo*/   case 1: break;
                     /*ChameleonSting*/  case 2: break; 
@@ -1480,8 +1589,8 @@ i livelli sono disposti cosi in realta':1 8
                     /*Storm*/           case 4: break;
                     /*Fire*/            case 5: break;
                     /*Electric*/        case 6: break;
-                    /*Boomerang*/       case 7: break;
-                    /*ShotgunIce*/      case 8: var sparo = new newShotgunIce(player.x+player.width+6,player.x-6-15,player.y+9,15,15,true,2.5,0,player.facingRight); entity.push(sparo); player.activeShot=player.activeShot+3; break;               
+                    /*Boomerang*/       case 7: var sparo = new newBoomerangCutter(15,15,true); entity.push(sparo); player.activeShot=player.activeShot+1; break;
+                    /*ShotgunIce*/      case 8: var sparo = new newShotgunIce(player.x+player.width+6,player.x-6-15,player.y+9,15,15,true,2.5,0,player.facingRight); entity.push(sparo); player.activeShot=player.activeShot+3; break;
                   }
                 }
               }
