@@ -43,12 +43,12 @@
         this.slope= 0;
         this.width= 24;
         this.height= 38;
-        this.color1= '#0300d0';
-        this.color2= '#005fbd';
-        this.coloreArmatura='#c8c8c8';
-        this.defaultColor1='#0300d0';
-        this.defaultColor2='#005fbd';
-        this.defaultColoreArmatura='#c8c8c8';
+        this.color1= '#003ef0';
+        this.color2= '#3AB7D4';
+        this.coloreArmatura='#e1e1e1';
+        this.defaultColor1='#003ef0';
+        this.defaultColor2='#3AB7D4';
+        this.defaultColoreArmatura='#e1e1e1';
         this.damagedColor='#990003';
         this.charge0color='#ffc000';
         this.charge1color='#49ff37';
@@ -67,16 +67,17 @@
         this.activePower=0;
         this.activeShot=0;
         this.power = [ //vettore dei poteri
-        {usageMax: 32, usage:32, color1:'#8e8363', color2:'#8e8363', nome:'Homing Torpedo'},
-        {usageMax: 32, usage:32, color1:'#00af3b', color2:'#00af3b', nome:'Chameleon Sting'},
-        {usageMax: 32, usage:32, color1:'#ff6666', color2:'#ff6666', nome:'Rolling Shield'},
-        {usageMax: 32, usage:32, color1:'#ff5a00', color2:'#ff5a00', nome:'Fire Wave'},
-        {usageMax: 32, usage:32, color1:'#e40097', color2:'#e40097', nome:'Storm Tornado'},
-        {usageMax: 32, usage:32, color1:'#e5ac00', color2:'#e5ac00', nome:'Electric Spark'},
-        {usageMax: 32, usage:32, color1:'#65766b', color2:'#65766b', nome:'Boomerang Cutter'},
-        {usageMax: 32, usage:32, color1:'#05e9ff', color2:'#05e9ff', nome:'Shotgun Ice'},
+        {usageMax: 32, usage:32, color1:'#687968', color2:'#d9b289', nome:'Homing Torpedo'},
+        {usageMax: 32, usage:32, color1:'#1a914f', color2:'#60d1aa', nome:'Chameleon Sting'},
+        {usageMax: 32, usage:32, color1:'#e13e60', color2:'#a1c1aa', nome:'Rolling Shield'},
+        {usageMax: 32, usage:32, color1:'#f14f02', color2:'#f8e179', nome:'Fire Wave'},
+        {usageMax: 32, usage:32, color1:'#e40097', color2:'#e191c1', nome:'Storm Tornado'},
+        {usageMax: 32, usage:32, color1:'#f8b202', color2:'#a1a1a1', nome:'Electric Spark'},
+        {usageMax: 32, usage:32, color1:'#606081', color2:'#81aa89', nome:'Boomerang Cutter'},
+        {usageMax: 32, usage:32, color1:'#35e1f8', color2:'#f8e14f', nome:'Shotgun Ice'},
         ];
         this.disegnaPlayer = function (xdisegnata,ydisegnata,larghezza,altezza,dettagli,colore1,colore2,coloreArmatura){
+        	  var coloreTemp=colore2;
               ctx.fillStyle = colore1;
               //testa
               ctx.fillRect(xdisegnata+(larghezza/2)-6, ydisegnata-2, 12, 12);
@@ -109,7 +110,12 @@
                 if(armaturaAcquired[1]){
                   ctx.fillStyle = coloreArmatura;
                   ctx.fillRect(xdisegnata+(larghezza/2)-8, ydisegnata+(altezza)-6, 6, 6);
-                  ctx.fillRect(xdisegnata+(larghezza/2)+2, ydisegnata+(altezza)-6, 6, 6);                  
+                  ctx.fillRect(xdisegnata+(larghezza/2)+2, ydisegnata+(altezza)-6, 6, 6);
+                  if(armaturaAcquired=="true,true,true,true"){
+	                  ctx.fillStyle = coloreTemp;
+	                  ctx.fillRect(xdisegnata+(larghezza/2)-8, ydisegnata+(altezza)-8, 6, 2);
+	                  ctx.fillRect(xdisegnata+(larghezza/2)+2, ydisegnata+(altezza)-8, 6, 2);
+                  }
                 }
                 //braccia
                 ctx.fillStyle = colore2;                
@@ -119,7 +125,12 @@
                   if(armaturaAcquired[2]){
                     ctx.fillStyle = coloreArmatura;
                     ctx.fillRect(xdisegnata+2-6, ydisegnata+11+10, 6, 5);
-                    ctx.fillRect(xdisegnata+(larghezza)-2+15-5, ydisegnata+11, 5, 6);                    
+                    ctx.fillRect(xdisegnata+(larghezza)-2+15-5, ydisegnata+11, 5, 6);
+                    if(armaturaAcquired=="true,true,true,true"){
+                    	ctx.fillStyle = coloreTemp;
+	                    ctx.fillRect(xdisegnata+2-6, ydisegnata+11+10-2, 6, 2);
+	                    ctx.fillRect(xdisegnata+(larghezza)-2+15-5-2, ydisegnata+11, 2, 6);
+                    }                    
                   }                  
                 }else{
                   ctx.fillRect(xdisegnata+2-10, ydisegnata+11, 10, 6);
@@ -127,7 +138,12 @@
                   if(armaturaAcquired[2]){
                     ctx.fillStyle = coloreArmatura;
                     ctx.fillRect(xdisegnata+2-15, ydisegnata+11, 5, 6);
-                    ctx.fillRect(xdisegnata+(larghezza)-2, ydisegnata+11+10, 6, 5);                    
+                    ctx.fillRect(xdisegnata+(larghezza)-2, ydisegnata+11+10, 6, 5);
+                    if(armaturaAcquired=="true,true,true,true"){
+                    	ctx.fillStyle = coloreTemp;
+	                    ctx.fillRect(xdisegnata+2-15+5, ydisegnata+11, 2, 6);
+	                    ctx.fillRect(xdisegnata+(larghezza)-2, ydisegnata+11+10-2, 6, 2);
+                    }                                        
                   }                     
                 }                
                 //corpo
@@ -685,10 +701,10 @@ i livelli sono disposti cosi in realta':1 8
         this.canSelfDraw=true;
         this.selfDraw= function( xdisegnata, ydisegnata, indiceDiQuestaEntity){
           ctx.strokeStyle=player.power[7].color1;
-        	ctx.beginPath();
-		      ctx.lineWidth = (this.width/8);
-		      ctx.moveTo(xdisegnata+this.width/2, ydisegnata);
-		      ctx.lineTo(xdisegnata+this.width/2, ydisegnata+this.height/2);
+          ctx.beginPath();
+	      ctx.lineWidth = (this.width/8);
+	      ctx.moveTo(xdisegnata+this.width/2, ydisegnata);
+	      ctx.lineTo(xdisegnata+this.width/2, ydisegnata+this.height/2);
           ctx.lineTo(xdisegnata+this.width, ydisegnata);
           ctx.lineTo(xdisegnata+this.width/2, ydisegnata+this.height/2);
           ctx.lineTo(xdisegnata+this.width, ydisegnata+this.height/2);
@@ -704,7 +720,7 @@ i livelli sono disposti cosi in realta':1 8
           ctx.lineTo(xdisegnata, ydisegnata);
           ctx.lineTo(xdisegnata+this.width/2, ydisegnata+this.height/2);
           ctx.lineTo(xdisegnata+this.width/2, ydisegnata);
-		      ctx.stroke();          
+	      ctx.stroke();          
         }
         this.physics= function( xdisegnata, ydisegnata, indiceDiQuestaEntity){ 
           if (this.facingRight){//movimento dello sparo
@@ -856,8 +872,8 @@ i livelli sono disposti cosi in realta':1 8
 		      ctx.fillStyle = this.color;
 		      ctx.moveTo(xdisegnata, ydisegnata+this.height);
 		      ctx.lineTo(xdisegnata+this.width, ydisegnata+this.height);
-          ctx.lineTo(xdisegnata+(this.width/2), ydisegnata-2);
-          ctx.lineTo(xdisegnata, ydisegnata+this.height);
+	          ctx.lineTo(xdisegnata+(this.width/2), ydisegnata-2);
+	          ctx.lineTo(xdisegnata, ydisegnata+this.height);
 		      ctx.fill();
         }              
       }
@@ -874,18 +890,18 @@ i livelli sono disposti cosi in realta':1 8
         this.canSelfDraw=true;
         this.hasPhysics=true;
         this.selfDraw= function( xdisegnata, ydisegnata, indiceDiQuestaEntity){//funzione per disegnare l'entita
-        	ctx.fillStyle=player.defaultColor1;
+        		ctx.fillStyle=player.defaultColor1;
 			    ctx.fillRect(xdisegnata, ydisegnata, this.width, this.height);        	
-        	ctx.fillStyle=player.defaultColoreArmatura;
+        		ctx.fillStyle=player.defaultColoreArmatura;
 			    ctx.fillRect(xdisegnata+1, ydisegnata+1, this.width-2, this.height-2);
 			    ctx.textAlign = "center";
 			    ctx.font = "small-caps bold 18px Lucida Console";
     			var textHeight=ctx.measureText("O").width; //dato che la O normalmente e' alta quanto larga (font monospace) imposto la larghezza di O come altezza approssimativa del testo
     			switch(this.indice){
-    				case 0: disegnaTestoConBordino("H",xdisegnata+(this.width/2), (ydisegnata+(this.height-2)/2+textHeight/2),player.defaultColor1,"#000000O");break;
-    				case 1: disegnaTestoConBordino("L",xdisegnata+(this.width/2), (ydisegnata+(this.height-2)/2+textHeight/2),player.defaultColor1,"#000000O");break;
-    				case 2: disegnaTestoConBordino("B",xdisegnata+(this.width/2), (ydisegnata+(this.height-2)/2+textHeight/2),player.defaultColor1,"#000000O");break;
-    				case 3: disegnaTestoConBordino("C",xdisegnata+(this.width/2), (ydisegnata+(this.height-2)/2+textHeight/2),player.defaultColor1,"#000000O");break;
+    				case 0: disegnaTestoConBordino("H",xdisegnata+(this.width/2), (ydisegnata+(this.height-2)/2+textHeight/2),player.defaultColor1,player.defaultColoreArmatura);break;
+    				case 1: disegnaTestoConBordino("L",xdisegnata+(this.width/2), (ydisegnata+(this.height-2)/2+textHeight/2),player.defaultColor1,player.defaultColoreArmatura);break;
+    				case 2: disegnaTestoConBordino("B",xdisegnata+(this.width/2), (ydisegnata+(this.height-2)/2+textHeight/2),player.defaultColor1,player.defaultColoreArmatura);break;
+    				case 3: disegnaTestoConBordino("C",xdisegnata+(this.width/2), (ydisegnata+(this.height-2)/2+textHeight/2),player.defaultColor1,player.defaultColoreArmatura);break;
 			}
 			ctx.textAlign = "left";//lo azzero se no mi si bugga in alcuni menu
         }//fine di selfDraw
@@ -1140,11 +1156,11 @@ i livelli sono disposti cosi in realta':1 8
         //ombre del dash
         if (player.speed>player.defaultspeed){
             if (player.xv < -10){
-                player.disegnaPlayer(xdisegnata-50, ydisegnata+3, player.width-3, player.height-6,false,player.color2+'AA');
-                player.disegnaPlayer(xdisegnata-26, ydisegnata+1, player.width-1, player.height-2,false,player.color2);
+                player.disegnaPlayer(xdisegnata-50, ydisegnata+3, player.width-3, player.height-6,false,player.color1+'AA',player.color2,player.coloreArmatura);
+                player.disegnaPlayer(xdisegnata-26, ydisegnata+1, player.width-1, player.height-2,false,player.color1,player.color2,player.coloreArmatura);
             }else if (player.xv > 10){
-               player.disegnaPlayer(xdisegnata+50+3, ydisegnata+3, player.width-3, player.height-6,false,player.color2+'AA');
-               player.disegnaPlayer(xdisegnata+26+1, ydisegnata+1, player.width-1, player.height-2,false,player.color2);
+               player.disegnaPlayer(xdisegnata+50+3, ydisegnata+3, player.width-3, player.height-6,false,player.color1+'AA',player.color2,player.coloreArmatura);
+               player.disegnaPlayer(xdisegnata+26+1, ydisegnata+1, player.width-1, player.height-2,false,player.color1,player.color2,player.coloreArmatura);
             }
         }
 		//ora disegna effettivamente il player
@@ -1203,11 +1219,28 @@ i livelli sono disposti cosi in realta':1 8
         }
       }
 
-      function drawHUD(){
+      /*function drawHUD(){
+      	var barLenght=player.lifeMax*6+40;
+      	var barHeight=30;
+		if(player.activePower!=0){//barra potere - la disegno prima cosi' va sotto
+	      	ctx.fillStyle = '#9e9e9e';
+			ctx.fillRect(8, 8+barHeight-5, barLenght-4-1, 16-1);
+			ctx.fillStyle = '#3d3b3b';
+			ctx.fillRect(10, 10+barHeight-5, barLenght-4, 16);
+			lineWidth=((barLenght-10)/player.power[player.activePower-1].usageMax)-1;
+			for (i=0; i < player.power[player.activePower-1].usageMax; i++){ //disegno le barre della vita
+				if (i < player.power[player.activePower-1].usage){
+					ctx.fillStyle = player.power[player.activePower-1].color1;
+				}else{
+					ctx.fillStyle = '#797979';
+				}
+				ctx.fillRect(13+(i*(lineWidth+1)), 15+barHeight-5, lineWidth, 8);
+			}
+		}      	
       	ctx.fillStyle = '#9e9e9e';
-		ctx.fillRect(8, 8, player.lifeMax*6+39, 29);
+		ctx.fillRect(8, 8, barLenght-1, barHeight-1);
 		ctx.fillStyle = '#3d3b3b';
-		ctx.fillRect(10, 10, player.lifeMax*6+40, 30);		
+		ctx.fillRect(10, 10, barLenght, barHeight);		
 		ctx.beginPath();//ora inizio a disegnare la x che sara' del colore del player attivo
 		ctx.lineWidth = "7";
 		ctx.strokeStyle = player.color1;
@@ -1216,9 +1249,8 @@ i livelli sono disposti cosi in realta':1 8
 		ctx.stroke(); // Disegna la prima meta'della X
 		ctx.moveTo(35, 15);
 		ctx.lineTo(15, 35);
-		ctx.stroke(); // Disegna la seconda meta'della X
-				
-		for (i=0; i < player.lifeMax; i++) { //disegno le barre della vita
+		ctx.stroke(); // Disegna la seconda meta'della X				
+		for (i=0; i < player.lifeMax; i++){ //disegno le barre della vita
 			if (i < player.life){
 				ctx.fillStyle = player.charge0color;
 			}else{
@@ -1226,12 +1258,93 @@ i livelli sono disposti cosi in realta':1 8
 			}
 			ctx.fillRect(i*6+43, 15, 5, 20);
 		}
-      }
+      }*/
+
+      function drawHUD(){
+      	var barLenght=16*6+40;
+      	var barHeight=30;
+		if(player.activePower!=0){//barra potere - la disegno prima cosi' va sotto
+	      	ctx.fillStyle = player.color1;
+			ctx.fillRect(8, 8+barHeight-5, barLenght-4-1, 16-1);
+			ctx.fillStyle = '#3d3b3b';
+			ctx.fillRect(10, 10+barHeight-5, barLenght-4, 16);
+			lineWidth=((barLenght-10)/player.power[player.activePower-1].usageMax)-1;
+			for (i=0; i < player.power[player.activePower-1].usageMax; i++){ //disegno le barre della vita
+				if (i < player.power[player.activePower-1].usage){
+					ctx.fillStyle = player.power[player.activePower-1].color1;
+				}else{
+					ctx.fillStyle = '#909090';
+				}
+				ctx.fillRect(13+(i*(lineWidth+1)), 15+barHeight-5, lineWidth, 8);
+			}
+		}      	
+      	ctx.fillStyle = player.color1;
+		ctx.fillRect(8, 8, barLenght-1, barHeight-1);
+		ctx.fillStyle = '#3d3b3b';
+		ctx.fillRect(10, 10, barLenght, barHeight);		
+		ctx.beginPath();//ora inizio a disegnare la x che sara' del colore del player attivo
+		ctx.lineWidth = "7";
+		ctx.strokeStyle = player.color2;
+		ctx.moveTo(15, 15);
+		ctx.lineTo(35, 35);
+		ctx.moveTo(35, 15);
+		ctx.lineTo(15, 35);
+		ctx.stroke(); // Disegna il contorno della X
+		ctx.lineWidth = "5";
+		ctx.strokeStyle = player.color1;
+		ctx.stroke(); // Disegna la parte interna della X
+		if(player.lifeMax>16){
+			if(player.life>16){
+				for (i=16; i < player.lifeMax; i++){ //disegno le barre della vita
+					if (i < player.life){
+						ctx.fillStyle = player.charge2color;
+					}else{
+						ctx.fillStyle = '#909090';
+					}
+					ctx.fillRect((i-16)*6+43, 14, 5, 21);	
+				}
+				for (i=0; i<16; i++){ //disegno le barre della vita
+					if(i+16>player.lifeMax-1){
+						ctx.fillStyle = player.charge0color;
+						ctx.fillRect(i*6+43, 17, 5, 18);							
+					}else{				
+						if(i+16>player.life-1){
+							ctx.fillStyle = player.charge0color;
+							ctx.fillRect(i*6+43, 17, 5, 18);
+						}
+						
+					}
+				}
+			}else{
+				for (i=16; i < player.lifeMax; i++){
+					ctx.fillStyle = '#707070';
+					ctx.fillRect((i-16)*6+43, 14, 5, 21);	
+				}
+				for (i=0; i < 16; i++){ //disegno le barre della vita
+					if (i < player.life){
+						ctx.fillStyle = player.charge0color;
+					}else{
+						ctx.fillStyle = '#909090';
+					}
+					//ctx.fillRect(i*6+43, 15, 5, 20);
+					ctx.fillRect(i*6+43, 17, 5, 18);
+				}				
+			}					
+		}else{
+			for (i=0; i < player.lifeMax; i++){ //disegno le barre della vita
+				if (i < player.life){
+					ctx.fillStyle = player.charge0color;
+				}else{
+					ctx.fillStyle = '#808080';
+				}
+				ctx.fillRect(i*6+43, 15, 5, 20);
+			}
+		}		
+	  }    
       
       function drawEntity(doEntityPhysics){   //disegna le entità a schermo e chiama la entity[i].physics
         for (var i = 0; i < entity.length; i++) {
           if (entity[i].life > 0){ //calcola la entita solo se la sua vita è maggiore di zero
-            ctx.fillStyle = entity[i].color;
             //variabili per disegnare il livello rispetto alla posizione di x (rispetto ai bordi del canvas) - visuale
             var xdisegnata=0;
             if (player.x+(player.width/2) < canvasWidth/2){
@@ -1258,6 +1371,7 @@ i livelli sono disposti cosi in realta':1 8
               if(entity[i].canSelfDraw==true){
                   entity[i].selfDraw(xdisegnata,ydisegnata, i);
               }else{
+              	  ctx.fillStyle = entity[i].color;
                   ctx.fillRect(xdisegnata, ydisegnata, entity[i].width, entity[i].height);
               }
               if(doEntityPhysics && entity[i].hasPhysics){entity[i].physics(xdisegnata,ydisegnata, i);}
