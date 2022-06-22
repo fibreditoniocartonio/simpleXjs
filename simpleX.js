@@ -1,4 +1,4 @@
-      var versioneDiGioco = "v0.20220621"
+      var versioneDiGioco = "v0.20220622"
       //crea il canvas
       var canvasWidth = 720;
       var canvasHeight = 540;
@@ -19,8 +19,8 @@
       var dashkey = "x";		    	//dash - default x
       var sparokey = "a";				//shoot - default a
       var startkey = "Enter";			//start - default INVIO/ENTER
-      var lkey = "d";					//power+ - default e
-      var rkey = "c";					//power- - default c
+      var lkey = "d";					//power- - default e
+      var rkey = "c";					//power+ - default c
 
       var ultimoTastoLetto="";
       document.addEventListener("keydown", function(e) {//events - leggi tasti schiacciati
@@ -212,7 +212,10 @@ i livelli sono disposti cosi in realta':1 8
 
 			case 3: stringToLevel("tttttttttttttttttttttttttttttttttttl..................................l.aaa.bbb.ccc.dd..eee.fff.gggg.h.h.l.a.a.b.b.c...d.d.e...f...g....h.h.l.aaa.bb..c.P.d.d.eee.fff.g.gg.hhh.l.a.a.b.b.c...d.d.e...f...g..g.h.h.l.a.a.bbb.ccc.dd..eee.f...ggg..h.h.l..................................l..................................l...aaaaaaaaaaaaaaaaaaaaaaaaaaaa...l..................................l..................................l.i.jjjjj.k.k......................l.....j...k.k......................l.i...j...kk.......................l.i.j.j...k.k......................l.i.jjj...k.k......................l..................................l..................................l..................................l...m...m.n...n.ooo.ppp.qqqq.rrr...l...mm.mm.nn..n.o.o.p.p.q..q.r.r...l...m.m.m.n.n.n.o.o.ppp.q..q.rrr...l.X.m...m.n..nn.o.o.p...q.qq.rr....l...m...m.n...n.ooo.p...qqqq.r.r...l..................................z0.62;0.85;ice.png;#000000;#dee9ff;#ccce7c;#8fdada;#d7dc8f;;;;;;;#aa9f11;;;#81790c;#413003;#123551;");
 				break;
-										
+
+			case 2: stringToLevel("tttttttttttttttttttttttttttttttttttl...a.....a...a.....a...a.....a...al.P.a.....a.P.a.....a.P.a.....a.P.al...a.....a...a.....a...a.....a...alaaaa.....aaaaa.....aaaaa.....aaaaal.......aaaaa.........aaaaa.......al.......a...a.........a...a.......al.......a.P.a.........a.P.a.......al.......a...a.........a...a.......al.......aaaaa.........aaaaa.......al.............aaaaaaa.............alaaaa..aaaaa..a.....a..aaaaa..aaaaal...a..a...a..a.....a..a...a..a...al.P.a..a.P.a..a..X..a..a.P.a..a.P.al...a..a...a..a..a..a..a...a..a...alaaaa..aaaaa..a..a..a..aaaaa..aaaaal.............aaaaaaa.............al.......aaaaa.........aaaaa.......al.......a...a.........a...a.......al.......a.P.a.........a.P.a.......al.......a...a.........a...a.......al.......aaaaa.........aaaaa.......alaaaa.....aaaaa.....aaaaa.....aaaaal...a.....a...a.....a...a.....a...al.P.a.....a.P.a.....a.P.a.....a.P.al...a.....a...a.....a...a.....a...az0.62;0.85;");
+				break;				
+				
 			default:
 				alert("Errore nel caricamento del livello - carico il level 1"); keys=[];
 				lvlNumber=1;
@@ -675,6 +678,470 @@ i livelli sono disposti cosi in realta':1 8
 	      }//fine di this.physics      
       }
 
+      function newHomingMissle(larghezza,altezza) {//lo sparo creato dal player
+        this.life= 1;
+        this.active=true;
+        this.type= "sparoDelPlayer";
+        this.damage= 1;
+        if(player.facingRight){
+         this.x= player.x+player.width+6;
+         this.xv=3;
+        }else{
+         this.x= player.x-6-larghezza; 
+         this.xv=-3;
+        }
+        this.speed= 1.3;
+        this.yv= 0;
+        this.width= larghezza;
+        this.height= altezza;
+        this.y=player.y+9;
+        this.targetIndex=-1;
+        this.color1=player.power[0].color1;
+        this.color2=player.power[0].color2;
+        this.perforation=false;
+        this.canPassWall=true;
+        this.hasPhysics=true;
+        this.canSelfDraw=true;
+        this.selfDraw= function( xdisegnata, ydisegnata, indiceDiQuestaEntity){
+          ctx.fillStyle=this.color1;
+          ctx.beginPath();
+	      ctx.lineWidth = 1;
+	      var larghezzaMissile=this.width/2;
+		  var velMin=3;
+	      if(this.xv<velMin && this.xv>-velMin && this.yv>velMin){//dritto verso l'alto
+		      ctx.moveTo(xdisegnata+this.width/2, ydisegnata);
+		      ctx.lineTo(xdisegnata+this.width/2+larghezzaMissile/2, ydisegnata+larghezzaMissile);
+		      ctx.lineTo(xdisegnata+this.width/2+larghezzaMissile/2, ydisegnata+this.height);
+		      ctx.lineTo(xdisegnata+this.width/2-larghezzaMissile/2, ydisegnata+this.height);
+		      ctx.lineTo(xdisegnata+this.width/2-larghezzaMissile/2, ydisegnata+larghezzaMissile);
+		      ctx.lineTo(xdisegnata+this.width/2, ydisegnata);
+		      ctx.fill();
+		      ctx.fillStyle=this.color2;
+		      ctx.fillRect(xdisegnata+this.width/2+larghezzaMissile/2-1, ydisegnata+larghezzaMissile+2, 2, larghezzaMissile-1);
+		      ctx.fillRect(xdisegnata+this.width/2-larghezzaMissile/2-1, ydisegnata+larghezzaMissile+2, 2, larghezzaMissile-1);
+	      }else if(this.xv<velMin && this.xv>-velMin && this.yv<velMin){//dritto verso il basso
+		      ctx.moveTo(xdisegnata+this.width/2, ydisegnata+this.height);
+		      ctx.lineTo(xdisegnata+this.width/2+larghezzaMissile/2, ydisegnata+this.height-larghezzaMissile);
+		      ctx.lineTo(xdisegnata+this.width/2+larghezzaMissile/2, ydisegnata);
+		      ctx.lineTo(xdisegnata+this.width/2-larghezzaMissile/2, ydisegnata);
+		      ctx.lineTo(xdisegnata+this.width/2-larghezzaMissile/2, ydisegnata+this.height-larghezzaMissile);
+		      ctx.lineTo(xdisegnata+this.width/2, ydisegnata+this.height);
+		      ctx.fill();
+		      ctx.fillStyle=this.color2;
+		      ctx.fillRect(xdisegnata+this.width/2+larghezzaMissile/2-1, ydisegnata-1, 2, larghezzaMissile-1);
+		      ctx.fillRect(xdisegnata+this.width/2-larghezzaMissile/2-1, ydisegnata-1, 2, larghezzaMissile-1);	      	
+	      }else if(this.yv<velMin && this.yv>-velMin && this.xv>velMin){//dritto a destra
+		      ctx.moveTo(xdisegnata+this.width, ydisegnata+this.height/2);
+		      ctx.lineTo(xdisegnata+this.width-larghezzaMissile, ydisegnata+this.height/2+larghezzaMissile/2);
+		      ctx.lineTo(xdisegnata, ydisegnata+this.height/2+larghezzaMissile/2);
+		      ctx.lineTo(xdisegnata, ydisegnata+this.height/2-larghezzaMissile/2);
+		      ctx.lineTo(xdisegnata+this.width-larghezzaMissile, ydisegnata+this.height/2-larghezzaMissile/2);
+		      ctx.lineTo(xdisegnata+this.width, ydisegnata+this.height/2);
+		      ctx.fill();
+		      ctx.fillStyle=this.color2;
+		      ctx.fillRect(xdisegnata-1, ydisegnata+this.height/2-larghezzaMissile/2-1, larghezzaMissile-1, 2);
+		      ctx.fillRect(xdisegnata-1, ydisegnata+this.height/2+larghezzaMissile/2-1, larghezzaMissile-1, 2);	      
+	      }else if(this.yv<velMin && this.yv>-velMin && this.xv<velMin){//dritto a sinistra
+		      ctx.moveTo(xdisegnata, ydisegnata+this.height/2);
+		      ctx.lineTo(xdisegnata+larghezzaMissile, ydisegnata+this.height/2+larghezzaMissile/2);
+		      ctx.lineTo(xdisegnata+this.width, ydisegnata+this.height/2+larghezzaMissile/2);
+		      ctx.lineTo(xdisegnata+this.width, ydisegnata+this.height/2-larghezzaMissile/2);
+		      ctx.lineTo(xdisegnata+larghezzaMissile, ydisegnata+this.height/2-larghezzaMissile/2);
+		      ctx.lineTo(xdisegnata, ydisegnata+this.height/2);
+		      ctx.fill();
+		      ctx.fillStyle=this.color2;
+		      ctx.fillRect(xdisegnata+this.width-larghezzaMissile+2, ydisegnata+this.height/2-larghezzaMissile/2-1, larghezzaMissile-1, 2);
+		      ctx.fillRect(xdisegnata+this.width-larghezzaMissile+2, ydisegnata+this.height/2+larghezzaMissile/2-1, larghezzaMissile-1, 2);
+	      }else if(this.xv>velMin && this.yv>velMin){//verso l'alto e destra
+		      ctx.moveTo(xdisegnata+this.width, ydisegnata);
+		      ctx.lineTo(xdisegnata+this.width, ydisegnata+larghezzaMissile);
+		      ctx.lineTo(xdisegnata+larghezzaMissile, ydisegnata+this.height);
+		      ctx.lineTo(xdisegnata, ydisegnata+this.height-larghezzaMissile);
+		      ctx.lineTo(xdisegnata+this.width-larghezzaMissile, ydisegnata);
+		      ctx.lineTo(xdisegnata+this.width, ydisegnata);
+		      ctx.fill();
+	          ctx.beginPath();
+		      ctx.lineWidth = 2;		      
+		      ctx.strokeStyle=this.color2;
+		      ctx.moveTo(xdisegnata-1, ydisegnata+this.height-larghezzaMissile+1);
+		      ctx.lineTo(xdisegnata+larghezzaMissile-1, ydisegnata+this.height-larghezzaMissile-larghezzaMissile/2-2);
+		      ctx.stroke();
+		      ctx.moveTo(xdisegnata+larghezzaMissile-1, ydisegnata+this.height+1);
+		      ctx.lineTo(xdisegnata+larghezzaMissile*2-1, ydisegnata+this.height-larghezzaMissile/2-2);
+		      ctx.stroke();		      
+	      }else if(this.xv<velMin && this.yv>velMin){//verso l'alto e sinistra
+		      ctx.moveTo(xdisegnata, ydisegnata);
+		      ctx.lineTo(xdisegnata+larghezzaMissile, ydisegnata);
+		      ctx.lineTo(xdisegnata+this.width, ydisegnata+this.height-larghezzaMissile);
+		      ctx.lineTo(xdisegnata+this.width-larghezzaMissile, ydisegnata+this.height);
+		      ctx.lineTo(xdisegnata, ydisegnata+larghezzaMissile);
+		      ctx.lineTo(xdisegnata, ydisegnata);
+		      ctx.fill();
+	          ctx.beginPath();
+		      ctx.lineWidth = 2;		      
+		      ctx.strokeStyle=this.color2;
+		      ctx.moveTo(xdisegnata+this.width-larghezzaMissile+1, ydisegnata+this.height+1);
+		      ctx.lineTo(xdisegnata+this.width-larghezzaMissile-larghezzaMissile/2-1, ydisegnata+this.height-larghezzaMissile/2-1);
+		      ctx.stroke();
+		      ctx.moveTo(xdisegnata+this.width+1, ydisegnata+this.height-larghezzaMissile+1);
+		      ctx.lineTo(xdisegnata+this.width-larghezzaMissile/2-1, ydisegnata+this.height-larghezzaMissile-larghezzaMissile/2-1);
+		      ctx.stroke();
+	      }else if(this.xv<velMin && this.yv<velMin){//verso il basso e sinistra
+		      ctx.moveTo(xdisegnata, ydisegnata+this.height);
+		      ctx.lineTo(xdisegnata, ydisegnata+this.height-larghezzaMissile);
+		      ctx.lineTo(xdisegnata+this.width-larghezzaMissile, ydisegnata);
+		      ctx.lineTo(xdisegnata+this.width, ydisegnata+larghezzaMissile);
+		      ctx.lineTo(xdisegnata+larghezzaMissile, ydisegnata+this.height);
+		      ctx.lineTo(xdisegnata, ydisegnata+this.height);
+		      ctx.fill();
+	          ctx.beginPath();
+		      ctx.lineWidth = 2;		      
+		      ctx.strokeStyle=this.color2;
+		      ctx.moveTo(xdisegnata+this.width-larghezzaMissile+1, ydisegnata-1);
+		      ctx.lineTo(xdisegnata+this.width-larghezzaMissile-larghezzaMissile/2-1, ydisegnata+larghezzaMissile-2);
+		      ctx.stroke();
+		      ctx.moveTo(xdisegnata+this.width+1, ydisegnata+larghezzaMissile-1);
+		      ctx.lineTo(xdisegnata+this.width-larghezzaMissile/2-1, ydisegnata+larghezzaMissile+larghezzaMissile/2+1);
+		      ctx.stroke();
+	      }else if(this.xv>velMin && this.yv<velMin){//verso il basso e destra
+		      ctx.moveTo(xdisegnata+this.width, ydisegnata+this.height);
+		      ctx.lineTo(xdisegnata+this.width-larghezzaMissile, ydisegnata+this.height);
+		      ctx.lineTo(xdisegnata, ydisegnata+this.height-larghezzaMissile);
+		      ctx.lineTo(xdisegnata+larghezzaMissile, ydisegnata);
+		      ctx.lineTo(xdisegnata+this.width, ydisegnata+this.height-larghezzaMissile);
+		      ctx.lineTo(xdisegnata+this.width, ydisegnata+this.height);
+		      ctx.fill();
+	          ctx.beginPath();
+		      ctx.lineWidth = 2;		      
+		      ctx.strokeStyle=this.color2;
+		      ctx.moveTo(xdisegnata-1, ydisegnata+this.height-larghezzaMissile-1);
+		      ctx.lineTo(xdisegnata+larghezzaMissile/2+1, ydisegnata+this.height-larghezzaMissile+larghezzaMissile/2+1);
+		      ctx.stroke();
+		      ctx.moveTo(xdisegnata+larghezzaMissile-1, ydisegnata-1);
+		      ctx.lineTo(xdisegnata+larghezzaMissile+larghezzaMissile/2+1, ydisegnata+larghezzaMissile/2+1);
+		      ctx.stroke();
+	      }          
+        }        
+        this.physics= function( xdisegnata, ydisegnata, indiceDiQuestaEntity){
+          //movimento dello sparo
+          if(this.targetIndex==-1){
+          	this.targetIndex=findTarget(this.x+this.width/2,this.y+this.height/2);
+          	if(this.xv<0){this.xv-=this.speed}else{this.xv+=this.speed}
+          }else{
+          	if(entity[this.targetIndex].life>0){//insegue il target
+	          	if(this.x<entity[this.targetIndex].x+(entity[this.targetIndex].width/2)){
+	          		this.xv += this.speed;
+	          	}else{
+	          		this.xv -= this.speed;	
+	          	}
+	          	if(this.y<entity[this.targetIndex].y+(entity[this.targetIndex].height/2)){
+	          		this.yv -= this.speed/(1.3);
+	          	}else{
+	          		this.yv += this.speed/(1.3);	
+	          	}          		
+          	}else{
+          		this.targetIndex=-1;
+          	}
+          }
+          this.xv *= level.friction;
+          this.x += this.xv;
+          this.yv *= level.friction;
+          this.y += -this.yv;             
+          //collisione dello sparo con level
+          if(!this.canPassWall){
+	          for (i=0; i<level.length;i++){
+	            if (collisionBetween(this,level[i])){
+	              this.life=-1;
+	            }
+	          }
+          }else{
+	        	if((this.x > (player.x+player.width+(canvasWidth*2)))||( this.x < (player.x-(canvasWidth*2)))){
+	        		this.life=-1;
+	        	}          
+          }
+          //collisione dello sparo con altre entita'
+          for (i=0; i<entity.length;i++){
+            if (!(i == indiceDiQuestaEntity)){
+              if ( entity[i].life > 0 && !(this.type == entity[i].type || entity[i].type=="pickup" )  && collisionBetween(this,entity[i]) ){	//controlla che l'entita da colpire sia viva, che non siano lo stesso proiettile e infine se c'è una collisione
+                entity[i].life-=this.damage;
+                if (!(entity[i].life < 1 && this.perforation)){
+                  this.life=-1;
+                }
+              }
+            }
+          }
+          
+          if(this.active && (this.life<1 || ((xdisegnata > canvasWidth)||( xdisegnata+this.width < 0)))){
+            player.activeShot=player.activeShot-1.5;
+            this.active=false;
+          }
+
+          function findTarget(x,y){
+          	var closestEntityX=999999999999; 
+          	var closestEntityY=999999999999; 
+          	var closestEntityIndex=-1;
+          	for (i=0; i<entity.length;i++){
+				if(entity[i].life > 0){
+					if(entity[i].type=="mostro"){
+						if(((entity[i].x<x && entity[i].x>x-canvasWidth/1.25)||(entity[i].x>x && entity[i].x<x+canvasWidth/1.25))&&((entity[i].y<y && entity[i].y>y-canvasHeight/1.25)||(entity[i].y>y && entity[i].y<y+canvasHeight/1.25))){//se e' circa nello schermo
+							var entX=entity[i].x+entity[i].width/2;
+							var entY=entity[i].y+entity[i].height/2;
+							prevDistanceX=x-closestEntityX; if(prevDistanceX<0){prevDistanceX=-1*prevDistanceX;}
+							prevDistanceY=y-closestEntityY; if(prevDistanceY<0){prevDistanceY=-1*prevDistanceY;}
+							distanceX=x-entX; if(distanceX<0){distanceX=-1*distanceX;}
+							distanceY=y-entY; if(distanceY<0){distanceY=-1*distanceY;}
+							//alert("i:"+i+", prevDistanceX:"+prevDistanceX+", prevDistanceY:"+prevDistanceY+", prevTotDist:"+(prevDistanceX+prevDistanceY)+", distanceX:"+distanceX+", distanceY:"+distanceY+", nowTotDist:"+(distanceX+distanceY)+", Meglio?:"+((distanceX+distanceY)<(prevDistanceX+prevDistanceY)));
+							if((distanceX+distanceY)<(prevDistanceX+prevDistanceY)){
+								closestEntityX=entX;
+								closestEntityY=entY;
+								closestEntityIndex=i;		
+							}
+						}
+					}
+				}
+          	}
+          	return closestEntityIndex;
+          }//fine findTarget
+        }//fine homingMissle physics
+      }//fine newHomingMissle      
+
+      function newStormTornado(xPassata,yPassata,larghezza,altezza,indicePassato,faceRight,goUp) {//lo sparo creato dal player - carica 3
+      	this.index=indicePassato;
+        this.active=true;
+        this.main=false;
+        this.contaLife=0;
+        this.facingRight=faceRight;
+        if(indicePassato==0){
+        	if(goUp){//individua il main
+        		this.main=true;
+        	}
+	        if(this.facingRight){
+	         this.x= xPassata+player.width+6;
+	        }else{
+	         this.x= xPassata-6-larghezza; 
+	        }        	
+        }else{this.x=xPassata;}
+        this.startingX=this.x;
+      	this.numeroFigli=40;
+        this.life= 1;
+        this.type= "sparoDelPlayer";
+        this.damage= 0.2;
+        this.xv= 0;
+        this.yv= 0;
+        this.width=larghezza;
+        this.height=altezza;
+        this.y=yPassata;
+        this.startingY=yPassata;
+        this.minY=this.startingY-(this.height/4);
+        this.maxY=this.startingY+(this.height/4);
+        this.minX=this.startingX-(this.width);
+        this.maxX=this.startingX+(this.width);        
+        this.startingDirection=goUp;
+        this.goingUp=goUp;
+        this.moveNext=faceRight;
+        this.color="#f5aad5";
+        this.speed=0.5;
+        this.xSpeed=1;
+        this.ySpeed=0.5;//velocita con cui va su e giu
+        this.perforation=true;
+        this.canPassWall=true;
+        this.hasPhysics=true;
+        this.physics= function(xdisegnata, ydisegnata, indiceDiQuestaEntity){
+        	this.speed+=0.0012;
+	        //movimento x dello sparo
+	        if (this.facingRight){
+	          this.xv -= this.speed;
+	        }else{
+	          this.xv += this.speed;
+	        }
+	        this.xv *= level.friction;
+	        this.x += -this.xv; 
+			//movimento y dello sparo
+	        if (this.goingUp){
+	          this.yv -= this.ySpeed;
+	          if (this.facingRight){this.xv -= this.xSpeed/2;
+	          }else{this.xv += this.xSpeed/2;}
+	          if(this.y < this.minY){
+	          	this.goingUp=false;
+	          }
+	        }else{
+	          this.yv += this.ySpeed;
+	          if (this.facingRight){this.xv += this.xSpeed;
+	          }else{this.xv -= this.xSpeed;}	          
+	          if(this.y > this.maxY){
+	          	this.goingUp=true;
+	          }	          
+	        }	        
+	        this.yv *= level.friction;
+	        this.y += this.yv;
+	        this.xv *= level.friction;
+	        this.x += -this.xv; 	        
+	        //creazione degli spari figli
+	        if(this.index<this.numeroFigli-1){
+				if(creaFiglio(this.startingX,this.facingRight,this.x,this.width,this.startingY,this.height,this.index,this.color,this.startingDirection,this.speed)){
+					this.index=this.numeroFigli;
+				}
+	        }
+	        //collisione dello sparo con level
+	        if(!this.canPassWall){
+	         for (i=0; i<level.length;i++){
+	           if (collisionBetween(this,level[i])){
+	             this.life=-1;
+	           }
+	         }
+	        }else{
+	        	if((this.x > (player.x+player.width+(canvasWidth*2)))||( this.x < (player.x-(canvasWidth*2)))){
+	        		this.life=-1;
+	        	}
+	        }
+	        //collisione dello sparo con altre entita'
+	        for (i=0; i<entity.length;i++){
+	          if (!(i == indiceDiQuestaEntity)){
+	            if ( entity[i].life > 0 && !(this.type==entity[i].type || entity[i].type=="pickup" || entity[i].type=="ostacolo" || entity[i].type=="piattaforma" )  && collisionBetween(this,entity[i]) ){	//controlla che l'entita da colpire sia viva, che non siano lo stesso proiettile e infine se c'è una collisione
+	              entity[i].life-=this.damage;
+	              this.damage= 0;
+	              if (!(entity[i].life < 1 && this.perforation)){
+	                this.life=-1;
+	              }
+	            }
+	          }
+	        }
+
+          if(this.contaLife>420){
+          	this.life=-1;	
+          }
+          this.contaLife++;
+          
+          if(this.main){
+            //disattiva colpi su schermo
+            if(this.active && (this.life<1 || ((xdisegnata > canvasWidth)||( xdisegnata+this.width < 0)))){
+              player.activeShot=player.activeShot-3; 
+              this.active=false;       
+            }
+          }
+                    
+			function creaFiglio(startingX,facingRight,x,width,startingY,height,index,color,startingDirection,velocita){
+				var xMax=startingX;		
+				if(facingRight){
+					if(((x)-(width))>xMax){
+						var sparoFiglio = new newStormTornado((x-width),startingY,width,height,index+1,facingRight,startingDirection);
+		                sparoFiglio.color= color;
+		                sparoFiglio.speed=velocita;
+		                entity.push(sparoFiglio);						
+						return true;
+					}
+				}else{
+					if(x+(width)<(xMax)){
+						var sparoFiglio = new newStormTornado((x+(width)),startingY,width,height,index+1,facingRight,startingDirection);
+		                sparoFiglio.color= color;
+		                sparoFiglio.speed=velocita;
+		                entity.push(sparoFiglio);						
+						return true;
+					}	
+				}
+				return false;
+			}//fine di crea figlio
+	      }//fine di this.physics      
+      }
+
+      function newElectricSpark(larghezza,altezza){//lo sparo creato dal player - electric spark charge 0
+        this.life= 1;
+        this.active=true;
+        this.type= "sparoDelPlayer";
+        this.damage= 1;
+        this.facingRight=player.facingRight;        
+        if(this.facingRight){
+         this.x= player.x+player.width+6;
+        }else{
+         this.x= player.x-6-larghezza; 
+        }
+        this.xv= 0;
+        this.yv= 0;
+        this.width= larghezza;
+        this.height= altezza;
+        this.y=player.y+9;
+        this.color=player.charge0color;
+        this.speedX= 2;
+        this.speedY= 0;
+        this.perforation=false;
+        this.canPassWall=false;
+        this.hasPhysics=true;
+        this.canSelfDraw=true;
+        this.selfDraw= function( xdisegnata, ydisegnata, indiceDiQuestaEntity){
+          ctx.fillStyle="#f83cf8";
+          ctx.beginPath();
+	      ctx.lineWidth = 1;
+	      var lungLato = this.width/4;
+	      ctx.moveTo(xdisegnata+this.width/2-lungLato/2, ydisegnata);
+	      ctx.lineTo(xdisegnata+this.width/2+lungLato/2, ydisegnata);
+	      ctx.lineTo(xdisegnata+this.width, ydisegnata+this.height/2-lungLato/2);
+	      ctx.lineTo(xdisegnata+this.width, ydisegnata+this.height/2+lungLato/2);
+	      ctx.lineTo(xdisegnata+this.width/2+lungLato/2, ydisegnata+this.height);
+	      ctx.lineTo(xdisegnata+this.width/2-lungLato/2, ydisegnata+this.height);
+	      ctx.lineTo(xdisegnata, ydisegnata+this.height/2+lungLato/2);
+	      ctx.lineTo(xdisegnata, ydisegnata+this.height/2-lungLato/2);
+	      ctx.lineTo(xdisegnata+this.width/2-lungLato/2, ydisegnata);
+	      ctx.fill();          
+        }
+        this.physics= function( xdisegnata, ydisegnata, indiceDiQuestaEntity){ 
+          if (this.facingRight){//movimento dello sparo
+            this.xv -= this.speedX;
+          }else{
+            this.xv += this.speedX;
+          }
+          this.yv += this.speedY; 
+          this.xv *= level.friction;
+          this.yv *= level.friction;
+          this.x += -this.xv;
+          this.y += -this.yv;
+              
+          //collisione dello sparo con level
+          if(!this.canPassWall){
+	          for (i=0; i<level.length;i++){
+	            if (collisionBetween(this,level[i])){
+	              this.life=-1;
+	              if(this.speedX!=0){//ora genera figli (quindi solo con collisioni con level)
+		              var sparoFiglioUp = new newElectricSpark(this.width,this.height);
+		              sparoFiglioUp.x=this.x+this.xv/2;
+		              sparoFiglioUp.y=this.y;
+		              sparoFiglioUp.canPassWall=true;
+		              sparoFiglioUp.active=false;
+		              sparoFiglioUp.speedX=0; sparoFiglioUp.speedY=-this.speedX;
+		              entity.push(sparoFiglioUp);
+		              var sparoFiglioDown = new newElectricSpark(this.width,this.height);
+		              sparoFiglioDown.x=this.x+this.xv/2;
+		              sparoFiglioDown.y=this.y;
+		              sparoFiglioDown.canPassWall=true;
+		              sparoFiglioDown.active=false;
+		              sparoFiglioDown.speedX=0; sparoFiglioDown.speedY=this.speedX;
+		              entity.push(sparoFiglioDown);
+	              }	              
+	            }
+	          }
+          }else{
+          	if(this.x>level.maxWidth+100 || this.x<-100){
+          		this.life=-1;
+          	}
+          }
+          //collisione dello sparo con altre entita'
+          for (i=0; i<entity.length;i++){
+            if (!(i == indiceDiQuestaEntity)){
+              if ( entity[i].life > 0 && !(this.type == entity[i].type || entity[i].type=="pickup" )  && collisionBetween(this,entity[i]) ){	//controlla che l'entita da colpire sia viva, che non siano lo stesso proiettile e infine se c'è una collisione
+                entity[i].life-=this.damage;
+                if (!(entity[i].life < 1 && this.perforation)){
+                  this.life=-1;
+                }
+              }
+            }
+          }
+          //disattiva colpi su schermo
+          if(this.active && (this.life<1 || ((xdisegnata > canvasWidth)||( xdisegnata+this.width < 0)))){
+            this.active=false;
+            player.activeShot=player.activeShot-1;       
+          }          
+        }
+      }      
+
       function newBoomerangCutter(larghezza,altezza) {//lo sparo creato dal player
         this.type= "sparoDelPlayer";
         this.damage= 1;      
@@ -889,6 +1356,11 @@ i livelli sono disposti cosi in realta':1 8
 	          for (i=0; i<level.length;i++){
 	            if (collisionBetween(this,level[i])){
 	              this.isDying=true;
+	              if(this.facingRight){
+	              	this.x=level[i].x-this.width-1;
+	              }else{
+	              	this.x=level[i].x+level[i].width+1;
+	              }
 	            }
 	          }
           }else{
@@ -911,14 +1383,13 @@ i livelli sono disposti cosi in realta':1 8
           
           //genera figlio alla morte se isPadre, altrimenti muore e basta
           if(this.isDying){
-            this.x += this.xv;
-            this.y += this.yv;          
+            //this.x += this.xv;         
             if(this.isFather){
-              var sparoFiglio = new newShotgunIce(this.x,this.x,this.y,this.width/2,this.height/2,false,2.5,0,!this.facingRight); entity.push(sparoFiglio);
-              var sparoFiglio = new newShotgunIce(this.x,this.x,this.y,this.width/2,this.height/2,false,2.5,1,!this.facingRight); entity.push(sparoFiglio);
-              var sparoFiglio = new newShotgunIce(this.x,this.x,this.y,this.width/2,this.height/2,false,2.5,2,!this.facingRight); entity.push(sparoFiglio);
-              var sparoFiglio = new newShotgunIce(this.x,this.x,this.y,this.width/2,this.height/2,false,2.5,-1,!this.facingRight); entity.push(sparoFiglio);
-              var sparoFiglio = new newShotgunIce(this.x,this.x,this.y,this.width/2,this.height/2,false,2.5,-2,!this.facingRight); entity.push(sparoFiglio);
+              var sparoFiglio = new newShotgunIce(this.x,this.x,(this.y+this.height/4),this.width/2,this.height/2,false,2.5,0,!this.facingRight); entity.push(sparoFiglio);
+              var sparoFiglio = new newShotgunIce(this.x,this.x,(this.y+this.height/4),this.width/2,this.height/2,false,2.5,1,!this.facingRight); entity.push(sparoFiglio);
+              var sparoFiglio = new newShotgunIce(this.x,this.x,(this.y+this.height/4),this.width/2,this.height/2,false,2.5,2,!this.facingRight); entity.push(sparoFiglio);
+              var sparoFiglio = new newShotgunIce(this.x,this.x,(this.y+this.height/4),this.width/2,this.height/2,false,2.5,-1,!this.facingRight); entity.push(sparoFiglio);
+              var sparoFiglio = new newShotgunIce(this.x,this.x,(this.y+this.height/4),this.width/2,this.height/2,false,2.5,-2,!this.facingRight); entity.push(sparoFiglio);
             }
             this.life=-1;
           }
@@ -1583,14 +2054,14 @@ i livelli sono disposti cosi in realta':1 8
                 if(player.power[player.activePower-1].usage>0){
                   player.power[player.activePower-1].usage--;
                   switch(player.activePower){ 
-                    /*HomingTorpedo*/   case 1: break;
+                    /*HomingTorpedo*/   case 1: var sparo = new newHomingMissle(12,12); entity.push(sparo); player.activeShot=player.activeShot+1.5; break;
                     /*ChameleonSting*/  case 2: break; 
                     /*RollingShield*/   case 3: break;
                     /*Storm*/           case 4: break;
-                    /*Fire*/            case 5: break;
-                    /*Electric*/        case 6: break;
+                    /*Fire*/            case 5: var sparo = new newStormTornado(player.x,(player.y+3+(15/2)),15,15,0,player.facingRight,true); entity.push(sparo); player.activeShot=player.activeShot+3; break;
+                    /*Electric*/        case 6: var sparo = new newElectricSpark(15,15); entity.push(sparo); player.activeShot=player.activeShot+1; break;
                     /*Boomerang*/       case 7: var sparo = new newBoomerangCutter(15,15,true); entity.push(sparo); player.activeShot=player.activeShot+1; break;
-                    /*ShotgunIce*/      case 8: var sparo = new newShotgunIce(player.x+player.width+6,player.x-6-15,player.y+9,15,15,true,2.5,0,player.facingRight); entity.push(sparo); player.activeShot=player.activeShot+3; break;
+                    /*ShotgunIce*/      case 8: var sparo = new newShotgunIce(player.x+player.width+6,player.x-6-15,player.y+6,15,15,true,2.5,0,player.facingRight); entity.push(sparo); player.activeShot=player.activeShot+3; break;
                   }
                 }
               }
