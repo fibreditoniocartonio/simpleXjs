@@ -195,7 +195,7 @@ i livelli sono disposti cosi in realta':1 8
 			  						  5     7
 										6 2     (mi serve per assegnare correttamente i poteri)*/
 										
-			case 1: stringToLevel("tttttttttttttttttttttttttttttttttttl.........................aaaaaaaaal.................................al.....................aa..........al...........aaaaa.....aa.P........al.....................aa..........al...aaaaa.............aaaaaaaaaaaaal.....................aaaaaaaaaaaaal.........................à.À......la.................................l..................................l..................................l...aa.............................l...è.È............................l..................................la.................................l..................................l..................................l........⁰.¹.².³.⁴.⁵.⁶.⁷.........aal...aaaaaaaaaaaaaaaaaaaaaaaaa......l..................................l..................................la...0..1..2..3...4..5..6..7...aaaal..............................a...l..X...........................a.P.l..............................a...z0.62;0.85;");
+			case 1: stringToLevel("tttttttttttttttttttttttttttttttttttl.........................aaaaaaaaal.................................al.....................aa..........al...........aaaaa.....aa.P........al.....................aa..........al...aaaaa.............aaaaaaaaaaaaal.....................aaaaaaaaaaaaal.........................à.À......la.................................l..................................l..................................l...aa.............................l...È.è............................l..................................la.................................l..................................l..................................l........⁰.¹.².³.⁴.⁵.⁶.⁷.........aal...aaaaaaaaaaaaaaaaaaaaaaaaa......l..................................l..................................la...0..1..2..3...4..5..6..7...aaaal..............................a...l..X...........................a.P.l..............................a...z0.62;0.85;");			
 				break;
 
 			case 8: stringToLevel("tttttttttttttttttttttttttttttttttttttttttttttttttttttttttttl..........................................................l..........................................................l..eeeeeee.................................................l..........................................................l............ggggggg.......................................l..........................................................l.....................fffffff..............................l..........................................................l..........................................................l..............................ggggggg.....................l..........................................................l........................................eeeeeee...........l..........................................................l..................................................aaa.....l..........a...............................................l..........a.......h...h..ccccc.ddd.ccc.d.d.c.ddd.c.c.....fl..........a...bbb.h.h.h..c.....d.d.c.c.d.d....d..c.c......l..........a...b.b.h.h.h..c..cc.dd..ccc.d.d.c..d...c.......l..........aaa.bbb..h.h...c...c.d.d.c.c..d..c..d...c.......l.........................cccc.............................l.........................................................gl..........................................................l..........................................................l...........................cccccccccccccccccccccccccccc...l....X.....................................................l....................bb....................................l................bb........................................l............gg............................................l........ff................................................l....ee....................................................z0.25;0.85;moon.jpg;#2F4858;#716F71;#81B2C5;#6D98BA;#EACDC2;#ebdb9d;#d6ba54;#490047;");
@@ -289,7 +289,7 @@ i livelli sono disposti cosi in realta':1 8
 				    break;
 
 				case '⁰': case '¹': case '²': case '³': case '⁴': case '⁵': case '⁶': case '⁷': //sono i cuori che aumentano la vita
-				//caratteri per copiare/incollare:  ⁰ ¹ ² ³ ⁴ ⁵ ⁶ ⁷ ⁸ ⁹
+					//caratteri per copiare/incollare:  ⁰ ¹ ² ³ ⁴ ⁵ ⁶ ⁷ ⁸ ⁹
 			        var cuore = new newPickUp_Cuore(lvlString[i]);
 				    cuore.x= (i%widthTot)*20;
 				    cuore.y= (heightTot-1)*20-1; 
@@ -301,7 +301,7 @@ i livelli sono disposti cosi in realta':1 8
 			        var lifeRec = new newPickUp_LifeEnergy(2);
 			        lifeRec.width=10;
 			        lifeRec.height=10;
-				    lifeRec.x= (i%widthTot)*20+(20-lifeRec.width);
+				    lifeRec.x= (i%widthTot)*20+(10-lifeRec.width/2);
 				    lifeRec.y= (heightTot-1)*20+1; 
 					entity.push(lifeRec);
 					if(lvlString[i-1]=='p' || lvlString[i-1]=='q' || lvlString[i-1]=='r' ){leggiBlocco(background,lvlString[i-1]);} //se il blocco prima era un background lo carica sotto la entita' letta
@@ -311,30 +311,30 @@ i livelli sono disposti cosi in realta':1 8
 			        var lifeRec = new newPickUp_LifeEnergy(8);
 			        lifeRec.width=18;
 			        lifeRec.height=18;			        
-				    lifeRec.x= (i%widthTot)*20+(20-lifeRec.width);
+				    lifeRec.x= (i%widthTot)*20+(10-lifeRec.width/2);
 				    lifeRec.y= (heightTot-1)*20+1; 
 					entity.push(lifeRec);
 					if(lvlString[i-1]=='p' || lvlString[i-1]=='q' || lvlString[i-1]=='r' ){leggiBlocco(background,lvlString[i-1]);} //se il blocco prima era un background lo carica sotto la entita' letta
 				    break;
 
-				case 'è'://small weapon recovery - devo ancora implementarlo
-			        /*var weaponRec = new newPickUp_WeaponEnergy(2);
+				case 'è'://small weapon recovery
+			        var weaponRec = new newPickUp_WeaponEnergy(2);
 			        weaponRec.width=10;
 			        weaponRec.height=10;			        
-				    weaponRec.x= (i%widthTot)*20+(20-weaponRec.width);
+				    weaponRec.x= (i%widthTot)*20+(10-weaponRec.width/2);
 				    weaponRec.y= (heightTot-1)*20+1; 
 					entity.push(weaponRec);
 					if(lvlString[i-1]=='p' || lvlString[i-1]=='q' || lvlString[i-1]=='r' ){leggiBlocco(background,lvlString[i-1]);} //se il blocco prima era un background lo carica sotto la entita' letta
-				    */break;
+				    break;
 				case 'È'://big weapon recovery
-			        /*var lifeRec = new newPickUp_WeaponEnergy(8);
+			        var weaponRec = new newPickUp_WeaponEnergy(8);
 			        weaponRec.width=18;
 			        weaponRec.height=18;			        
-				    weaponRec.x= (i%widthTot)*20+(20-weaponRec.width);
-				    weaponRec.y= (heightTot-1)*20+1;  
+				    weaponRec.x= (i%widthTot)*20+(10-weaponRec.width/2);
+				    weaponRec.y= (heightTot-1)*20+1;
 					entity.push(weaponRec);
 					if(lvlString[i-1]=='p' || lvlString[i-1]=='q' || lvlString[i-1]=='r' ){leggiBlocco(background,lvlString[i-1]);} //se il blocco prima era un background lo carica sotto la entita' letta
-				    */break;																		    	        	 							
+				    break;																		    	        	 							
 
 				//i blocchi
 				case 'a': case 'b': case 'c': case 'd': case 'e': case 'f': case 'g': case 'h': case 'i': case 'j': case 'k': 
@@ -499,7 +499,7 @@ i livelli sono disposti cosi in realta':1 8
            	this.x= (i%widthTot)*20;
             this.y= (heightTot-1)*20;
             this.width= 20;
-      		  this.height= 20+1;
+      		this.height= 20+1;
             this.color= '#155261';            													
 		}					
 	}//fine di stringToLevel()
@@ -709,118 +709,85 @@ i livelli sono disposti cosi in realta':1 8
 	      var larghezzaMissile=this.width/2;
 		  var velMin=3;
 	      if(this.xv<velMin && this.xv>-velMin && this.yv>velMin){//dritto verso l'alto
-		      ctx.moveTo(xdisegnata+this.width/2, ydisegnata);
-		      ctx.lineTo(xdisegnata+this.width/2+larghezzaMissile/2, ydisegnata+larghezzaMissile);
-		      ctx.lineTo(xdisegnata+this.width/2+larghezzaMissile/2, ydisegnata+this.height);
-		      ctx.lineTo(xdisegnata+this.width/2-larghezzaMissile/2, ydisegnata+this.height);
-		      ctx.lineTo(xdisegnata+this.width/2-larghezzaMissile/2, ydisegnata+larghezzaMissile);
-		      ctx.lineTo(xdisegnata+this.width/2, ydisegnata);
-		      ctx.fill();
+			  baseMissileVerticale( (xdisegnata), (ydisegnata), (this.width), (this.height), (larghezzaMissile), (larghezzaMissile));
 		      ctx.fillStyle=this.color2;
 		      ctx.fillRect(xdisegnata+this.width/2+larghezzaMissile/2-1, ydisegnata+larghezzaMissile+2, 2, larghezzaMissile-1);
-		      ctx.fillRect(xdisegnata+this.width/2-larghezzaMissile/2-1, ydisegnata+larghezzaMissile+2, 2, larghezzaMissile-1);
+		      ctx.fillRect(xdisegnata+this.width/2-larghezzaMissile/2-1, ydisegnata+larghezzaMissile+2, 2, larghezzaMissile-1);			
 	      }else if(this.xv<velMin && this.xv>-velMin && this.yv<velMin){//dritto verso il basso
-		      ctx.moveTo(xdisegnata+this.width/2, ydisegnata+this.height);
-		      ctx.lineTo(xdisegnata+this.width/2+larghezzaMissile/2, ydisegnata+this.height-larghezzaMissile);
-		      ctx.lineTo(xdisegnata+this.width/2+larghezzaMissile/2, ydisegnata);
-		      ctx.lineTo(xdisegnata+this.width/2-larghezzaMissile/2, ydisegnata);
-		      ctx.lineTo(xdisegnata+this.width/2-larghezzaMissile/2, ydisegnata+this.height-larghezzaMissile);
-		      ctx.lineTo(xdisegnata+this.width/2, ydisegnata+this.height);
-		      ctx.fill();
+      		  baseMissileVerticale( (xdisegnata), (ydisegnata+this.height), (this.width), (-this.height), (larghezzaMissile), (-larghezzaMissile));
 		      ctx.fillStyle=this.color2;
 		      ctx.fillRect(xdisegnata+this.width/2+larghezzaMissile/2-1, ydisegnata-1, 2, larghezzaMissile-1);
-		      ctx.fillRect(xdisegnata+this.width/2-larghezzaMissile/2-1, ydisegnata-1, 2, larghezzaMissile-1);	      	
+		      ctx.fillRect(xdisegnata+this.width/2-larghezzaMissile/2-1, ydisegnata-1, 2, larghezzaMissile-1);      		  
 	      }else if(this.yv<velMin && this.yv>-velMin && this.xv>velMin){//dritto a destra
-		      ctx.moveTo(xdisegnata+this.width, ydisegnata+this.height/2);
-		      ctx.lineTo(xdisegnata+this.width-larghezzaMissile, ydisegnata+this.height/2+larghezzaMissile/2);
-		      ctx.lineTo(xdisegnata, ydisegnata+this.height/2+larghezzaMissile/2);
-		      ctx.lineTo(xdisegnata, ydisegnata+this.height/2-larghezzaMissile/2);
-		      ctx.lineTo(xdisegnata+this.width-larghezzaMissile, ydisegnata+this.height/2-larghezzaMissile/2);
-		      ctx.lineTo(xdisegnata+this.width, ydisegnata+this.height/2);
-		      ctx.fill();
+     		  baseMissileLaterale( (xdisegnata), (ydisegnata), (this.width), (this.height), (larghezzaMissile), (larghezzaMissile), this.color2);
 		      ctx.fillStyle=this.color2;
 		      ctx.fillRect(xdisegnata-1, ydisegnata+this.height/2-larghezzaMissile/2-1, larghezzaMissile-1, 2);
-		      ctx.fillRect(xdisegnata-1, ydisegnata+this.height/2+larghezzaMissile/2-1, larghezzaMissile-1, 2);	      
+		      ctx.fillRect(xdisegnata-1, ydisegnata+this.height/2+larghezzaMissile/2-1, larghezzaMissile-1, 2);	     		  
 	      }else if(this.yv<velMin && this.yv>-velMin && this.xv<velMin){//dritto a sinistra
-		      ctx.moveTo(xdisegnata, ydisegnata+this.height/2);
-		      ctx.lineTo(xdisegnata+larghezzaMissile, ydisegnata+this.height/2+larghezzaMissile/2);
-		      ctx.lineTo(xdisegnata+this.width, ydisegnata+this.height/2+larghezzaMissile/2);
-		      ctx.lineTo(xdisegnata+this.width, ydisegnata+this.height/2-larghezzaMissile/2);
-		      ctx.lineTo(xdisegnata+larghezzaMissile, ydisegnata+this.height/2-larghezzaMissile/2);
-		      ctx.lineTo(xdisegnata, ydisegnata+this.height/2);
-		      ctx.fill();
+			  baseMissileLaterale( (xdisegnata+this.width), (ydisegnata), (-this.width), (this.height), (-larghezzaMissile), (larghezzaMissile));
 		      ctx.fillStyle=this.color2;
 		      ctx.fillRect(xdisegnata+this.width-larghezzaMissile+2, ydisegnata+this.height/2-larghezzaMissile/2-1, larghezzaMissile-1, 2);
-		      ctx.fillRect(xdisegnata+this.width-larghezzaMissile+2, ydisegnata+this.height/2+larghezzaMissile/2-1, larghezzaMissile-1, 2);
+		      ctx.fillRect(xdisegnata+this.width-larghezzaMissile+2, ydisegnata+this.height/2+larghezzaMissile/2-1, larghezzaMissile-1, 2);			  
 	      }else if(this.xv>velMin && this.yv>velMin){//verso l'alto e destra
-		      ctx.moveTo(xdisegnata+this.width, ydisegnata);
-		      ctx.lineTo(xdisegnata+this.width, ydisegnata+larghezzaMissile);
-		      ctx.lineTo(xdisegnata+larghezzaMissile, ydisegnata+this.height);
-		      ctx.lineTo(xdisegnata, ydisegnata+this.height-larghezzaMissile);
-		      ctx.lineTo(xdisegnata+this.width-larghezzaMissile, ydisegnata);
-		      ctx.lineTo(xdisegnata+this.width, ydisegnata);
-		      ctx.fill();
-	          ctx.beginPath();
-		      ctx.lineWidth = 2;		      
-		      ctx.strokeStyle=this.color2;
+	       	  baseMissileDiagonale( (xdisegnata), (ydisegnata), (this.width), (this.height), (larghezzaMissile), (larghezzaMissile));
+	          ctx.beginPath(); ctx.lineWidth = 2; ctx.strokeStyle=this.color2;
 		      ctx.moveTo(xdisegnata-1, ydisegnata+this.height-larghezzaMissile+1);
 		      ctx.lineTo(xdisegnata+larghezzaMissile-1, ydisegnata+this.height-larghezzaMissile-larghezzaMissile/2-2);
-		      ctx.stroke();
 		      ctx.moveTo(xdisegnata+larghezzaMissile-1, ydisegnata+this.height+1);
-		      ctx.lineTo(xdisegnata+larghezzaMissile*2-1, ydisegnata+this.height-larghezzaMissile/2-2);
-		      ctx.stroke();		      
+		      ctx.lineTo(xdisegnata+larghezzaMissile*2-1, ydisegnata+this.height-larghezzaMissile/2-2); 
+		      ctx.stroke();	       	  
 	      }else if(this.xv<velMin && this.yv>velMin){//verso l'alto e sinistra
-		      ctx.moveTo(xdisegnata, ydisegnata);
-		      ctx.lineTo(xdisegnata+larghezzaMissile, ydisegnata);
-		      ctx.lineTo(xdisegnata+this.width, ydisegnata+this.height-larghezzaMissile);
-		      ctx.lineTo(xdisegnata+this.width-larghezzaMissile, ydisegnata+this.height);
-		      ctx.lineTo(xdisegnata, ydisegnata+larghezzaMissile);
-		      ctx.lineTo(xdisegnata, ydisegnata);
-		      ctx.fill();
-	          ctx.beginPath();
-		      ctx.lineWidth = 2;		      
-		      ctx.strokeStyle=this.color2;
+			  baseMissileDiagonale( (xdisegnata+this.width), (ydisegnata), (-this.width), (this.height), (-larghezzaMissile), (larghezzaMissile));
+	          ctx.beginPath(); ctx.lineWidth = 2; ctx.strokeStyle=this.color2;
 		      ctx.moveTo(xdisegnata+this.width-larghezzaMissile+1, ydisegnata+this.height+1);
 		      ctx.lineTo(xdisegnata+this.width-larghezzaMissile-larghezzaMissile/2-1, ydisegnata+this.height-larghezzaMissile/2-1);
-		      ctx.stroke();
 		      ctx.moveTo(xdisegnata+this.width+1, ydisegnata+this.height-larghezzaMissile+1);
 		      ctx.lineTo(xdisegnata+this.width-larghezzaMissile/2-1, ydisegnata+this.height-larghezzaMissile-larghezzaMissile/2-1);
-		      ctx.stroke();
+		      ctx.stroke();			  
 	      }else if(this.xv<velMin && this.yv<velMin){//verso il basso e sinistra
-		      ctx.moveTo(xdisegnata, ydisegnata+this.height);
-		      ctx.lineTo(xdisegnata, ydisegnata+this.height-larghezzaMissile);
-		      ctx.lineTo(xdisegnata+this.width-larghezzaMissile, ydisegnata);
-		      ctx.lineTo(xdisegnata+this.width, ydisegnata+larghezzaMissile);
-		      ctx.lineTo(xdisegnata+larghezzaMissile, ydisegnata+this.height);
-		      ctx.lineTo(xdisegnata, ydisegnata+this.height);
-		      ctx.fill();
-	          ctx.beginPath();
-		      ctx.lineWidth = 2;		      
-		      ctx.strokeStyle=this.color2;
+			  baseMissileDiagonale( (xdisegnata+this.width), (ydisegnata+this.height), (-this.width), (-this.height), (-larghezzaMissile), (-larghezzaMissile));
+	          ctx.beginPath(); ctx.lineWidth = 2; ctx.strokeStyle=this.color2;
 		      ctx.moveTo(xdisegnata+this.width-larghezzaMissile+1, ydisegnata-1);
 		      ctx.lineTo(xdisegnata+this.width-larghezzaMissile-larghezzaMissile/2-1, ydisegnata+larghezzaMissile-2);
-		      ctx.stroke();
 		      ctx.moveTo(xdisegnata+this.width+1, ydisegnata+larghezzaMissile-1);
 		      ctx.lineTo(xdisegnata+this.width-larghezzaMissile/2-1, ydisegnata+larghezzaMissile+larghezzaMissile/2+1);
-		      ctx.stroke();
+		      ctx.stroke();			  
 	      }else if(this.xv>velMin && this.yv<velMin){//verso il basso e destra
-		      ctx.moveTo(xdisegnata+this.width, ydisegnata+this.height);
-		      ctx.lineTo(xdisegnata+this.width-larghezzaMissile, ydisegnata+this.height);
-		      ctx.lineTo(xdisegnata, ydisegnata+this.height-larghezzaMissile);
-		      ctx.lineTo(xdisegnata+larghezzaMissile, ydisegnata);
-		      ctx.lineTo(xdisegnata+this.width, ydisegnata+this.height-larghezzaMissile);
-		      ctx.lineTo(xdisegnata+this.width, ydisegnata+this.height);
-		      ctx.fill();
-	          ctx.beginPath();
-		      ctx.lineWidth = 2;		      
-		      ctx.strokeStyle=this.color2;
+			  baseMissileDiagonale( (xdisegnata), (ydisegnata+this.height), (this.width), (-this.height), (larghezzaMissile), (-larghezzaMissile));
+	          ctx.beginPath(); ctx.lineWidth = 2; ctx.strokeStyle=this.color2;
 		      ctx.moveTo(xdisegnata-1, ydisegnata+this.height-larghezzaMissile-1);
 		      ctx.lineTo(xdisegnata+larghezzaMissile/2+1, ydisegnata+this.height-larghezzaMissile+larghezzaMissile/2+1);
-		      ctx.stroke();
 		      ctx.moveTo(xdisegnata+larghezzaMissile-1, ydisegnata-1);
 		      ctx.lineTo(xdisegnata+larghezzaMissile+larghezzaMissile/2+1, ydisegnata+larghezzaMissile/2+1);
-		      ctx.stroke();
-	      }          
+		      ctx.stroke();			  
+	      }
+	      function baseMissileVerticale(xdisegnata,ydisegnata,width,height,larghezzaMissile,altezzaMissile){
+		      ctx.moveTo(xdisegnata+width/2, ydisegnata);
+		      ctx.lineTo(xdisegnata+width/2+larghezzaMissile/2, ydisegnata+altezzaMissile);
+		      ctx.lineTo(xdisegnata+width/2+larghezzaMissile/2, ydisegnata+height);
+		      ctx.lineTo(xdisegnata+width/2-larghezzaMissile/2, ydisegnata+height);
+		      ctx.lineTo(xdisegnata+width/2-larghezzaMissile/2, ydisegnata+altezzaMissile);
+		      ctx.lineTo(xdisegnata+width/2, ydisegnata);
+		      ctx.fill();     	
+	      }
+	      function baseMissileLaterale(xdisegnata,ydisegnata,width,height,larghezzaMissile,altezzaMissile){
+		      ctx.moveTo(xdisegnata+width, ydisegnata+height/2);
+		      ctx.lineTo(xdisegnata+width-larghezzaMissile, ydisegnata+height/2+altezzaMissile/2);
+		      ctx.lineTo(xdisegnata, ydisegnata+height/2+altezzaMissile/2);
+		      ctx.lineTo(xdisegnata, ydisegnata+height/2-altezzaMissile/2);
+		      ctx.lineTo(xdisegnata+width-larghezzaMissile, ydisegnata+height/2-altezzaMissile/2);
+		      ctx.lineTo(xdisegnata+width, ydisegnata+height/2);
+		      ctx.fill();     	
+	      }
+	      function baseMissileDiagonale(xdisegnata,ydisegnata,width,height,larghezzaMissile,altezzaMissile){
+		      ctx.moveTo(xdisegnata+width, ydisegnata);
+		      ctx.lineTo(xdisegnata+width, ydisegnata+altezzaMissile);
+		      ctx.lineTo(xdisegnata+larghezzaMissile, ydisegnata+height);
+		      ctx.lineTo(xdisegnata, ydisegnata+height-altezzaMissile);
+		      ctx.lineTo(xdisegnata+width-larghezzaMissile, ydisegnata);
+		      ctx.lineTo(xdisegnata+width, ydisegnata);
+		      ctx.fill();	      	
+	      }	                
         }        
         this.physics= function( xdisegnata, ydisegnata, indiceDiQuestaEntity){
           //movimento dello sparo
@@ -869,13 +836,11 @@ i livelli sono disposti cosi in realta':1 8
                 }
               }
             }
-          }
-          
+          }          
           if(this.active && (this.life<1 || ((xdisegnata > canvasWidth)||( xdisegnata+this.width < 0)))){
             player.activeShot=player.activeShot-1.5;
             this.active=false;
           }
-
           function findTarget(x,y){
           	var closestEntityX=999999999999; 
           	var closestEntityY=999999999999; 
@@ -890,7 +855,6 @@ i livelli sono disposti cosi in realta':1 8
 							prevDistanceY=y-closestEntityY; if(prevDistanceY<0){prevDistanceY=-1*prevDistanceY;}
 							distanceX=x-entX; if(distanceX<0){distanceX=-1*distanceX;}
 							distanceY=y-entY; if(distanceY<0){distanceY=-1*distanceY;}
-							//alert("i:"+i+", prevDistanceX:"+prevDistanceX+", prevDistanceY:"+prevDistanceY+", prevTotDist:"+(prevDistanceX+prevDistanceY)+", distanceX:"+distanceX+", distanceY:"+distanceY+", nowTotDist:"+(distanceX+distanceY)+", Meglio?:"+((distanceX+distanceY)<(prevDistanceX+prevDistanceY)));
 							if((distanceX+distanceY)<(prevDistanceX+prevDistanceY)){
 								closestEntityX=entX;
 								closestEntityY=entY;
@@ -1085,9 +1049,7 @@ i livelli sono disposti cosi in realta':1 8
 	      }
         }        
         this.physics= function( xdisegnata, ydisegnata, indiceDiQuestaEntity){
-          //rotazione
-          this.rotation++;
-          if(this.rotation>10){this.rotation=0;}
+          this.rotation++; if(this.rotation>10){this.rotation=0;} //animazione rotazione
           //movimento dello sparo
           if (this.facingRight){
             this.xv -= this.speed;
@@ -1322,11 +1284,9 @@ i livelli sono disposti cosi in realta':1 8
 	            }
 	          }
 	        }
-
           if(this.contaLife>420){
           	this.life=-1;	
-          }
-          this.contaLife++;
+          }this.contaLife++;
           
           if(this.main){
             //disattiva colpi su schermo
@@ -1598,7 +1558,9 @@ i livelli sono disposti cosi in realta':1 8
           	entity[this.entityPickedIndex].y=this.y;
           }
           if(collisionBetween(this,player) && this.speedX<0.3){
-          	if(!this.hitSomething){player.power[6].usage++;}
+          	if(!this.hitSomething){
+          		if(player.power[6].usage<player.power[6].usageMax){player.power[6].usage++;}
+          	}
           	this.life=-1;
           }          
           if(this.active && (this.life<1 || ((xdisegnata > canvasWidth)||( xdisegnata+this.width < 0)))){
@@ -1957,7 +1919,7 @@ i livelli sono disposti cosi in realta':1 8
         }
       }              
 
-      function newPickUp_LifeEnergy(vitaRecuperata) {//le spine per terra
+      function newPickUp_LifeEnergy(vitaRecuperata) {
         this.life= 9999999999;
         this.type= "pickup";
         this.damage= -vitaRecuperata;
@@ -1970,10 +1932,12 @@ i livelli sono disposti cosi in realta':1 8
         this.canSelfDraw=true;
         this.hasPhysics=true;
         this.selfDraw= function( xdisegnata, ydisegnata, indiceDiQuestaEntity){//funzione per disegnare l'entita
+        	ctx.fillStyle = "#868686";
+			ctx.fillRect(xdisegnata-3, ydisegnata+3, this.width+6, this.height-6);        
         	ctx.fillStyle = "#d70000";
         	ctx.fillRect(xdisegnata, ydisegnata, this.width, this.height);
         	ctx.fillStyle = "#ffe100";
-			ctx.fillRect(xdisegnata+2, ydisegnata+2, this.width-4, this.height-4);
+			ctx.fillRect(xdisegnata+2, ydisegnata+2, this.width-4, this.height-4);			
         }//fine di selfDraw
         this.physics= function( xdisegnata, ydisegnata, indiceDiQuestaEntity){
 	      var gravityApplicata = 0; var frizioneApplicata = 0;
@@ -2012,7 +1976,101 @@ i livelli sono disposti cosi in realta':1 8
 				this.life=-1;
 			}
         }//fine di physics              
-      }                   
+      }
+
+      function newPickUp_WeaponEnergy(usageRecuparato) {
+        this.life= 9999999999;
+        this.type= "pickup";
+        this.damage= 0;
+        this.usageRestore=usageRecuparato;
+        this.x= 0;
+        this.y= 0;
+        this.yv = 0;
+        this.width= 20;
+        this.height= 20;
+        this.isInWater = false;
+        this.canSelfDraw=true;
+        this.hasPhysics=true;
+        this.selfDraw= function( xdisegnata, ydisegnata, indiceDiQuestaEntity){//funzione per disegnare l'entita
+        	ctx.fillStyle = "#003ef0";
+        	ctx.fillRect(xdisegnata, ydisegnata, this.width, this.height);
+        	ctx.fillStyle = "#3AB7D4";
+			ctx.fillRect(xdisegnata+2, ydisegnata+2, this.width-4, this.height-4);
+        	ctx.fillStyle = "#ff7c00";
+        	ctx.fillRect(xdisegnata, ydisegnata-1.5+this.height/2, this.width, 3);			
+        }//fine di selfDraw
+        this.physics= function( xdisegnata, ydisegnata, indiceDiQuestaEntity){
+	      var gravityApplicata = 0; var frizioneApplicata = 0;
+	        if (this.y > level.waterLevel){  //determina se sei in acqua o no
+	            if (!this.isInWater){
+	                this.isInWater = true;
+	                this.yv = 0;
+	            }
+	            gravityApplicata = level.gravityWater;
+	            frizioneApplicata = level.frictionWater;
+	        }else{
+	            this.isInWater = false;
+	            gravityApplicata = level.gravity;
+	            frizioneApplicata = level.friction;            
+	        }      
+	        this.yv += gravityApplicata;//get level gravity
+	        if(this.yv>(this.height)){//limita la gravita' massima raggiungibile
+	        	this.yv=this.height;
+	        }
+	        this.y += this.yv;//apply gravity
+
+	        for(var i = 0; i < level.length; i++) {//y collision with level
+	          if(collisionBetween(this, level[i])) {
+	            this.y=level[i].y-this.height;
+	          }	
+	        }
+			for(var i = 0; i < entity.length; i++) {//y collision with entities that are solid (ostacolo e piattaforma)
+				if(entity[i].type=="ostacolo" || entity[i].type=="piattaforma"){
+		          if(collisionBetween(this, entity[i])) {
+		            this.y=entity[i].y-this.height;
+		          }
+		        }
+	        }	        		        
+	        
+			if(collisionBetween(this, player)) {//quando il player lo raccoglie
+				this.life=-1;
+				if(levelDefeated!="false,false,false,false,false,false,false,false"){
+					for(;this.usageRestore>0;){
+						if(player.activePower!=0){
+							if(player.power[player.activePower-1].usage<player.power[player.activePower-1].usageMax){
+								this.usageRestore--;
+								player.power[player.activePower-1].usage++;	
+							}else{
+								for(i=0;i<9;i++){
+									if(i!=8){
+										if(levelDefeated[i]){
+											if(player.power[i].usage<player.power[i].usageMax){
+												this.usageRestore--;
+												player.power[i].usage++;
+												break;	
+											}									
+										}
+									}else{this.usageRestore=-1;}
+								}
+							}
+						}else{
+							for(i=0;i<9;i++){
+								if(i!=8){
+									if(levelDefeated[i]){
+										if(player.power[i].usage<player.power[i].usageMax){
+											this.usageRestore--;
+											player.power[i].usage++;
+											break;	
+										}
+									}
+								}else{this.usageRestore=-1;}					
+							}						
+						}
+					}
+				}
+			}
+        }//fine di physics              
+      }                         
       			
   //start the engine
   window.onload = start;
