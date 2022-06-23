@@ -1151,6 +1151,76 @@ i livelli sono disposti cosi in realta':1 8
         }//fine physics
       }//fine rolling shield
 
+      function newFireWave(larghezza,altezza) {//lo sparo creato dal player
+      	this.timer=0;
+        this.life= 1;
+        this.type= "sparoDelPlayer";
+        this.damage= 1;
+        if(player.facingRight){
+         this.x= player.x+player.width+14;
+        }else{
+         this.x= player.x-8-larghezza; 
+        }
+        this.y=player.y+9;
+        this.width= larghezza;
+        this.height= altezza;
+        this.color1=player.power[3].color1;
+        this.color2=player.power[3].color2;
+        this.hasPhysics=true;
+        this.canSelfDraw=true;
+        this.selfDraw= function( xdisegnata, ydisegnata, indiceDiQuestaEntity){
+          var numeroFiamme=Math.round((this.width/10));
+          var fiammeWidth=(this.width/numeroFiamme)-1;
+          for(i=0;i<numeroFiamme;i++){
+          	ctx.fillStyle=this.color1;
+          	ctx.fillRect(xdisegnata+1+i*fiammeWidth, ydisegnata, fiammeWidth-1, this.height);
+          	disegnaFiammella(xdisegnata+1+i*fiammeWidth, ydisegnata,fiammeWidth-1,this.color1);	
+          	ctx.fillStyle=this.color2;
+          	ctx.fillRect(xdisegnata+3+i*fiammeWidth, ydisegnata+2, fiammeWidth-5, this.height-4);
+          	disegnaFiammella(xdisegnata+3+i*fiammeWidth, ydisegnata+2,fiammeWidth-5,this.color2);	
+          }         
+          function disegnaFiammella(x,y,fiammeWidth,color){
+	          ctx.fillStyle=color;
+	          ctx.beginPath();
+		      ctx.lineWidth = 1;
+		      var lato=fiammeWidth/6;
+		      ctx.moveTo(x, y+1);
+		      ctx.lineTo(x+lato, y-lato*2);
+		      ctx.lineTo(x+lato*2, y+1);
+		      ctx.lineTo(x+lato*4, y-lato*4);
+		      ctx.lineTo(x+lato*6, y+1);
+		      ctx.lineTo(x, y+1);
+		      ctx.fill();          	
+          }          
+        }       
+        this.physics= function( xdisegnata, ydisegnata, indiceDiQuestaEntity){
+          //movimento(insieme al player)
+	      if(player.facingRight){
+	       this.x= player.x+player.width+14;
+	      }else{
+	       this.x= player.x-8-larghezza; 
+	      }
+	      this.y=player.y+9;          
+          //collisione dello sparo con altre entita'
+          for (i=0; i<entity.length;i++){
+            if (!(i == indiceDiQuestaEntity)){
+              if ( entity[i].life > 0 && !(this.type == entity[i].type || entity[i].type=="pickup" )  && collisionBetween(this,entity[i]) ){	//controlla che l'entita da colpire sia viva, che non siano lo stesso proiettile e infine se c'è una collisione
+                entity[i].life-=this.damage;
+              }
+            }
+          }
+          if(keys[sparokey] && player.power[3].usage>0 && (player.carica<150 || !armaturaAcquired[2])){
+          	if(this.timer==40){
+          		player.power[3].usage--;
+          		this.timer=0;
+          	}else{this.timer++;}
+          }else{
+          	this.life= -1;
+          	player.activeShot=player.activeShot-3;
+          }
+        }
+      }
+
       function newStormTornado(xPassata,yPassata,larghezza,altezza,indicePassato,faceRight,goUp) {//lo sparo creato dal player - carica 3
       	this.index=indicePassato;
         this.active=true;
@@ -2289,129 +2359,132 @@ i livelli sono disposti cosi in realta':1 8
             calcolaPlayerColor();
         }
         
-        if(player.activeShot<3){//se non ci sono piu di 3 colpi attivi contemporaneamente        
-          if(keys[sparokey] && player.canMove) {//shooting
-            if(!player.giasparato){
-              player.giasparato = true;
-              if(player.activePower==0){
-                  var sparo = new newSparo(20,10); entity.push(sparo); 
-                  player.activeShot++;
-              }else{
-                if(player.power[player.activePower-1].usage>0){
-                  player.power[player.activePower-1].usage--;
-                  switch(player.activePower){ 
-                    /*HomingTorpedo*/   case 1: var sparo = new newHomingMissle(12,12); entity.push(sparo); player.activeShot=player.activeShot+1.5; break;
-                    /*ChameleonSting*/  case 2: var sparo = new newChameleonSting(15,15); entity.push(sparo); player.activeShot=player.activeShot+3; break;
-                    /*RollingShield*/   case 3: var sparo = new newRollingShield(40,40); entity.push(sparo); player.activeShot=player.activeShot+3; break;
-                    /*Fire*/            case 4: break;
-                    /*Storm*/           case 5: var sparo = new newStormTornado(player.x,(player.y+3+(15/2)),15,15,0,player.facingRight,true); entity.push(sparo); player.activeShot=player.activeShot+3; break;
-                    /*Electric*/        case 6: var sparo = new newElectricSpark(15,15); entity.push(sparo); player.activeShot=player.activeShot+1; break;
-                    /*Boomerang*/       case 7: var sparo = new newBoomerangCutter(15,15,true); entity.push(sparo); player.activeShot=player.activeShot+1; break;
-                    /*ShotgunIce*/      case 8: var sparo = new newShotgunIce(player.x+player.width+6,player.x-6-15,player.y+6,15,15,true,2.5,0,player.facingRight); entity.push(sparo); player.activeShot=player.activeShot+3; break;
-                  }
-                }
-              }
-            }else{
-              if(player.activePower==0 || armaturaAcquired[2]){
-                player.carica++;//disegna i pallini del colore della carica intorno al player
-                if (player.carica > 80){ //level 2 charge and 3
-                  if (player.carica > 150 && armaturaAcquired[2]){//charge 3 - richiede armaturaAcquired[2]
-    	              var xdisegnata=xDisegnata(); var ydisegnata=yDisegnata();
-    	              var xrandom=((-player.width/4)+Math.floor(Math.random() * (player.width/2)))*3; var yrandom=((-player.height/4)+Math.floor(Math.random() * (player.height/2)))*2;
-    	              ctx.fillStyle = player.charge3color;
-    	              ctx.fillRect(xdisegnata+(player.width/2)+xrandom, ydisegnata+(player.height/2)+yrandom, 8, 8);              	
-                  }else{//charge 2
-    	              var xdisegnata=xDisegnata(); var ydisegnata=yDisegnata();
-    	              var xrandom=((-player.width/4)+Math.floor(Math.random() * (player.width/2)))*3; var yrandom=((-player.height/4)+Math.floor(Math.random() * (player.height/2)))*2;
-    	              ctx.fillStyle = player.charge0color;
-    	              ctx.fillRect(xdisegnata+(player.width/2)+xrandom, ydisegnata+(player.height/2)+yrandom, 8, 8);
-                  }
-                }else if(player.carica > 25){ //level 1 charge
-                  var xdisegnata=xDisegnata(); var ydisegnata=yDisegnata();
-                  var xrandom=((-player.width/4)+Math.floor(Math.random() * (player.width/2)))*3; var yrandom=((-player.height/4)+Math.floor(Math.random() * (player.height/2)))*2;
-                  ctx.fillStyle = player.charge1color;
-                  ctx.fillRect(xdisegnata+(player.width/2)+xrandom, ydisegnata+(player.height/2)+yrandom, 8, 8);
-                }   
-              }
-            }
-          }else{
-            if (player.giasparato){
-  	          if (player.canMove){
-                if(player.activePower==0){//default power
-      	            if (player.carica > 80){
-                      player.activeShot++;
-      	            	if (player.carica > 150 && armaturaAcquired[2]){//charge 3 shoot
-      	            		var latoCubottiSparo=15;
-      				        if(player.facingRight){
-      				        	var sparo = new newSparoCharge3((player.x+player.width+6),(player.y+3+(latoCubottiSparo/2)),latoCubottiSparo,latoCubottiSparo,0,player.facingRight,true);
-      				        	var sparoInvisibile = new newSparo(1,55);
-      				        	sparoInvisibile.x=(player.x+player.width+6);
-      				        }else{
-      				        	var sparo = new newSparoCharge3((player.x-6-latoCubottiSparo),(player.y+3+(latoCubottiSparo/2)),latoCubottiSparo,latoCubottiSparo,0,player.facingRight,true);
-      				        	var sparoInvisibile = new newSparo(1,55);
-      				        	sparoInvisibile.x=(player.x-6-latoCubottiSparo);				        	
-      				        }
-      		                sparo.color= player.charge3color;
-      		                sparoInvisibile.color= "#00000000";//sono 8 zeri invece che 6, gli ultimi due indicano il canale alpha(trasparenza)
-      		                sparoInvisibile.speed=sparo.speed;
-      			        	sparoInvisibile.y=sparo.startingY-20;
-      			        	sparoInvisibile.canPassWall=true;		                
-      		                entity.push(sparo);
-      		                entity.push(sparoInvisibile);
-      	            		var latoCubottiSparo=15;
-      				        if(player.facingRight){
-      				        	var sparo = new newSparoCharge3((player.x+player.width+6),(player.y+3+(latoCubottiSparo/2)),latoCubottiSparo,latoCubottiSparo,0,player.facingRight,false);			        	
-      				        }else{
-      				        	var sparo = new newSparoCharge3((player.x-6-latoCubottiSparo),(player.y+3+(latoCubottiSparo/2)),latoCubottiSparo,latoCubottiSparo,0,player.facingRight,false);
-      				        }
-      		                sparo.color= player.charge3color;
-      		                entity.push(sparo);		                	                            		
-      	            	}else{//charge 2 shoot
-      	            	var sparo = new newSparo(50,25);
-      	                sparo.y= sparo.y-7;
-      	                sparo.color= player.charge2color;
-      	                sparo.perforation=true;
-      	                entity.push(sparo);
-      	                }
-      	            }else if (player.carica > 25){//charge 1 shoot
-                      player.activeShot++;
-      	            	var sparo = new newSparo(35,15);
-      	              sparo.y= sparo.y-2;
-      	            	sparo.color= player.charge1color;
-      	            	entity.push(sparo);
-      	            }
-      	            player.carica=0;
-      	            player.giasparato=false;
-                }else{
-                    if (player.carica > 150 && armaturaAcquired[2]){
-                        switch(player.activePower){//poteri caricati
-                          case 1: break;
-                          case 2: break; 
-                          case 3: break;
-                          case 4: break;
-                          case 5: break;
-                          case 6: break;
-                          case 7: break;
-                          case 8: break;                         
-                        }
-                    }
-      	            player.carica=0;
-      	            player.giasparato=false;                  
-                }
-  	         }else{player.carica=-9999999999999;}
-            }
-          }
-        }
-                
-        p1.slope = 0;	//serve per i bordi tipo - serve anche per le collision
-        for(var i = 0; i < lvl.length; i++) {
-          if(collisionBetween(p1, lvl[i])) {
-            if(p1.slope != -8) {
-              p1.y -= 1;
-              p1.slope += 1;
-            }
-          }
-        }
+        //if(player.activeShot<3){//se non ci sono piu di 3 colpi attivi contemporaneamente        
+         if(keys[sparokey] && player.canMove) {//shooting
+           if(!player.giasparato){
+           	 if(player.activeShot<3){//se non ci sono piu di 3 colpi attivi contemporaneamente        
+	             player.giasparato = true;
+	             if(player.activePower==0){
+	                 var sparo = new newSparo(20,10); entity.push(sparo); 
+	                 player.activeShot++;
+	             }else{
+	               if(player.power[player.activePower-1].usage>0){
+	                 player.power[player.activePower-1].usage--;
+	                 switch(player.activePower){ 
+	                   /*HomingTorpedo*/   case 1: var sparo = new newHomingMissle(12,12); entity.push(sparo); player.activeShot=player.activeShot+1.5; break;
+	                   /*ChameleonSting*/  case 2: var sparo = new newChameleonSting(15,15); entity.push(sparo); player.activeShot=player.activeShot+3; break;
+	                   /*RollingShield*/   case 3: var sparo = new newRollingShield(40,40); entity.push(sparo); player.activeShot=player.activeShot+3; break;
+	                   /*Fire*/            case 4: var sparo = new newFireWave(70,10); entity.push(sparo); player.activeShot=player.activeShot+3; break;
+	                   /*Storm*/           case 5: var sparo = new newStormTornado(player.x,(player.y+3+(15/2)),15,15,0,player.facingRight,true); entity.push(sparo); player.activeShot=player.activeShot+3; break;
+	                   /*Electric*/        case 6: var sparo = new newElectricSpark(15,15); entity.push(sparo); player.activeShot=player.activeShot+1; break;
+	                   /*Boomerang*/       case 7: var sparo = new newBoomerangCutter(15,15,true); entity.push(sparo); player.activeShot=player.activeShot+1; break;
+	                   /*ShotgunIce*/      case 8: var sparo = new newShotgunIce(player.x+player.width+6,player.x-6-15,player.y+6,15,15,true,2.5,0,player.facingRight); entity.push(sparo); player.activeShot=player.activeShot+3; break;
+	                 }
+	               }
+	             }
+	       	 }
+           }else{
+             if(player.activePower==0 || armaturaAcquired[2]){
+               player.carica++;//disegna i pallini del colore della carica intorno al player
+               if (player.carica > 80){ //level 2 charge and 3
+                 if (player.carica > 150 && armaturaAcquired[2]){//charge 3 - richiede armaturaAcquired[2]
+   	              var xdisegnata=xDisegnata(); var ydisegnata=yDisegnata();
+   	              var xrandom=((-player.width/4)+Math.floor(Math.random() * (player.width/2)))*3; var yrandom=((-player.height/4)+Math.floor(Math.random() * (player.height/2)))*2;
+   	              ctx.fillStyle = player.charge3color;
+   	              ctx.fillRect(xdisegnata+(player.width/2)+xrandom, ydisegnata+(player.height/2)+yrandom, 8, 8);              	
+                 }else{//charge 2
+   	              var xdisegnata=xDisegnata(); var ydisegnata=yDisegnata();
+   	              var xrandom=((-player.width/4)+Math.floor(Math.random() * (player.width/2)))*3; var yrandom=((-player.height/4)+Math.floor(Math.random() * (player.height/2)))*2;
+   	              ctx.fillStyle = player.charge0color;
+   	              ctx.fillRect(xdisegnata+(player.width/2)+xrandom, ydisegnata+(player.height/2)+yrandom, 8, 8);
+                 }
+               }else if(player.carica > 25){ //level 1 charge
+                 var xdisegnata=xDisegnata(); var ydisegnata=yDisegnata();
+                 var xrandom=((-player.width/4)+Math.floor(Math.random() * (player.width/2)))*3; var yrandom=((-player.height/4)+Math.floor(Math.random() * (player.height/2)))*2;
+                 ctx.fillStyle = player.charge1color;
+                 ctx.fillRect(xdisegnata+(player.width/2)+xrandom, ydisegnata+(player.height/2)+yrandom, 8, 8);
+               }   
+             }
+           }
+         }else{
+           if (player.giasparato){
+ 	          if (player.canMove){
+ 	          	if(player.activeShot<3){//se non ci sono piu di 3 colpi attivi contemporaneamente        
+	               if(player.activePower==0){//default power
+	     	            if (player.carica > 80){
+	                     player.activeShot++;
+	     	            	if (player.carica > 150 && armaturaAcquired[2]){//charge 3 shoot
+	     	            		var latoCubottiSparo=15;
+	     				        if(player.facingRight){
+	     				        	var sparo = new newSparoCharge3((player.x+player.width+6),(player.y+3+(latoCubottiSparo/2)),latoCubottiSparo,latoCubottiSparo,0,player.facingRight,true);
+	     				        	var sparoInvisibile = new newSparo(1,55);
+	     				        	sparoInvisibile.x=(player.x+player.width+6);
+	     				        }else{
+	     				        	var sparo = new newSparoCharge3((player.x-6-latoCubottiSparo),(player.y+3+(latoCubottiSparo/2)),latoCubottiSparo,latoCubottiSparo,0,player.facingRight,true);
+	     				        	var sparoInvisibile = new newSparo(1,55);
+	     				        	sparoInvisibile.x=(player.x-6-latoCubottiSparo);				        	
+	     				        }
+	     		                sparo.color= player.charge3color;
+	     		                sparoInvisibile.color= "#00000000";//sono 8 zeri invece che 6, gli ultimi due indicano il canale alpha(trasparenza)
+	     		                sparoInvisibile.speed=sparo.speed;
+	     			        	sparoInvisibile.y=sparo.startingY-20;
+	     			        	sparoInvisibile.canPassWall=true;		                
+	     		                entity.push(sparo);
+	     		                entity.push(sparoInvisibile);
+	     	            		var latoCubottiSparo=15;
+	     				        if(player.facingRight){
+	     				        	var sparo = new newSparoCharge3((player.x+player.width+6),(player.y+3+(latoCubottiSparo/2)),latoCubottiSparo,latoCubottiSparo,0,player.facingRight,false);			        	
+	     				        }else{
+	     				        	var sparo = new newSparoCharge3((player.x-6-latoCubottiSparo),(player.y+3+(latoCubottiSparo/2)),latoCubottiSparo,latoCubottiSparo,0,player.facingRight,false);
+	     				        }
+	     		                sparo.color= player.charge3color;
+	     		                entity.push(sparo);		                	                            		
+	     	            	}else{//charge 2 shoot
+	     	            	var sparo = new newSparo(50,25);
+	     	                sparo.y= sparo.y-7;
+	     	                sparo.color= player.charge2color;
+	     	                sparo.perforation=true;
+	     	                entity.push(sparo);
+	     	                }
+	     	            }else if (player.carica > 25){//charge 1 shoot
+	                     player.activeShot++;
+	     	            	var sparo = new newSparo(35,15);
+	     	              sparo.y= sparo.y-2;
+	     	            	sparo.color= player.charge1color;
+	     	            	entity.push(sparo);
+	     	            }
+	     	            player.carica=0;
+	     	            player.giasparato=false;
+	               }else{
+	                   if (player.carica > 150 && armaturaAcquired[2]){
+	                       switch(player.activePower){//poteri caricati
+	                         case 1: break;
+	                         case 2: break; 
+	                         case 3: break;
+	                         case 4: break;
+	                         case 5: break;
+	                         case 6: break;
+	                         case 7: break;
+	                         case 8: break;                         
+	                       }
+	                   }
+	     	            player.carica=0;
+	     	            player.giasparato=false;                  
+	               }
+	         	}
+ 	         }else{player.carica=-9999999999999;}
+           }
+         }
+               
+       p1.slope = 0;	//serve per i bordi tipo - serve anche per le collision
+       for(var i = 0; i < lvl.length; i++) {
+         if(collisionBetween(p1, lvl[i])) {
+           if(p1.slope != -8) {
+             p1.y -= 1;
+             p1.slope += 1;
+           }
+         }
+       }
 
        	for(var i = 0; i < lvl.length; i++) {//x collision
           if(collisionBetween(p1, lvl[i])) {
