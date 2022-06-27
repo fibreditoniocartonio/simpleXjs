@@ -1,4 +1,4 @@
-      var versioneDiGioco = "v0.20220623"
+      var versioneDiGioco = "v0.20220627"; //aggiunto H.Torpedo carica 3, aggiornati i prezzi dei poteri, aggiornata la lunghezza massima della barra dei poteri (da 32 a 28), aggiunti effetti visivi minori nel menu di pausa
       //crea il canvas
       var canvasWidth = 720;
       var canvasHeight = 540;
@@ -67,14 +67,14 @@
         this.activePower=0;
         this.activeShot=0;
         this.power = [ //vettore dei poteri
-        {usageMax: 32, usage:32, color1:'#687968', color2:'#d9b289', nome:'Homing Torpedo'},
-        {usageMax: 32, usage:32, color1:'#1a914f', color2:'#60d1aa', nome:'Chameleon Sting'},
-        {usageMax: 32, usage:32, color1:'#e13e60', color2:'#a1c1aa', nome:'Rolling Shield'},
-        {usageMax: 32, usage:32, color1:'#f14f02', color2:'#f8e179', nome:'Fire Wave'},
-        {usageMax: 32, usage:32, color1:'#e40097', color2:'#e191c1', nome:'Storm Tornado'},
-        {usageMax: 32, usage:32, color1:'#f8b202', color2:'#a1a1a1', nome:'Electric Spark'},
-        {usageMax: 32, usage:32, color1:'#606081', color2:'#81aa89', nome:'Boomerang Cutter'},
-        {usageMax: 32, usage:32, color1:'#35e1f8', color2:'#f8e14f', nome:'Shotgun Ice'},
+        {usageMax: 28, usage:28, color1:'#687968', color2:'#d9b289', nome:'Homing Torpedo'},
+        {usageMax: 28, usage:28, color1:'#1a914f', color2:'#60d1aa', nome:'Chameleon Sting'},
+        {usageMax: 28, usage:28, color1:'#e13e60', color2:'#a1c1aa', nome:'Rolling Shield'},
+        {usageMax: 28, usage:28, color1:'#f14f02', color2:'#f8e179', nome:'Fire Wave'},
+        {usageMax: 28, usage:28, color1:'#e40097', color2:'#e191c1', nome:'Storm Tornado'},
+        {usageMax: 28, usage:28, color1:'#f8b202', color2:'#a1a1a1', nome:'Electric Spark'},
+        {usageMax: 28, usage:28, color1:'#606081', color2:'#81aa89', nome:'Boomerang Cutter'},
+        {usageMax: 28, usage:28, color1:'#35e1f8', color2:'#f8e14f', nome:'Shotgun Ice'},
         ];
         this.disegnaPlayer = function (xdisegnata,ydisegnata,larghezza,altezza,dettagli,colore1,colore2,coloreArmatura){
         	  var coloreTemp=colore2;
@@ -355,8 +355,8 @@ i livelli sono disposti cosi in realta':1 8
 					heightTot++;
 					level['gravity'] = readNumber();
 					level['friction'] = readNumber();
-          			level['gravityWater'] = level.gravity*4/7;
-          			level['frictionWater'] = level.friction*9/10;
+          level['gravityWater'] = level.gravity*4/7;
+          level['frictionWater'] = level.friction*9/10;
 					level['backGroundImg'] = readBackground();
 					blocksColors(level,11);//this will push color[] to level, it will contain the blocks colors
 					blocksColors(foreground,3);
@@ -678,9 +678,10 @@ i livelli sono disposti cosi in realta':1 8
 	      }//fine di this.physics      
       }
 
-      function newHomingMissle(larghezza,altezza) {//lo sparo creato dal player
+      function newHomingMissle(larghezza,altezza,color1Pass,color2Pass,pesoShot) {//lo sparo creato dal player
         this.life= 1;
         this.active=true;
+        this.activeShotCounter=pesoShot;
         this.type= "sparoDelPlayer";
         this.damage= 1;
         if(player.facingRight){
@@ -696,13 +697,13 @@ i livelli sono disposti cosi in realta':1 8
         this.height= altezza;
         this.y=player.y+9;
         this.targetIndex=-1;
-        this.color1=player.power[0].color1;
-        this.color2=player.power[0].color2;
+        this.color1=color1Pass;
+        this.color2=color2Pass;
         this.perforation=false;
         this.canPassWall=true;
         this.hasPhysics=true;
         this.canSelfDraw=true;
-        this.selfDraw= function( xdisegnata, ydisegnata, indiceDiQuestaEntity){
+        this.selfDraw= function(xdisegnata, ydisegnata, indiceDiQuestaEntity){
           ctx.fillStyle=this.color1;
           ctx.beginPath();
 	      ctx.lineWidth = 1;
@@ -802,9 +803,9 @@ i livelli sono disposti cosi in realta':1 8
 	          		this.xv -= this.speed;	
 	          	}
 	          	if(this.y<entity[this.targetIndex].y+(entity[this.targetIndex].height/2)){
-	          		this.yv -= this.speed/(1.3);
+	          		this.yv -= this.speed/(1.5);
 	          	}else{
-	          		this.yv += this.speed/(1.3);	
+	          		this.yv += this.speed/(1.5);	
 	          	}          		
           	}else{
           		this.targetIndex=-1;
@@ -838,7 +839,7 @@ i livelli sono disposti cosi in realta':1 8
             }
           }          
           if(this.active && (this.life<1 || ((xdisegnata > canvasWidth)||( xdisegnata+this.width < 0)))){
-            player.activeShot=player.activeShot-1.5;
+            player.activeShot=player.activeShot-this.activeShotCounter;
             this.active=false;
           }
           function findTarget(x,y){
@@ -905,11 +906,11 @@ i livelli sono disposti cosi in realta':1 8
 	          }
 	        }
         	if(this.timer>10 && this.life>0){//crea figli
-				var sparoFiglio = new newChameleonSting_Figli(this.x,this.figliY,30,6,3,0,this.facingRight,this.color);
+				var sparoFiglio = new newChameleonSting_Figli(this.x,this.figliY,30,6,4,0,this.facingRight,this.color);
 	            entity.push(sparoFiglio);
-				var sparoFiglio = new newChameleonSting_Figli(this.x,this.figliY-5,30,6,3,1,this.facingRight,this.color);
+				var sparoFiglio = new newChameleonSting_Figli(this.x,this.figliY-5,30,6,4,1,this.facingRight,this.color);
 	            entity.push(sparoFiglio);
-				var sparoFiglio = new newChameleonSting_Figli(this.x,this.figliY-1,30,6,3,-1,this.facingRight,this.color);
+				var sparoFiglio = new newChameleonSting_Figli(this.x,this.figliY-1,30,6,4,-1,this.facingRight,this.color);
 	            entity.push(sparoFiglio);	            	            		
 	        	this.life=-1;	
         	}	                	
@@ -2427,16 +2428,15 @@ i livelli sono disposti cosi in realta':1 8
 	                 player.activeShot++;
 	             }else{
 	               if(player.power[player.activePower-1].usage>0){
-	                 player.power[player.activePower-1].usage--;
 	                 switch(player.activePower){ 
-	                   /*HomingTorpedo*/   case 1: var sparo = new newHomingMissle(12,12); entity.push(sparo); player.activeShot=player.activeShot+1.5; break;
-	                   /*ChameleonSting*/  case 2: var sparo = new newChameleonSting(15,15); entity.push(sparo); player.activeShot=player.activeShot+3; break;
-	                   /*RollingShield*/   case 3: var sparo = new newRollingShield(40,40); entity.push(sparo); player.activeShot=player.activeShot+3; break;
-	                   /*Fire*/            case 4: var sparo = new newFireWave(70,10); entity.push(sparo); player.activeShot=player.activeShot+3; break;
-	                   /*Storm*/           case 5: var sparo = new newStormTornado(player.x,(player.y+3+(15/2)),15,15,0,player.facingRight,true); entity.push(sparo); player.activeShot=player.activeShot+3; break;
-	                   /*Electric*/        case 6: var sparo = new newElectricSpark(15,15); entity.push(sparo); player.activeShot=player.activeShot+1; break;
-	                   /*Boomerang*/       case 7: var sparo = new newBoomerangCutter(15,15,true); entity.push(sparo); player.activeShot=player.activeShot+1; break;
-	                   /*ShotgunIce*/      case 8: var sparo = new newShotgunIce(player.x+player.width+6,player.x-6-15,player.y+6,15,15,true,2.5,0,player.facingRight); entity.push(sparo); player.activeShot=player.activeShot+3; break;
+	                   /*HomingTorpedo*/   case 1: var sparo = new newHomingMissle(12,12,player.power[0].color1,player.power[0].color2,1.5); entity.push(sparo); player.activeShot=player.activeShot+1.5; player.power[player.activePower-1].usage-=0.5; break;
+	                   /*ChameleonSting*/  case 2: var sparo = new newChameleonSting(15,15); entity.push(sparo); player.activeShot=player.activeShot+3; player.power[player.activePower-1].usage-=0.5; break;
+	                   /*RollingShield*/   case 3: var sparo = new newRollingShield(40,40); entity.push(sparo); player.activeShot=player.activeShot+3; player.power[player.activePower-1].usage-=1; break;
+	                   /*Fire*/            case 4: var sparo = new newFireWave(70,10); entity.push(sparo); player.activeShot=player.activeShot+3; player.power[player.activePower-1].usage-=0.5; break;
+	                   /*Storm*/           case 5: var sparo = new newStormTornado(player.x,(player.y+3+(15/2)),15,15,0,player.facingRight,true); entity.push(sparo); player.activeShot=player.activeShot+3; player.power[player.activePower-1].usage-=1; break;
+	                   /*Electric*/        case 6: var sparo = new newElectricSpark(15,15); entity.push(sparo); player.activeShot=player.activeShot+1; player.power[player.activePower-1].usage-=1; break;
+	                   /*Boomerang*/       case 7: var sparo = new newBoomerangCutter(15,15,true); entity.push(sparo); player.activeShot=player.activeShot+1; player.power[player.activePower-1].usage-=1; break;
+	                   /*ShotgunIce*/      case 8: var sparo = new newShotgunIce(player.x+player.width+6,player.x-6-15,player.y+6,15,15,true,2.5,0,player.facingRight); entity.push(sparo); player.activeShot=player.activeShot+3; player.power[player.activePower-1].usage-=1; break;
 	                 }
 	               }
 	             }
@@ -2516,14 +2516,18 @@ i livelli sono disposti cosi in realta':1 8
 	               }else{
 	                   if (player.carica > 150 && armaturaAcquired[2]){
 	                       switch(player.activePower){//poteri caricati
-	                         case 1: break;
-	                         case 2: break; 
-	                         case 3: break;
-	                         case 4: break;
-	                         case 5: break;
-	                         case 6: break;
-	                         case 7: break;
-	                         case 8: break;                         
+	                         /*HomingTorpedo*/case 1: if(player.power[player.activePower-1].usage>2){var sparo = new newHomingMissle(18,18,"#3d85c6","#fa8cff",3); sparo.damage=2; entity.push(sparo); player.activeShot=player.activeShot+3;
+                                   var sparo = new newHomingMissle(18,18,"#3d85c6","#fa8cff",0); sparo.y+=-15; sparo.damage=2; entity.push(sparo);
+                                   var sparo = new newHomingMissle(18,18,"#3d85c6","#fa8cff",0); sparo.y+=15; sparo.damage=2; entity.push(sparo);
+                                   var sparo = new newHomingMissle(18,18,"#3d85c6","#fa8cff",0); sparo.y+=-30; sparo.damage=2; entity.push(sparo);                                                                      
+                                   player.power[player.activePower-1].usage-=3;} break;
+	                         /*ChameleonSting*/case 2: if(player.power[player.activePower-1].usage>3){player.power[player.activePower-1].usage-=4;} break; 
+	                         /*RollingShield*/case 3: if(player.power[player.activePower-1].usage>1){player.power[player.activePower-1].usage-=2;} break;
+	                         /*FireWave*/case 4: if(player.power[player.activePower-1].usage>2){player.power[player.activePower-1].usage-=3;} break;
+	                         /*StormTornado*/case 5: if(player.power[player.activePower-1].usage>1){player.power[player.activePower-1].usage-=2;} break;
+	                         /*ElectricSpark*/case 6: if(player.power[player.activePower-1].usage>1){player.power[player.activePower-1].usage-=2;} break;
+	                         /*BoomerangCut*/case 7: if(player.power[player.activePower-1].usage>1){player.power[player.activePower-1].usage-=2;} break;
+	                         /*ShotgunIce*/case 8: if(player.power[player.activePower-1].usage>1){player.power[player.activePower-1].usage-=2;} break;                                                    
 	                       }
 	                   }
 	     	            player.carica=0;
@@ -2737,7 +2741,7 @@ i livelli sono disposti cosi in realta':1 8
         this.isClosing=false;
         this.canInput=true;
         this.tornaStageSelection=false;
-        this.indice=0;
+        this.indice=player.activePower;
         this.settore=0;
         this.usingSubtank=4; //4 vuol dire che non sto usando la subtank (da 0 a 3 e' l'indice della subtank usata)
         this.lastSubtankAcquired=4;//se rimane uguale a 4 vuol dire che non e' stata acquisita nessuna subtank
@@ -2769,8 +2773,9 @@ i livelli sono disposti cosi in realta':1 8
                   if(levelDefeated[i-1]){//disegna i poteri e le loro barre
                   	disegnaTestoConBordino(player.power[i-1].nome, xdisegnata, ydisegnata+21,player.power[i-1].color1,"#000000");
                     for (j=0; j<player.power[i-1].usageMax; j++){
-                      if(player.power[i-1].usage < j+1){ctx.fillStyle = '#a7a7a7'; }
-                      ctx.fillRect(j*9+xdisegnata+2, ydisegnata+25, 8, 12);
+                      ctx.fillStyle = '#444444'; ctx.fillRect(j*10+xdisegnata+2, ydisegnata+25, 9, 12);
+                      if(player.power[i-1].usage < j+1){ctx.fillStyle = '#a7a7a7'; }else{ctx.fillStyle = player.power[i-1].color1;}
+                      ctx.fillRect(j*10+xdisegnata+3, ydisegnata+25, 8, 11);
                     }
                   }
                 }
@@ -2786,8 +2791,9 @@ i livelli sono disposti cosi in realta':1 8
                 	if (subtank[i-1].acquired){
                 		disegnaTestoConBordino("S", xdisegnata+15,ydisegnata+28,"#ffc000","#000000");
                     	for (j=0; j<subtank[i-1].lifeMax; j++){
-                      		if(subtank[i-1].life < j+1){ctx.fillStyle = '#a7a7a7'; }
-                      		ctx.fillRect(j*9+xdisegnata+39, ydisegnata+12, 8, 17);
+                          ctx.fillStyle = '#444444'; ctx.fillRect(j*9+xdisegnata+39, ydisegnata+12, 8, 17);
+                      		if(subtank[i-1].life < j+1){ctx.fillStyle = '#a7a7a7';}else{ctx.fillStyle = '#ffc000';}
+                      		ctx.fillRect(j*9+xdisegnata+40, ydisegnata+12, 7, 16);
                       	}	
                     }                	
                 }              	
