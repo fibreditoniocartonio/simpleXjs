@@ -1,4 +1,6 @@
-      var versioneDiGioco = "v0.20220627"; //aggiunto H.Torpedo carica 3, aggiunta una nuova grafica per gli alert (senza usare la funz. del browser), aggiornati i prezzi dei poteri, aggiornata la lunghezza massima della barra dei poteri (da 32 a 28), aggiunti effetti visivi minori nel menu di pausa, aggiornato il modo in cui vengono gestiti i gamestate
+      var versioneDiGioco = "v0.20220627"; //aggiunto H.Torpedo carica 3, aggiutna debugMode, aggiunta una nuova grafica per gli alert (senza usare la funz. del browser), aggiornati i prezzi dei poteri, aggiornata la lunghezza massima della barra dei poteri (da 32 a 28), aggiunti effetti visivi minori nel menu di pausa, aggiornato il modo in cui vengono gestiti i gamestate, fixato un bug con il corpo caricato 3 notmale (activeShot diventava negativo)
+      debugMode=false; //you can enable debugMode with the console (press f12 in the browser)
+      
       //crea il canvas
       var canvasWidth = 720;
       var canvasHeight = 540;
@@ -571,9 +573,6 @@ i livelli sono disposti cosi in realta':1 8
 
       function newSparoCharge3(xPassata,yPassata,larghezza,altezza,indicePassato,faceRight,goUp) {//lo sparo creato dal player - carica 3
       	this.index=indicePassato;
-        this.active=true;
-        this.main=false;
-        if(indicePassato==0 && goUp){this.main=true;}
       	this.numeroFigli=5;
         this.life= 1;
         this.type= "sparoDelPlayer";
@@ -649,14 +648,7 @@ i livelli sono disposti cosi in realta':1 8
 	            }
 	          }
 	        }
-          
-          if(this.main){
-            //disattiva colpi su schermo
-            if(this.active && (this.life<1 || ((xdisegnata > canvasWidth)||( xdisegnata+this.width < 0)))){
-              player.activeShot=player.activeShot-1; 
-              this.active=false;       
-            }
-          }
+          //non c'e' nessun activeShot-- perche' il counter lo altera lo sparoInvisibile
                     
 			function creaFiglio(startingX,facingRight,x,width,startingY,height,index,color,startingDirection){
 				var xMax=startingX;		
@@ -2217,86 +2209,99 @@ i livelli sono disposti cosi in realta':1 8
       }
 
       function drawHUD(){
+        if(debugMode){
+          ctx.font = "small-caps bold 12px Lucida Console";
+          altezzaTesto=ctx.measureText("O").width+3;
+			    ctx.textAlign = "right";
+			    disegnaTestoConBordino("DEBUGMODE Level:"+lvlNumber, canvasWidth-3, canvasHeight-3,"#d2d2d2","#000000");
+          ctx.textAlign = "left";
+          disegnaTestoConBordino("player.activePower:"+player.activePower, 10, 49,"#d2d2d2","#000000");
+          disegnaTestoConBordino("player.life:"+player.life+" max:"+player.lifeMax, 10, 50+altezzaTesto,"#d2d2d2","#000000");
+          if(player.activePower>0){disegnaTestoConBordino("power.usage:"+player.power[player.activePower-1].usage+" max:"+player.power[player.activePower-1].usageMax, 10, 50+altezzaTesto*2,"#d2d2d2","#000000");}
+          disegnaTestoConBordino("last key pressed:"+ultimoTastoLetto, 3, canvasHeight-3-altezzaTesto,"#d2d2d2","#000000");
+          disegnaTestoConBordino("player.activeShot:"+player.activeShot, 3, canvasHeight-3-altezzaTesto*2,"#d2d2d2","#000000");          
+          disegnaTestoConBordino("player.x:"+Math.round(player.x)+" player.y:"+Math.round(player.y), 3, canvasHeight-3,"#d2d2d2","#000000");
+        }//fine debugMode       
       	var barLenght=16*6+40;
       	var barHeight=30;
-		if(player.activePower!=0){//barra potere - la disegno prima cosi' va sotto
+		    if(player.activePower!=0){//barra potere - la disegno prima cosi' va sotto
 	      	ctx.fillStyle = player.color1;
-			ctx.fillRect(8, 8+barHeight-5, barLenght-4-1, 16-1);
-			ctx.fillStyle = '#3d3b3b';
-			ctx.fillRect(10, 10+barHeight-5, barLenght-4, 16);
-			lineWidth=((barLenght-10)/player.power[player.activePower-1].usageMax)-1;
-			for (i=0; i < player.power[player.activePower-1].usageMax; i++){ //disegno le barre della vita
-				if (i < player.power[player.activePower-1].usage){
-					ctx.fillStyle = player.power[player.activePower-1].color1;
-				}else{
-					ctx.fillStyle = '#909090';
-				}
-				ctx.fillRect(13+(i*(lineWidth+1)), 15+barHeight-5, lineWidth, 8);
-			}
-		}      	
+    			ctx.fillRect(8, 8+barHeight-5, barLenght-4-1, 16-1);
+    			ctx.fillStyle = '#3d3b3b';
+    			ctx.fillRect(10, 10+barHeight-5, barLenght-4, 16);
+    			lineWidth=((barLenght-10)/player.power[player.activePower-1].usageMax)-1;
+    			for (i=0; i < player.power[player.activePower-1].usageMax; i++){ //disegno le barre della vita
+    				if (i < player.power[player.activePower-1].usage){
+    					ctx.fillStyle = player.power[player.activePower-1].color1;
+    				}else{
+    					ctx.fillStyle = '#909090';
+    				}
+    				ctx.fillRect(13+(i*(lineWidth+1)), 15+barHeight-5, lineWidth, 8);
+    			}
+    		}      	
       	ctx.fillStyle = player.color1;
-		ctx.fillRect(8, 8, barLenght-1, barHeight-1);
-		ctx.fillStyle = '#3d3b3b';
-		ctx.fillRect(10, 10, barLenght, barHeight);		
-		ctx.beginPath();//ora inizio a disegnare la x che sara' del colore del player attivo
-		ctx.lineWidth = "7";
-		ctx.strokeStyle = player.color2;
-		ctx.moveTo(15, 15);
-		ctx.lineTo(35, 35);
-		ctx.moveTo(35, 15);
-		ctx.lineTo(15, 35);
-		ctx.stroke(); // Disegna il contorno della X
-		ctx.lineWidth = "5";
-		ctx.strokeStyle = player.color1;
-		ctx.stroke(); // Disegna la parte interna della X
-		if(player.lifeMax>16){
-			if(player.life>16){
-				for (i=16; i < player.lifeMax; i++){ //disegno le barre della vita
-					if (i < player.life){
-						ctx.fillStyle = player.charge2color;
-					}else{
-						ctx.fillStyle = '#909090';
-					}
-					ctx.fillRect((i-16)*6+43, 14, 5, 21);	
-				}
-				for (i=0; i<16; i++){ //disegno le barre della vita
-					if(i+16>player.lifeMax-1){
-						ctx.fillStyle = player.charge0color;
-						ctx.fillRect(i*6+43, 17, 5, 18);							
-					}else{				
-						if(i+16>player.life-1){
-							ctx.fillStyle = player.charge0color;
-							ctx.fillRect(i*6+43, 17, 5, 18);
-						}
-						
-					}
-				}
-			}else{
-				for (i=16; i < player.lifeMax; i++){
-					ctx.fillStyle = '#707070';
-					ctx.fillRect((i-16)*6+43, 14, 5, 21);	
-				}
-				for (i=0; i < 16; i++){ //disegno le barre della vita
-					if (i < player.life){
-						ctx.fillStyle = player.charge0color;
-					}else{
-						ctx.fillStyle = '#909090';
-					}
-					//ctx.fillRect(i*6+43, 15, 5, 20);
-					ctx.fillRect(i*6+43, 17, 5, 18);
-				}				
-			}					
-		}else{
-			for (i=0; i < player.lifeMax; i++){ //disegno le barre della vita
-				if (i < player.life){
-					ctx.fillStyle = player.charge0color;
-				}else{
-					ctx.fillStyle = '#808080';
-				}
-				ctx.fillRect(i*6+43, 15, 5, 20);
-			}
-		}		
-	  }    
+    		ctx.fillRect(8, 8, barLenght-1, barHeight-1);
+    		ctx.fillStyle = '#3d3b3b';
+    		ctx.fillRect(10, 10, barLenght, barHeight);		
+    		ctx.beginPath();//ora inizio a disegnare la x che sara' del colore del player attivo
+    		ctx.lineWidth = "7";
+    		ctx.strokeStyle = player.color2;
+    		ctx.moveTo(15, 15);
+    		ctx.lineTo(35, 35);
+    		ctx.moveTo(35, 15);
+    		ctx.lineTo(15, 35);
+    		ctx.stroke(); // Disegna il contorno della X
+    		ctx.lineWidth = "5";
+    		ctx.strokeStyle = player.color1;
+    		ctx.stroke(); // Disegna la parte interna della X
+    		if(player.lifeMax>16){
+    			if(player.life>16){
+    				for (i=16; i < player.lifeMax; i++){ //disegno le barre della vita
+    					if (i < player.life){
+    						ctx.fillStyle = player.charge2color;
+    					}else{
+    						ctx.fillStyle = '#909090';
+    					}
+    					ctx.fillRect((i-16)*6+43, 14, 5, 21);	
+    				}
+    				for (i=0; i<16; i++){ //disegno le barre della vita
+    					if(i+16>player.lifeMax-1){
+    						ctx.fillStyle = player.charge0color;
+    						ctx.fillRect(i*6+43, 17, 5, 18);							
+    					}else{				
+    						if(i+16>player.life-1){
+    							ctx.fillStyle = player.charge0color;
+    							ctx.fillRect(i*6+43, 17, 5, 18);
+    						}
+    						
+    					}
+    				}
+    			}else{
+    				for (i=16; i < player.lifeMax; i++){
+    					ctx.fillStyle = '#707070';
+    					ctx.fillRect((i-16)*6+43, 14, 5, 21);	
+    				}
+    				for (i=0; i < 16; i++){ //disegno le barre della vita
+    					if (i < player.life){
+    						ctx.fillStyle = player.charge0color;
+    					}else{
+    						ctx.fillStyle = '#909090';
+    					}
+    					//ctx.fillRect(i*6+43, 15, 5, 20);
+    					ctx.fillRect(i*6+43, 17, 5, 18);
+    				}				
+    			}					
+    		}else{
+    			for (i=0; i < player.lifeMax; i++){ //disegno le barre della vita
+    				if (i < player.life){
+    					ctx.fillStyle = player.charge0color;
+    				}else{
+    					ctx.fillStyle = '#808080';
+    				}
+    				ctx.fillRect(i*6+43, 15, 5, 20);
+    			}
+    		}       		
+	  }//fine drawHUD    
       
       function drawEntity(doEntityPhysics){   //disegna le entità a schermo e chiama la entity[i].physics
         for (var i = 0; i < entity.length; i++) {
@@ -2418,8 +2423,7 @@ i livelli sono disposti cosi in realta':1 8
             }
             calcolaPlayerColor();
         }
-        
-        //if(player.activeShot<3){//se non ci sono piu di 3 colpi attivi contemporaneamente        
+                
          if(keys[sparokey] && player.canMove) {//shooting
            if(!player.giasparato){
            	 if(player.activeShot<3){//se non ci sono piu di 3 colpi attivi contemporaneamente        
@@ -2433,7 +2437,7 @@ i livelli sono disposti cosi in realta':1 8
 	                   /*HomingTorpedo*/   case 1: var sparo = new newHomingMissle(12,12,player.power[0].color1,player.power[0].color2,1.5); entity.push(sparo); player.activeShot=player.activeShot+1.5; player.power[player.activePower-1].usage-=0.5; break;
 	                   /*ChameleonSting*/  case 2: var sparo = new newChameleonSting(15,15); entity.push(sparo); player.activeShot=player.activeShot+3; player.power[player.activePower-1].usage-=0.5; break;
 	                   /*RollingShield*/   case 3: var sparo = new newRollingShield(40,40); entity.push(sparo); player.activeShot=player.activeShot+3; player.power[player.activePower-1].usage-=1; break;
-	                   /*Fire*/            case 4: var sparo = new newFireWave(70,10); entity.push(sparo); player.activeShot=player.activeShot+3; player.power[player.activePower-1].usage-=0.5; break;
+	                   /*Fire*/            case 4: var sparo = new newFireWave(70,10); entity.push(sparo); player.activeShot=player.activeShot+3; player.power[player.activePower-1].usage-=1; break;
 	                   /*Storm*/           case 5: var sparo = new newStormTornado(player.x,(player.y+3+(15/2)),15,15,0,player.facingRight,true); entity.push(sparo); player.activeShot=player.activeShot+3; player.power[player.activePower-1].usage-=1; break;
 	                   /*Electric*/        case 6: var sparo = new newElectricSpark(15,15); entity.push(sparo); player.activeShot=player.activeShot+1; player.power[player.activePower-1].usage-=1; break;
 	                   /*Boomerang*/       case 7: var sparo = new newBoomerangCutter(15,15,true); entity.push(sparo); player.activeShot=player.activeShot+1; player.power[player.activePower-1].usage-=1; break;
@@ -2473,38 +2477,38 @@ i livelli sono disposti cosi in realta':1 8
 	     	            if (player.carica > 80){
 	                     player.activeShot++;
 	     	            	if (player.carica > 150 && armaturaAcquired[2]){//charge 3 shoot
-	     	            		var latoCubottiSparo=15;
-	     				        if(player.facingRight){
-	     				        	var sparo = new newSparoCharge3((player.x+player.width+6),(player.y+3+(latoCubottiSparo/2)),latoCubottiSparo,latoCubottiSparo,0,player.facingRight,true);
-	     				        	var sparoInvisibile = new newSparo(1,55);
-	     				        	sparoInvisibile.x=(player.x+player.width+6);
-	     				        }else{
-	     				        	var sparo = new newSparoCharge3((player.x-6-latoCubottiSparo),(player.y+3+(latoCubottiSparo/2)),latoCubottiSparo,latoCubottiSparo,0,player.facingRight,true);
-	     				        	var sparoInvisibile = new newSparo(1,55);
-	     				        	sparoInvisibile.x=(player.x-6-latoCubottiSparo);				        	
-	     				        }
+  	     	            		var latoCubottiSparo=15;
+    	     				        if(player.facingRight){
+    	     				        	var sparo = new newSparoCharge3((player.x+player.width+6),(player.y+3+(latoCubottiSparo/2)),latoCubottiSparo,latoCubottiSparo,0,player.facingRight,true);
+    	     				        	var sparoInvisibile = new newSparo(1,55); //gestisce activeShot per lo sparoCharge3
+    	     				        	sparoInvisibile.x=(player.x+player.width+6);
+    	     				        }else{
+    	     				        	var sparo = new newSparoCharge3((player.x-6-latoCubottiSparo),(player.y+3+(latoCubottiSparo/2)),latoCubottiSparo,latoCubottiSparo,0,player.facingRight,true);
+    	     				        	var sparoInvisibile = new newSparo(1,55);
+    	     				        	sparoInvisibile.x=(player.x-6-latoCubottiSparo);				        	
+    	     				        }
 	     		                sparo.color= player.charge3color;
 	     		                sparoInvisibile.color= "#00000000";//sono 8 zeri invece che 6, gli ultimi due indicano il canale alpha(trasparenza)
 	     		                sparoInvisibile.speed=sparo.speed;
-	     			        	sparoInvisibile.y=sparo.startingY-20;
-	     			        	sparoInvisibile.canPassWall=true;		                
+    	     			        	sparoInvisibile.y=sparo.startingY-20;
+    	     			        	sparoInvisibile.canPassWall=true;		                
 	     		                entity.push(sparo);
 	     		                entity.push(sparoInvisibile);
-	     	            		var latoCubottiSparo=15;
-	     				        if(player.facingRight){
-	     				        	var sparo = new newSparoCharge3((player.x+player.width+6),(player.y+3+(latoCubottiSparo/2)),latoCubottiSparo,latoCubottiSparo,0,player.facingRight,false);			        	
-	     				        }else{
-	     				        	var sparo = new newSparoCharge3((player.x-6-latoCubottiSparo),(player.y+3+(latoCubottiSparo/2)),latoCubottiSparo,latoCubottiSparo,0,player.facingRight,false);
-	     				        }
-	     		                sparo.color= player.charge3color;
+  	     	            		var latoCubottiSparo=15;
+    	     				        if(player.facingRight){
+    	     				        	var sparo = new newSparoCharge3((player.x+player.width+6),(player.y+3+(latoCubottiSparo/2)),latoCubottiSparo,latoCubottiSparo,0,player.facingRight,false);			        	
+    	     				        }else{
+    	     				        	var sparo = new newSparoCharge3((player.x-6-latoCubottiSparo),(player.y+3+(latoCubottiSparo/2)),latoCubottiSparo,latoCubottiSparo,0,player.facingRight,false);
+    	     				        }
+  	     		              sparo.color= player.charge3color;
 	     		                entity.push(sparo);		                	                            		
-	     	            	}else{//charge 2 shoot
-	     	            	var sparo = new newSparo(50,25);
+	     	             }else{//charge 2 shoot
+	     	            	  var sparo = new newSparo(50,25);
 	     	                sparo.y= sparo.y-7;
 	     	                sparo.color= player.charge2color;
 	     	                sparo.perforation=true;
 	     	                entity.push(sparo);
-	     	                }
+	     	             }
 	     	            }else if (player.carica > 25){//charge 1 shoot
 	                     player.activeShot++;
 	     	            	var sparo = new newSparo(35,15);
@@ -2636,8 +2640,7 @@ i livelli sono disposti cosi in realta':1 8
       	
       	if(player.life<1){//gameover
       		disegnaSchermoDiGioco(false);
-      		objAlert = new newAlert("Gameover",gamestate); gamestate=5;
-      		gamestate=1;
+      		objAlert = new newAlert("Gameover",1); gamestate=5;
       	}
         
         if(keys[startkey]) {//menu di pausa
@@ -3191,11 +3194,11 @@ i livelli sono disposti cosi in realta':1 8
           this.height=0;
           this.prevGameState=gameStatePrecedente;
           ctx.font = "small-caps bold 16px Lucida Console"; //tipo di font per le scritte
-          this.widthMax=ctx.measureText(stringaDiTesto).width;
+          this.widthMax=ctx.measureText(stringaDiTesto+"aa").width;
           this.heightMax=ctx.measureText("O").width*2;
           this.drawMenu = function (){
             if (!this.isOpen && !this.isClosing){//animazione di apertura del menu
-              if (this.width < this.widthMax){this.width+=20;}
+              if (this.width < this.widthMax){this.width+=(this.widthMax/20);}//always 20 frames to open, no matter how long the text is
               if (this.height < this.heightMax){this.height+=15;}
               if (this.height > this.heightMax-1 && this.width > this.widthMax-1){//quando il menu e' tutto aperto:
               	this.isOpen=true;
