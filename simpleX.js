@@ -1,4 +1,4 @@
-      var versioneDiGioco = "v0.20220628"; //aggiunto stingChameleon charge3, aggiunto rollingShield charge3, parzialmente firewave charge3
+      var versioneDiGioco = "v0.20220628"; //aggiunto stingChameleon charge3, aggiunto rollingShield charge3, aggiunto firewave charge3
       debugMode=true; //you can enable debugMode with the console (press f12 in the browser)
       
       //crea il canvas
@@ -1322,8 +1322,8 @@ i livelli sono disposti cosi in realta':1 8
 
 	        for(i=0; i<level.length; i++) {//y collision with level
 	          if(((this.y+this.height)>level[i].y)&&((this.y+this.height)<level[i].y+19)&&(collisionBetween(this,level[i]))){//collison verso il basso
-	            this.y=level[i].y-this.height+3;
-              var sparofiglio = new newFireWaveCharge3Figli(this.x,this.y,this.width,this.height,3,this.facingRight); sparofiglio.active=true; entity.push(sparofiglio);
+	            this.y=level[i].y-this.height-0.2;
+              var sparofiglio = new newFireWaveCharge3Figli(this.x,this.y,this.width,this.height,4,this.facingRight); sparofiglio.active=true; entity.push(sparofiglio);
               this.life=-1; this.active=false;
 	          }
 	          if((((this.x+this.width)>level[i].x)||(this.x<(level[i].x+level[i].width)))&&(collisionBetween(this,level[i]))){//collsion laterale
@@ -1352,8 +1352,9 @@ i livelli sono disposti cosi in realta':1 8
         this.indice=indicePass;
         this.active=false;
         this.type= "sparoDelPlayer";
-        this.damage= 1;
+        this.damage= 2;
         this.facingRight=facingPass;
+        this.appoggiatoInBasso=false;
         this.x=xPass;
         this.y=yPass;
         this.startingY=this.y;                
@@ -1367,7 +1368,7 @@ i livelli sono disposti cosi in realta':1 8
         this.canSelfDraw=true;
         this.selfDraw= function( xdisegnata, ydisegnata, indiceDiQuestaEntity){
             var numeroFiamme=Math.floor(this.height/this.startingHeight);
-            var fiammeWidth=(this.width/numeroFiamme)-1;
+            var fiammeWidth=this.width-1;
             for(i=1;i<numeroFiamme+1;i++){
             	ctx.fillStyle=this.color1;
             	ctx.fillRect(xdisegnata+1, ydisegnata+this.height-(this.startingHeight*i), fiammeWidth-1, this.startingHeight);
@@ -1393,21 +1394,26 @@ i livelli sono disposti cosi in realta':1 8
         this.physics= function( xdisegnata, ydisegnata, indiceDiQuestaEntity){
           this.height+=this.startingHeight/4;
           this.y-=this.startingHeight/4;
+          this.appoggiatoInBasso=false;
 	        for(i=0; i<level.length; i++) {//y collision with level
+            this.height+=1;
 	          if(((this.y+this.height)>level[i].y)&&((this.y+this.height)<level[i].y+19)&&(collisionBetween(this,level[i]))){//collison verso il basso
-              if(this.height==this.startingHeight*3){
-                if(this.facingRight){ var sparofiglio = new newFireWaveCharge3Figli(this.x+this.width+1,this.startingY,this.width,this.startingHeight,this.indice,this.facingRight); entity.push(sparofiglio);  
-                }else{ var sparofiglio = new newFireWaveCharge3Figli(this.x-this.width-1,this.startingY,this.width,this.startingHeight,this.indice,this.facingRight); entity.push(sparofiglio);}
+              this.height-=1;
+              this.appoggiatoInBasso=true;
+              if(this.height==this.startingHeight*4){
+                if(this.facingRight){ var sparofiglio = new newFireWaveCharge3Figli(this.x+this.width+1,this.startingY,this.width,this.startingHeight,-1,this.facingRight); sparofiglio.active=this.active; entity.push(sparofiglio);  
+                }else{ var sparofiglio = new newFireWaveCharge3Figli(this.x-this.width-1,this.startingY,this.width,this.startingHeight,-1,this.facingRight); sparofiglio.active=this.active; entity.push(sparofiglio);}
                 this.life=-1; this.active=false;
+                if(this.indice>1){var sparofiglio = new newFireWaveCharge3Figli(this.x,this.startingY,this.width,this.startingHeight,this.indice-1,this.facingRight); entity.push(sparofiglio); this.indice=-1;}
               }
-              if(this.indice>0){var sparofiglio = new newFireWaveCharge3Figli(this.x,this.startingY,this.width,this.startingHeight,this.indice-1,this.facingRight); entity.push(sparofiglio);}                            
-	          }else{//not collision with y
-              this.life=-1;
-            }
+              this.height+=1;                            
+	          }
+            this.height-=1;
 	          if((((this.x+this.width)>level[i].x)||(this.x<(level[i].x+level[i].width)))&&(collisionBetween(this,level[i]))){//collsion laterale
 	          	this.life=-1;	
 	          }	
 	        }
+          if(!this.appoggiatoInBasso){this.life=-1;}
           //collisione dello sparo con altre entita'
           for (i=0; i<entity.length;i++){
             if (!(i == indiceDiQuestaEntity)){
