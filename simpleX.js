@@ -1,4 +1,4 @@
-      var versioneDiGioco = "v0.20220627"; //aggiunto H.Torpedo carica 3, aggiutna debugMode, aggiunta una nuova grafica per gli alert (senza usare la funz. del browser), aggiornati i prezzi dei poteri, aggiornata la lunghezza massima della barra dei poteri (da 32 a 28), aggiunti effetti visivi minori nel menu di pausa, aggiornato il modo in cui vengono gestiti i gamestate, fixato un bug con il corpo caricato 3 notmale (activeShot diventava negativo)
+      var versioneDiGioco = "v0.20220628"; //aggiunto stingChameleon charge3, aggiunto rollingShield charge3, aggiunto firewave charge3
       debugMode=false; //you can enable debugMode with the console (press f12 in the browser)
       
       //crea il canvas
@@ -65,6 +65,7 @@
         this.isInWater = false;
         this.invulnerability = 0;
         this.canMove = true;
+        this.canChangeWeap=true;
         this.carica = 0;
         this.activePower=0;
         this.activeShot=0;
@@ -1108,6 +1109,78 @@ i livelli sono disposti cosi in realta':1 8
         }//fine physics
       }//fine rolling shield
 
+      function newRollingShieldCharge3(larghezza,altezza) {//lo sparo creato dal player
+        this.life= 2;
+        this.duration=700;
+        this.active=true;
+        this.type= "sparoDelPlayer";
+        this.damage= 2;
+        this.width= larghezza;
+        this.height= altezza;
+        this.x=player.x+player.width/2-this.width/2;
+        this.y=player.y+player.height/2-this.height/2;
+        this.color="#2860b899";
+        this.rotation=0;
+        this.hasPhysics=true;
+        this.canSelfDraw=true;
+        this.selfDraw= function( xdisegnata, ydisegnata, indiceDiQuestaEntity){
+          ctx.fillStyle=this.color;
+          ctx.beginPath();
+	      ctx.lineWidth = 1;
+	      if(this.rotation<5){
+	      	  var lungLato = this.width/2;
+		      ctx.moveTo(xdisegnata+this.width/2-lungLato/2, ydisegnata);
+		      ctx.lineTo(xdisegnata+this.width/2+lungLato/2, ydisegnata);
+		      ctx.lineTo(xdisegnata+this.width, ydisegnata+this.height/2-lungLato/2);
+		      ctx.lineTo(xdisegnata+this.width, ydisegnata+this.height/2+lungLato/2);
+		      ctx.lineTo(xdisegnata+this.width/2+lungLato/2, ydisegnata+this.height);
+		      ctx.lineTo(xdisegnata+this.width/2-lungLato/2, ydisegnata+this.height);
+		      ctx.lineTo(xdisegnata, ydisegnata+this.height/2+lungLato/2);
+		      ctx.lineTo(xdisegnata, ydisegnata+this.height/2-lungLato/2);
+		      ctx.lineTo(xdisegnata+this.width/2-lungLato/2, ydisegnata);
+		      ctx.fill();
+	      }else{
+		      ctx.moveTo(xdisegnata+this.width/2, ydisegnata);
+		      ctx.lineTo(xdisegnata+this.width-this.width/4, ydisegnata+this.height/8);
+		      ctx.lineTo(xdisegnata+this.width, ydisegnata+this.height/2);
+		      ctx.lineTo(xdisegnata+this.width-this.width/4, ydisegnata+this.height-this.height/8);
+		      ctx.lineTo(xdisegnata+this.width/2, ydisegnata+this.height);
+		      ctx.lineTo(xdisegnata+this.width/4, ydisegnata+this.height-this.height/8);
+		      ctx.lineTo(xdisegnata, ydisegnata+this.height/2);
+		      ctx.lineTo(xdisegnata+this.width/4, ydisegnata+this.height/8);
+		      ctx.lineTo(xdisegnata+this.width/2, ydisegnata);
+		      ctx.fill();	      	      	      	
+	      }
+        }        
+        this.physics= function( xdisegnata, ydisegnata, indiceDiQuestaEntity){
+          this.rotation++; if(this.rotation>10){this.rotation=0;} //animazione rotazione
+          //movimento dello sparo
+          this.x=player.x+player.width/2-this.width/2;
+          this.y=player.y+player.height/2-this.height/2;
+        
+          //collisione dello sparo con altre entita'
+          for (i=0; i<entity.length;i++){
+            if (!(i == indiceDiQuestaEntity)){
+              if ( entity[i].life > 0 && !(this.type == entity[i].type || entity[i].type=="pickup" )  && collisionBetween(this,entity[i]) ){	//controlla che l'entita da colpire sia viva, che non siano lo stesso proiettile e infine se c'è una collisione
+                if (!(entity[i].life < this.life)){
+                  this.life=-1;
+                }
+                entity[i].life-=this.damage;
+              }
+            }
+          }
+          //duration
+          this.duration--;
+          if(this.duration<0){this.life=-1;}
+          //disattivazione sparo          
+          if(this.active && (this.life<1 || ((xdisegnata > canvasWidth)||( xdisegnata+this.width < 0)))){
+            player.activeShot=player.activeShot-3;
+            this.active=false;
+            player.canChangeWeap=true;
+          }
+        }//fine physics
+      }//fine rolling shield charge3
+
       function newFireWave(larghezza,altezza) {//lo sparo creato dal player
       	this.timer=0;
         this.life= 1;
@@ -1123,6 +1196,7 @@ i livelli sono disposti cosi in realta':1 8
         this.height= altezza;
         this.color1=player.power[3].color1;
         this.color2=player.power[3].color2;
+        this.inWater=false;
         this.hasPhysics=true;
         this.canSelfDraw=true;
         this.selfDraw= function( xdisegnata, ydisegnata, indiceDiQuestaEntity){
@@ -1151,13 +1225,16 @@ i livelli sono disposti cosi in realta':1 8
           }          
         }       
         this.physics= function( xdisegnata, ydisegnata, indiceDiQuestaEntity){
-          //movimento(insieme al player)
+        //movimento(insieme al player)
 	      if(player.facingRight){
 	       this.x= player.x+player.width+14;
 	      }else{
 	       this.x= player.x-8-larghezza; 
 	      }
-	      this.y=player.y+9;          
+	      this.y=player.y+9;
+        if (this.y > level.waterLevel){  //determina se sei in acqua o no
+          this.inWater=true;
+        }          
           //collisione dello sparo con altre entita'
           for (i=0; i<entity.length;i++){
             if (!(i == indiceDiQuestaEntity)){
@@ -1166,7 +1243,7 @@ i livelli sono disposti cosi in realta':1 8
               }
             }
           }
-          if(keys[sparokey] && player.power[3].usage>0 && (player.carica<150 || !armaturaAcquired[2])){
+          if(keys[sparokey] && !this.inWater &&player.power[3].usage>0 && player.activePower==4 && (player.carica<150 || !armaturaAcquired[2])){
           	if(this.timer==40){
           		player.power[3].usage--;
           		this.timer=0;
@@ -1177,7 +1254,181 @@ i livelli sono disposti cosi in realta':1 8
           }
         }
       }
+      
+      function newFireWaveCharge3Main(larghezza,altezza) {//lo sparo creato dal player
+        this.life= 1;
+        this.active=true;
+        this.type= "sparoDelPlayer";
+        this.damage= 1;
+        this.facingRight=player.facingRight;        
+        if(this.facingRight){
+         this.x= player.x+player.width+6;
+         this.xv= -1;
+        }else{
+         this.x= player.x-6-larghezza; 
+         this.xv= 1;
+        }
+        this.yv= 0;
+        this.width= larghezza;
+        this.height= altezza;
+        this.y=player.y;
+        this.color1=player.power[3].color1;
+        this.color2=player.power[3].color2;
+        this.speed= 1;
+        this.perforation=true;
+        this.hasPhysics=true;
+        this.canSelfDraw=true;
+        this.selfDraw= function( xdisegnata, ydisegnata, indiceDiQuestaEntity){
+            var numeroFiamme=1;
+            var fiammeWidth=(this.width/numeroFiamme)-1;
+            for(i=0;i<numeroFiamme;i++){
+            	ctx.fillStyle=this.color1;
+            	ctx.fillRect(xdisegnata+1+i*fiammeWidth, ydisegnata, fiammeWidth-1, this.height);
+            	disegnaFiammella(xdisegnata+1+i*fiammeWidth, ydisegnata,fiammeWidth-1,this.color1);	
+            	ctx.fillStyle=this.color2;
+            	ctx.fillRect(xdisegnata+3+i*fiammeWidth, ydisegnata+2, fiammeWidth-5, this.height-4);
+            	disegnaFiammella(xdisegnata+3+i*fiammeWidth, ydisegnata+2,fiammeWidth-5,this.color2);	
+            }         
+            function disegnaFiammella(x,y,fiammeWidth,color){
+    	        ctx.fillStyle=color;
+    	        ctx.beginPath();
+    		      ctx.lineWidth = 1;
+    		      var lato=fiammeWidth/6;
+    		      ctx.moveTo(x, y+1);
+    		      ctx.lineTo(x+lato, y-lato*2);
+    		      ctx.lineTo(x+lato*2, y+1);
+    		      ctx.lineTo(x+lato*4, y-lato*4);
+    		      ctx.lineTo(x+lato*6, y+1);
+    		      ctx.lineTo(x, y+1);
+    		      ctx.fill();          	
+            }          
+        }        
+        this.physics= function( xdisegnata, ydisegnata, indiceDiQuestaEntity){
+          //movimento dello sparo
+          if (this.facingRight){
+            this.xv -= this.speed;
+          }else{
+            this.xv += this.speed;
+          }
+          this.xv *= level.friction;
+          this.x += -this.xv;
+	        var gravityApplicata = 0; var frizioneApplicata = 0;
+	        if (this.y > level.waterLevel){  //determina se sei in acqua o no
+              this.life=-1;
+	        }     
+	        this.yv += level.gravity;
+	        if(this.yv>19){this.yv=19;}  //limita la gravita'
+	        this.y += this.yv;           //apply gravity
 
+	        for(i=0; i<level.length; i++) {//y collision with level
+	          if(((this.y+this.height)>level[i].y)&&((this.y+this.height)<level[i].y+19)&&(collisionBetween(this,level[i]))){//collison verso il basso
+	            this.y=level[i].y-this.height-0.2;
+              var sparofiglio = new newFireWaveCharge3Figli(this.x,this.y,this.width,this.height,4,this.facingRight); sparofiglio.active=true; entity.push(sparofiglio);
+              this.life=-1; this.active=false;
+	          }
+	          if((((this.x+this.width)>level[i].x)||(this.x<(level[i].x+level[i].width)))&&(collisionBetween(this,level[i]))){//collsion laterale
+	          		this.life=-1;	
+	          }	
+	        }
+          //collisione dello sparo con altre entita'
+          for (i=0; i<entity.length;i++){
+            if (!(i == indiceDiQuestaEntity)){
+              if ( entity[i].life > 0 && !(this.type == entity[i].type || entity[i].type=="pickup" )  && collisionBetween(this,entity[i]) ){	//controlla che l'entita da colpire sia viva, che non siano lo stesso proiettile e infine se c'è una collisione
+                entity[i].life-=this.damage;
+                if (!(entity[i].life < 1 && this.perforation)){
+                  this.life=-1;
+                }
+              }
+            }
+          }          
+          if(this.active && (this.life<1 || ((xdisegnata > canvasWidth)||( xdisegnata+this.width < 0)))){
+            player.activeShot=player.activeShot-3;
+            this.active=false;
+          }
+        }//fine physics
+      }//fine firewave charge3 main
+      function newFireWaveCharge3Figli(xPass,yPass,larghezza,altezza,indicePass,facingPass){
+        this.life= 1;
+        this.indice=indicePass;
+        this.active=false;
+        this.type= "sparoDelPlayer";
+        this.damage= 2;
+        this.facingRight=facingPass;
+        this.appoggiatoInBasso=false;
+        this.x=xPass;
+        this.y=yPass;
+        this.startingY=this.y;                
+        this.width= larghezza;
+        this.height= altezza;
+        this.startingHeight=this.height;
+        this.color1=player.power[3].color1;
+        this.color2=player.power[3].color2;
+        this.speed= 1;
+        this.hasPhysics=true;
+        this.canSelfDraw=true;
+        this.selfDraw= function( xdisegnata, ydisegnata, indiceDiQuestaEntity){
+            var numeroFiamme=Math.floor(this.height/this.startingHeight);
+            var fiammeWidth=this.width-1;
+            for(i=1;i<numeroFiamme+1;i++){
+            	ctx.fillStyle=this.color1;
+            	ctx.fillRect(xdisegnata+1, ydisegnata+this.height-(this.startingHeight*i), fiammeWidth-1, this.startingHeight);
+            	disegnaFiammella(xdisegnata+1, ydisegnata+this.height-(this.startingHeight*i),fiammeWidth-1,this.color1);	
+            	ctx.fillStyle=this.color2;
+            	ctx.fillRect(xdisegnata+3, ydisegnata+2+this.height-(this.startingHeight*i), fiammeWidth-5, this.startingHeight-4);
+            	disegnaFiammella(xdisegnata+3, ydisegnata+2+this.height-(this.startingHeight*i),fiammeWidth-5,this.color2);	
+            }         
+            function disegnaFiammella(x,y,fiammeWidth,color){
+    	        ctx.fillStyle=color;
+    	        ctx.beginPath();
+    		      ctx.lineWidth = 1;
+    		      var lato=fiammeWidth/6;
+    		      ctx.moveTo(x, y+1);
+    		      ctx.lineTo(x+lato, y-lato*2);
+    		      ctx.lineTo(x+lato*2, y+1);
+    		      ctx.lineTo(x+lato*4, y-lato*4);
+    		      ctx.lineTo(x+lato*6, y+1);
+    		      ctx.lineTo(x, y+1);
+    		      ctx.fill();          	
+            }          
+        }        
+        this.physics= function( xdisegnata, ydisegnata, indiceDiQuestaEntity){
+          this.height+=this.startingHeight/4;
+          this.y-=this.startingHeight/4;
+          this.appoggiatoInBasso=false;
+	        for(i=0; i<level.length; i++) {//y collision with level
+            this.height+=1;
+	          if(((this.y+this.height)>level[i].y)&&((this.y+this.height)<level[i].y+19)&&(collisionBetween(this,level[i]))){//collison verso il basso
+              this.height-=1;
+              this.appoggiatoInBasso=true;
+              if(this.height==this.startingHeight*4){
+                if(this.facingRight){ var sparofiglio = new newFireWaveCharge3Figli(this.x+this.width+1,this.startingY,this.width,this.startingHeight,-1,this.facingRight); sparofiglio.active=this.active; entity.push(sparofiglio);  
+                }else{ var sparofiglio = new newFireWaveCharge3Figli(this.x-this.width-1,this.startingY,this.width,this.startingHeight,-1,this.facingRight); sparofiglio.active=this.active; entity.push(sparofiglio);}
+                this.life=-1; this.active=false;
+                if(this.indice>1){var sparofiglio = new newFireWaveCharge3Figli(this.x,this.startingY,this.width,this.startingHeight,this.indice-1,this.facingRight); entity.push(sparofiglio); this.indice=-1;}
+              }
+              this.height+=1;                            
+	          }
+            this.height-=1;
+	          if((((this.x+this.width)>level[i].x)||(this.x<(level[i].x+level[i].width)))&&(collisionBetween(this,level[i]))){//collsion laterale
+	          	this.life=-1;	
+	          }	
+	        }
+          if(!this.appoggiatoInBasso){this.life=-1;}
+          //collisione dello sparo con altre entita'
+          for (i=0; i<entity.length;i++){
+            if (!(i == indiceDiQuestaEntity)){
+              if ( entity[i].life > 0 && !(this.type == entity[i].type || entity[i].type=="pickup" )  && collisionBetween(this,entity[i]) ){	//controlla che l'entita da colpire sia viva, che non siano lo stesso proiettile e infine se c'è una collisione
+                entity[i].life-=this.damage;
+              }
+            }
+          }          
+          if(this.active && (this.life<1 || ((xdisegnata > canvasWidth)||( xdisegnata+this.width < 0)))){
+            player.activeShot=player.activeShot-3;
+            this.active=false;
+          }
+        }//fine physics
+      }//fine firewave ch3 figlio  
+      
       function newStormTornado(xPassata,yPassata,larghezza,altezza,indicePassato,faceRight,goUp) {//lo sparo creato dal player - carica 3
       	this.index=indicePassato;
         this.active=true;
@@ -2219,7 +2470,8 @@ i livelli sono disposti cosi in realta':1 8
           disegnaTestoConBordino("player.life:"+player.life+" max:"+player.lifeMax, 10, 50+altezzaTesto,"#d2d2d2","#000000");
           if(player.activePower>0){disegnaTestoConBordino("power.usage:"+player.power[player.activePower-1].usage+" max:"+player.power[player.activePower-1].usageMax, 10, 50+altezzaTesto*2,"#d2d2d2","#000000");}
           disegnaTestoConBordino("last key pressed:"+ultimoTastoLetto, 3, canvasHeight-3-altezzaTesto,"#d2d2d2","#000000");
-          disegnaTestoConBordino("player.activeShot:"+player.activeShot, 3, canvasHeight-3-altezzaTesto*2,"#d2d2d2","#000000");          
+          disegnaTestoConBordino("player.activeShot:"+player.activeShot, 3, canvasHeight-3-altezzaTesto*2,"#d2d2d2","#000000");
+          disegnaTestoConBordino("player.invulnerability:"+player.invulnerability, 3, canvasHeight-3-altezzaTesto*3,"#d2d2d2","#000000");          
           disegnaTestoConBordino("player.x:"+Math.round(player.x)+" player.y:"+Math.round(player.y), 3, canvasHeight-3,"#d2d2d2","#000000");
         }//fine debugMode       
       	var barLenght=16*6+40;
@@ -2393,7 +2645,7 @@ i livelli sono disposti cosi in realta':1 8
         p1.xv *= frizioneApplicata;
         p1.x += -p1.xv;
         
-        if(keys[lkey] && !tastoGiaSchiacciato && player.canMove) {//previous available power
+        if(keys[lkey] && !tastoGiaSchiacciato && player.canMove && player.canChangeWeap) {//previous available power
             tastoGiaSchiacciato=true;
             for(i=player.activePower-1; ;i--){
                 if(i==-1){ 
@@ -2410,7 +2662,7 @@ i livelli sono disposti cosi in realta':1 8
             calcolaPlayerColor();
         }
                 
-        if(keys[rkey] && !tastoGiaSchiacciato && player.canMove) {//next available power
+        if(keys[rkey] && !tastoGiaSchiacciato && player.canMove && player.canChangeWeap) {//next available power
             tastoGiaSchiacciato=true;
             for(i=player.activePower+1; ; i++){
                 if(i==9){ 
@@ -2526,15 +2778,15 @@ i livelli sono disposti cosi in realta':1 8
                                    var sparo = new newHomingMissle(18,18,"#3d85c6","#fa8cff",0); sparo.y+=15; sparo.damage=2; entity.push(sparo);
                                    var sparo = new newHomingMissle(18,18,"#3d85c6","#fa8cff",0); sparo.y+=-30; sparo.damage=2; entity.push(sparo);                                                                      
                                    player.power[player.activePower-1].usage-=3;} break;
-	                         /*ChameleonSting*/case 2: if(player.power[player.activePower-1].usage>3){player.power[player.activePower-1].usage-=4;} break; 
-	                         /*RollingShield*/case 3: if(player.power[player.activePower-1].usage>1){player.power[player.activePower-1].usage-=2;} break;
-	                         /*FireWave*/case 4: if(player.power[player.activePower-1].usage>2){player.power[player.activePower-1].usage-=3;} break;
+	                         /*ChameleonSting*/case 2: if(player.power[player.activePower-1].usage>3.5 && player.invulnerability<90000){player.invulnerability=91000; player.canChangeWeap=false; player.power[player.activePower-1].usage-=4;} break; 
+	                         /*RollingShield*/case 3: if(player.power[player.activePower-1].usage>1){ player.power[player.activePower-1].usage-=2; player.canChangeWeap=false; var sparo = new newRollingShieldCharge3(100,100);entity.push(sparo); player.activeShot=player.activeShot+3; }break;
+	                         /*FireWave*/case 4: if(player.power[player.activePower-1].usage>2){var sparo = new newFireWaveCharge3Main(20,20); entity.push(sparo); player.activeShot=player.activeShot+3; player.power[player.activePower-1].usage-=3;} break;
 	                         /*StormTornado*/case 5: if(player.power[player.activePower-1].usage>1){player.power[player.activePower-1].usage-=2;} break;
 	                         /*ElectricSpark*/case 6: if(player.power[player.activePower-1].usage>1){player.power[player.activePower-1].usage-=2;} break;
 	                         /*BoomerangCut*/case 7: if(player.power[player.activePower-1].usage>1){player.power[player.activePower-1].usage-=2;} break;
 	                         /*ShotgunIce*/case 8: if(player.power[player.activePower-1].usage>1){player.power[player.activePower-1].usage-=2;} break;                                                    
 	                       }
-	                   }
+	                   } 
 	     	            player.carica=0;
 	     	            player.giasparato=false;                  
 	               }
@@ -2586,7 +2838,7 @@ i livelli sono disposti cosi in realta':1 8
 	            if(collisionBetween(player, entity[i])) {
 	            	if(entity[i].damage>0){
         				if (player.invulnerability < 1){//entity collison								            		
-							player.color1=player.damagedColor;
+							      player.color1=player.damagedColor;
 				            player.color2=player.damagedColor;
 				            player.coloreArmatura=player.damagedColor;
 				            if(armaturaAcquired[3]&&(entity[i].damage>1)){
@@ -2623,14 +2875,18 @@ i livelli sono disposti cosi in realta':1 8
 	    }
        	if(player.invulnerability > 0){//se l'invulnerabilita' e' >=1 la riduce e colora x in base a che punto e'
        		player.invulnerability--;
-       		if (player.invulnerability < 30){
+          if(player.invulnerability==90000){player.invulnerability=5; player.canChangeWeap=true;}//fine sting cham charge3
+          if(player.invulnerability > 90000){//potere di sting chameleon charge3
             calcolaPlayerColor();
-       			player.color1=player.color2;
-            player.color2=player.color2;
-            player.coloreArmatura=player.color2;
+          }
+       		if (player.invulnerability < 30){
+              calcolaPlayerColor();
+         			player.color1=player.color2;
+              player.color2=player.color2;
+              player.coloreArmatura=player.color2;
        		}
        		if (player.invulnerability < 20){
-       			player.canMove=true;
+       			  player.canMove=true;
        		}       		
        		if (player.invulnerability < 5){
               calcolaPlayerColor();
@@ -2645,10 +2901,12 @@ i livelli sono disposti cosi in realta':1 8
         
         if(keys[startkey]) {//menu di pausa
           if (!tastoGiaSchiacciato && !(player.life<1)){//ho dovuto fare il check della vita se no era possibile far aprire il menu dopo essere morti se si schiacciava INVIO nello stesso frame in cui si moriva
-            objMenuDiPausa=new newMenuDiPausa();
-            disegnaSchermoDiGioco(false);
-            tastoGiaSchiacciato=true;
-            gamestate=2;
+             if (player.canChangeWeap){ //menu di pausa completo non apribile se si sta usando il potere di sting cham, almeno non si cambia potere
+              objMenuDiPausa=new newMenuDiPausa();
+              disegnaSchermoDiGioco(false);
+              tastoGiaSchiacciato=true;
+              gamestate=2;
+            }else{objAlert = new newAlert("pausa",-1); gamestate=5;}
           }
         }
         
@@ -2657,12 +2915,36 @@ i livelli sono disposti cosi in realta':1 8
         }
         
         function calcolaPlayerColor(){//calcola i colori attivi del player
-          if (player.activePower==0){
-                  player.color1=player.defaultColor1;
-                  player.color2=player.defaultColor2;                               
-          }else{
-                  player.color1=player.power[player.activePower-1].color1;
-                  player.color2=player.power[player.activePower-1].color2;  
+          if (player.invulnerability < 90000){//se non e' stingCham charge3 
+            if (player.activePower==0){
+                    player.color1=player.defaultColor1;
+                    player.color2=player.defaultColor2;                               
+            }else{
+                    player.color1=player.power[player.activePower-1].color1;
+                    player.color2=player.power[player.activePower-1].color2;  
+            }
+          }else{//se invece stingCham charge3
+            var colorNumber=player.invulnerability-90000;
+            if (colorNumber>950){       player.color1="#ff1100"; player.color2="#ffa7a1";            
+            }else if (colorNumber>900){ player.color1="#ff9500"; player.color2="#ffcc85";
+            }else if (colorNumber>850){ player.color1="#ffe400"; player.color2="#fff38d";            
+            }else if (colorNumber>800){ player.color1="#aaff00"; player.color2="#d8ff8c";
+            }else if (colorNumber>750){ player.color1="#00ffb3"; player.color2="#a8ffe5";
+            }else if (colorNumber>700){ player.color1="#00b9ff"; player.color2="#bbecff";            
+            }else if (colorNumber>650){ player.color1="#6100ff"; player.color2="#b78aff";            
+            }else if (colorNumber>600){ player.color1="#e800ff"; player.color2="#fac6ff";           
+            }else if (colorNumber>550){ player.color1="#ff1100"; player.color2="#ffa7a1";
+            }else if (colorNumber>500){ player.color1="#ff0084"; player.color2="#ffc7e4";
+            }else if (colorNumber>450){ player.color1="#ff9500"; player.color2="#ffcc85";
+            }else if (colorNumber>400){ player.color1="#ffe400"; player.color2="#fff38d";            
+            }else if (colorNumber>350){ player.color1="#aaff00"; player.color2="#d8ff8c";
+            }else if (colorNumber>300){ player.color1="#00ffb3"; player.color2="#a8ffe5";
+            }else if (colorNumber>250){ player.color1="#00b9ff"; player.color2="#bbecff";            
+            }else if (colorNumber>200){ player.color1="#6100ff"; player.color2="#b78aff";            
+            }else if (colorNumber>150){ player.color1="#e800ff"; player.color2="#fac6ff";           
+            }else if (colorNumber>100){ player.color1="#ff0084"; player.color2="#ffc7e4";                       
+            }else{player.color1=player.power[player.activePower-1].color1; player.color2=player.color2=player.power[player.activePower-1].color2;}
+            player.coloreArmatura="#303030";         
           }
         } 
       } //fine della funzione playerPhysics - se riesco la faccio diventare un metodo di player invece che una funzione sestante
