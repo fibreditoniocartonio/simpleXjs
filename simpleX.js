@@ -1,4 +1,4 @@
-      var versioneDiGioco = "v0.20220629"; //aggiunto storm eagle charge3, corretto la voce "pausa" in "pause" quando viene aperto il menu di pausa mentre non si puo cambiare il potere
+      var versioneDiGioco = "v0.20220629"; //aggiunto storm eagle charge3, aggiunto electric spark charge 3, corretto la voce "pausa" in "pause" quando viene aperto il menu di pausa mentre non si puo cambiare il potere
       debugMode=false; //you can enable debugMode with the console (press f12 in the browser)
       
       //crea il canvas
@@ -1727,7 +1727,81 @@ i livelli sono disposti cosi in realta':1 8
             player.activeShot=player.activeShot-1;       
           }          
         }
-      }      
+      }
+      
+      function newElectricSparkCharge3(xPass,yPass,larghezza,altezza,facingRight){//lo sparo creato dal player - electric spark charge 3
+        this.life= 1;
+        this.active=facingRight;
+        this.type= "sparoDelPlayer";
+        this.damage= 2;
+        this.facingRight=facingRight;        
+        this.x=xPass;
+        this.y=yPass;
+        this.xv= 0;
+        this.width= larghezza;
+        this.height=this.width;
+        this.heightMax= altezza;
+        this.color=player.charge0color;
+        this.speedX= 2;
+        this.canPassWall=true;
+        this.hasPhysics=true;
+        this.color1="#f83cf8";
+        this.color2="#cb18ff99";
+        this.canSelfDraw=true;
+        this.selfDraw= function( xdisegnata, ydisegnata, indiceDiQuestaEntity){
+          ctx.fillStyle=this.color2;
+          ctx.fillRect(xdisegnata+this.width/4, ydisegnata+this.width/2, this.width/2, this.height-this.width/2);
+          drawPalla(xdisegnata, ydisegnata,this.width,this.width,this.color1);
+          drawPalla(xdisegnata, ydisegnata+this.height-this.width/2,this.width,this.width,this.color1);
+          function drawPalla(xdisegnata, ydisegnata,pallawidth,pallaheight,color){
+            ctx.fillStyle=color;
+            ctx.beginPath();
+    	      ctx.lineWidth = 1;
+    	      var lungLato = pallawidth/4;
+    	      ctx.moveTo(xdisegnata+pallawidth/2-lungLato/2, ydisegnata);
+    	      ctx.lineTo(xdisegnata+pallawidth/2+lungLato/2, ydisegnata);
+    	      ctx.lineTo(xdisegnata+pallawidth, ydisegnata+pallaheight/2-lungLato/2);
+    	      ctx.lineTo(xdisegnata+pallawidth, ydisegnata+pallaheight/2+lungLato/2);
+    	      ctx.lineTo(xdisegnata+pallawidth/2+lungLato/2, ydisegnata+pallaheight);
+    	      ctx.lineTo(xdisegnata+pallawidth/2-lungLato/2, ydisegnata+pallaheight);
+    	      ctx.lineTo(xdisegnata, ydisegnata+pallaheight/2+lungLato/2);
+    	      ctx.lineTo(xdisegnata, ydisegnata+pallaheight/2-lungLato/2);
+    	      ctx.lineTo(xdisegnata+pallawidth/2-lungLato/2, ydisegnata);
+    	      ctx.fill();
+          }          
+        }
+        this.physics= function( xdisegnata, ydisegnata, indiceDiQuestaEntity){
+          if(this.height<this.heightMax){
+            this.height+=(this.heightMax/10);
+            this.y-=(this.heightMax/20);
+          }else{ 
+            if (this.facingRight){//movimento dello sparo
+              this.xv -= this.speedX;
+            }else{
+              this.xv += this.speedX;
+            } 
+            this.xv *= level.friction;
+            this.x += -this.xv;
+          }    
+          //disattivazione dello sparo fuori dal livello
+        	if(this.x>level.maxWidth+50 || this.x<-50){
+        		this.life=-1;
+        	}
+          //collisione dello sparo con altre entita'
+          for (i=0; i<entity.length;i++){
+            if (!(i == indiceDiQuestaEntity)){
+              if ( entity[i].life > 0 && !(this.type == entity[i].type || entity[i].type=="pickup" )  && collisionBetween(this,entity[i]) ){	//controlla che l'entita da colpire sia viva, che non siano lo stesso proiettile e infine se c'è una collisione
+                entity[i].life-=this.damage;
+              }
+            }
+          }
+          //disattiva colpi su schermo
+          if(this.active && (this.life<1 || ((xdisegnata > canvasWidth)||( xdisegnata+this.width < 0)))){
+            this.active=false;
+            player.activeShot=player.activeShot-3;       
+          }          
+        }
+      }             
 
       function newBoomerangCutter(larghezza,altezza) {//lo sparo creato dal player
         this.type= "sparoDelPlayer";
@@ -2340,43 +2414,43 @@ i livelli sono disposti cosi in realta':1 8
 		        }
 	        }	        		        
 	        
-			if(collisionBetween(this, player)) {//quando il player lo raccoglie
-				this.life=-1;
-				if(levelDefeated!="false,false,false,false,false,false,false,false"){
-					for(;this.usageRestore>0;){
-						if(player.activePower!=0){
-							if(player.power[player.activePower-1].usage<player.power[player.activePower-1].usageMax){
-								this.usageRestore--;
-								player.power[player.activePower-1].usage++;	
-							}else{
-								for(i=0;i<9;i++){
-									if(i!=8){
-										if(levelDefeated[i]){
-											if(player.power[i].usage<player.power[i].usageMax){
-												this.usageRestore--;
-												player.power[i].usage++;
-												break;	
-											}									
-										}
-									}else{this.usageRestore=-1;}
-								}
-							}
-						}else{
-							for(i=0;i<9;i++){
-								if(i!=8){
-									if(levelDefeated[i]){
-										if(player.power[i].usage<player.power[i].usageMax){
-											this.usageRestore--;
-											player.power[i].usage++;
-											break;	
-										}
-									}
-								}else{this.usageRestore=-1;}					
-							}						
-						}
-					}
-				}
-			}
+    			if(collisionBetween(this, player)) {//quando il player lo raccoglie
+    				this.life=-1;
+    				if(levelDefeated!="false,false,false,false,false,false,false,false"){
+    					for(;this.usageRestore>0;){
+    						if(player.activePower!=0){
+    							if(player.power[player.activePower-1].usage<player.power[player.activePower-1].usageMax){
+    								this.usageRestore--;
+    								player.power[player.activePower-1].usage++;	
+    							}else{
+    								for(i=0;i<9;i++){
+    									if(i!=8){
+    										if(levelDefeated[i]){
+    											if(player.power[i].usage<player.power[i].usageMax){
+    												this.usageRestore--;
+    												player.power[i].usage++;
+    												break;	
+    											}									
+    										}
+    									}else{this.usageRestore=-1;}
+    								}
+    							}
+    						}else{
+    							for(i=0;i<9;i++){
+    								if(i!=8){
+    									if(levelDefeated[i]){
+    										if(player.power[i].usage<player.power[i].usageMax){
+    											this.usageRestore--;
+    											player.power[i].usage++;
+    											break;	
+    										}
+    									}
+    								}else{this.usageRestore=-1;}					
+    							}						
+    						}
+    					}
+    				}
+    			}
         }//fine di physics              
       }                         
       			
@@ -2847,7 +2921,14 @@ i livelli sono disposti cosi in realta':1 8
 	                         /*RollingShield*/case 3: if(player.power[player.activePower-1].usage>1){ player.power[player.activePower-1].usage-=2; player.canChangeWeap=false; var sparo = new newRollingShieldCharge3(100,100);entity.push(sparo); player.activeShot=player.activeShot+3; }break;
 	                         /*FireWave*/case 4: if(player.power[player.activePower-1].usage>2){var sparo = new newFireWaveCharge3Main(20,20); entity.push(sparo); player.activeShot=player.activeShot+3; player.power[player.activePower-1].usage-=3;} break;
 	                         /*StormTornado*/case 5: if(player.power[player.activePower-1].usage>1){player.power[player.activePower-1].usage-=2;var sparo=new newStormTornadoCharge3(player.x,player.y+6,60,15,player.facingRight,0,true); entity.push(sparo);player.activeShot=player.activeShot+3;} break;
-	                         /*ElectricSpark*/case 6: if(player.power[player.activePower-1].usage>1){player.power[player.activePower-1].usage-=2;} break;
+	                         /*ElectricSpark*/case 6: if(player.power[player.activePower-1].usage>1){player.activeShot=player.activeShot+3;
+                                  if(player.facingRight){
+                                    var sparo = new newElectricSparkCharge3(player.x+player.width+6,player.y+9,16,100,player.facingRight); entity.push(sparo);
+                                    var sparo = new newElectricSparkCharge3(player.x+player.width+6,player.y+9,16,100,!player.facingRight); entity.push(sparo);
+                                  }else{
+                                    var sparo = new newElectricSparkCharge3(player.x-6-16,player.y+9,16,100,player.facingRight); entity.push(sparo);
+                                    var sparo = new newElectricSparkCharge3(player.x-6-16,player.y+9,16,100,!player.facingRight); entity.push(sparo);
+                                  }player.power[player.activePower-1].usage-=2;} break;
 	                         /*BoomerangCut*/case 7: if(player.power[player.activePower-1].usage>1){player.power[player.activePower-1].usage-=2;} break;
 	                         /*ShotgunIce*/case 8: if(player.power[player.activePower-1].usage>1){player.power[player.activePower-1].usage-=2;} break;                                                    
 	                       }
@@ -2857,9 +2938,9 @@ i livelli sono disposti cosi in realta':1 8
 	               }
 	         	}
  	         }else{player.carica=-9999999999999;}
-           }
-         }
-               
+          }
+        }
+
        p1.slope = 0;	//serve per i bordi tipo - serve anche per le collision
        for(var i = 0; i < lvl.length; i++) {
          if(collisionBetween(p1, lvl[i])) {
