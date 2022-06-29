@@ -1,4 +1,4 @@
-      var versioneDiGioco = "v0.20220628"; //aggiunto stingChameleon charge3, aggiunto rollingShield charge3, aggiunto firewave charge3
+      var versioneDiGioco = "v0.20220629"; //aggiunto storm eagle charge3, corretto la voce "pausa" in "pause" quando viene aperto il menu di pausa mentre non si puo cambiare il potere
       debugMode=false; //you can enable debugMode with the console (press f12 in the browser)
       
       //crea il canvas
@@ -1540,31 +1540,96 @@ i livelli sono disposti cosi in realta':1 8
               player.activeShot=player.activeShot-3; 
               this.active=false;       
             }
-          }
-                    
-			function creaFiglio(startingX,facingRight,x,width,startingY,height,index,color,startingDirection,velocita){
-				var xMax=startingX;		
-				if(facingRight){
-					if(((x)-(width))>xMax){
-						var sparoFiglio = new newStormTornado((x-width),startingY,width,height,index+1,facingRight,startingDirection);
-		                sparoFiglio.color= color;
-		                sparoFiglio.speed=velocita;
-		                entity.push(sparoFiglio);						
-						return true;
-					}
-				}else{
-					if(x+(width)<(xMax)){
-						var sparoFiglio = new newStormTornado((x+(width)),startingY,width,height,index+1,facingRight,startingDirection);
-		                sparoFiglio.color= color;
-		                sparoFiglio.speed=velocita;
-		                entity.push(sparoFiglio);						
-						return true;
-					}	
-				}
-				return false;
-			}//fine di crea figlio
+          }                    
+    			function creaFiglio(startingX,facingRight,x,width,startingY,height,index,color,startingDirection,velocita){
+    				var xMax=startingX;		
+    				if(facingRight){
+    					if(((x)-(width))>xMax){
+    						var sparoFiglio = new newStormTornado((x-width),startingY,width,height,index+1,facingRight,startingDirection);
+    		                sparoFiglio.color= color;
+    		                sparoFiglio.speed=velocita;
+    		                entity.push(sparoFiglio);						
+    						return true;
+    					}
+    				}else{
+    					if(x+(width)<(xMax)){
+    						var sparoFiglio = new newStormTornado((x+(width)),startingY,width,height,index+1,facingRight,startingDirection);
+    		                sparoFiglio.color= color;
+    		                sparoFiglio.speed=velocita;
+    		                entity.push(sparoFiglio);						
+    						return true;
+    					}	
+    				}
+    				return false;
+    			}//fine di crea figlio
 	      }//fine di this.physics      
       }
+      
+      function newStormTornadoCharge3(xPass,yPass,larghezza,altezza,facingRight,durata,main){//lo sparo creato dal player
+        this.life= 1;
+        this.duration=durata;
+        this.active=main;
+        this.type= "sparoDelPlayer";
+        this.damage= 2;
+        this.facingRight=facingRight;
+        if(this.active){        
+          if(this.facingRight){
+           this.x= player.x+player.width+6;
+          }else{
+           this.x= player.x-6-larghezza;
+           this.facingRight=true; 
+          }
+          this.startingX=this.x;
+        }else{
+           this.startingX=xPass;
+           this.x=xPass;
+        }
+        this.xv= 0;
+        this.xMassima=this.startingX+1;
+        this.xMinima=this.startingX-1;
+        this.width= larghezza;
+        this.height= altezza;
+        this.y=yPass;
+        this.color=player.power[4].color2+"99";
+        this.speed= 0.1;
+        this.maxFigli=Math.ceil(canvasWidth/(this.height+1));
+        this.figli=0;
+        this.hasPhysics=true;
+        this.physics= function( xdisegnata, ydisegnata, indiceDiQuestaEntity){
+          //movimento dello sparo
+          if (this.facingRight){
+            this.xv += this.speed;
+            if(this.x>this.xMassima){this.facingRight=!this.facingRight}
+          }else{
+            this.xv -= this.speed;
+            if(this.x<this.xMinima){this.facingRight=!this.facingRight}
+          }
+          this.xv *= level.friction;
+          this.x += this.xv;    
+          //collisione dello sparo con altre entita'
+          for (i=0; i<entity.length;i++){
+            if (!(i == indiceDiQuestaEntity)){
+              if ( entity[i].life > 0 && !(this.type == entity[i].type || entity[i].type=="pickup" )  && collisionBetween(this,entity[i]) ){	//controlla che l'entita da colpire sia viva, che non siano lo stesso proiettile e infine se c'è una collisione
+                entity[i].life-=this.damage;
+              }
+            }
+          }
+          if(this.active){
+            this.figli++;
+            if(this.figli<this.maxFigli){
+              var goRight=false;
+              if(this.figli%2==0){goRight=true;}
+              var sparoFiglio=new newStormTornadoCharge3(this.startingX,(this.y-this.figli*(this.height+1)),this.width,this.height,goRight,0,false); entity.push(sparoFiglio);
+              var sparoFiglio=new newStormTornadoCharge3(this.startingX,(this.y+this.figli*(this.height+1)),this.width,this.height,goRight,0,false); entity.push(sparoFiglio);
+            }
+          }
+          this.duration++; if(this.duration>80){this.life=-1;}
+          if(this.active && (this.life<1 || ((xdisegnata > canvasWidth)||( xdisegnata+this.width < 0)))){
+            player.activeShot=player.activeShot-3;
+            this.active=false;
+          }
+        }
+      }      
 
       function newElectricSpark(larghezza,altezza){//lo sparo creato dal player - electric spark charge 0
         this.life= 1;
@@ -2781,7 +2846,7 @@ i livelli sono disposti cosi in realta':1 8
 	                         /*ChameleonSting*/case 2: if(player.power[player.activePower-1].usage>3.5 && player.invulnerability<90000){player.invulnerability=91000; player.canChangeWeap=false; player.power[player.activePower-1].usage-=4;} break; 
 	                         /*RollingShield*/case 3: if(player.power[player.activePower-1].usage>1){ player.power[player.activePower-1].usage-=2; player.canChangeWeap=false; var sparo = new newRollingShieldCharge3(100,100);entity.push(sparo); player.activeShot=player.activeShot+3; }break;
 	                         /*FireWave*/case 4: if(player.power[player.activePower-1].usage>2){var sparo = new newFireWaveCharge3Main(20,20); entity.push(sparo); player.activeShot=player.activeShot+3; player.power[player.activePower-1].usage-=3;} break;
-	                         /*StormTornado*/case 5: if(player.power[player.activePower-1].usage>1){player.power[player.activePower-1].usage-=2;} break;
+	                         /*StormTornado*/case 5: if(player.power[player.activePower-1].usage>1){player.power[player.activePower-1].usage-=2;var sparo=new newStormTornadoCharge3(player.x,player.y+6,60,15,player.facingRight,0,true); entity.push(sparo);player.activeShot=player.activeShot+3;} break;
 	                         /*ElectricSpark*/case 6: if(player.power[player.activePower-1].usage>1){player.power[player.activePower-1].usage-=2;} break;
 	                         /*BoomerangCut*/case 7: if(player.power[player.activePower-1].usage>1){player.power[player.activePower-1].usage-=2;} break;
 	                         /*ShotgunIce*/case 8: if(player.power[player.activePower-1].usage>1){player.power[player.activePower-1].usage-=2;} break;                                                    
@@ -2906,7 +2971,7 @@ i livelli sono disposti cosi in realta':1 8
               disegnaSchermoDiGioco(false);
               tastoGiaSchiacciato=true;
               gamestate=2;
-            }else{objAlert = new newAlert("pausa",-1); gamestate=5;}
+            }else{objAlert = new newAlert("pause",-1); gamestate=5;}
           }
         }
         
