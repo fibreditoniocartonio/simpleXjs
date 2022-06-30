@@ -1,4 +1,4 @@
-      var versioneDiGioco = "v0.20220629"; //aggiunto storm eagle charge3, aggiunto electric spark charge 3, corretto la voce "pausa" in "pause" quando viene aperto il menu di pausa mentre non si puo cambiare il potere
+      var versioneDiGioco = "v0.20220630"; //aggiunto shotgun ice charge 3 
       debugMode=false; //you can enable debugMode with the console (press f12 in the browser)
       
       //crea il canvas
@@ -1054,7 +1054,7 @@ i livelli sono disposti cosi in realta':1 8
           }
           this.xv *= level.friction;
           this.x += -this.xv;
-	      var gravityApplicata = 0; var frizioneApplicata = 0;
+	        var gravityApplicata = 0; var frizioneApplicata = 0;
 	        if (this.y > level.waterLevel){  //determina se sei in acqua o no
 	            if (!this.isInWater){
 	                this.isInWater = true;
@@ -1071,7 +1071,7 @@ i livelli sono disposti cosi in realta':1 8
 	        if(this.yv>19){this.yv=19;}//limita la gravita'
 	        this.y += this.yv;//apply gravity
 
-	        for(i=0; i<level.length; i++) {//y collision with level
+	        for(i=0; i<level.length; i++) {// collision with level
 	          if(((this.y+this.height)>level[i].y)&&((this.y+this.height)<level[i].y+19)&&(collisionBetween(this,level[i]))){//collison verso il basso
 	            this.y=level[i].y-this.height-1;
 	            this.yv=this.yv/2;
@@ -2042,8 +2042,7 @@ i livelli sono disposti cosi in realta':1 8
                 }
               }
             }
-          }
-          
+          }          
           //genera figlio alla morte se isPadre, altrimenti muore e basta
           if(this.isDying){
             //this.x += this.xv;         
@@ -2065,7 +2064,100 @@ i livelli sono disposti cosi in realta':1 8
             }
           }          
         }
-      }      
+      }
+
+      function newShotgunIceCharge3(larghezza,altezza) {// ShotgunIce Charge 3
+        this.life= 1;
+        this.active=true;
+        this.type= "piattaforma";
+        this.damage= 0;
+        this.damageToEnemy= 2;
+        this.facingRight=player.facingRight;        
+        if(this.facingRight){
+         this.x= player.x+player.width+3+larghezza/2;
+        }else{
+         this.x= player.x-3-larghezza; 
+        }
+        this.xv= 0;
+        this.yv= 0;
+        this.width=0;
+        this.height=altezza;
+        this.widthMax= larghezza;
+        this.y=player.y+9;
+        this.color=player.power[7].color1;
+        this.speed= 0.05;
+        this.hasPhysics=true;
+        this.canSelfDraw=true;
+        this.selfDraw= function( xdisegnata, ydisegnata, indiceDiQuestaEntity){
+          ctx.fillStyle=this.color;
+          var larghezzaRuota=this.width/4;
+          var altezzaRuota=this.height/7;
+          ctx.fillRect(xdisegnata-2, ydisegnata, this.width+4, this.height-altezzaRuota);
+          if(this.width==this.widthMax){
+            ctx.fillRect(xdisegnata+this.width/2-larghezzaRuota/2, ydisegnata, larghezzaRuota, this.height+1);
+          }          
+        }        
+        this.physics= function( xdisegnata, ydisegnata, indiceDiQuestaEntity){
+          if(this.width<this.widthMax){ //crescita da fermo
+            this.width+=(this.widthMax/10);
+            this.x-=(this.width/20);
+          }else{ //movimento dello sparo         
+            if (this.facingRight){
+              this.xv -= this.speed;
+            }else{
+              this.xv += this.speed;
+            }
+            this.xv *= level.friction;
+            this.x += -this.xv;
+            if(this.speed<3){this.speed+=0.01;}//accelera
+  	        if (this.y > level.waterLevel){  //determina se sei in acqua o no
+  	            if (!this.isInWater){
+  	                this.isInWater = true;
+  	                this.yv = 0;
+  	            }
+  	            gravityApplicata = level.gravityWater;
+  	            frizioneApplicata = level.frictionWater;
+  	        }else{
+  	            this.isInWater = false;
+  	            gravityApplicata = level.gravity;
+  	            frizioneApplicata = level.friction;            
+  	        }      
+  	        this.yv += gravityApplicata;//get level gravity
+  	        if(this.yv>this.width){this.yv=this.width;}//limita la gravita'
+  	        this.y += this.yv;//apply gravity            
+          }    
+	        for(i=0; i<level.length; i++) {// collision with level
+	          if(((this.y+this.height)>level[i].y)&&((this.y+this.height)<level[i].y+this.yv+1)&&(collisionBetween(this,level[i]))){//collison verso il basso
+	            this.y=level[i].y-this.height-1;
+	            this.yv=this.yv/2;
+	          }
+	          if((((this.x+this.width)>level[i].x)||(this.x<(level[i].x+level[i].width)))&&(collisionBetween(this,level[i]))){//collsion laterale
+	          		this.life=-1;	
+	          }	
+	        }
+          if(collisionBetween(this, player)&&(((this.x+this.width)>player.x)||(this.x<(player.x+player.width)))){//collisione laterale player
+            player.x-=this.xv;
+            for(var j = 0; j < level.length; j++){
+              if(collisionBetween(player, level[j])){
+                player.x+=this.xv*2;
+              }
+            }  
+          }                  
+          //collisione dello sparo con altre entita'
+          for (i=0; i<entity.length;i++){
+            if (!(i == indiceDiQuestaEntity)){
+              if ( entity[i].life > 0 && !(this.type == entity[i].type || entity[i].type=="pickup" )  && collisionBetween(this,entity[i]) ){	//controlla che l'entita da colpire sia viva, che non siano lo stesso proiettile e infine se c'è una collisione
+                entity[i].life-=this.damageToEnemy;
+              }
+            }
+          }
+          if(player.activePower!=8){this.life-=0.5;}//distruzione se il player cambia weapon
+          if(this.active && (this.life<0.1 || ((xdisegnata > canvasWidth)||( xdisegnata+this.width < 0)))){//disattivazione sparo
+            player.activeShot=player.activeShot-3;
+            this.active=false;
+          }
+        }
+      }            
 
       function newPipistrello() {//mostro pipistrello
         this.life= 1;
@@ -2347,8 +2439,8 @@ i livelli sono disposti cosi in realta':1 8
 	          }	
 	        }
 			for(var i = 0; i < entity.length; i++) {//y collision with entities that are solid (ostacolo e piattaforma)
-				if(entity[i].type=="ostacolo" || entity[i].type=="piattaforma"){
-		          if(collisionBetween(this, entity[i])) {
+				if(entity[i].life>0 && (entity[i].type=="ostacolo" || entity[i].type=="piattaforma")){
+              if(((this.y+this.height)>entity[i].y)&&((this.y+this.height)<entity[i].y+19)&&(collisionBetween(this,entity[i]))) {
 		            this.y=entity[i].y-this.height;
 		          }
 		        }
@@ -2407,8 +2499,8 @@ i livelli sono disposti cosi in realta':1 8
 	          }	
 	        }
 			for(var i = 0; i < entity.length; i++) {//y collision with entities that are solid (ostacolo e piattaforma)
-				if(entity[i].type=="ostacolo" || entity[i].type=="piattaforma"){
-		          if(collisionBetween(this, entity[i])) {
+				if(entity[i].life>0 && (entity[i].type=="ostacolo" || entity[i].type=="piattaforma")){
+		          if(((this.y+this.height)>entity[i].y)&&((this.y+this.height)<entity[i].y+19)&&(collisionBetween(this,entity[i]))) {
 		            this.y=entity[i].y-this.height;
 		          }
 		        }
@@ -2542,7 +2634,7 @@ i livelli sono disposti cosi in realta':1 8
                player.disegnaPlayer(xdisegnata+26+1, ydisegnata+1, player.width-1, player.height-2,false,player.color1,player.color2,player.coloreArmatura);
             }
         }
-		//ora disegna effettivamente il player
+		    //ora disegna effettivamente il player
         //ctx.fillStyle = player.color1+"80"; ctx.fillRect(xdisegnata, ydisegnata, player.width, player.height); //hitbox */
         player.disegnaPlayer(xdisegnata,ydisegnata,player.width,player.height,true,player.color1,player.color2,player.coloreArmatura);        
       }
@@ -2751,9 +2843,10 @@ i livelli sono disposti cosi in realta':1 8
         p1.yv += gravityApplicata;//get level gravity
         p1.y += p1.yv;//apply gravity
                         
-        for(var i = 0; i < lvl.length; i++) {//y collision
+        for(var i = 0; i < lvl.length; i++) {//y collision con level
           if(collisionBetween(p1, lvl[i])) {
-            p1.y += -p1.yv;            
+            p1.y += -p1.yv;
+            p1.yv = 0;            
             if(keys[dashkey] && player.canMove && armaturaAcquired[1]) {//dash
               p1.speed=p1.defaultspeed*2.25;
             }else{
@@ -2767,11 +2860,71 @@ i livelli sono disposti cosi in realta':1 8
                 p1.yv = 0; 
               }
             } else {
-              p1.yv = 0;
               p1.giasaltato = false;
             }
           }	
-        }        
+        }
+        
+        for(var i = 0; i < entity.length; i++) {//y collision con entity (piattaforma e ostacolo)
+          if(entity[i].life>0 && entity[i].type=="piattaforma"){
+            if(collisionBetween(p1, entity[i])) {
+              if(((player.y+player.height)>entity[i].y)&&((player.y+player.height)<entity[i].y+19)){//collisione con y
+                p1.y = entity[i].y-p1.height;
+                p1.yv = entity[i].yv*1.1;            
+                if(keys[dashkey] && player.canMove && armaturaAcquired[1]) {//dash
+                  p1.speed=p1.defaultspeed*2.25;
+                }else{
+                  p1.speed=player.defaultspeed;
+                }            
+                if(keys[jumpkey] && player.canMove) {//jump
+                  if(!p1.giasaltato) {
+                    p1.yv = -p1.jumpheight;
+                    p1.giasaltato = true;
+                  } else {
+                    p1.yv = 0; 
+                  }
+                } else {
+                  p1.giasaltato = false;
+                }
+                if(entity[i].speed){
+                    p1.xv += entity[i].xv;
+                    if(entity[i].xv>0){if(p1.xv>entity[i].xv){p1.xv = entity[i].xv/1.85;}
+                    }else{if(p1.xv<entity[i].xv){p1.xv = entity[i].xv/1.85;}}
+                    p1.x -= p1.xv;                
+                  for(var j = 0; j < lvl.length; j++){
+                    if(collisionBetween(p1, lvl[j])) {
+                      p1.x+=p1.xv*2;
+                    }
+                  }  
+                }
+              }else{//collisione con x
+                p1.y += p1.slope;
+                p1.x -= -p1.xv;
+                if(keys[dashkey] && player.canMove && armaturaAcquired[1]) {//wall dash
+                  p1.speed=p1.defaultspeed*2.25;
+                }else{
+                  p1.speed=player.defaultspeed;
+                }           
+                if(keys[jumpkey] && player.canMove) {//wall jumping
+                  if(!p1.giasaltato) { 
+                    p1.yv = -p1.jumpheight + 1;
+                    if(p1.xv > 0) {
+                      p1.xv = -9.9;
+                    } else {
+                      p1.xv = 9.9;
+                    }
+                    p1.giasaltato = true;
+                  } else {
+                    p1.xv = 0;
+                  }
+                } else {
+                  p1.xv = 0;
+                  p1.giasaltato = false;
+                }              
+              }
+            }
+          }	
+        }                
                        
         if(keys[destrakey] && player.canMove) {//x movement
           p1.xv -= p1.speed;
@@ -2930,12 +3083,12 @@ i livelli sono disposti cosi in realta':1 8
                                     var sparo = new newElectricSparkCharge3(player.x-6-16,player.y+9,16,100,!player.facingRight); entity.push(sparo);
                                   }player.power[player.activePower-1].usage-=2;} break;
 	                         /*BoomerangCut*/case 7: if(player.power[player.activePower-1].usage>1){player.power[player.activePower-1].usage-=2;} break;
-	                         /*ShotgunIce*/case 8: if(player.power[player.activePower-1].usage>1){player.power[player.activePower-1].usage-=2;} break;                                                    
+	                         /*ShotgunIce*/case 8: if(player.power[player.activePower-1].usage>1){var sparo = new newShotgunIceCharge3(60,20); entity.push(sparo); player.activeShot=player.activeShot+3; player.power[player.activePower-1].usage-=2;} break;                                                    
 	                       }
 	                   } 
 	     	            player.carica=0;
 	     	            player.giasparato=false;                  
-	               }
+	               } 
 	         	}
  	         }else{player.carica=-9999999999999;}
           }
