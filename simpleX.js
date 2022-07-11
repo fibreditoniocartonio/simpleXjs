@@ -1,4 +1,4 @@
-      var versioneDiGioco = "v0.20220711"; //aggiunto boomerang cutter charge 3 
+      var versioneDiGioco = "v0.20220711"; //aggiunto boomerang cutter charge 3, fixato il bug che se c'erano colpi attivi manteneva il livello di carica anche dopo aver lasciato il tasto 
       debugMode=false; //you can enable debugMode with the console (press f12 in the browser)
       
       //crea il canvas
@@ -3221,10 +3221,9 @@ i livelli sono disposti cosi in realta':1 8
 	                         /*ShotgunIce*/case 8: if(player.power[player.activePower-1].usage>1){var sparo = new newShotgunIceCharge3(60,20); entity.push(sparo); player.activeShot=player.activeShot+3; player.power[player.activePower-1].usage-=2;} break;                                                    
 	                       }
 	                   } 
-	     	            player.carica=0;
 	     	            player.giasparato=false;                  
 	               } 
-	         	}
+	         	}else{player.carica=0;}
  	         }else{player.carica=-9999999999999;}
           }
         }
