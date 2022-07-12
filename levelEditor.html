@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+<meta charset='utf-8'>
+<style>
+body {background-color:black; overflow: hidden;}
+#canvas {
+  background-color: white;
+  display: block;
+  top:0;
+  position:absolute;
+  height:100%;
+}
+.canvasDiv {
+  display: flex;
+  justify-content: center;
+}
+.caricaPartitaDiv {
+  position: absolute;
+  z-index: -1;
+  top:48%;
+  left:43%
+}
+</style>
+<body>
+<title>Simple X Js - Level Editor</title>
+<script src='levelEditor.js' id='scriptId' charset='utf-8'></script> <!--Questo avvia lo script di gioco - il canvas lo crea lo script e lo mette in un div di classe canvasDiv-->
+</body>
+<!--Carico le immagini che usera' il js - La width e' a 0% per nasconderle-->
+<img id='stageselect' src='imgs/stageselect.jpg' width=0%></img> <!--Prende l'immagine e la nasconde, ci pensera' il canvas del .js a usarla. Per avere un'esperienza piu' realistica si puo' ritagliare lo stage select screen di mmx1 e ingrandirlo a 600x600. Poi estendi l'immagine lasciando il bordo bianco a 800x600 e la rinomini stageselect.jpg. La metti nella cartella di gioco e enjoy :D  -->
+<img id='sunnySky.png' src='imgs/sunnySky.png' width=0%></img>
+<img id='moon.jpg' src='imgs/moon.jpg' width=0%></img>
+<img id='ice.png' src='imgs/ice.png' width=0%></img>
+</html>
