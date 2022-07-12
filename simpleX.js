@@ -1,4 +1,4 @@
-      var versioneDiGioco = "v0.20220711"; //aggiunto boomerang cutter charge 3, fixato il bug che se c'erano colpi attivi manteneva il livello di carica anche dopo aver lasciato il tasto 
+      var versioneDiGioco = "v0.20220712"; //nuovo design pipistrello 
       debugMode=false; //you can enable debugMode with the console (press f12 in the browser)
       
       //crea il canvas
@@ -2298,11 +2298,38 @@ i livelli sono disposti cosi in realta':1 8
         this.xv= 0;
         this.yv= 0;
         this.slope = 0;
-        this.width= 30;
-        this.height= 30;
-        this.color= '#a400ff';
+        this.width= 34;
+        this.height= 16;
+        this.color1= '#8500b5';
+        this.color2= '#d7b600';
         this.speed= 0.5;
         this.hasPhysics=true;
+        this.canSelfDraw=true;
+        this.selfDraw= function( xdisegnata, ydisegnata, indiceDiQuestaEntity){
+          var unitX=this.width/10;
+          var unitY=this.height/10;
+		      ctx.fillStyle = this.color2;
+          halfBatDraw(xdisegnata,this.width,ydisegnata,this.height,unitX,unitY);
+          halfBatDraw(xdisegnata,this.width,ydisegnata,this.height,-unitX,unitY);
+          ctx.fillStyle = this.color1;
+          halfBatDraw(xdisegnata+1.5,this.width-3,ydisegnata+1.5,this.height-3,unitX,unitY);
+          halfBatDraw(xdisegnata+1.5,this.width-3,ydisegnata+1.5,this.height-3,-unitX,unitY);          
+          function halfBatDraw(xdisegnata,width,ydisegnata,height,unitX,unitY){
+          	ctx.beginPath();
+  		      ctx.lineWidth = "1";          
+  		      ctx.moveTo(xdisegnata+width/2, ydisegnata+unitY*2);
+  		      ctx.lineTo(xdisegnata+width/2+unitX, ydisegnata);
+            ctx.lineTo(xdisegnata+width/2+unitX, ydisegnata+unitY*3);
+            ctx.lineTo(xdisegnata+width/2+unitX*2.5, ydisegnata);
+            ctx.lineTo(xdisegnata+width/2+unitX*5, ydisegnata+height-unitY);
+            ctx.lineTo(xdisegnata+width/2+unitX*2.5, ydisegnata+height-unitY*2.5);
+            ctx.lineTo(xdisegnata+width/2+unitX*1.25, ydisegnata+height-unitY/2);
+            ctx.lineTo(xdisegnata+width/2+unitX, ydisegnata+height-unitY*2.4);
+            ctx.lineTo(xdisegnata+width/2, ydisegnata+height);
+            ctx.lineTo(xdisegnata+width/2, ydisegnata+unitY*2);
+            ctx.fill();
+          }
+        }          
         this.physics= function( xdisegnata, ydisegnata, indiceDiQuestaEntity){
           //movimento
           if (this.x < player.x-1){
