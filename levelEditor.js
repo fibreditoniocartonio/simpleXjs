@@ -1,4 +1,4 @@
-      var versioneDiGioco = "v0.20220714"; //aggiunto drawTool() e iniziato a lavorarci, migliorato il sistema di telecamera e reso togglable 
+      var versioneDiGioco = "v0.20220714"; //aggiunto drawTool() e iniziato a lavorarci, migliorato il sistema di telecamera e reso togglable, snapmode, tante altre robette 
       debugMode=true;     //you can enable debugMode with the console (press f12 in the browser)
       showMouseBox=false; //you can enable showMouseBox with the console (press f12 in the browser)
       showGrid=true;      //griglia sul livello, togglable
@@ -15,7 +15,7 @@
       var keys = []; //vettore associativo dei tasti (tiene dentro dei bool)
       var mouseX=0; var mouseY=0; //coordinate mouse
       var mouseClick=false; //il mouse ha schiacciato
-      var tastoGiaSchiacciato = false;  //mi serve per alcune funzioni tipo selectScreen()
+      var tastoGiaSchiacciato = false; 
       var jumpkey = "z";         		//salta - default z
       var destrakey = "ArrowRight";     //muovi sinistra - default freccia destra
       var sinistrakey = "ArrowLeft";    //muovi destra - default freccia sinistra
@@ -36,13 +36,12 @@
           keys[e.key] = false;
       });
       
-      canvas.addEventListener('mousedown', function(e) {
-          mouseClick=true;
-      });      
-      
       canvas.addEventListener('mouseup', function(e) {
           mouseClick=false;
       });      
+      canvas.addEventListener('mousedown', function(e) {
+          mouseClick=true;
+      });                     
       
       canvas.addEventListener("mousemove", function(e) {//events - legge il mouse
           var cRect = canvas.getBoundingClientRect(); // Gets CSS pos, and width/height
@@ -58,6 +57,7 @@
         this.height= 19;
         this.color="#0400f8";
         this.showPlayerCamera=true; //mostra l'iconcina della telecamera che serve per spostarsi nel livello e simula la visione del player
+        this.snapMode=false;
       }
             
   //gamestate - se == -1: stato nel level editor
@@ -770,16 +770,23 @@
         this.width=realCanvasWidth-canvasWidth;
         this.height=canvasHeight;
         this.openedTab=0;
-        this.nrTab=3;        
+        this.nrTab=3;
+        this.mouseTimer=0;
+        this.showExitMenu=false;        
         this.drawTool = function (){
+          if(this.mouseTimer>0 && !this.showExitMenu){this.mouseTimer--;}//timer mouse
           ctx.fillStyle="#cccccc"; ctx.fillRect(canvasWidth, 0, this.width, this.height); //sfondo
           this.tabCode(); //disegno la parte in alto delle tab e le gestisco (mouse input)
+          switch(this.openedTab){//disegno la tab aperta
+            case 0: this.toolTabCode(); break;
+          }
+          if(this.showExitMenu){this.drawExitMenu();}
           ctx.textAlign="left";//sistemo almeno non si buggano gli altri menu
         }//fine drawTool()
         this.tabCode = function (){
           tabWidth=this.width/this.nrTab;
           tabHeight=20;        
-          ctx.textAlign="center"
+          ctx.textAlign="center";
           for(i=0; i<this.nrTab; i++){
             var tabTitle=""; var textSize=20;
             switch(i){
@@ -796,35 +803,131 @@
               ctx.fillStyle="#6c6c6c"; ctx.fillRect(canvasWidth+(i+1)*tabWidth-1, 0, 1, tabHeight); //separatore tab
             }
             disegnaTestoConBordino(tabTitle, canvasWidth+i*tabWidth+(tabWidth/2), tabHeight/2+ctx.measureText("o").width/2, "#000000");//testo della tab
-            if(checkMouseBox(canvasWidth+i*tabWidth,0,tabWidth,tabHeight) && mouseClick){
+            if(checkMouseBox(canvasWidth+i*tabWidth,0,tabWidth,tabHeight) && mouseClick && !this.showExitMenu){
               this.openedTab=i;
             }
           }          
         }//fine tabCode()
+        this.toolTabCode = function (){
+          var numeroVoci=5;
+          var voceHeight=(this.height-20)/numeroVoci;
+          ctx.textAlign="left"; ctx.font = "small-caps bold 15px Lucida Console";
+          for(k=0; k<numeroVoci; k++){
+            switch(k){
+              case 0://show player camera 
+                var word="Show Player Camera"; 
+                disegnaTestoConBordino(word, canvasWidth+5, 20+(voceHeight*k)+voceHeight/2+ctx.measureText("o").width/2, "#000000");
+                disegnaTestoConBordino("[ ]", canvasWidth+5+5+ctx.measureText(word).width, 20+(voceHeight*k)+voceHeight/2+ctx.measureText("o").width/2, "#000000");
+                if(player.showPlayerCamera){disegnaTestoConBordino(" X", canvasWidth+5+5+ctx.measureText(word).width, 20+(voceHeight*k)+voceHeight/2+ctx.measureText("o").width/2, "#000000");}
+                if(checkMouseBox(canvasWidth+2,20+voceHeight*k+2,this.width-4,voceHeight-4)){
+                  ctx.strokeStyle="#000000"; ctx.lineWidth="2";
+                  ctx.strokeRect(canvasWidth+2,20+voceHeight*k+2,this.width-4,voceHeight-4);
+                  if(mouseClick && this.mouseTimer==0){player.showPlayerCamera=!player.showPlayerCamera; this.mouseTimer=10;}
+                }
+                break;            
+              case 1://show grid
+                var word="Show Grid"; 
+                disegnaTestoConBordino(word, canvasWidth+5, 20+(voceHeight*k)+voceHeight/2+ctx.measureText("o").width/2, "#000000");
+                disegnaTestoConBordino("[ ]", canvasWidth+5+5+ctx.measureText(word).width, 20+(voceHeight*k)+voceHeight/2+ctx.measureText("o").width/2, "#000000");
+                if(showGrid){disegnaTestoConBordino(" X", canvasWidth+5+5+ctx.measureText(word).width, 20+(voceHeight*k)+voceHeight/2+ctx.measureText("o").width/2, "#000000");}
+                if(checkMouseBox(canvasWidth+2,20+voceHeight*k+2,this.width-4,voceHeight-4)){
+                  ctx.strokeStyle="#000000"; ctx.lineWidth="2";
+                  ctx.strokeRect(canvasWidth+2,20+voceHeight*k+2,this.width-4,voceHeight-4);
+                  if(mouseClick && this.mouseTimer==0){showGrid=!showGrid; this.mouseTimer=10;}
+                }
+                break;
+              case 2://snap mode 
+                var word="Snap mode"; 
+                disegnaTestoConBordino(word, canvasWidth+5, 20+(voceHeight*k)+voceHeight/2+ctx.measureText("o").width/2, "#000000");
+                disegnaTestoConBordino("[ ]", canvasWidth+5+5+ctx.measureText(word).width, 20+(voceHeight*k)+voceHeight/2+ctx.measureText("o").width/2, "#000000");
+                if(player.snapMode){disegnaTestoConBordino(" X", canvasWidth+5+5+ctx.measureText(word).width, 20+(voceHeight*k)+voceHeight/2+ctx.measureText("o").width/2, "#000000");}
+                if(checkMouseBox(canvasWidth+2,20+voceHeight*k+2,this.width-4,voceHeight-4)){
+                  ctx.strokeStyle="#000000"; ctx.lineWidth="2";
+                  ctx.strokeRect(canvasWidth+2,20+voceHeight*k+2,this.width-4,voceHeight-4);
+                  if(mouseClick && this.mouseTimer==0){player.snapMode=!player.snapMode; this.mouseTimer=10;}
+                }
+                break;                
+              case numeroVoci-2://save level 
+                disegnaTestoConBordino("Save Level", canvasWidth+5, 20+(voceHeight*k)+voceHeight/2+ctx.measureText("o").width/2, "#000000");
+                disegnaTestoConBordino("(not yet)", canvasWidth+5+5+ctx.measureText("Save Level").width, 20+(voceHeight*k)+voceHeight/2+ctx.measureText("o").width/2, "#000000");
+                if(checkMouseBox(canvasWidth+2,20+voceHeight*k+2,this.width-4,voceHeight-4)){
+                  ctx.strokeStyle="#000000"; ctx.lineWidth="2";
+                  ctx.strokeRect(canvasWidth+2,20+voceHeight*k+2,this.width-4,voceHeight-4);
+                  if(mouseClick && this.mouseTimer==0){/*save level*/; this.mouseTimer=10;}
+                }
+                break;
+              case numeroVoci-1://exit to main menu
+                disegnaTestoConBordino("Back to main menu", canvasWidth+5, 20+(voceHeight*k)+voceHeight/2+ctx.measureText("o").width/2, "#000000"); 
+                if(checkMouseBox(canvasWidth+2,20+voceHeight*k+2,this.width-4,voceHeight-4)){
+                  ctx.strokeStyle="#000000"; ctx.lineWidth="2";
+                  ctx.strokeRect(canvasWidth+2,20+voceHeight*k+2,this.width-4,voceHeight-4);
+                  if(mouseClick && this.mouseTimer==0){this.showExitMenu=true; this.mouseTimer=10;}
+                }
+                break;                                              
+            }
+          }
+        }//fine di toolTabCode()
+        this.drawExitMenu = function (){
+          ctx.textAlign="center"; ctx.font = "small-caps bold 25px Lucida Console";
+          var string1="do you really want to exit?";
+          var string2="every unsaved progress will be lost.";
+          var menuWidth=ctx.measureText(string2).width+8;
+          var menuHeight=8+(ctx.measureText("O").width+4)*5;
+          ctx.fillStyle="#cccccc"; ctx.fillRect(realCanvasWidth/2-menuWidth/2, canvasHeight/2-menuHeight/2, menuWidth, menuHeight);
+          ctx.strokeStyle="#000000"; ctx.strokeRect(realCanvasWidth/2-menuWidth/2, canvasHeight/2-menuHeight/2, menuWidth, menuHeight);
+          disegnaTestoConBordino(string1,realCanvasWidth/2,4+canvasHeight/2-menuHeight/2+ctx.measureText("O").width,"#000000");
+          disegnaTestoConBordino(string2,realCanvasWidth/2,4+canvasHeight/2-menuHeight/2+ctx.measureText("O").width+(menuHeight-8)/3,"#000000");
+          disegnaTestoConBordino("yes",realCanvasWidth/2-menuWidth/4,4+canvasHeight/2-menuHeight/2+ctx.measureText("O").width+2*(menuHeight-8)/3,"#000000");
+          if(checkMouseBox(realCanvasWidth/2-menuWidth/4-ctx.measureText("aaa").width,5+canvasHeight/2-menuHeight/2-ctx.measureText("O").width/2+2*(menuHeight-8)/3,ctx.measureText("aaa").width*2,4*ctx.measureText("O").width/2)){
+            ctx.strokeStyle="#000000"; ctx.lineWidth="2";
+            ctx.strokeRect(realCanvasWidth/2-menuWidth/4-ctx.measureText("aaa").width,5+canvasHeight/2-menuHeight/2-ctx.measureText("O").width/2+2*(menuHeight-8)/3,ctx.measureText("aaa").width*2,4*ctx.measureText("O").width/2);
+            if(mouseClick){objMenuPrincipale= new newMenuPrincipale();gamestate=0;}
+          }
+          disegnaTestoConBordino("no",realCanvasWidth/2+menuWidth/4,4+canvasHeight/2-menuHeight/2+ctx.measureText("O").width+2*(menuHeight-8)/3,"#000000");
+          if(checkMouseBox(realCanvasWidth/2+menuWidth/4-ctx.measureText("aaa").width,5+canvasHeight/2-menuHeight/2-ctx.measureText("O").width/2+2*(menuHeight-8)/3,ctx.measureText("aaa").width*2,4*ctx.measureText("O").width/2)){
+            ctx.strokeStyle="#000000"; ctx.lineWidth="2";
+            ctx.strokeRect(realCanvasWidth/2+menuWidth/4-ctx.measureText("aaa").width,5+canvasHeight/2-menuHeight/2-ctx.measureText("O").width/2+2*(menuHeight-8)/3,ctx.measureText("aaa").width*2,4*ctx.measureText("O").width/2);
+            if(mouseClick){this.showExitMenu=false;}
+          }            
+        }//fine di drawExitMenu()
       }     
       
       function playerPhysics(p1, lvl) {//this function handles the platformer physics - in realta' solo del player
-        var cameraSpeed=3;
-        if(keys[dashkey]){cameraSpeed=9;}else{cameraSpeed=3;}                                             
-        if(keys[destrakey] && (p1.x+p1.width<lvl.maxWidth-20)){//x movement (camera)
-          p1.x += cameraSpeed;
+        if(player.snapMode){//1 movimento di griglia alla volta
+          var cameraSpeed=20;                                             
+          if(!tastoGiaSchiacciato && keys[destrakey] && (p1.x+p1.width<lvl.maxWidth-20)){//x movement (camera)
+            p1.x += cameraSpeed;
+            tastoGiaSchiacciato=true;
+          }
+          if(!tastoGiaSchiacciato && keys[sinistrakey] && (p1.x>20)) {
+            p1.x -= cameraSpeed;
+            tastoGiaSchiacciato=true;
+          }
+          if(!tastoGiaSchiacciato && keys[sukey]&& (p1.y>20)) {//y movement (camera)
+            p1.y -= cameraSpeed;
+            tastoGiaSchiacciato=true;
+          }
+          if(!tastoGiaSchiacciato && keys[giukey]&& (p1.y+p1.height<lvl.maxHeight-20)) {
+            p1.y += cameraSpeed;
+            tastoGiaSchiacciato=true;
+          }          
+        }else{
+          var cameraSpeed=3;
+          if(keys[dashkey]){cameraSpeed=9;}else{cameraSpeed=3;}                                             
+          if(keys[destrakey] && (p1.x+p1.width<lvl.maxWidth-20)){//x movement (camera)
+            p1.x += cameraSpeed;
+          }
+          if(keys[sinistrakey] && (p1.x>20)) {
+            p1.x -= cameraSpeed;
+          }
+          if(keys[sukey]&& (p1.y>20)) {//y movement (camera)
+            p1.y -= cameraSpeed;
+          }
+          if(keys[giukey]&& (p1.y+p1.height<lvl.maxHeight-20)) {
+            p1.y += cameraSpeed;
+          }        
         }
-        if(keys[sinistrakey] && (p1.x>20)) {
-          p1.x -= cameraSpeed;
-        }
-        if(keys[sukey]&& (p1.y>20)) {//y movement (camera)
-          p1.y -= cameraSpeed;
-        }
-        if(keys[giukey]&& (p1.y+p1.height<lvl.maxHeight-20)) {
-          p1.y += cameraSpeed;
-        }
-        if(keys[startkey]){//menu di pausa - non ancora implementato (c'e' il codice del gioco ma ovviamente non va)
-              /*objMenuDiPausa=new newMenuDiPausa();
-              disegnaSchermoDiGioco(false);
-              tastoGiaSchiacciato=true;
-              gamestate=2;*/
-        }   
-        if(tastoGiaSchiacciato && !(keys[startkey])){ //azzera tasto gia schiacciato
+        if(tastoGiaSchiacciato && !(keys[destrakey] || keys[sinistrakey] || keys[sukey] || keys[giukey])){ //azzera tasto gia schiacciato
           tastoGiaSchiacciato=false;
         }
         //qui sotto implementero' cosa succede col mouse
