@@ -1,7 +1,7 @@
-      var versioneDiGioco = "v0.20220713"; //migliorato supporto al mouse, mostra il livello da editare, creata una griglia togglable per le coordinate, implementata la possibilita' di caricare i livelli da 
+      var versioneDiGioco = "v0.20220714"; //aggiunto drawTool() e iniziato a lavorarci, migliorato il sistema di telecamera e reso togglable 
       debugMode=true;     //you can enable debugMode with the console (press f12 in the browser)
       showMouseBox=false; //you can enable showMouseBox with the console (press f12 in the browser)
-      showGrid=true;      //griglia sul livello, togglable con i tool a destra (per ora non ancora)
+      showGrid=true;      //griglia sul livello, togglable
       
       //crea il canvas
       var realCanvasWidth = 960;//level editor in 16:9
@@ -57,6 +57,7 @@
         this.width= 19;
         this.height= 19;
         this.color="#0400f8";
+        this.showPlayerCamera=true; //mostra l'iconcina della telecamera che serve per spostarsi nel livello e simula la visione del player
       }
             
   //gamestate - se == -1: stato nel level editor
@@ -568,6 +569,7 @@
   	
     function nuovoLivello(){	//azzera i dati del player e carica un nuovo livello (da stringa e non da file...)
   		  player = new Player();
+        tool = new newMenuTool();
   		  stringToLevel(stringaLivello);
       	player.x = level.xStartingPos;
       	player.y = level.yStartingPos;
@@ -606,7 +608,7 @@
           drawWater();
           if(showGrid){drawGrid();}//disegna la griglia per separare i blocchi
           //da qui in poi disegno la parte piu' a destra del canvas, dove mettero' i tool per editare il livello
-          ctx.clearRect(canvasWidth, 0, realCanvasWidth, canvasHeight);	//pulisco la parte a destra
+          tool.drawTool();
     }
 
     function xDisegnata(){
@@ -635,9 +637,14 @@
 	  }
             
       function drawPlayer() {
-        var xdisegnata=xDisegnata();
-        var ydisegnata=yDisegnata(); 
-        ctx.fillStyle = player.color; ctx.fillRect(xdisegnata, ydisegnata, player.width, player.height);        
+        if(player.showPlayerCamera){
+          var xdisegnata=xDisegnata();
+          var ydisegnata=yDisegnata();
+          ctx.fillStyle=player.color; 
+          ctx.fillRect(xdisegnata-player.width*2/10, ydisegnata+player.height/10, player.width*8/10, player.height*8/10);
+          ctx.fillRect(xdisegnata+player.width*6/10, ydisegnata+player.height/2-player.height*1.5/10, player.width*2/10, player.height*3/10); 
+          ctx.fillRect(xdisegnata+player.width*8/10, ydisegnata+player.height/2-player.height*3/10, player.width*2/10, player.height*6/10);
+        }
       }
 
 	function drawBackgroundImage(){//disegna immagine di sfondo
@@ -758,7 +765,43 @@
           }
         }
       }
-            
+      
+      function newMenuTool(){
+        this.width=realCanvasWidth-canvasWidth;
+        this.height=canvasHeight;
+        this.openedTab=0;
+        this.nrTab=3;        
+        this.drawTool = function (){
+          ctx.fillStyle="#cccccc"; ctx.fillRect(canvasWidth, 0, this.width, this.height); //sfondo
+          this.tabCode(); //disegno la parte in alto delle tab e le gestisco (mouse input)
+          ctx.textAlign="left";//sistemo almeno non si buggano gli altri menu
+        }//fine drawTool()
+        this.tabCode = function (){
+          tabWidth=this.width/this.nrTab;
+          tabHeight=20;        
+          ctx.textAlign="center"
+          for(i=0; i<this.nrTab; i++){
+            var tabTitle=""; var textSize=20;
+            switch(i){
+              case 0: tabTitle="tools";break;
+              case 1: tabTitle="blocks";break;
+              case 2: tabTitle="entities";break;
+            }
+            for(j=textSize;j>2;j--){//riduco le dimensioni del testo se la scritta non ci sta
+              ctx.font = "small-caps bold "+j+"px Lucida Console";
+              if(ctx.measureText(tabTitle).width < tabWidth-4){break;}  
+            }
+            if(i!=this.openedTab){
+              ctx.fillStyle="#8c8c8c"; ctx.fillRect(canvasWidth+i*tabWidth, 0, tabWidth, tabHeight); //sfondo scuro tab non selez
+              ctx.fillStyle="#6c6c6c"; ctx.fillRect(canvasWidth+(i+1)*tabWidth-1, 0, 1, tabHeight); //separatore tab
+            }
+            disegnaTestoConBordino(tabTitle, canvasWidth+i*tabWidth+(tabWidth/2), tabHeight/2+ctx.measureText("o").width/2, "#000000");//testo della tab
+            if(checkMouseBox(canvasWidth+i*tabWidth,0,tabWidth,tabHeight) && mouseClick){
+              this.openedTab=i;
+            }
+          }          
+        }//fine tabCode()
+      }     
       
       function playerPhysics(p1, lvl) {//this function handles the platformer physics - in realta' solo del player
         var cameraSpeed=3;
@@ -815,11 +858,13 @@
       }     
 
       function disegnaTestoConBordino(stringaDiTesto, xdisegnata, ydisegnata, coloreTesto, coloreBordino){
-      	ctx.fillStyle = coloreBordino;
-      	ctx.fillText(stringaDiTesto, xdisegnata+1, ydisegnata+1);
-      	ctx.fillText(stringaDiTesto, xdisegnata+1, ydisegnata-1);
-      	ctx.fillText(stringaDiTesto, xdisegnata-1, ydisegnata+1);
-      	ctx.fillText(stringaDiTesto, xdisegnata-1, ydisegnata-1);
+        if(coloreBordino){
+        	ctx.fillStyle = coloreBordino;
+        	ctx.fillText(stringaDiTesto, xdisegnata+1, ydisegnata+1);
+        	ctx.fillText(stringaDiTesto, xdisegnata+1, ydisegnata-1);
+        	ctx.fillText(stringaDiTesto, xdisegnata-1, ydisegnata+1);
+        	ctx.fillText(stringaDiTesto, xdisegnata-1, ydisegnata-1);
+        }
       	ctx.fillStyle = coloreTesto;
       	ctx.fillText(stringaDiTesto, xdisegnata, ydisegnata);
       }
