@@ -1,4 +1,4 @@
-      var versioneDiGioco = "v0.20220715"; //aggiunto tool per estendere il livello
+      var versioneDiGioco = "v0.20220715"; //aggiunto tool per estendere il livello, aggiunte coordinate, aggiunta possibilita' di salvare il livello lavorato
       debugMode=true;     //you can enable debugMode with the console (press f12 in the browser)
       showMouseBox=false; //you can enable showMouseBox with the console (press f12 in the browser)
       showGrid=true;      //griglia sul livello, togglable
@@ -16,6 +16,7 @@
 	    //variabili dei tasti - prima o poi faro' un'opzione nel menu per poterli cambiare ingame
       var keys = []; //vettore associativo dei tasti (tiene dentro dei bool)
       var mouseX=0; var mouseY=0; //coordinate mouse
+      var lvlCanvasMouseX=0; var lvlCanvasMouseY=0; //coordinate mouse rispetto a level (nel mini canvas)
       var mouseClick=false; //il mouse ha schiacciato
       var tastoGiaSchiacciato = false; 
       var jumpkey = "z";         		//salta - default z
@@ -60,6 +61,7 @@
         this.color="#0400f8";
         this.showPlayerCamera=true; //mostra l'iconcina della telecamera che serve per spostarsi nel livello e simula la visione del player
         this.snapMode=false;
+        this.showCoordinates=true;
       }
             
   //gamestate - se == -1: stato nel level editor
@@ -208,8 +210,8 @@
 					heightTot++;
 					level['gravity'] = readNumber();
 					level['friction'] = readNumber();
-          level['gravityWater'] = level.gravity*4/7;
-          level['frictionWater'] = level.friction*9/10;
+		            level['gravityWater'] = level.gravity*4/7;
+		            level['frictionWater'] = level.friction*9/10;
 					level['backGroundImg'] = readBackground();
 					blocksColors(level,11);//this will push color[] to level, it will contain the blocks colors
 					blocksColors(foreground,3);
@@ -582,9 +584,9 @@
   	}
   	
     function nuovoLivello(){	//azzera i dati del player e carica un nuovo livello (da stringa e non da file...)
-  		  player = new Player();
+  		player = new Player();
         tool = new newMenuTool();
-  		  stringToLevel(stringaLivello);
+  		stringToLevel(stringaLivello);
       	player.x = level.xStartingPos;
       	player.y = level.yStartingPos;
   	}
@@ -608,7 +610,31 @@
       }else{
         disegnaSchermoDiGioco(false); //ATTENZIONE: se le viene passato true oltre a disegnare le entita' calcola anche le lore physics
         playerPhysics(player, level); //chiama la funzione physics del player
+        mouseCoordinatesConverter();
       }
+    }
+
+    function mouseCoordinatesConverter(){
+          if (player.x+(player.width/2) < canvasWidth/2){
+            lvlCanvasMouseX=mouseX;
+          }else{
+            if (player.x+(player.width/2) > level.maxWidth-canvasWidth/2){
+              lvlCanvasMouseX=mouseX+level.maxWidth-canvasWidth;
+            }else{
+              lvlCanvasMouseX=mouseX+player.x+(player.width/2)-canvasWidth/2;
+            }
+          }
+          if (player.y < canvasHeight/2){
+            lvlCanvasMouseY=mouseY;
+          }else{
+            if (player.y > level.maxHeight-canvasHeight/2){
+              lvlCanvasMouseY=mouseY+level.maxHeight-canvasHeight;
+            }else{
+              lvlCanvasMouseY=mouseY+player.y+(player.height/2)-canvasHeight/2;
+            }
+          }
+          lvlCanvasMouseX=Math.floor(lvlCanvasMouseX/20);//converte in blocchi
+          lvlCanvasMouseY=Math.floor(lvlCanvasMouseY/20);
     }
       
     function disegnaSchermoDiGioco(doEntityPhysics){
@@ -621,6 +647,7 @@
           drawLvl(level.foreground);//disegna i blocchi non materiali che stanno sopra tutto il resto (effetto grafico) e il waterlevel (passa true a isDrawingWater)
           drawWater();
           if(showGrid){drawGrid();}//disegna la griglia per separare i blocchi
+          drawHUD();
           //da qui in poi disegno la parte piu' a destra del canvas, dove mettero' i tool per editare il livello
           tool.drawTool();
     }
@@ -697,7 +724,7 @@
               xdisegnata=lvl[i].x-player.x-(player.width/2)+canvasWidth/2;
             }
           }
-		      var ydisegnata=0
+		  var ydisegnata=0
           if (player.y < canvasHeight/2){
             ydisegnata=lvl[i].y;
           }else{
@@ -741,6 +768,20 @@
           ctx.fillRect(0, ydisegnata, canvasWidth, 1);          
         }                               
       }   
+
+	  function drawHUD(){
+		if(player.showCoordinates){//disegna coordinate
+			ctx.font = "small-caps bold 15px Lucida Console";
+			ctx.textAlign="right"; 
+			if(player.showPlayerCamera){
+				disegnaTestoConBordino("cameraX:"+Math.floor((player.x+player.width/2)/20)+" cameraY:"+Math.floor((player.y+player.height/2)/20), canvasWidth-3, 7+ctx.measureText("O").width/2, "#cccccc", "#000000");
+			}
+			ctx.textAlign="left"; 
+			if(mouseX<canvasWidthDefault){
+				disegnaTestoConBordino("mouseX:"+lvlCanvasMouseX+" mouseY:"+lvlCanvasMouseY, 3, 7+ctx.measureText("O").width/2, "#cccccc", "#000000");
+			}
+		}
+	  }	
       
       function drawEntity(doEntityPhysics){   //disegna le entità a schermo e chiama la entity[i].physics
         for (var i = 0; i < entity.length; i++) {
@@ -830,12 +871,23 @@
           }          
         }//fine tabCode()
         this.toolTabCode = function (){
-          var numeroVoci=6;
+          var numeroVoci=7;
           var voceHeight=(this.height-20)/numeroVoci;
           ctx.textAlign="left"; ctx.font = "small-caps bold 15px Lucida Console";
           for(k=0; k<numeroVoci; k++){
             switch(k){
-              case 0://show player camera 
+              case 0://show player coordinate 
+                var word="Show Coordinates"; 
+                disegnaTestoConBordino(word, canvasWidthDefault+5, 20+(voceHeight*k)+voceHeight/2+ctx.measureText("o").width/2, "#000000");
+                disegnaTestoConBordino("[ ]", canvasWidthDefault+5+5+ctx.measureText(word).width, 20+(voceHeight*k)+voceHeight/2+ctx.measureText("o").width/2, "#000000");
+                if(player.showCoordinates){disegnaTestoConBordino(" X", canvasWidthDefault+5+5+ctx.measureText(word).width, 20+(voceHeight*k)+voceHeight/2+ctx.measureText("o").width/2, "#000000");}
+                if(checkMouseBox(canvasWidthDefault+2,20+voceHeight*k+2,this.width-4,voceHeight-4)){
+                  ctx.strokeStyle="#000000"; ctx.lineWidth="2";
+                  ctx.strokeRect(canvasWidthDefault+2,20+voceHeight*k+2,this.width-4,voceHeight-4);
+                  if(mouseClick && this.mouseTimer==0){player.showCoordinates=!player.showCoordinates; this.mouseTimer=10;}
+                }
+                break;             
+              case 1://show player camera 
                 var word="Show Player Camera"; 
                 disegnaTestoConBordino(word, canvasWidthDefault+5, 20+(voceHeight*k)+voceHeight/2+ctx.measureText("o").width/2, "#000000");
                 disegnaTestoConBordino("[ ]", canvasWidthDefault+5+5+ctx.measureText(word).width, 20+(voceHeight*k)+voceHeight/2+ctx.measureText("o").width/2, "#000000");
@@ -846,7 +898,7 @@
                   if(mouseClick && this.mouseTimer==0){player.showPlayerCamera=!player.showPlayerCamera; this.mouseTimer=10;}
                 }
                 break;            
-              case 1://show grid
+              case 2://show grid
                 var word="Show Grid"; 
                 disegnaTestoConBordino(word, canvasWidthDefault+5, 20+(voceHeight*k)+voceHeight/2+ctx.measureText("o").width/2, "#000000");
                 disegnaTestoConBordino("[ ]", canvasWidthDefault+5+5+ctx.measureText(word).width, 20+(voceHeight*k)+voceHeight/2+ctx.measureText("o").width/2, "#000000");
@@ -857,7 +909,7 @@
                   if(mouseClick && this.mouseTimer==0){showGrid=!showGrid; this.mouseTimer=10;}
                 }
                 break;
-              case 2://snap mode 
+              case 3://snap mode 
                 var word="Snap mode"; 
                 disegnaTestoConBordino(word, canvasWidthDefault+5, 20+(voceHeight*k)+voceHeight/2+ctx.measureText("o").width/2, "#000000");
                 disegnaTestoConBordino("[ ]", canvasWidthDefault+5+5+ctx.measureText(word).width, 20+(voceHeight*k)+voceHeight/2+ctx.measureText("o").width/2, "#000000");
@@ -868,7 +920,7 @@
                   if(mouseClick && this.mouseTimer==0){player.snapMode=!player.snapMode; this.mouseTimer=10;}
                 }
                 break;
-              case 3://extend level
+              case 4://extend level
                 disegnaTestoConBordino("Modify level lenght", canvasWidthDefault+5, 20+(voceHeight*k)+voceHeight/2+ctx.measureText("o").width/2, "#000000"); 
                 if(checkMouseBox(canvasWidthDefault+2,20+voceHeight*k+2,this.width-4,voceHeight-4)){
                   ctx.strokeStyle="#000000"; ctx.lineWidth="2";
@@ -878,11 +930,10 @@
                 break;                                
               case numeroVoci-2://save level 
                 disegnaTestoConBordino("Save Level", canvasWidthDefault+5, 20+(voceHeight*k)+voceHeight/2+ctx.measureText("o").width/2, "#000000");
-                disegnaTestoConBordino("(not yet)", canvasWidthDefault+5+5+ctx.measureText("Save Level").width, 20+(voceHeight*k)+voceHeight/2+ctx.measureText("o").width/2, "#000000");
                 if(checkMouseBox(canvasWidthDefault+2,20+voceHeight*k+2,this.width-4,voceHeight-4)){
                   ctx.strokeStyle="#000000"; ctx.lineWidth="2";
                   ctx.strokeRect(canvasWidthDefault+2,20+voceHeight*k+2,this.width-4,voceHeight-4);
-                  if(mouseClick && this.mouseTimer==0){/*save level*/; this.mouseTimer=10;}
+                  if(mouseClick && this.mouseTimer==0){salvaLivello(); this.mouseTimer=10;}
                 }
                 break;
               case numeroVoci-1://exit to main menu
@@ -981,7 +1032,7 @@
               if(differenzaWidth>0){
                 var puntiInPiu=""; var tInPiu=""; 
                 for(var i=0; i<(differenzaWidth/20); i++){puntiInPiu+="."; tInPiu+="t";}
-                for(var i=1; i<level.maxHeight/20+1; i++){
+                for(var i=1; i<level.maxHeight/20; i++){
                   var newStringaLivello="";
                   if(i==1){
                     newStringaLivello = stringaLivello.slice(0, (level.maxWidth/20)-1) + tInPiu + stringaLivello.slice(-1+level.maxWidth/20);
@@ -991,9 +1042,9 @@
                   stringaLivello=newStringaLivello;  
                 }
               }else if(differenzaWidth<0){
-                for(var i=1; i<level.maxHeight/20-1; i++){
+                for(var i=1; i<level.maxHeight/20; i++){
                   var newStringaLivello="";
-                  newStringaLivello = stringaLivello.slice(0, (i*(level.maxWidth/20-1)+(i)*differenzaWidth/20)) + stringaLivello.slice(i*(level.maxWidth/20-1)+(i-1)*(differenzaWidth/20));
+				  newStringaLivello = stringaLivello.slice(0, (i*(level.maxWidth/20-1)+(i)*(differenzaWidth/20)))+ stringaLivello.slice(i*(level.maxWidth/20-1)+(i-1)*(differenzaWidth/20));
                   stringaLivello=newStringaLivello;
                 }
               }
@@ -1644,17 +1695,12 @@
     }
 	}
 
-  function SalvaPartita(){ //questa cambiera' completamente, diventera' salvaLivello
-    stringaSalvataggio=jumpkey+"|"+destrakey+"|"+sinistrakey+"|"+sukey+"|"+giukey+"|"+dashkey+"|"+sparokey+"|"+startkey+"|"+lkey+"|"+rkey+"|"+levelDefeated+"|"+heartAcquired;
-    for (i=0; i<4; i++){
-        stringaSalvataggio+="|"+subtank[i].life+"|"+subtank[i].acquired;
-    }
-    stringaSalvataggio+="|"+armaturaAcquired;    
-    {//creo il file simpleXjs.dataDiOggi.savegame da scaricare
+  function salvaLivello(){  
+    //creo il file simpleXjs.dataDiOggi.savegame da scaricare
         const dataDiOggi=creaData(); //prende la data di oggi
         var element = document.createElement('a');
-        element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(stringaSalvataggio));
-        element.setAttribute('download', "simpleXjs."+dataDiOggi+".savegame");
+        element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(stringaLivello));
+        element.setAttribute('download', "simpleXjs."+dataDiOggi+".level");
         element.style.display = 'none';
         document.body.appendChild(element);
         element.click();
@@ -1674,5 +1720,4 @@
               return (i < 10) ? "0" + i : "" + i;
           }        
         }
-    }
   }
