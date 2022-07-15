@@ -1,12 +1,14 @@
-      var versioneDiGioco = "v0.20220714"; //aggiunto drawTool() e iniziato a lavorarci, migliorato il sistema di telecamera e reso togglable, snapmode, tante altre robette 
+      var versioneDiGioco = "v0.20220715"; //aggiunto tool per estendere il livello
       debugMode=true;     //you can enable debugMode with the console (press f12 in the browser)
       showMouseBox=false; //you can enable showMouseBox with the console (press f12 in the browser)
       showGrid=true;      //griglia sul livello, togglable
       
       //crea il canvas
-      var realCanvasWidth = 960;//level editor in 16:9
-      var canvasWidth = 720;//per mostrare il level, 4:3
-      var canvasHeight = 540;
+      var realCanvasWidth = 960;  //level editor in 16:9
+      var canvasWidthDefault=720; //per mostrare il level, 4:3
+      var canvasHeightDefault = 540;
+      var canvasWidth = canvasWidthDefault;            
+      var canvasHeight = canvasHeightDefault;
       if(document.getElementsByTagName('canvas').length == 0) {     //crea il canvas con le variabili che ho creato
           document.body.innerHTML += "".concat("<div class='caricaPartitaDiv' id='caricaPartitaDiv'><input type='file' id='fileCaricaPartita' disabled></div><div class='canvasDiv' id='canvasDivId' tabIndex='1'><canvas id='canvas' width=" , realCanvasWidth , " height=" , canvasHeight , "></canvas></div>");
       }   var ctx = document.getElementById('canvas').getContext('2d');
@@ -46,7 +48,7 @@
       canvas.addEventListener("mousemove", function(e) {//events - legge il mouse
           var cRect = canvas.getBoundingClientRect(); // Gets CSS pos, and width/height
           mouseX=Math.round(((e.clientX - cRect.left)/(cRect.right-cRect.left))*realCanvasWidth); //coordinate acquisite riproporzionate perche' il canvas ha grandezza variabile, ma coordinate fisse
-          mouseY=Math.round(((e.clientY - cRect.top)/window.innerHeight)*canvasHeight); //coordinate acquisite riproporzionate perche' il canvas ha grandezza variabile, ma coordinate fisse  
+          mouseY=Math.round(((e.clientY - cRect.top)/window.innerHeight)*canvasHeightDefault); //coordinate acquisite riproporzionate perche' il canvas ha grandezza variabile, ma coordinate fisse  
       });      
 
       //prototipo del player
@@ -220,11 +222,23 @@
 		//imposto la grandezza del livello e lo confronto con la grandezza del canvas
 		level['maxWidth'] = widthTot*20;
 		level['maxHeight'] = heightTot*20;
-        if (level.maxWidth < canvas.width){ //controlla che il livello non sia piu piccolo del canvas, che se no si bugga tutto - le x
+        if (level.maxWidth < canvasWidth){ //controlla che il livello non sia piu piccolo del canvas, che se no si bugga tutto - le x
            		canvasWidth=level.maxWidth;
+        }else{
+          if(level.maxWidth > canvasWidth){
+            if(level.maxWidth > canvasWidthDefault){
+              canvasWidth=canvasWidthDefault;
+            }else{canvasWidth=level.maxWidth;}
+          }
         }
-        if (level.maxHeight < canvas.height){ //controlla che il livello non sia piu piccolo del canvas, che se no si bugga tutto - le y
+        if (level.maxHeight < canvasHeight){ //controlla che il livello non sia piu piccolo del canvas, che se no si bugga tutto - le y
            		canvasHeight=level.maxHeight;
+        }else{
+          if(level.maxHeight > canvasHeight){
+            if(level.maxHeight > canvasHeightDefault){
+              canvasHeight=canvasHeightDefault;
+            }else{canvasHeight=level.maxHeight;}
+          }
         }    
 		//imposto i colori dei blocchi in base a quello che ho letto
 		for(i=0; i<level.length;i++){
@@ -767,20 +781,27 @@
       }
       
       function newMenuTool(){
-        this.width=realCanvasWidth-canvasWidth;
-        this.height=canvasHeight;
+        this.width=realCanvasWidth-canvasWidthDefault;
+        this.height=canvasHeightDefault;
         this.openedTab=0;
         this.nrTab=3;
         this.mouseTimer=0;
-        this.showExitMenu=false;        
+        this.showAnotherMenu=false;
+        this.showExitMenu=false;
+        this.showExtendLevelMenu=false;
+        this.extendLevelMenu_staScrivendo=false;
+        this.extendLevelMenu_staScrivendo_Width=false;
+        this.newNumberWidth=0;
+        this.newNumberHeight=0;        
         this.drawTool = function (){
-          if(this.mouseTimer>0 && !this.showExitMenu){this.mouseTimer--;}//timer mouse
-          ctx.fillStyle="#cccccc"; ctx.fillRect(canvasWidth, 0, this.width, this.height); //sfondo
+          if(this.mouseTimer>0 && !this.showAnotherMenu){this.mouseTimer--;}//timer mouse
+          ctx.fillStyle="#cccccc"; ctx.fillRect(canvasWidthDefault, 0, this.width, this.height); //sfondo
           this.tabCode(); //disegno la parte in alto delle tab e le gestisco (mouse input)
           switch(this.openedTab){//disegno la tab aperta
             case 0: this.toolTabCode(); break;
           }
-          if(this.showExitMenu){this.drawExitMenu();}
+          if(this.showAnotherMenu && this.showExitMenu){this.drawExitMenu();}
+          if(this.showAnotherMenu && this.showExtendLevelMenu){this.drawExtendLevelMenu();}
           ctx.textAlign="left";//sistemo almeno non si buggano gli altri menu
         }//fine drawTool()
         this.tabCode = function (){
@@ -799,69 +820,77 @@
               if(ctx.measureText(tabTitle).width < tabWidth-4){break;}  
             }
             if(i!=this.openedTab){
-              ctx.fillStyle="#8c8c8c"; ctx.fillRect(canvasWidth+i*tabWidth, 0, tabWidth, tabHeight); //sfondo scuro tab non selez
-              ctx.fillStyle="#6c6c6c"; ctx.fillRect(canvasWidth+(i+1)*tabWidth-1, 0, 1, tabHeight); //separatore tab
+              ctx.fillStyle="#8c8c8c"; ctx.fillRect(canvasWidthDefault+i*tabWidth, 0, tabWidth, tabHeight); //sfondo scuro tab non selez
+              ctx.fillStyle="#6c6c6c"; ctx.fillRect(canvasWidthDefault+(i+1)*tabWidth-1, 0, 1, tabHeight); //separatore tab
             }
-            disegnaTestoConBordino(tabTitle, canvasWidth+i*tabWidth+(tabWidth/2), tabHeight/2+ctx.measureText("o").width/2, "#000000");//testo della tab
-            if(checkMouseBox(canvasWidth+i*tabWidth,0,tabWidth,tabHeight) && mouseClick && !this.showExitMenu){
+            disegnaTestoConBordino(tabTitle, canvasWidthDefault+i*tabWidth+(tabWidth/2), tabHeight/2+ctx.measureText("o").width/2, "#000000");//testo della tab
+            if(checkMouseBox(canvasWidthDefault+i*tabWidth,0,tabWidth,tabHeight) && mouseClick && !this.showAnotherMenu){
               this.openedTab=i;
             }
           }          
         }//fine tabCode()
         this.toolTabCode = function (){
-          var numeroVoci=5;
+          var numeroVoci=6;
           var voceHeight=(this.height-20)/numeroVoci;
           ctx.textAlign="left"; ctx.font = "small-caps bold 15px Lucida Console";
           for(k=0; k<numeroVoci; k++){
             switch(k){
               case 0://show player camera 
                 var word="Show Player Camera"; 
-                disegnaTestoConBordino(word, canvasWidth+5, 20+(voceHeight*k)+voceHeight/2+ctx.measureText("o").width/2, "#000000");
-                disegnaTestoConBordino("[ ]", canvasWidth+5+5+ctx.measureText(word).width, 20+(voceHeight*k)+voceHeight/2+ctx.measureText("o").width/2, "#000000");
-                if(player.showPlayerCamera){disegnaTestoConBordino(" X", canvasWidth+5+5+ctx.measureText(word).width, 20+(voceHeight*k)+voceHeight/2+ctx.measureText("o").width/2, "#000000");}
-                if(checkMouseBox(canvasWidth+2,20+voceHeight*k+2,this.width-4,voceHeight-4)){
+                disegnaTestoConBordino(word, canvasWidthDefault+5, 20+(voceHeight*k)+voceHeight/2+ctx.measureText("o").width/2, "#000000");
+                disegnaTestoConBordino("[ ]", canvasWidthDefault+5+5+ctx.measureText(word).width, 20+(voceHeight*k)+voceHeight/2+ctx.measureText("o").width/2, "#000000");
+                if(player.showPlayerCamera){disegnaTestoConBordino(" X", canvasWidthDefault+5+5+ctx.measureText(word).width, 20+(voceHeight*k)+voceHeight/2+ctx.measureText("o").width/2, "#000000");}
+                if(checkMouseBox(canvasWidthDefault+2,20+voceHeight*k+2,this.width-4,voceHeight-4)){
                   ctx.strokeStyle="#000000"; ctx.lineWidth="2";
-                  ctx.strokeRect(canvasWidth+2,20+voceHeight*k+2,this.width-4,voceHeight-4);
+                  ctx.strokeRect(canvasWidthDefault+2,20+voceHeight*k+2,this.width-4,voceHeight-4);
                   if(mouseClick && this.mouseTimer==0){player.showPlayerCamera=!player.showPlayerCamera; this.mouseTimer=10;}
                 }
                 break;            
               case 1://show grid
                 var word="Show Grid"; 
-                disegnaTestoConBordino(word, canvasWidth+5, 20+(voceHeight*k)+voceHeight/2+ctx.measureText("o").width/2, "#000000");
-                disegnaTestoConBordino("[ ]", canvasWidth+5+5+ctx.measureText(word).width, 20+(voceHeight*k)+voceHeight/2+ctx.measureText("o").width/2, "#000000");
-                if(showGrid){disegnaTestoConBordino(" X", canvasWidth+5+5+ctx.measureText(word).width, 20+(voceHeight*k)+voceHeight/2+ctx.measureText("o").width/2, "#000000");}
-                if(checkMouseBox(canvasWidth+2,20+voceHeight*k+2,this.width-4,voceHeight-4)){
+                disegnaTestoConBordino(word, canvasWidthDefault+5, 20+(voceHeight*k)+voceHeight/2+ctx.measureText("o").width/2, "#000000");
+                disegnaTestoConBordino("[ ]", canvasWidthDefault+5+5+ctx.measureText(word).width, 20+(voceHeight*k)+voceHeight/2+ctx.measureText("o").width/2, "#000000");
+                if(showGrid){disegnaTestoConBordino(" X", canvasWidthDefault+5+5+ctx.measureText(word).width, 20+(voceHeight*k)+voceHeight/2+ctx.measureText("o").width/2, "#000000");}
+                if(checkMouseBox(canvasWidthDefault+2,20+voceHeight*k+2,this.width-4,voceHeight-4)){
                   ctx.strokeStyle="#000000"; ctx.lineWidth="2";
-                  ctx.strokeRect(canvasWidth+2,20+voceHeight*k+2,this.width-4,voceHeight-4);
+                  ctx.strokeRect(canvasWidthDefault+2,20+voceHeight*k+2,this.width-4,voceHeight-4);
                   if(mouseClick && this.mouseTimer==0){showGrid=!showGrid; this.mouseTimer=10;}
                 }
                 break;
               case 2://snap mode 
                 var word="Snap mode"; 
-                disegnaTestoConBordino(word, canvasWidth+5, 20+(voceHeight*k)+voceHeight/2+ctx.measureText("o").width/2, "#000000");
-                disegnaTestoConBordino("[ ]", canvasWidth+5+5+ctx.measureText(word).width, 20+(voceHeight*k)+voceHeight/2+ctx.measureText("o").width/2, "#000000");
-                if(player.snapMode){disegnaTestoConBordino(" X", canvasWidth+5+5+ctx.measureText(word).width, 20+(voceHeight*k)+voceHeight/2+ctx.measureText("o").width/2, "#000000");}
-                if(checkMouseBox(canvasWidth+2,20+voceHeight*k+2,this.width-4,voceHeight-4)){
+                disegnaTestoConBordino(word, canvasWidthDefault+5, 20+(voceHeight*k)+voceHeight/2+ctx.measureText("o").width/2, "#000000");
+                disegnaTestoConBordino("[ ]", canvasWidthDefault+5+5+ctx.measureText(word).width, 20+(voceHeight*k)+voceHeight/2+ctx.measureText("o").width/2, "#000000");
+                if(player.snapMode){disegnaTestoConBordino(" X", canvasWidthDefault+5+5+ctx.measureText(word).width, 20+(voceHeight*k)+voceHeight/2+ctx.measureText("o").width/2, "#000000");}
+                if(checkMouseBox(canvasWidthDefault+2,20+voceHeight*k+2,this.width-4,voceHeight-4)){
                   ctx.strokeStyle="#000000"; ctx.lineWidth="2";
-                  ctx.strokeRect(canvasWidth+2,20+voceHeight*k+2,this.width-4,voceHeight-4);
+                  ctx.strokeRect(canvasWidthDefault+2,20+voceHeight*k+2,this.width-4,voceHeight-4);
                   if(mouseClick && this.mouseTimer==0){player.snapMode=!player.snapMode; this.mouseTimer=10;}
                 }
-                break;                
-              case numeroVoci-2://save level 
-                disegnaTestoConBordino("Save Level", canvasWidth+5, 20+(voceHeight*k)+voceHeight/2+ctx.measureText("o").width/2, "#000000");
-                disegnaTestoConBordino("(not yet)", canvasWidth+5+5+ctx.measureText("Save Level").width, 20+(voceHeight*k)+voceHeight/2+ctx.measureText("o").width/2, "#000000");
-                if(checkMouseBox(canvasWidth+2,20+voceHeight*k+2,this.width-4,voceHeight-4)){
+                break;
+              case 3://extend level
+                disegnaTestoConBordino("Modify level lenght", canvasWidthDefault+5, 20+(voceHeight*k)+voceHeight/2+ctx.measureText("o").width/2, "#000000"); 
+                if(checkMouseBox(canvasWidthDefault+2,20+voceHeight*k+2,this.width-4,voceHeight-4)){
                   ctx.strokeStyle="#000000"; ctx.lineWidth="2";
-                  ctx.strokeRect(canvasWidth+2,20+voceHeight*k+2,this.width-4,voceHeight-4);
+                  ctx.strokeRect(canvasWidthDefault+2,20+voceHeight*k+2,this.width-4,voceHeight-4);
+                  if(mouseClick && this.mouseTimer==0){this.showExtendLevelMenu=true;this.showAnotherMenu=true; this.newNumberWidth=0; this.newNumberHeight=0; this.mouseTimer=10;}                  
+                }
+                break;                                
+              case numeroVoci-2://save level 
+                disegnaTestoConBordino("Save Level", canvasWidthDefault+5, 20+(voceHeight*k)+voceHeight/2+ctx.measureText("o").width/2, "#000000");
+                disegnaTestoConBordino("(not yet)", canvasWidthDefault+5+5+ctx.measureText("Save Level").width, 20+(voceHeight*k)+voceHeight/2+ctx.measureText("o").width/2, "#000000");
+                if(checkMouseBox(canvasWidthDefault+2,20+voceHeight*k+2,this.width-4,voceHeight-4)){
+                  ctx.strokeStyle="#000000"; ctx.lineWidth="2";
+                  ctx.strokeRect(canvasWidthDefault+2,20+voceHeight*k+2,this.width-4,voceHeight-4);
                   if(mouseClick && this.mouseTimer==0){/*save level*/; this.mouseTimer=10;}
                 }
                 break;
               case numeroVoci-1://exit to main menu
-                disegnaTestoConBordino("Back to main menu", canvasWidth+5, 20+(voceHeight*k)+voceHeight/2+ctx.measureText("o").width/2, "#000000"); 
-                if(checkMouseBox(canvasWidth+2,20+voceHeight*k+2,this.width-4,voceHeight-4)){
+                disegnaTestoConBordino("Back to main menu", canvasWidthDefault+5, 20+(voceHeight*k)+voceHeight/2+ctx.measureText("o").width/2, "#000000"); 
+                if(checkMouseBox(canvasWidthDefault+2,20+voceHeight*k+2,this.width-4,voceHeight-4)){
                   ctx.strokeStyle="#000000"; ctx.lineWidth="2";
-                  ctx.strokeRect(canvasWidth+2,20+voceHeight*k+2,this.width-4,voceHeight-4);
-                  if(mouseClick && this.mouseTimer==0){this.showExitMenu=true; this.mouseTimer=10;}
+                  ctx.strokeRect(canvasWidthDefault+2,20+voceHeight*k+2,this.width-4,voceHeight-4);
+                  if(mouseClick && this.mouseTimer==0){this.showExitMenu=true;this.showAnotherMenu=true; this.mouseTimer=10;}
                 }
                 break;                                              
             }
@@ -873,23 +902,125 @@
           var string2="every unsaved progress will be lost.";
           var menuWidth=ctx.measureText(string2).width+8;
           var menuHeight=8+(ctx.measureText("O").width+4)*5;
-          ctx.fillStyle="#cccccc"; ctx.fillRect(realCanvasWidth/2-menuWidth/2, canvasHeight/2-menuHeight/2, menuWidth, menuHeight);
-          ctx.strokeStyle="#000000"; ctx.strokeRect(realCanvasWidth/2-menuWidth/2, canvasHeight/2-menuHeight/2, menuWidth, menuHeight);
-          disegnaTestoConBordino(string1,realCanvasWidth/2,4+canvasHeight/2-menuHeight/2+ctx.measureText("O").width,"#000000");
-          disegnaTestoConBordino(string2,realCanvasWidth/2,4+canvasHeight/2-menuHeight/2+ctx.measureText("O").width+(menuHeight-8)/3,"#000000");
-          disegnaTestoConBordino("yes",realCanvasWidth/2-menuWidth/4,4+canvasHeight/2-menuHeight/2+ctx.measureText("O").width+2*(menuHeight-8)/3,"#000000");
-          if(checkMouseBox(realCanvasWidth/2-menuWidth/4-ctx.measureText("aaa").width,5+canvasHeight/2-menuHeight/2-ctx.measureText("O").width/2+2*(menuHeight-8)/3,ctx.measureText("aaa").width*2,4*ctx.measureText("O").width/2)){
+          ctx.fillStyle="#cccccc"; ctx.fillRect(realCanvasWidth/2-menuWidth/2, canvasHeightDefault/2-menuHeight/2, menuWidth, menuHeight);
+          ctx.strokeStyle="#000000"; ctx.strokeRect(realCanvasWidth/2-menuWidth/2, canvasHeightDefault/2-menuHeight/2, menuWidth, menuHeight);
+          disegnaTestoConBordino(string1,realCanvasWidth/2,4+canvasHeightDefault/2-menuHeight/2+ctx.measureText("O").width,"#000000");
+          disegnaTestoConBordino(string2,realCanvasWidth/2,4+canvasHeightDefault/2-menuHeight/2+ctx.measureText("O").width+(menuHeight-8)/3,"#000000");
+          disegnaTestoConBordino("yes",realCanvasWidth/2-menuWidth/4,4+canvasHeightDefault/2-menuHeight/2+ctx.measureText("O").width+2*(menuHeight-8)/3,"#000000");
+          if(checkMouseBox(realCanvasWidth/2-menuWidth/4-ctx.measureText("aaa").width,5+canvasHeightDefault/2-menuHeight/2-ctx.measureText("O").width/2+2*(menuHeight-8)/3,ctx.measureText("aaa").width*2,4*ctx.measureText("O").width/2)){
             ctx.strokeStyle="#000000"; ctx.lineWidth="2";
-            ctx.strokeRect(realCanvasWidth/2-menuWidth/4-ctx.measureText("aaa").width,5+canvasHeight/2-menuHeight/2-ctx.measureText("O").width/2+2*(menuHeight-8)/3,ctx.measureText("aaa").width*2,4*ctx.measureText("O").width/2);
-            if(mouseClick){objMenuPrincipale= new newMenuPrincipale();gamestate=0;}
+            ctx.strokeRect(realCanvasWidth/2-menuWidth/4-ctx.measureText("aaa").width,5+canvasHeightDefault/2-menuHeight/2-ctx.measureText("O").width/2+2*(menuHeight-8)/3,ctx.measureText("aaa").width*2,4*ctx.measureText("O").width/2);
+            if(mouseClick){
+              canvasWidth = canvasWidthDefault; canvasHeight = canvasHeightDefault;            
+              objMenuPrincipale= new newMenuPrincipale(); gamestate=0;
+            }
           }
-          disegnaTestoConBordino("no",realCanvasWidth/2+menuWidth/4,4+canvasHeight/2-menuHeight/2+ctx.measureText("O").width+2*(menuHeight-8)/3,"#000000");
-          if(checkMouseBox(realCanvasWidth/2+menuWidth/4-ctx.measureText("aaa").width,5+canvasHeight/2-menuHeight/2-ctx.measureText("O").width/2+2*(menuHeight-8)/3,ctx.measureText("aaa").width*2,4*ctx.measureText("O").width/2)){
+          disegnaTestoConBordino("no",realCanvasWidth/2+menuWidth/4,4+canvasHeightDefault/2-menuHeight/2+ctx.measureText("O").width+2*(menuHeight-8)/3,"#000000");
+          if(checkMouseBox(realCanvasWidth/2+menuWidth/4-ctx.measureText("aaa").width,5+canvasHeightDefault/2-menuHeight/2-ctx.measureText("O").width/2+2*(menuHeight-8)/3,ctx.measureText("aaa").width*2,4*ctx.measureText("O").width/2)){
             ctx.strokeStyle="#000000"; ctx.lineWidth="2";
-            ctx.strokeRect(realCanvasWidth/2+menuWidth/4-ctx.measureText("aaa").width,5+canvasHeight/2-menuHeight/2-ctx.measureText("O").width/2+2*(menuHeight-8)/3,ctx.measureText("aaa").width*2,4*ctx.measureText("O").width/2);
-            if(mouseClick){this.showExitMenu=false;}
+            ctx.strokeRect(realCanvasWidth/2+menuWidth/4-ctx.measureText("aaa").width,5+canvasHeightDefault/2-menuHeight/2-ctx.measureText("O").width/2+2*(menuHeight-8)/3,ctx.measureText("aaa").width*2,4*ctx.measureText("O").width/2);
+            if(mouseClick){this.showExitMenu=false;this.showAnotherMenu=false;}
           }            
         }//fine di drawExitMenu()
+        this.drawExtendLevelMenu = function (){
+          ctx.textAlign="center"; ctx.font = "small-caps bold 25px Lucida Console";
+          var string1="LEVEL LENGHT MENU";
+          var string2="width: "+(level.maxWidth/20)+" blocks - height: "+(level.maxHeight/20)+" blocks";
+          var menuWidth=ctx.measureText(string2).width+8;
+          var menuHeight=8+(ctx.measureText("O").width+4)*7;
+          ctx.fillStyle="#cccccc"; ctx.fillRect(realCanvasWidth/2-menuWidth/2, canvasHeightDefault/2-menuHeight/2, menuWidth, menuHeight);
+          ctx.strokeStyle="#000000"; ctx.strokeRect(realCanvasWidth/2-menuWidth/2, canvasHeightDefault/2-menuHeight/2, menuWidth, menuHeight);
+          disegnaTestoConBordino(string1,realCanvasWidth/2,4+canvasHeightDefault/2-menuHeight/2+ctx.measureText("O").width,"#000000");
+          disegnaTestoConBordino(string2,realCanvasWidth/2,4+canvasHeightDefault/2-menuHeight/2+ctx.measureText("O").width+(menuHeight-8)/4,"#000000");
+          disegnaTestoConBordino("new width: ____",realCanvasWidth/2-menuWidth/4,4+canvasHeightDefault/2-menuHeight/2+ctx.measureText("O").width+2*(menuHeight-8)/4,"#000000");
+          if(this.newNumberWidth!=0){disegnaTestoConBordino(this.newNumberWidth,realCanvasWidth/2-menuWidth/4+ctx.measureText("new width: ").width/2,4+canvasHeightDefault/2-menuHeight/2+ctx.measureText("O").width+2*(menuHeight-8)/4-2,"#000000");}
+          if(!(this.extendLevelMenu_staScrivendo) && checkMouseBox(realCanvasWidth/2-menuWidth/4-ctx.measureText(" new width: xxxx ").width/2,5+canvasHeightDefault/2-menuHeight/2-ctx.measureText("O").width/2+2*(menuHeight-8)/4,ctx.measureText(" new width: xxxx ").width,4*ctx.measureText("O").width/2)){
+            ctx.strokeStyle="#000000"; ctx.lineWidth="2";
+            ctx.strokeRect(realCanvasWidth/2-menuWidth/4-ctx.measureText(" new width: xxxx ").width/2,5+canvasHeightDefault/2-menuHeight/2-ctx.measureText("O").width/2+2*(menuHeight-8)/4,ctx.measureText(" new width: xxxx ").width,4*ctx.measureText("O").width/2);
+            if(mouseClick){this.extendLevelMenu_staScrivendo=true; this.extendLevelMenu_staScrivendo_Width=true; this.newNumberWidth=0; ultimoTastoLetto="";}              
+          }
+          disegnaTestoConBordino("new height: ____",realCanvasWidth/2+menuWidth/4,4+canvasHeightDefault/2-menuHeight/2+ctx.measureText("O").width+2*(menuHeight-8)/4,"#000000");
+          if(this.newNumberHeight!=0){disegnaTestoConBordino(this.newNumberHeight,realCanvasWidth/2+menuWidth/4+ctx.measureText("new height: ").width/2,4+canvasHeightDefault/2-menuHeight/2+ctx.measureText("O").width+2*(menuHeight-8)/4-2,"#000000");}
+          if(!(this.extendLevelMenu_staScrivendo) && checkMouseBox(realCanvasWidth/2+menuWidth/4-ctx.measureText(" new height: xxxx ").width/2,5+canvasHeightDefault/2-menuHeight/2-ctx.measureText("O").width/2+2*(menuHeight-8)/4,ctx.measureText(" new height: xxxx ").width,4*ctx.measureText("O").width/2)){
+            ctx.strokeStyle="#000000"; ctx.lineWidth="2";
+            ctx.strokeRect(realCanvasWidth/2+menuWidth/4-ctx.measureText(" new height: xxxx ").width/2,5+canvasHeightDefault/2-menuHeight/2-ctx.measureText("O").width/2+2*(menuHeight-8)/4,ctx.measureText(" new height: xxxx ").width,4*ctx.measureText("O").width/2);
+            if(mouseClick){this.extendLevelMenu_staScrivendo=true; this.extendLevelMenu_staScrivendo_Width=false; this.newNumberHeight=0; ultimoTastoLetto="";}
+          }
+          disegnaTestoConBordino("confirm",realCanvasWidth/2-menuWidth/4,4+canvasHeightDefault/2-menuHeight/2+ctx.measureText("O").width+3*(menuHeight-8)/4,"#000000");
+          if(!(this.extendLevelMenu_staScrivendo) && checkMouseBox(realCanvasWidth/2-menuWidth/4-ctx.measureText("confirm").width,5+canvasHeightDefault/2-menuHeight/2-ctx.measureText("O").width/2+3*(menuHeight-8)/4,ctx.measureText("confirm").width*2,4*ctx.measureText("O").width/2)){
+            ctx.strokeStyle="#000000"; ctx.lineWidth="2";
+            ctx.strokeRect(realCanvasWidth/2-menuWidth/4-ctx.measureText("confirm").width,5+canvasHeightDefault/2-menuHeight/2-ctx.measureText("O").width/2+3*(menuHeight-8)/4,ctx.measureText("confirm").width*2,4*ctx.measureText("O").width/2);
+            if(mouseClick){stringToLevel(aggiornaLivelloExtend(this.newNumberWidth,this.newNumberHeight)); this.showExtendLevelMenu=false;this.showAnotherMenu=false;}
+          }
+          disegnaTestoConBordino("cancel",realCanvasWidth/2+menuWidth/4,4+canvasHeightDefault/2-menuHeight/2+ctx.measureText("O").width+3*(menuHeight-8)/4,"#000000");
+          if(!(this.extendLevelMenu_staScrivendo) && checkMouseBox(realCanvasWidth/2+menuWidth/4-ctx.measureText("cancel").width,5+canvasHeightDefault/2-menuHeight/2-ctx.measureText("O").width/2+3*(menuHeight-8)/4,ctx.measureText("cancel").width*2,4*ctx.measureText("O").width/2)){
+            ctx.strokeStyle="#000000"; ctx.lineWidth="2";
+            ctx.strokeRect(realCanvasWidth/2+menuWidth/4-ctx.measureText("cancel").width,5+canvasHeightDefault/2-menuHeight/2-ctx.measureText("O").width/2+3*(menuHeight-8)/4,ctx.measureText("cancel").width*2,4*ctx.measureText("O").width/2);
+            if(mouseClick){this.showExtendLevelMenu=false;this.showAnotherMenu=false;}
+          }
+          if(this.extendLevelMenu_staScrivendo){
+            switch(ultimoTastoLetto){
+              case '0': case '1': case '2': case '3': case '4': case '5': case '6': case '7': case '8': case '9':
+                if(this.extendLevelMenu_staScrivendo_Width){this.newNumberWidth=this.newNumberWidth*10+parseInt(ultimoTastoLetto,10);
+                }else{this.newNumberHeight=this.newNumberHeight*10+parseInt(ultimoTastoLetto,10);}
+                ultimoTastoLetto="";
+                break;
+              case 'Backspace':
+                if(this.extendLevelMenu_staScrivendo_Width){this.newNumberWidth=Math.floor(this.newNumberWidth/10);
+                }else{this.newNumberHeight=Math.floor(this.newNumberHeight/10);}
+                ultimoTastoLetto="";              
+                break;
+              case 'Enter':
+                this.extendLevelMenu_staScrivendo=false;
+                break;                                       
+            }
+          }
+          function aggiornaLivelloExtend(newWidth,newHeight){
+            if(newWidth>0){
+              var differenzaWidth=(newWidth*20)-level.maxWidth;
+              if(differenzaWidth>0){
+                var puntiInPiu=""; var tInPiu=""; 
+                for(var i=0; i<(differenzaWidth/20); i++){puntiInPiu+="."; tInPiu+="t";}
+                for(var i=1; i<level.maxHeight/20+1; i++){
+                  var newStringaLivello="";
+                  if(i==1){
+                    newStringaLivello = stringaLivello.slice(0, (level.maxWidth/20)-1) + tInPiu + stringaLivello.slice(-1+level.maxWidth/20);
+                  }else{
+                    newStringaLivello = stringaLivello.slice(0, (i*(level.maxWidth/20-1)+(i-1)*(puntiInPiu.length)) ) + puntiInPiu + stringaLivello.slice((i*(level.maxWidth/20-1)+(i-1)*(puntiInPiu.length)));
+                  }
+                  stringaLivello=newStringaLivello;  
+                }
+              }else if(differenzaWidth<0){
+                for(var i=1; i<level.maxHeight/20-1; i++){
+                  var newStringaLivello="";
+                  newStringaLivello = stringaLivello.slice(0, (i*(level.maxWidth/20-1)+(i)*differenzaWidth/20)) + stringaLivello.slice(i*(level.maxWidth/20-1)+(i-1)*(differenzaWidth/20));
+                  stringaLivello=newStringaLivello;
+                }
+              }
+              level.maxWidth+=differenzaWidth; //serve per i calcoli della height, se no viene sbagliato perche' li fa subito dopo
+            }
+            if(newHeight>0){
+              var differenzaHeight=(newHeight*20)-level.maxHeight;
+              if(differenzaHeight>0){
+                var rigaInPiu="l";
+                for(var i=1;i<level.maxWidth/20-1;i++){rigaInPiu+=".";}
+                for(var i=1; i<differenzaHeight/20+1; i++){
+                  var newStringaLivello="";
+                  newStringaLivello = stringaLivello.slice(0, (level.maxWidth/20-1)*(level.maxHeight/20-1)) + rigaInPiu + stringaLivello.slice((level.maxWidth/20-1)*(level.maxHeight/20-1));
+                  stringaLivello=newStringaLivello;
+                }  
+              }else if(differenzaHeight<0){
+                  var newStringaLivello="";
+                  newStringaLivello = stringaLivello.slice(0, (level.maxWidth/20-1)*(level.maxHeight/20-1+(differenzaHeight/20))) + stringaLivello.slice((level.maxWidth/20-1)*(level.maxHeight/20-1));
+                  stringaLivello=newStringaLivello;
+              }
+              level.maxHeight+=differenzaHeight;                          
+            }
+            if(player.x>level.maxWidth){player.x=level.maxWidth-player.width*2}
+            if(player.y>level.maxHeight){player.y=level.maxHeight-player.height*2}            
+            return stringaLivello;
+          }                     
+        }//fine di drawExtendLevelMenu()        
       }     
       
       function playerPhysics(p1, lvl) {//this function handles the platformer physics - in realta' solo del player
