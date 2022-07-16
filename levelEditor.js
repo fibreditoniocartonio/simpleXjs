@@ -1,4 +1,4 @@
-      var versioneDiGioco = "v0.20220716"; //aggiunte level bars per spostarsi velocemente
+      var versioneDiGioco = "v0.20220716"; //aggiunte level bars per spostarsi velocemente, lettura immagini in base64, anche caricate da utente
       debugMode=true;     //you can enable debugMode with the console (press f12 in the browser) - mi pare che non faccia nulla lol
       showMouseBox=false; //you can enable showMouseBox with the console (press f12 in the browser)
       
@@ -79,7 +79,7 @@
   
 	//caricare il livello
 	var level = []; //create the level array      					
-  stringaLivelloDefault="tttttttttttttttttttttttttttttttttttl..................................l..................................l..................................l..................................l..................................l..................................l..................................l..................................l..................................l..................................l..................................l..................................l..................................l..................................l..................................l..................................l..................................l..................................l..................................l..................................l..................................l..................................l..X...............................l..................................l..................................z0.62;0.85;;;;;;;;;;;;;;;;;;;";//livello base
+  stringaLivelloDefault="tttttttttttttttttttttttttttttttttttl..................................l..................................l..................................l..................................l..................................l..................................l..................................l..................................l..................................l..................................l..................................l..................................l..................................l..................................l..................................l..................................l..................................l..................................l..................................l..................................l..................................l..................................l..X...............................l..................................l..................................z0.62;0.85;#155261;#155261;#155261;#155261;#155261;#155261;#155261;#155261;#155261;#155261;#155261;#155261;#155261;#155261;#155261;#155261;#155261; ";//livello base - lo spazio alla fine e' importante
   stringaLivello=stringaLivelloDefault;         
 	function stringToLevel(lvlString){			
 		level = []; //azzera level
@@ -212,14 +212,14 @@
 					heightTot++;
 					level['gravity'] = readNumber();
 					level['friction'] = readNumber();
-		            level['gravityWater'] = level.gravity*4/7;
-		            level['frictionWater'] = level.friction*9/10;
-					level['backGroundImg'] = readBackground();
+			        level['gravityWater'] = level.gravity*4/7;
+			        level['frictionWater'] = level.friction*9/10;
 					blocksColors(level,11);//this will push color[] to level, it will contain the blocks colors
 					blocksColors(foreground,3);
 					blocksColors(background,3);
 					level['foreground'] = foreground;
 					level['background'] = background;
+					level['backGroundImg'] = readBackground();
 					break;
 			}//fine dello switch case															
 		}//fine del for					        
@@ -307,17 +307,15 @@
 			var immagineLetta="";
 			if (i < lvlString.length){
 				for (i++ ; i < lvlString.length; i++) {
-					if (lvlString[i] != ";"){
 						immagineLetta+=lvlString[i]
-					}else{
-						break;
-					}
 				}
 			}
-			if (immagineLetta!=""){
-				return document.getElementById(immagineLetta);
+			if (immagineLetta!="" && immagineLetta!=" "){
+				var img = new Image();
+				img.src = immagineLetta;
+				return img;
 			}else{
-				return immagineLetta;
+				return "";
 			}
 		}
 		function readColor(){
@@ -832,6 +830,7 @@
         this.showAnotherMenu=false;
         this.showExitMenu=false;
         this.showExtendLevelMenu=false;
+        this.showModifyBackgroundMenu=false;
         this.extendLevelMenu_staScrivendo=false;
         this.extendLevelMenu_staScrivendo_Width=false;
         this.newNumberWidth=0;
@@ -848,6 +847,7 @@
           if(player.showLevelBar){this.drawlevelBar();}
           if(this.showAnotherMenu && this.showExitMenu){this.drawExitMenu();}
           if(this.showAnotherMenu && this.showExtendLevelMenu){this.drawExtendLevelMenu();}
+          if(this.showAnotherMenu && this.showModifyBackgroundMenu){this.drawModifyBackgroundMenu();}
           ctx.textAlign="left";//sistemo almeno non si buggano gli altri menu
         }//fine drawSideMenu()
         this.tabCode = function (){
@@ -876,7 +876,7 @@
           }          
         }//fine tabCode()
         this.toolTabCode = function (){
-          var numeroVoci=8;
+          var numeroVoci=9;         
           var voceHeight=(this.height-20)/numeroVoci;
           ctx.textAlign="left"; ctx.font = "small-caps bold 15px Lucida Console";
           for(k=0; k<numeroVoci; k++){
@@ -944,14 +944,26 @@
                   	this.mouseTimer=10;}
                 }
                 break;                
-              case numeroVoci-3://extend level
+              case numeroVoci-4://extend level
                 disegnaTestoConBordino("Modify level lenght", canvasWidthDefault+5, 20+(voceHeight*k)+voceHeight/2+ctx.measureText("o").width/2, "#000000"); 
                 if(checkMouseBox(canvasWidthDefault+2,20+voceHeight*k+2,this.width-4,voceHeight-4)){
                   ctx.strokeStyle="#000000"; ctx.lineWidth="2";
                   ctx.strokeRect(canvasWidthDefault+2,20+voceHeight*k+2,this.width-4,voceHeight-4);
                   if(mouseClick && this.mouseTimer==0){this.showExtendLevelMenu=true;this.showAnotherMenu=true; this.newNumberWidth=0; this.newNumberHeight=0; this.mouseTimer=10;}                  
                 }
-                break;                                
+                break;
+              case numeroVoci-3://exit to main menu
+                disegnaTestoConBordino("Modify background image", canvasWidthDefault+5, 20+(voceHeight*k)+voceHeight/2+ctx.measureText("o").width/2, "#000000"); 
+                if(checkMouseBox(canvasWidthDefault+2,20+voceHeight*k+2,this.width-4,voceHeight-4)){
+                  ctx.strokeStyle="#000000"; ctx.lineWidth="2";
+                  ctx.strokeRect(canvasWidthDefault+2,20+voceHeight*k+2,this.width-4,voceHeight-4);
+                  if(mouseClick && this.mouseTimer==0){
+			        document.getElementById("caricaPartitaDiv").style.zIndex = "10";
+			        document.getElementById("fileCaricaPartita").disabled=false; 
+                  	this.showModifyBackgroundMenu=true;this.showAnotherMenu=true; this.mouseTimer=10;
+                  }
+                }
+                break;                                                
               case numeroVoci-2://save level 
                 disegnaTestoConBordino("Save Level", canvasWidthDefault+5, 20+(voceHeight*k)+voceHeight/2+ctx.measureText("o").width/2, "#000000");
                 if(checkMouseBox(canvasWidthDefault+2,20+voceHeight*k+2,this.width-4,voceHeight-4)){
@@ -1123,7 +1135,73 @@
 	        	ctx.fillStyle="#cccccc"; ctx.fillRect(verBarX, verBarY, verBarWidth, verBarHeight);
 	        	ctx.strokeStyle="#000000"; ctx.strokeRect(verBarX, verBarY, verBarWidth, verBarHeight);	        	
         	}        				
-        }//fine di drawLevelBar()        
+        }//fine di drawLevelBar()
+        this.drawModifyBackgroundMenu = async function (){
+          ctx.textAlign="center"; ctx.font = "small-caps bold 14px Lucida Console";
+          var offsetY=10;
+          var string1="BACKGROUND MENU";
+          var string2="Upload the new image. Confirm without uploading to remove the current background.";
+          var menuWidth=8+ctx.measureText(string2).width;
+          var menuHeight=8+(ctx.measureText("O").width+4)*5;
+          ctx.fillStyle="#cccccc"; ctx.fillRect(realCanvasWidth/2-menuWidth/2, -offsetY+canvasHeightDefault/2-menuHeight/2, menuWidth, menuHeight);
+          ctx.strokeStyle="#000000"; ctx.strokeRect(realCanvasWidth/2-menuWidth/2, -offsetY+canvasHeightDefault/2-menuHeight/2, menuWidth, menuHeight);
+          disegnaTestoConBordino(string1, realCanvasWidth/2, -offsetY+4+canvasHeightDefault/2-menuHeight/2+ctx.measureText("O").width,"#000000");
+          disegnaTestoConBordino(string2, realCanvasWidth/2, -offsetY+4+canvasHeightDefault/2-menuHeight/2+ctx.measureText("O").width+(menuHeight-8)/5,"#000000");
+          disegnaTestoConBordino("confirm",realCanvasWidth/2-menuWidth/4, -offsetY+4+canvasHeightDefault/2-menuHeight/2+ctx.measureText("O").width+3*(menuHeight-8)/4,"#000000");
+          if(!(this.extendLevelMenu_staScrivendo) && checkMouseBox(realCanvasWidth/2-menuWidth/4-ctx.measureText("confirm").width, -offsetY+5+canvasHeightDefault/2-menuHeight/2-ctx.measureText("O").width/2+3*(menuHeight-8)/4,ctx.measureText("confirm").width*2,4*ctx.measureText("O").width/2)){
+            ctx.strokeStyle="#000000"; ctx.lineWidth="2";
+            ctx.strokeRect(realCanvasWidth/2-menuWidth/4-ctx.measureText("confirm").width, -offsetY+5+canvasHeightDefault/2-menuHeight/2-ctx.measureText("O").width/2+3*(menuHeight-8)/4, ctx.measureText("confirm").width*2,4*ctx.measureText("O").width/2);
+            if(mouseClick){
+            	var immagineLetta = await controllaFile();
+				stringaLivello = rimuoviBackgroundCorrente(stringaLivello)+immagineLetta;
+				stringToLevel(stringaLivello);
+              	document.getElementById("caricaPartitaDiv").style.zIndex = "-1";
+              	document.getElementById("fileCaricaPartita").value="";
+              	document.getElementById("fileCaricaPartita").disabled=true;
+              	document.getElementById('canvasDivId').focus(); //riporta il focus sul canvas
+            	this.showModifyBackgroundMenu=false; this.showAnotherMenu=false;
+            }
+          }
+          disegnaTestoConBordino("cancel",realCanvasWidth/2+menuWidth/4,-offsetY+4+canvasHeightDefault/2-menuHeight/2+ctx.measureText("O").width+3*(menuHeight-8)/4,"#000000");
+          if(!(this.extendLevelMenu_staScrivendo) && checkMouseBox(realCanvasWidth/2+menuWidth/4-ctx.measureText("cancel").width, -offsetY+5+canvasHeightDefault/2-menuHeight/2-ctx.measureText("O").width/2+3*(menuHeight-8)/4,ctx.measureText("cancel").width*2,4*ctx.measureText("O").width/2)){
+            ctx.strokeStyle="#000000"; ctx.lineWidth="2";
+            ctx.strokeRect(realCanvasWidth/2+menuWidth/4-ctx.measureText("cancel").width, -offsetY+5+canvasHeightDefault/2-menuHeight/2-ctx.measureText("O").width/2+3*(menuHeight-8)/4,ctx.measureText("cancel").width*2,4*ctx.measureText("O").width/2);
+            if(mouseClick){
+              	document.getElementById("caricaPartitaDiv").style.zIndex = "-1";
+              	document.getElementById("fileCaricaPartita").value="";
+              	document.getElementById("fileCaricaPartita").disabled=true;
+              	document.getElementById('canvasDivId').focus(); //riporta il focus sul canvas
+            	this.showModifyBackgroundMenu=false; this.showAnotherMenu=false;
+            }
+          }
+          function rimuoviBackgroundCorrente(lvlString){
+          	var i=0;
+          	for (; i < lvlString.length; i++) { //ciclo fino all'ultimo colore
+				if(lvlString[i]==" "){break;}//lo spazio c'e' solo prima dell'immagine di sfondo
+			}
+			lvlString=lvlString.slice(0,i)+" ";
+			return lvlString;          					
+          }
+	      async function controllaFile(){ //controlla che il file sia caricato correttamente
+	      		if(document.getElementById("fileCaricaPartita").value==""){ return "";}
+	            var uploadedFile = document.getElementById("fileCaricaPartita").files[0];
+	            if(uploadedFile.size > (2*1024*1024)){//controlla la dimensione del file - non deve essere superiore a 1MB
+	               objAlert = new newAlert("The file size limit is 2MB. Upload a smaller file.",gamestate); gamestate=5;
+	               return false;
+	            }
+	            var immagineBase64Letta = await readFileAsDataURL(uploadedFile);
+	            return immagineBase64Letta;
+	            	            
+	            async function readFileAsDataURL(uploadedFile) {
+	                let stringaLetta = await new Promise((resolve) => {
+	                    let fileReader = new FileReader();
+	                    fileReader.onload = (e) => resolve(fileReader.result);
+	                    fileReader.readAsDataURL(uploadedFile);
+	                });
+	                return stringaLetta;
+	            }                                    
+	      }//fine di controllaFile()          
+        }//fine di drawModifyBackground()        
       }     
       
       function playerPhysics(p1, lvl) {//this function handles the platformer physics - in realta' solo del player
@@ -1204,292 +1282,7 @@
         }
       	ctx.fillStyle = coloreTesto;
       	ctx.fillText(stringaDiTesto, xdisegnata, ydisegnata);
-      }
-      
-      function newMenuDiPausa(){
-        this.width=0;
-        this.height=0;
-        this.widthMax=canvasWidth-150;
-        this.heightMax=canvasHeight-150;
-        this.isOpen=false;
-        this.isClosing=false;
-        this.canInput=true;
-        this.tornaStageSelection=false;
-        this.indice=player.activePower;
-        this.settore=0;
-        this.usingSubtank=4; //4 vuol dire che non sto usando la subtank (da 0 a 3 e' l'indice della subtank usata)
-        this.lastSubtankAcquired=4;//se rimane uguale a 4 vuol dire che non e' stata acquisita nessuna subtank
-        this.drawMenuDiPausa = function (){
-          ctx.textAlign = "left";
-          ctx.font = "small-caps bold 20px Lucida Console"; //tipo di font per le scritte
-          if (!this.isOpen && !this.isClosing){//animazione di apertura del menu + lettura subtank acquisite
-            if (this.width < this.widthMax){this.width+=10;}
-            if (this.height < this.heightMax){this.height+=15;}
-            if (this.height > this.heightMax-1 && this.width > this.widthMax-1){//quando il menu e' tutto aperto:
-            	this.isOpen=true;
-            	for(var j=0; j<4; j++){//legge l'indice dell'ultima subtank acquisita
-            		if(subtank[j].acquired){this.lastSubtankAcquired=j;}
-            	}
-            }
-          }
-          ctx.clearRect((canvasWidth/2)-this.width/2-15,(canvasHeight/2)-this.height/2-15, this.width+30, this.height+30);	//pulisci la parte dove viene mostrato il menu
-          ctx.fillStyle = "#d2d2d2"; ctx.fillRect((canvasWidth/2)-this.width/2-15,(canvasHeight/2)-this.height/2-15, this.width+30, this.height+30); //disegna il bordo grigio 
-          ctx.fillStyle = "#52b58b"; ctx.fillRect((canvasWidth/2)-this.width/2,(canvasHeight/2)-this.height/2, this.width, this.height); //disegna lo sfondo verde
-          if (this.isOpen){ //qui dentro devo mostrare il testo del menu e gestire cosa succede quando schiaccio i tasti
-              ctx.fillStyle = "#d2d2d2"; 
-              ctx.fillRect((canvasWidth/2)+this.width/2-250,(canvasHeight/2)-this.height/2, 15, this.height); ctx.fillRect((canvasWidth/2)+this.width/2-250,(canvasHeight/2), 250, 15); //disegna i settori del menu
-              for(i=0;i<9;i++){ //disegna le scritte del settore 0 (xbuster e poteri di X)
-                var xdisegnata = (canvasWidth/2)-this.width/2+13;
-                var ydisegnata = ((canvasHeight/2)-this.height/2)+(44*i)-7;
-                if (i-1 < 0){ //scrive xbuster
-                	disegnaTestoConBordino("X Buster", xdisegnata, ydisegnata+33,"#d2d2d2","#000000");
-                }else{
-                  if(levelDefeated[i-1]){//disegna i poteri e le loro barre
-                  	disegnaTestoConBordino(player.power[i-1].nome, xdisegnata, ydisegnata+21,player.power[i-1].color1,"#000000");
-                    for (j=0; j<player.power[i-1].usageMax; j++){
-                      ctx.fillStyle = '#444444'; ctx.fillRect(j*10+xdisegnata+2, ydisegnata+25, 9, 12);
-                      if(player.power[i-1].usage < j+1){ctx.fillStyle = '#a7a7a7'; }else{ctx.fillStyle = player.power[i-1].color1;}
-                      ctx.fillRect(j*10+xdisegnata+3, ydisegnata+25, 8, 11);
-                    }
-                  }
-                }
-              }
-              for(i=0;i<5;i++){//disegna le subtank
-              	var xdisegnata=(canvasWidth/2)+this.width/2-250+15;
-              	var ydisegnata=((canvasHeight/2)-this.height/2)+(40*i)-6;
-                if (i < 1){ //scrive Subtanks
-                	ctx.textAlign = "center";
-                	disegnaTestoConBordino("Subtanks", xdisegnata+(250-15)/2, ydisegnata+30,"#d2d2d2","#000000");
-                }else{ //disegna le barre delle subtanks
-                	ctx.textAlign = "left";
-                	if (subtank[i-1].acquired){
-                		disegnaTestoConBordino("S", xdisegnata+15,ydisegnata+28,"#ffc000","#000000");
-                    	for (j=0; j<subtank[i-1].lifeMax; j++){
-                          ctx.fillStyle = '#444444'; ctx.fillRect(j*9+xdisegnata+39, ydisegnata+12, 8, 17);
-                      		if(subtank[i-1].life < j+1){ctx.fillStyle = '#a7a7a7';}else{ctx.fillStyle = '#ffc000';}
-                      		ctx.fillRect(j*9+xdisegnata+40, ydisegnata+12, 7, 16);
-                      	}	
-                    }                	
-                }              	
-              }
-              for(i=0;i<3;i++){//ora disegno la parte sotto le subtanks
-              	ctx.textAlign = "left";
-              	var xdisegnata=(canvasWidth/2)+this.width/2-250+15+10;
-              	var ydisegnata=((canvasHeight/2)+15+((canvasHeight-this.height+30)/3*(i+1)))-1;
-  				switch (i){
-  					case 0:
-  						disegnaTestoConBordino("resume game", xdisegnata+5,ydisegnata+7-((canvasHeight-this.height+30)/3)/2,"#d2d2d2","#000000");
-  						break;
-  
-  					case 1:
-  						disegnaTestoConBordino("options", xdisegnata+5,ydisegnata+7-((canvasHeight-this.height+30)/3)/2,"#d2d2d2","#000000");
-  						break;
-  
-  					case 2:
-  						disegnaTestoConBordino("return to the", xdisegnata+5,ydisegnata-2-((canvasHeight-this.height+30)/3)/2,"#d2d2d2","#000000");
-  						disegnaTestoConBordino("level selection", xdisegnata+5,ydisegnata+15-((canvasHeight-this.height+30)/3)/2,"#d2d2d2","#000000");
-  						break;												
-  				}
-			  }
-                            
-              if(this.settore == 0){//disegna i quadrati intorno alla scritta scelta - parte poteri
-                ctx.fillStyle = "#ffc000";
-                var xdisegnata = (canvasWidth/2)-this.width/2+13;
-                var ydisegnata = ((canvasHeight/2)-this.height/2)+(44*this.indice)-7;
-                if (this.indice==0){
-                	ctx.fillRect((canvasWidth/2)-this.width/2, ydisegnata+5, (canvasWidth/2)+this.width/2-325, 8);
-                	ctx.fillRect((canvasWidth/2)-this.width/2, ydisegnata+40, (canvasWidth/2)+this.width/2-325, 8);
-                	ctx.fillRect((canvasWidth/2)-this.width/2, ydisegnata+5, 8, 40);
-                	ctx.fillRect((canvasWidth/2)+this.width/2-258, ydisegnata+5, 8, 40);
-                }else{
-                	ctx.fillRect((canvasWidth/2)-this.width/2, ydisegnata-5, (canvasWidth/2)+this.width/2-325, 8);
-                	ctx.fillRect((canvasWidth/2)-this.width/2, ydisegnata+42, (canvasWidth/2)+this.width/2-325, 8);
-                	ctx.fillRect((canvasWidth/2)-this.width/2, ydisegnata-5, 8, 51);
-                	ctx.fillRect((canvasWidth/2)+this.width/2-258, ydisegnata-5, 8, 51);
-                }
-              }else if(this.settore == 1){//disegna i quadrati intorno alla scritta scelta - parte subtank e sotto subtank
-              	if (this.indice < 4){//disegna quadrati del settore subtank
-              		ctx.fillStyle = "#ffc000";
-              		var xdisegnata=(canvasWidth/2)+this.width/2-250+15;
-              		var ydisegnata=((canvasHeight/2)-this.height/2)+(40*(this.indice+1))-6;
-                	ctx.fillRect(xdisegnata, ydisegnata, 235, 9);
-                	ctx.fillRect(xdisegnata, ydisegnata+32, 235, 9);
-                	ctx.fillRect(xdisegnata, ydisegnata, 9, 40);
-                	ctx.fillRect(xdisegnata+235-9, ydisegnata, 9, 40);              	
-                }else{//disegna quadrati della parte sotto le subtank
-                	ctx.fillStyle = "#ffc000";
-					var xdisegnata=(canvasWidth/2)+this.width/2-250+15;
-              		var ydisegnata=((canvasHeight/2)+15+((canvasHeight-this.height+30)/3*(this.indice-4)))-1;
-                	ctx.fillRect(xdisegnata, ydisegnata, 235, 9);
-                	ctx.fillRect(xdisegnata, ydisegnata+((canvasHeight-this.height+30)/3-8), 235, 9);
-                	ctx.fillRect(xdisegnata, ydisegnata, 9, ((canvasHeight-this.height+30)/3-8));
-                	ctx.fillRect(xdisegnata+235-9, ydisegnata, 9, ((canvasHeight-this.height+30)/3-8));              		
-                }
-              }
-              if(this.usingSubtank < 4){//se il menu e' impostato nell'usare una subtank:
-              	if(subtank[this.usingSubtank].life > 0){
-              		subtank[this.usingSubtank].life-=0.5;
-              		if(player.life<player.lifeMax){
-              			player.life+=0.5; drawHUD();
-              		}
-              	}else{//esce dallo stato di depleting della subtank
-              		this.usingSubtank=4;
-              		this.canInput=true;
-              	}
-              }              
-             if(this.canInput){//cosa succede quando vengono schiacciati i tasti (solo se this e' in lettura di input - this.canInput)
-              if((keys[startkey] || keys[dashkey]) && !tastoGiaSchiacciato) {//attiva la voce selezionata
-              	if (this.settore==0){ // se e' nella sezione poteri, attiva il potere selezionato e chiude il menu
-                  player.activePower=this.indice;
-                  if (player.activePower==0){
-                          player.color1=player.defaultColor1;
-                          player.color2=player.defaultColor2;                               
-                  }else{
-                          player.color1=player.power[player.activePower-1].color1;
-                          player.color2=player.power[player.activePower-1].color2;  
-                  }                  
-					        this.isClosing=true;
-                	this.isOpen=false;
-              	}else{ //se e' nell'altro settore fa delle cose in base all'indice
-              		if(this.indice<4){//hai scelto una subtank
-              			if(player.life<player.lifeMax){
-              				this.usingSubtank=this.indice;
-              				this.canInput=false;
-              			}
-              		}else{
-              			switch (this.indice){
-              				case 4://ritorna al gioco - chiude il menu
-								        this.isClosing=true;
-                				this.isOpen=false;              				
-                				break;
-                			case 5://opzioni
-            					objMenuOpzioni=new newMenuOpzioni(this.width, this.height, true);
-            					tastoGiaSchiacciato=true;
-            					gamestate=3;                				
-                				break;
-                			case 6://torna alla selezione del livello
-      								this.tornaStageSelection=true; lvlNumber=1;
-      								this.isClosing=true;
-      								this.isOpen=false;
-                				break;
-              			}
-              		}
-              	}
-              }
-              if(keys[jumpkey] && !tastoGiaSchiacciato) {//esci dal menu di pausa
-                this.isClosing=true;
-                this.isOpen=false;
-              }              
-              if(keys[giukey] && !tastoGiaSchiacciato) {
-              	if (this.settore==0){//se sei nella parte a sinistra
-                	for (i=1; i < 10; i++){
-                  		if(levelDefeated[this.indice+i-1]){
-                    		this.indice+=i;
-                    		break;
-                  		}else if(i == 9){ this.indice=0; break;}
-                	}
-                  if(this.indice==9){this.indice=0;}
-                }else if (this.settore==1){//se sei nella parte a destra
-                	if (this.indice<this.lastSubtankAcquired){//se sei nella parte delle subtank-1
-                		for(var k=1; k<(4-this.indice); k++){
-							if(subtank[this.indice+k].acquired){
-								this.indice+=k;
-								break;
-							}
-						}
-                	}else if(this.indice==this.lastSubtankAcquired && this.lastSubtankAcquired!=4){//se hai selezionato l'ultima subtank disponibile e schiacci giu'
-                		this.indice=4;
-                	}else{//se sei nella parte sotto le subtank
-                		if (this.indice<6){
-                			this.indice++;
-                		}
-                	}
-                }
-              }
-              if(keys[sukey] && !tastoGiaSchiacciato) {
-              	if (this.settore==0){
-                	if(this.indice == 0){ this.indice=9; }
-                	for (i=1; i < this.indice+1; i++){
-                  		if(levelDefeated[this.indice-i-1]){
-                    		this.indice-=i;
-                    		break;
-                  		}else if(i == this.indice){ this.indice=0; break;}
-                	}
-                }else if (this.settore==1){//se sei nella parte a destra
-                	if (this.indice<4){//se sei nella parte delle subtank
-						if(this.indice>0){
-							for(var k=1; k<this.indice+1;k++){
-								if(subtank[this.indice-k].acquired){
-									this.indice-=k;
-									break;
-								}
-							}
-						}
-                	}else{
-                		if (this.indice>4){//se sei nel menu tutto ok
-                			this.indice--;
-                		}else{//schiacci su e ti stai spostando nelle subtank - devo vedere che io ne possegga almeno una
-							this.indice=this.lastSubtankAcquired;
-                		}
-                	}
-                }                                
-              }
-              if(keys[destrakey] && !tastoGiaSchiacciato) {
-				for (var j=0; j<4; j++){
-					if(subtank[j].acquired){
-						this.indice=j;
-						break;
-					}else{
-						this.indice=4;
-					}
-				}
-                this.settore=1;
-              }
-              if(keys[sinistrakey] && !tastoGiaSchiacciato) {
-                this.indice=0;
-                this.settore=0;
-              }
-              if(keys[startkey] || keys[sukey] || keys[giukey] || keys[sinistrakey] || keys[destrakey] || keys[dashkey] || keys[jumpkey]){
-                tastoGiaSchiacciato=true;
-              }else{
-                tastoGiaSchiacciato=false;
-              }
-          }              
-         }
-          if(this.isClosing){//animazione di chiusura del menu + regolazione delle subtanks
-              if (this.width > 0){this.width-=20;}
-              if (this.height > 0){this.height-=20;}
-              ctx.clearRect((canvasWidth/2)-this.width/2-15,(canvasHeight/2)-this.height/2-15, this.width+30, this.height+30);	//pulisci la parte dove viene mostrato il menu
-              disegnaSchermoDiGioco(false);
-              ctx.fillStyle = "#d2d2d2"; ctx.fillRect((canvasWidth/2)-this.width/2-15,(canvasHeight/2)-this.height/2-15, this.width+30, this.height+30); //disegna il bordo grigio 
-              ctx.fillStyle = "#52b58b"; ctx.fillRect((canvasWidth/2)-this.width/2,(canvasHeight/2)-this.height/2, this.width, this.height); //disegna lo sfondo verde
-              if (this.height-1 < 0 && this.width-1 < 0){//quando il menu e' tutto chiuso:
-              	gamestate=-1;
-              	if(this.tornaStageSelection){gamestate=1;}
-              	var sommaSubtank=0;//aggiusto la vita delle subtank (la metto tutta nelle prime subtank disponibili)
-        				for (var j=0; j<4; j++){//azzero tutte le subtank e carico tutta la vita per ridistribuirla nel prossimo for
-        					if (subtank[j].acquired){
-        						sommaSubtank+=subtank[j].life;
-        						subtank[j].life=0;
-        					}
-        				}
-                if(sommaSubtank>0){//ridistribuisco la vita alle subtank dalla prima all'ultima
-          				for (var j=0; j<4; j++){
-                    if(subtank[j].life<subtank[j].lifeMax && subtank[j].acquired){
-  			              if (sommaSubtank>(subtank[j].lifeMax-subtank[j].life)){
-                        sommaSubtank-=(subtank[j].lifeMax-subtank[j].life);
-                        subtank[j].life=subtank[j].lifeMax;
-                      }else{
-                        subtank[j].life+=sommaSubtank;
-                        sommaSubtank=0;
-                      }
-            				}
-                  }
-                }
-             }             
-          }
-        }     
-      }//fine menu di pausa       
+      }       
   
   function newAlert(stringaDiTesto, gameStatePrecedente){
   	      this.isOpen=false;
@@ -1508,17 +1301,16 @@
               	this.isOpen=true;
               }
             }
-            ctx.clearRect((canvasWidth/2)-this.width/2-15,(canvasHeight/2)-this.height/2-15, this.width+30, this.height+30);	//pulisci la parte dove viene mostrato il menu
-  		      ctx.fillStyle = "#d2d2d2"; ctx.fillRect((canvasWidth/2)-this.width/2-15,(canvasHeight/2)-this.height/2-15, this.width+30, this.height+30); //disegna il bordo grigio 
-            ctx.fillStyle = "#52b58b"; ctx.fillRect((canvasWidth/2)-this.width/2,(canvasHeight/2)-this.height/2, this.width, this.height); //disegna lo sfondo verde  
+  		    ctx.fillStyle = "#d2d2d2"; ctx.fillRect((realCanvasWidth/2)-this.width/2-15,(canvasHeightDefault/2)-this.height/2-15, this.width+30, this.height+30); //disegna il bordo grigio 
+            ctx.fillStyle = "#52b58b"; ctx.fillRect((realCanvasWidth/2)-this.width/2,(canvasHeightDefault/2)-this.height/2, this.width, this.height); //disegna lo sfondo verde  
             if(this.isOpen){  //quando il menu e' tutto aperto
                   ctx.font = "small-caps bold 16px Lucida Console"; //tipo di font per le scritte
                   var textHeight=ctx.measureText("O").width; //dato che la O normalmente e' alta quanto larga (font monospace) imposto la larghezza di O come altezza approssimativa del testo
                   ctx.textAlign = "center";
-            			disegnaTestoConBordino(this.text, canvasWidth/2, canvasHeight/2+textHeight/2,"#d2d2d2","#000000");
+            	  disegnaTestoConBordino(this.text, realCanvasWidth/2, canvasHeightDefault/2+textHeight/2,"#d2d2d2","#000000");
                   ctx.textAlign = "left"; //lo reimposto left se no si bugga tutto
                   //ora gestisco gli input
-                  if(keys[startkey] || keys[sukey] || keys[giukey] || keys[sinistrakey] || keys[destrakey] || keys[dashkey] || keys[jumpkey]){
+                  if(keys[startkey] || keys[sukey] || keys[giukey] || keys[sinistrakey] || keys[destrakey] || keys[dashkey] || keys[jumpkey] || mouseClick){
                     if(!tastoGiaSchiacciato){
                      tastoGiaSchiacciato=true;
                      gamestate=this.prevGameState;
@@ -1531,7 +1323,7 @@
   }  
 
   function newMenuCaricaPartita(){//carica livello
-	      this.isOpen=false;
+	    this.isOpen=false;
         this.isClosing=false;
         this.indexAlterato=false;
         this.premutoConferma=false;
@@ -1558,7 +1350,7 @@
             this.daPulire=false;
           }
           ctx.clearRect((realCanvasWidth/2)-this.width/2-15,(canvasHeight/2)-this.height/2-15, this.width+30, this.height+30);	//pulisci la parte dove viene mostrato il menu
-		      ctx.fillStyle = "#d2d2d2"; ctx.fillRect((realCanvasWidth/2)-this.width/2-15,(canvasHeight/2)-this.height/2-15, this.width+30, this.height+30); //disegna il bordo grigio 
+		  ctx.fillStyle = "#d2d2d2"; ctx.fillRect((realCanvasWidth/2)-this.width/2-15,(canvasHeight/2)-this.height/2-15, this.width+30, this.height+30); //disegna il bordo grigio 
           ctx.fillStyle = "#52b58b"; ctx.fillRect((realCanvasWidth/2)-this.width/2,(canvasHeight/2)-this.height/2, this.width, this.height); //disegna lo sfondo verde
 
           if(this.isOpen){ //quando il menu e' tutto aperto
@@ -1580,8 +1372,14 @@
                   ctx.textAlign = "left"; //lo reimposto left se no si bugga tutto
           			}		
                 //mouse input 
-                if(checkMouseBox((realCanvasWidth/2-ctx.measureText((dashkey+" to confirm")).width/2),(ydisegnata-ctx.measureText("O").width),(ctx.measureText((dashkey+" to confirm")).width),(ctx.measureText("O").width)) && mouseClick){this.premutoConferma=true;}
-                if(checkMouseBox((realCanvasWidth/2-ctx.measureText((jumpkey+" to cancel")).width/2),(ydisegnata+20-ctx.measureText("O").width),(ctx.measureText((jumpkey+" to cancel")).width),(ctx.measureText("O").width)) && mouseClick){this.premutoCancella=true;}                   
+                if(checkMouseBox((-3+realCanvasWidth/2-ctx.measureText((dashkey+" to confirm")).width/2), 2+(ydisegnata-ctx.measureText("O").width), 6+(ctx.measureText((dashkey+" to confirm")).width), 1+(ctx.measureText("O").width))){
+                	ctx.strokeStyle="#000000"; ctx.strokeRect((-3+realCanvasWidth/2-ctx.measureText((dashkey+" to confirm")).width/2), 2+(ydisegnata-ctx.measureText("O").width), 6+(ctx.measureText((dashkey+" to confirm")).width), 1+(ctx.measureText("O").width));
+                	if(mouseClick){this.premutoConferma=true;}
+                }
+                if(checkMouseBox((-3+realCanvasWidth/2-ctx.measureText((jumpkey+" to cancel")).width/2), 2+(ydisegnata+20-ctx.measureText("O").width), 6+(ctx.measureText((jumpkey+" to cancel")).width), 1+(ctx.measureText("O").width))){
+                	ctx.strokeStyle="#000000"; ctx.strokeRect((-3+realCanvasWidth/2-ctx.measureText((jumpkey+" to cancel")).width/2), 2+(ydisegnata+20-ctx.measureText("O").width), 6+(ctx.measureText((jumpkey+" to cancel")).width), 1+(ctx.measureText("O").width));
+                	if(mouseClick){this.premutoCancella=true;}
+                }                   
                 //tasti
                   if((keys[dashkey] || keys[startkey]) && !tastoGiaSchiacciato) {this.premutoConferma=true;}                           			
                   if(keys[jumpkey] && !tastoGiaSchiacciato) {this.premutoCancella=true;}
@@ -1599,6 +1397,7 @@
                       this.isOpen=false;
                       this.daPulire=false;
                       this.isClosing=true;
+                      document.getElementById("fileCaricaPartita").value="";//svuota il robino dell'input del file di html
                     }                   
                   }
                   if(this.premutoCancella){
@@ -1636,11 +1435,11 @@
         async function controllaFile(){ //controlla che il file sia caricato correttamente
             var uploadedFile = document.getElementById("fileCaricaPartita").files[0];
             var stringaCaricaPartita="";
-            if(uploadedFile.size > (1024*1024)){//controlla la dimensione del file - non deve essere superiore a 1MB
-               objAlert = new newAlert("The file size limit is 1MB. Upload a smaller file.",gamestate); gamestate=5;
+            if(uploadedFile.size > (5*1024*1024)){//controlla la dimensione del file - non deve essere superiore a 1MB
+               objAlert = new newAlert("The file size limit is 5MB. Upload a smaller file.",gamestate); gamestate=5;
                return false;
             }
-            async function readFileAsDataURL(uploadedFile) {
+            async function readFileAsText(uploadedFile) {
                 let text = await new Promise((resolve) => {
                     let fileReader = new FileReader();
                     fileReader.onload = (e) => resolve(fileReader.result);
@@ -1648,7 +1447,7 @@
                 });
                 return text;
             }          
-            stringaLivelloLetta = await readFileAsDataURL(uploadedFile);
+            stringaLivelloLetta = await readFileAsText(uploadedFile);
             return stringaLivelloLetta;                          
         }//fine di controllaFile()                
      }//fine di drawMenu()               
