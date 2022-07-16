@@ -1,5 +1,5 @@
       var versioneDiGioco = "v0.20220716"; //nuova lettura immagini in base64
-      debugMode=true; //you can enable debugMode with the console (press f12 in the browser)
+      debugMode=false; //you can enable debugMode with the console (press f12 in the browser)
       
       //crea il canvas
       var canvasWidth = 720;
