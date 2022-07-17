@@ -1,4 +1,4 @@
-      var versioneDiGioco = "v0.20220716"; //nuova lettura immagini in base64
+      var versioneDiGioco = "v0.20220717"; //ottimizzato drawLvl(), ora dovrebbe laggare di meno nei livelli piu grandi
       debugMode=true; //you can enable debugMode with the console (press f12 in the browser)
       
       //crea il canvas
