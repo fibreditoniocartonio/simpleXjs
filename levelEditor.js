@@ -1,5 +1,5 @@
-      var versioneDiGioco = "v0.20220716"; //aggiunte level bars per spostarsi velocemente, lettura immagini in base64, anche caricate da utente
-      debugMode=true;     //you can enable debugMode with the console (press f12 in the browser) - mi pare che non faccia nulla lol
+      var versioneDiGioco = "v0.20220717"; //blocks tab (manca modifica colore e applicare effettivamente la lettera), vettore lista entity e entities tab (solo iniziata), dato un senso alla debug mode(ora mostra le lettere)
+      debugMode=false;    //you can enable debugMode with the console (press f12 in the browser)
       showMouseBox=false; //you can enable showMouseBox with the console (press f12 in the browser)
       
       //crea il canvas
@@ -64,6 +64,26 @@
         this.showGrid=true;
         this.showLevelBar=true;
         this.permanentLevelBar=false;
+      }
+
+	  var listaEntityStringa="01234567⁰¹²³⁴⁵⁶⁷àÀèÈPS";
+	  var listaEntity=creaListaEntity(listaEntityStringa);
+      function creaListaEntity(listaEntityStringa){
+      	var entity=[];
+      	for (i = 0; i < listaEntityStringa.length; i++) {
+	      	switch(listaEntityStringa[i]){
+			        case '0': case '1': case '2': case '3': var armatura = new newPickUp_Armor(parseInt(listaEntityStringa[i],10)); entity.push(armatura); break;
+			        case '4': case '5': case '6': case '7': var subtankLetta = new newPickUp_Subtank(parseInt(listaEntityStringa[i],10)-4); entity.push(subtankLetta); break;
+					case '⁰': case '¹': case '²': case '³': case '⁴': case '⁵': case '⁶': case '⁷': var cuore = new newPickUp_Cuore(listaEntityStringa[i]); entity.push(cuore); break;				    
+					case 'à': var lifeRec/*small*/ = new newPickUp_LifeEnergy(2); entity.push(lifeRec); break;
+					case 'À': var lifeRec/*big*/ = new newPickUp_LifeEnergy(8); entity.push(lifeRec); break;
+					case 'è': var weaponRec/*small*/ = new newPickUp_WeaponEnergy(2); entity.push(weaponRec); break;
+					case 'È': var weaponRec/*big*/ = new newPickUp_WeaponEnergy(8); entity.push(weaponRec); break;      		
+					case 'P': var pipistrello = new newPipistrello(); entity.push(pipistrello); break;
+					case 'S': var spike= new newSpike(); entity.push(spike); break;
+	      	}
+	    }
+      	return entity;
       }
             
   //gamestate - se == -1: stato nel level editor
@@ -275,10 +295,10 @@
 			}
 		}				
     //ora inizializzo i bordi - ho schiacciato il codice perche' occupava righe inutili. e' molto simile al prototipo di blocco    
-		var ground = {x: 0, width: level.maxWidth, height: (20)+1, color: level.color[0]};  ground['y']=level.maxHeight-ground.height;
-  	var ceiling = {x: 0, y: 0, width: level.maxWidth, height: (20)+1, color: level.color[0]};        	            
-  	var leftWall = {x: 0, y: 0, width: (20)+1, height: level.maxHeight, color: level.color[0]};
-  	var rightWall = {y: 0, width: (20)+1, height: level.maxHeight, color: level.color[0]}; rightWall['x']= level.maxWidth-rightWall.width;	            				
+		var ground = {x: 0, width: level.maxWidth, height: (20)+1, color: level.color[0], lettera: "a"};  ground['y']=level.maxHeight-ground.height;
+  	var ceiling = {x: 0, y: 0, width: level.maxWidth, height: (20)+1, color: level.color[0], lettera: "a"};        	            
+  	var leftWall = {x: 0, y: 0, width: (20)+1, height: level.maxHeight, color: level.color[0], lettera: "a"};
+  	var rightWall = {y: 0, width: (20)+1, height: level.maxHeight, color: level.color[0], lettera: "a"}; rightWall['x']= level.maxWidth-rightWall.width;	            				
 		level.push(ground, ceiling, leftWall, rightWall); //this pushes all of the static objects into the level				   
     // ora definisco le funzioni interne di stringToLevel()
 		function readNumber(){//compone i vari caratteri di una stringa in numero. Esempio traduce "10.91;" in numeroLetto=10.91
@@ -736,6 +756,7 @@
           }
           //ora disegno il livello[i]                    
           ctx.fillRect(xdisegnata, ydisegnata, lvl[i].width, lvl[i].height);
+          if(debugMode){ ctx.font="bold 10px Lucida Console"; ctx.textAlign="center"; disegnaTestoConBordino(lvl[i].lettera, xdisegnata+lvl[i].width/2, ydisegnata+lvl[i].height/2+ctx.measureText("O").width/2, "#000000","#cccccc"); ctx.textAlign="left";}
         }
       }
        
@@ -834,15 +855,18 @@
         this.extendLevelMenu_staScrivendo=false;
         this.extendLevelMenu_staScrivendo_Width=false;
         this.newNumberWidth=0;
-        this.newNumberHeight=0;        
+        this.newNumberHeight=0;
+        this.selected="NIENTE";//blocco/entita' selezionata - se vuoto deve essere == "NIENTE"
+        this.isSelecting=false;
+        this.modifyBlock=false;
         this.drawSideMenu = function (){
           if(this.mouseTimer>0 && !this.showAnotherMenu){this.mouseTimer--;}//timer mouse
           ctx.fillStyle="#cccccc"; ctx.fillRect(canvasWidthDefault, 0, this.width, this.height); //sfondo
           this.tabCode(); //disegno la parte in alto delle tab e le gestisco (mouse input)
           switch(this.openedTab){//disegno la tab aperta
             case 0: this.toolTabCode(); break;
-            //case 1: this.blockTabCode(); break;
-            //case 2: this.entityTabCode(); break;
+            case 1: this.blockTabCode(); break;
+            case 2: this.entityTabCode(); break;
           }
           if(player.showLevelBar){this.drawlevelBar();}
           if(this.showAnotherMenu && this.showExitMenu){this.drawExitMenu();}
@@ -871,7 +895,8 @@
             }
             disegnaTestoConBordino(tabTitle, canvasWidthDefault+i*tabWidth+(tabWidth/2), tabHeight/2+ctx.measureText("o").width/2, "#000000");//testo della tab
             if(checkMouseBox(canvasWidthDefault+i*tabWidth,0,tabWidth,tabHeight) && mouseClick && !this.showAnotherMenu){
-              this.openedTab=i;
+			  if(i!=this.openedTab){this.selected="NIENTE"; this.isSelecting=false; this.modifyBlock=false;} //azzero la selezione al cambio di tab
+              this.openedTab=i; 
             }
           }          
         }//fine tabCode()
@@ -1202,7 +1227,155 @@
 	            }                                    
 	      }//fine di controllaFile()          
         }//fine di drawModifyBackground()        
-      }     
+        this.blockTabCode = function (){
+			var offsetY=this.selectAndEraserCode()+20;
+			var voceHeight=ctx.measureText("O").width*2;
+            var word="modify block color";
+            ctx.textAlign="center"; ctx.font = "small-caps bold 15px Lucida Console";
+            if(this.modifyBlock){ctx.fillStyle="#8c8c8c"; ctx.fillRect(canvasWidthDefault+2, offsetY+2, this.width-4, voceHeight-4);}
+            ctx.strokeStyle="#676767"; ctx.lineWidth="1"; ctx.strokeRect(canvasWidthDefault+2, offsetY+2, this.width-4, voceHeight-4);
+            disegnaTestoConBordino(word, canvasWidthDefault+this.width/2, offsetY-2+voceHeight-ctx.measureText("O").width/2, "#000000");
+            if(checkMouseBox(canvasWidthDefault+2, offsetY+2, this.width-4, voceHeight-4)){
+              ctx.strokeStyle="#000000"; ctx.lineWidth="2";
+              ctx.strokeRect(canvasWidthDefault+2, offsetY+2, this.width-4, voceHeight-4);
+              if(mouseClick && this.mouseTimer==0){this.modifyBlock=!this.modifyBlock; this.selected="NIENTE"; this.isSelecting=false; this.mouseTimer=10;}			
+            }
+            offsetY+=voceHeight;
+            ctx.textAlign="center"; ctx.font = "bold 15px Lucida Console";
+            var blockLetter=["PLATFORM BLOCKS","a","b","c","d","e","f","g","h","i","j","k","FOREGROUND BLOCKS","m","n","o","BACKGROUND BLOCKS","p","q","r"];
+            var altezzaTotale=canvasHeightDefault-offsetY-30;
+            var numeroRighe=9; var rigaCorrente=0;
+            var altezzaRiga=altezzaTotale/numeroRighe;
+            var larghezzaScritta=this.width/3;
+            offsetY-=10;
+            for(i=0;i<blockLetter.length;i++){
+            	if(blockLetter[i].length>2){
+            		disegnaTestoConBordino(blockLetter[i], canvasWidthDefault+this.width/2, offsetY-2+altezzaRiga*(rigaCorrente+1)-ctx.measureText("O").width/2, "#000000");
+            	}else{
+            		for(j=0; j<3;j++){
+            			if(blockLetter[i].length<2){
+            				var rectColor=this.getBlockColor(blockLetter[i]);
+            				//var rectColor="#676767";
+            				if(this.selected==blockLetter[i]){ctx.fillStyle="#8c8c8c"; ctx.fillRect(canvasWidthDefault+j*larghezzaScritta+2, offsetY+2+altezzaRiga*(rigaCorrente), larghezzaScritta-4, altezzaRiga-4);}
+            				ctx.strokeStyle="#676767"; ctx.lineWidth="1"; ctx.strokeRect(canvasWidthDefault+j*larghezzaScritta+2, offsetY+2+altezzaRiga*(rigaCorrente), larghezzaScritta-4, altezzaRiga-4);
+            				if(checkMouseBox(canvasWidthDefault+j*larghezzaScritta+2, offsetY+2+altezzaRiga*(rigaCorrente), larghezzaScritta-4, altezzaRiga-4)){
+            					ctx.strokeStyle="#000000"; ctx.lineWidth="2"; ctx.strokeRect(canvasWidthDefault+j*larghezzaScritta+2, offsetY+2+altezzaRiga*(rigaCorrente), larghezzaScritta-4, altezzaRiga-4); 
+            					if(mouseClick && this.mouseTimer==0){
+            						this.mouseTimer=10;
+            						if(this.modifyBlock){
+            							//modify block color menu(blockLetter[i],rectColor);
+            							this.modifyBlock=!this.modifyBlock;
+            						}else{
+            							if(this.selected==blockLetter[i]){
+            								this.selected="NIENTE";
+            							}else{
+            								this.selected=blockLetter[i];
+            							}
+            							this.isSelecting=false;
+            						}
+            					}
+            				}
+            				var latoRect=ctx.measureText("O").width*2;
+            				ctx.fillStyle=rectColor; ctx.fillRect(canvasWidthDefault+j*larghezzaScritta+larghezzaScritta/2-latoRect/2, offsetY-2+altezzaRiga*(rigaCorrente)+altezzaRiga/2-latoRect/2+ctx.measureText("o").width/4, latoRect, latoRect);
+            				ctx.strokeStyle="#222222"; ctx.strokeRect(canvasWidthDefault+j*larghezzaScritta+larghezzaScritta/2-latoRect/2, offsetY-2+altezzaRiga*(rigaCorrente)+altezzaRiga/2-latoRect/2+ctx.measureText("o").width/4, latoRect, latoRect);
+            				if(debugMode){disegnaTestoConBordino(blockLetter[i], canvasWidthDefault+j*larghezzaScritta+larghezzaScritta/2, offsetY-2+altezzaRiga*(rigaCorrente)+altezzaRiga/2+ctx.measureText("O").width/2, "#000000","#cccccc");}
+            				i++;
+            			}
+            		}
+            		i--;
+            	}
+            	rigaCorrente++;
+            }
+            ctx.textAlign="left";
+        }//fine di blockTabCode()
+        this.getBlockColor = function (blockLetter){
+        	var puntiVirgola=0;
+        	var colore=[];
+        	for(k=0; k<stringaLivello.length; k++){
+        		if (stringaLivello[k] == ";"){
+					puntiVirgola++;
+        		}
+        		if(puntiVirgola>1){
+        			var coloreLetto="";
+					for (; k < stringaLivello.length; k++) {
+						if (stringaLivello[k] != ";"){
+							coloreLetto+=stringaLivello[k]
+						}else{
+							if (coloreLetto==""){
+								colore[(puntiVirgola-2)]="#155261";
+								break;
+							}else{
+								colore[(puntiVirgola-2)]=coloreLetto;
+								coloreLetto="";
+								k--; break;
+							}
+						}
+					}        			
+        		}
+        	}
+        	switch(blockLetter){
+        		case "a": return colore[0]; break; 
+        		case "b": return colore[1]; break;
+        		case "c": return colore[2]; break;
+        		case "d": return colore[3]; break;
+        		case "e": return colore[4]; break;
+        		case "f": return colore[5]; break;
+        		case "g": return colore[6]; break;
+        		case "h": return colore[7]; break;
+        		case "i": return colore[8]; break;
+        		case "j": return colore[9]; break;
+        		case "k": return colore[10]; break;
+        		case "m": return colore[11]; break;
+        		case "n": return colore[12]; break;
+        		case "o": return colore[13]; break;
+        		case "p": return colore[14]; break;
+        		case "q": return colore[15]; break;
+        		case "r": return colore[16]; break;
+        	}
+        }
+        this.entityTabCode = function (){
+			var offesetY=this.selectAndEraserCode()+20;
+        }//fine di entityTabCode()        
+        this.selectAndEraserCode = function (){
+        	ctx.textAlign="center"; ctx.font = "small-caps bold 15px Lucida Console";
+        	var voceWidth=this.width/2;
+        	var voceHeight=ctx.measureText("O").width*2;
+	        var word1="select"; var word2="eraser"; var word3="deselect";
+	        if(this.isSelecting){ctx.fillStyle="#8c8c8c"; ctx.fillRect(canvasWidthDefault+2, 22, voceWidth-4, voceHeight-4);}
+	        if(this.selected=="."){ctx.fillStyle="#8c8c8c"; ctx.fillRect(canvasWidthDefault+voceWidth+2, 22, voceWidth-4, voceHeight-4);}
+	        ctx.strokeStyle="#676767"; ctx.lineWidth="1"; ctx.strokeRect(canvasWidthDefault+2, 22, voceWidth-4, voceHeight-4); ctx.strokeRect(canvasWidthDefault+voceWidth+2, 22, voceWidth-4, voceHeight-4);
+	        if(this.selected=="NIENTE"){ 
+	        	disegnaTestoConBordino(word1, canvasWidthDefault+voceWidth/2, 20+voceHeight/2+ctx.measureText("o").width/2, "#000000");
+		        if(checkMouseBox(canvasWidthDefault+2, 22, voceWidth-4, voceHeight-4)){
+		          ctx.strokeStyle="#000000"; ctx.lineWidth="2";
+		          ctx.strokeRect(canvasWidthDefault+2, 22, voceWidth-4, voceHeight-4);
+		          if(mouseClick && this.mouseTimer==0){this.isSelecting=!this.isSelecting; this.modifyBlock=false; this.mouseTimer=10;}
+		        }
+	        }else{
+	        	disegnaTestoConBordino(word3, canvasWidthDefault+voceWidth/2, 20+voceHeight/2+ctx.measureText("o").width/2, "#000000");
+		        if(checkMouseBox(canvasWidthDefault+2, 22, voceWidth-4, voceHeight-4)){
+		          ctx.strokeStyle="#000000"; ctx.lineWidth="2";
+		          ctx.strokeRect(canvasWidthDefault+2, 22, voceWidth-4, voceHeight-4);
+		          if(mouseClick && this.mouseTimer==0){this.selected="NIENTE"; this.mouseTimer=10;}
+		        }	        	
+	        }
+        	disegnaTestoConBordino(word2, canvasWidthDefault+voceWidth+voceWidth/2, 20+voceHeight/2+ctx.measureText("o").width/2, "#000000");
+	        if(checkMouseBox(canvasWidthDefault+voceWidth+2, 22, voceWidth-4, voceHeight-4)){
+	          ctx.strokeStyle="#000000"; ctx.lineWidth="2";
+	          ctx.strokeRect(canvasWidthDefault+voceWidth+2, 22, voceWidth-4, voceHeight-4);
+	          if(mouseClick && this.mouseTimer==0){
+	          	if(this.selected=="."){
+					this.selected="NIENTE"; 
+	          	}else{
+	          		this.selected="."; 
+	          	}
+	          	this.isSelecting=false; this.modifyBlock=false; this.mouseTimer=10;
+	          }
+	        }	        
+	        ctx.textAlign="left";				
+			return voceHeight; 
+        }//fine di selectAndEraserCode()
+      }//fine di sideMenu
       
       function playerPhysics(p1, lvl) {//this function handles the platformer physics - in realta' solo del player
         if(player.snapMode){//1 movimento di griglia alla volta
