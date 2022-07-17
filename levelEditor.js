@@ -1,5 +1,5 @@
-      var versioneDiGioco = "v0.20220717"; //blocks tab (manca modifica colore e applicare effettivamente la lettera), vettore lista entity e entities tab (solo iniziata), dato un senso alla debug mode(ora mostra le lettere)
-      debugMode=false;    //you can enable debugMode with the console (press f12 in the browser)
+      var versioneDiGioco = "v0.20220717"; //blocks tab e mod. colore blocco (manca solo la possibilita' di applicarli), vettore lista entity e entities tab (solo iniziata), dato un senso alla debug mode(ora mostra le lettere)
+      debugMode=true;    //you can enable debugMode with the console (press f12 in the browser)
       showMouseBox=false; //you can enable showMouseBox with the console (press f12 in the browser)
       
       //crea il canvas
@@ -1259,7 +1259,6 @@
             		for(j=0; j<3;j++){
             			if(blockLetter[i].length<2){
             				var rectColor=this.getBlockColor(blockLetter[i]);
-            				//var rectColor="#676767";
             				if(this.selected==blockLetter[i]){ctx.fillStyle="#8c8c8c"; ctx.fillRect(canvasWidthDefault+j*larghezzaScritta+2, offsetY+2+altezzaRiga*(rigaCorrente), larghezzaScritta-4, altezzaRiga-4);}
             				ctx.strokeStyle="#676767"; ctx.lineWidth="1"; ctx.strokeRect(canvasWidthDefault+j*larghezzaScritta+2, offsetY+2+altezzaRiga*(rigaCorrente), larghezzaScritta-4, altezzaRiga-4);
             				if(checkMouseBox(canvasWidthDefault+j*larghezzaScritta+2, offsetY+2+altezzaRiga*(rigaCorrente), larghezzaScritta-4, altezzaRiga-4)){
@@ -1267,9 +1266,9 @@
             					if(mouseClick && this.mouseTimer==0){
             						this.mouseTimer=10;
             						if(this.modifyBlock){
-							          	var j=0; for(i=1; i<rectColor.length; i+=2){
-							          		this.startingColor[j]=parseInt(rectColor[i]+rectColor[i+1],16);
-							          		j++;
+							          	var k=0; for(l=1; l<rectColor.length; l+=2){
+							          		this.startingColor[k]=parseInt(rectColor[l]+rectColor[l+1],16);
+							          		k++;
 							          	}            						
             							this.showModifyBlockMenu=true; this.showAnotherMenu=true;
             							this.modifyBlockLetter=blockLetter[i];
@@ -1356,6 +1355,7 @@
           ctx.fillStyle="#cccccc"; ctx.fillRect(realCanvasWidth/2-menuWidth/2, canvasHeightDefault/2-menuHeight/2, menuWidth, menuHeight);
           ctx.strokeStyle="#000000"; ctx.strokeRect(realCanvasWidth/2-menuWidth/2, canvasHeightDefault/2-menuHeight/2, menuWidth, menuHeight);
           ctx.fillStyle=rectColor; ctx.fillRect(realCanvasWidth/2+menuWidth/2-xOffset-rectDimension, 2+canvasHeightDefault/2-menuHeight/2+2*(menuHeight-8)/12, rectDimension*0.91, rectDimension*0.91);
+          disegnaTestoConBordino(rectColor, realCanvasWidth/2+menuWidth/2-xOffset-rectDimension+rectDimension*0.91/2, -3+canvasHeightDefault/2-menuHeight/2+2*(menuHeight-8)/12+rectDimension*0.91, "#000000", "#cccccc");
           disegnaTestoConBordino(string1,realCanvasWidth/2,4+canvasHeightDefault/2-menuHeight/2+ctx.measureText("O").width,"#000000");
           ctx.textAlign="left";
           for(i=0; i<4; i++){
@@ -1365,14 +1365,20 @@
           	xOffset+=10+ctx.measureText("α:").width;
           	disegnaTestoConBordino("-",realCanvasWidth/2-menuWidth/2+xOffset,4+canvasHeightDefault/2-menuHeight/2+ctx.measureText("O").width+2*(i+1)*(menuHeight-8)/12,textColor);
           	ctx.strokeStyle="#676767"; ctx.lineWidth="1"; ctx.strokeRect(realCanvasWidth/2-menuWidth/2+xOffset-ctx.measureText("O").width/2, 2+canvasHeightDefault/2-menuHeight/2+2*(i+1)*(menuHeight-8)/12, ctx.measureText("O").width*1.5, ctx.measureText("O").width*1.5);
-          	if(this.startingColor[i]>1 && this.mouseTimer==1 && checkMouseBox(realCanvasWidth/2-menuWidth/2+xOffset-ctx.measureText("O").width/2, 2+canvasHeightDefault/2-menuHeight/2+2*(i+1)*(menuHeight-8)/12, ctx.measureText("O").width*1.5, ctx.measureText("O").width*1.5)){
+          	if(this.startingColor[i]>0 && this.mouseTimer==1 && checkMouseBox(realCanvasWidth/2-menuWidth/2+xOffset-ctx.measureText("O").width/2, 2+canvasHeightDefault/2-menuHeight/2+2*(i+1)*(menuHeight-8)/12, ctx.measureText("O").width*1.5, ctx.measureText("O").width*1.5)){
           		ctx.strokeStyle="#000000"; ctx.lineWidth="2"; ctx.strokeRect(realCanvasWidth/2-menuWidth/2+xOffset-ctx.measureText("O").width/2, 2+canvasHeightDefault/2-menuHeight/2+2*(i+1)*(menuHeight-8)/12, ctx.measureText("O").width*1.5, ctx.measureText("O").width*1.5);
           		if(mouseClick){ this.startingColor[i]--; this.mouseTimer=10;}	
           	}
           	xOffset+=5+ctx.measureText("O").width;
           	var barLength=menuWidth-xOffset*2-rectDimension-ctx.measureText("000").width;
-          	ctx.fillStyle="#676767"; ctx.fillRect(realCanvasWidth/2-menuWidth/2+xOffset,-2+canvasHeightDefault/2-menuHeight/2+ctx.measureText("O").width+2*(i+1)*(menuHeight-8)/12, barLength,3);
-
+          	ctx.fillStyle="#676767"; ctx.fillRect(realCanvasWidth/2-menuWidth/2+xOffset,-2+canvasHeightDefault/2-menuHeight/2+ctx.measureText("O").width+2*(i+1)*(menuHeight-8)/12, barLength, 3);
+          	var sliderWidth=5; var sliderX=realCanvasWidth/2-menuWidth/2+xOffset-sliderWidth/2;
+          	if(checkMouseBox(realCanvasWidth/2-menuWidth/2+xOffset,-2+canvasHeightDefault/2-menuHeight/2+2*(i+1)*(menuHeight-8)/12, barLength, ctx.measureText("O").width*2) && mouseClick){
+          		this.startingColor[i]=-4+Math.round((mouseX-sliderX)*255/barLength);
+          		if(this.startingColor[i]<0){this.startingColor[i]=0;} if(this.startingColor[i]>255){this.startingColor[i]=255;}
+          	}
+          	sliderX+=barLength*this.startingColor[i]/255;
+          	ctx.fillStyle="#272727"; ctx.fillRect(sliderX, -1+canvasHeightDefault/2-menuHeight/2+2*(i+1)*(menuHeight-8)/12+ctx.measureText("O").width/2, sliderWidth, ctx.measureText("O").width);
           	disegnaTestoConBordino("+  "+this.startingColor[i],realCanvasWidth/2-menuWidth/2+xOffset+barLength+10,4+canvasHeightDefault/2-menuHeight/2+ctx.measureText("O").width+2*(i+1)*(menuHeight-8)/12,textColor);
           	ctx.strokeStyle="#676767"; ctx.lineWidth="1"; ctx.strokeRect(realCanvasWidth/2-menuWidth/2+xOffset+barLength+13.5-ctx.measureText("O").width/2, 2+canvasHeightDefault/2-menuHeight/2+2*(i+1)*(menuHeight-8)/12, ctx.measureText("O").width*1.5, ctx.measureText("O").width*1.5);
           	if(this.startingColor[i]<255 && this.mouseTimer==1 && checkMouseBox(realCanvasWidth/2-menuWidth/2+xOffset+barLength+13.5-ctx.measureText("O").width/2, 2+canvasHeightDefault/2-menuHeight/2+2*(i+1)*(menuHeight-8)/12, ctx.measureText("O").width*1.5, ctx.measureText("O").width*1.5)){
@@ -1385,7 +1391,11 @@
           if(checkMouseBox(realCanvasWidth/2-menuWidth/4-ctx.measureText("confirm").width,5+canvasHeightDefault/2-menuHeight/2-ctx.measureText("O").width/2+10*(menuHeight-8)/12,ctx.measureText("confirm").width*2,4*ctx.measureText("O").width/2)){
             ctx.strokeStyle="#000000"; ctx.lineWidth="2";
             ctx.strokeRect(realCanvasWidth/2-menuWidth/4-ctx.measureText("confirm").width,5+canvasHeightDefault/2-menuHeight/2-ctx.measureText("O").width/2+10*(menuHeight-8)/12,ctx.measureText("confirm").width*2,4*ctx.measureText("O").width/2);
-            if(mouseClick){/*stringToLevel(aggiornaLivelloExtend(this.newNumberWidth,this.newNumberHeight)); this.showExtendLevelMenu=false;this.showAnotherMenu=false;*/}
+            if(mouseClick){
+            	stringToLevel(modificaColore(rectColor,this.modifyBlockLetter));
+		        this.showAnotherMenu=false; this.showModifyBlockMenu=false;
+				this.startingColor=[0,0,0,255]; this.modifyBlockLetter="";
+            }
           }
           disegnaTestoConBordino("cancel",realCanvasWidth/2+menuWidth/4,4+canvasHeightDefault/2-menuHeight/2+ctx.measureText("O").width+10*(menuHeight-8)/12,"#000000");
           if(checkMouseBox(realCanvasWidth/2+menuWidth/4-ctx.measureText("cancel").width,5+canvasHeightDefault/2-menuHeight/2-ctx.measureText("O").width/2+10*(menuHeight-8)/12,ctx.measureText("cancel").width*2,4*ctx.measureText("O").width/2)){
@@ -1397,6 +1407,38 @@
             }
           }          
           ctx.textAlign="left";
+          function modificaColore(colore,lettera){
+          	var puntoVirgolaPrima=0; var puntoVirgolaLetti=0;
+          	var inizioColore=0; var fineColore=0;
+        	switch(lettera){
+        		case "a": puntoVirgolaPrima= 2; break; 
+        		case "b": puntoVirgolaPrima= 3; break;
+        		case "c": puntoVirgolaPrima= 4; break;
+        		case "d": puntoVirgolaPrima= 5; break;
+        		case "e": puntoVirgolaPrima= 6; break;
+        		case "f": puntoVirgolaPrima= 7; break;
+        		case "g": puntoVirgolaPrima= 8; break;
+        		case "h": puntoVirgolaPrima= 9; break;
+        		case "i": puntoVirgolaPrima= 10; break;
+        		case "j": puntoVirgolaPrima= 11; break;
+        		case "k": puntoVirgolaPrima= 12; break;
+        		case "m": puntoVirgolaPrima= 13; break;
+        		case "n": puntoVirgolaPrima= 14; break;
+        		case "o": puntoVirgolaPrima= 15; break;
+        		case "p": puntoVirgolaPrima= 16; break;
+        		case "q": puntoVirgolaPrima= 17; break;
+        		case "r": puntoVirgolaPrima= 18; break;
+        	}
+        	for(k=0; k<stringaLivello.length; k++){
+        		if (stringaLivello[k] == ";"){
+					puntoVirgolaLetti++;
+        		}
+        		if(puntoVirgolaLetti==puntoVirgolaPrima && inizioColore==0){inizioColore=k+1;}
+        		if(puntoVirgolaLetti==puntoVirgolaPrima+1){fineColore=k; break;}
+        	}        	          	
+        	stringaLivello=stringaLivello.slice(0,inizioColore)+colore+stringaLivello.slice(fineColore);
+          	return stringaLivello;
+          }
         }
         this.entityTabCode = function (){
 			var offesetY=this.selectAndEraserCode()+20;
