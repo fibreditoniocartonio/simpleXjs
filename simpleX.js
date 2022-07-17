@@ -1,4 +1,4 @@
-      var versioneDiGioco = "v0.20220716"; //nuova lettura immagini in base64
+      var versioneDiGioco = "v0.20220717"; //ottimizzato drawLvl(), ora dovrebbe laggare di meno nei livelli piu grandi
       debugMode=false; //you can enable debugMode with the console (press f12 in the browser)
       
       //crea il canvas
@@ -2841,7 +2841,7 @@ i livelli sono disposti cosi in realta':1 8
             }
           }
           //ora disegno il livello[i]                    
-          ctx.fillRect(xdisegnata, ydisegnata, lvl[i].width, lvl[i].height);
+          if(xdisegnata+lvl[i].width>-1 && xdisegnata<canvasWidth+1){ctx.fillRect(xdisegnata, ydisegnata, lvl[i].width, lvl[i].height);}
         }
       }
 
@@ -2966,7 +2966,7 @@ i livelli sono disposti cosi in realta':1 8
               }
             }
             //ora disegno l'entita e chiamo physics se e' dentro il canvas disegnato+unQuartoDiCanvas (questa roba non si applica se è uno sparo del player - se no si bugga tutto)                    
-            if ( (xdisegnata > (-canvasWidth/8) && xdisegnata < (canvasWidth+(canvasWidth/8))) && (ydisegnata > (-canvasHeight/8) && ydisegnata < (canvasHeight+(canvasHeight/8))) || entity[i].type=="sparoDelPlayer") { //questo if fa i controlli spiegati sopra 
+            if ( (xdisegnata+entity[i].width > (-canvasWidth/8) && xdisegnata < (canvasWidth+(canvasWidth/8))) && (ydisegnata > (-canvasHeight/8) && ydisegnata < (canvasHeight+(canvasHeight/8))) || entity[i].type=="sparoDelPlayer") { //questo if fa i controlli spiegati sopra 
               if(entity[i].canSelfDraw==true){
                   entity[i].selfDraw(xdisegnata,ydisegnata, i);
               }else{
