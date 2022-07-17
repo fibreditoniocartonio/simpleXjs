@@ -1350,7 +1350,7 @@
           var menuHeight=8+(ctx.measureText("O").width+4)*12;
           var rectDimension=8*(menuHeight-8)/12;
           var rectColor="#";
-          for(i=0; i<4; i++){if(this.startingColor[i]>15){rectColor+=this.startingColor[i].toString(16);}else{rectColor+="0"+this.startingColor[i].toString(16);}}
+          for(i=0; i<4; i++){if(this.startingColor[i]>15){if(!(i==3 && this.startingColor[i]==255)){rectColor+=this.startingColor[i].toString(16);}}else{rectColor+="0"+this.startingColor[i].toString(16);}}
           var xOffset=10;
           ctx.fillStyle="#cccccc"; ctx.fillRect(realCanvasWidth/2-menuWidth/2, canvasHeightDefault/2-menuHeight/2, menuWidth, menuHeight);
           ctx.strokeStyle="#000000"; ctx.strokeRect(realCanvasWidth/2-menuWidth/2, canvasHeightDefault/2-menuHeight/2, menuWidth, menuHeight);
