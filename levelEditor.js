@@ -1,4 +1,4 @@
-      var versioneDiGioco = "v0.20220717"; //blocks tab (manca modifica colore e applicare effettivamente la lettera), vettore lista entity e entities tab (solo iniziata), dato un senso alla debug mode(ora mostra le lettere)
+      var versioneDiGioco = "v0.20220717"; //blocks tab e mod. colore blocco (manca solo la possibilita' di applicarli), vettore lista entity e entities tab (solo iniziata), dato un senso alla debug mode(ora mostra le lettere)
       debugMode=false;    //you can enable debugMode with the console (press f12 in the browser)
       showMouseBox=false; //you can enable showMouseBox with the console (press f12 in the browser)
       
@@ -859,6 +859,9 @@
         this.selected="NIENTE";//blocco/entita' selezionata - se vuoto deve essere == "NIENTE"
         this.isSelecting=false;
         this.modifyBlock=false;
+		this.showModifyBlockMenu=false;
+		this.startingColor=[0,0,0,255];
+		this.modifyBlockLetter="";        
         this.drawSideMenu = function (){
           if(this.mouseTimer>0 && !this.showAnotherMenu){this.mouseTimer--;}//timer mouse
           ctx.fillStyle="#cccccc"; ctx.fillRect(canvasWidthDefault, 0, this.width, this.height); //sfondo
@@ -872,6 +875,7 @@
           if(this.showAnotherMenu && this.showExitMenu){this.drawExitMenu();}
           if(this.showAnotherMenu && this.showExtendLevelMenu){this.drawExtendLevelMenu();}
           if(this.showAnotherMenu && this.showModifyBackgroundMenu){this.drawModifyBackgroundMenu();}
+          if(this.showAnotherMenu && this.showModifyBlockMenu){this.drawModifyBlockMenu();}
           ctx.textAlign="left";//sistemo almeno non si buggano gli altri menu
         }//fine drawSideMenu()
         this.tabCode = function (){
@@ -1255,7 +1259,6 @@
             		for(j=0; j<3;j++){
             			if(blockLetter[i].length<2){
             				var rectColor=this.getBlockColor(blockLetter[i]);
-            				//var rectColor="#676767";
             				if(this.selected==blockLetter[i]){ctx.fillStyle="#8c8c8c"; ctx.fillRect(canvasWidthDefault+j*larghezzaScritta+2, offsetY+2+altezzaRiga*(rigaCorrente), larghezzaScritta-4, altezzaRiga-4);}
             				ctx.strokeStyle="#676767"; ctx.lineWidth="1"; ctx.strokeRect(canvasWidthDefault+j*larghezzaScritta+2, offsetY+2+altezzaRiga*(rigaCorrente), larghezzaScritta-4, altezzaRiga-4);
             				if(checkMouseBox(canvasWidthDefault+j*larghezzaScritta+2, offsetY+2+altezzaRiga*(rigaCorrente), larghezzaScritta-4, altezzaRiga-4)){
@@ -1263,8 +1266,13 @@
             					if(mouseClick && this.mouseTimer==0){
             						this.mouseTimer=10;
             						if(this.modifyBlock){
-            							//modify block color menu(blockLetter[i],rectColor);
-            							this.modifyBlock=!this.modifyBlock;
+							          	var k=0; for(l=1; l<rectColor.length; l+=2){
+							          		this.startingColor[k]=parseInt(rectColor[l]+rectColor[l+1],16);
+							          		k++;
+							          	}            						
+            							this.showModifyBlockMenu=true; this.showAnotherMenu=true;
+            							this.modifyBlockLetter=blockLetter[i];
+            							this.modifyBlock=false;
             						}else{
             							if(this.selected==blockLetter[i]){
             								this.selected="NIENTE";
@@ -1332,6 +1340,105 @@
         		case "q": return colore[15]; break;
         		case "r": return colore[16]; break;
         	}
+        }
+        this.drawModifyBlockMenu = function (){
+          if(this.mouseTimer>1){this.mouseTimer--;}
+          ctx.textAlign="center"; ctx.font = "bold 18px Lucida Console";
+          var string1="MODIFY BLOCK COLOR"; if(debugMode){string1+=": "+this.modifyBlockLetter;}
+          var string2=["r:","g:","b:","α:"];
+          var menuWidth=realCanvasWidth/2;
+          var menuHeight=8+(ctx.measureText("O").width+4)*12;
+          var rectDimension=8*(menuHeight-8)/12;
+          var rectColor="#";
+          for(i=0; i<4; i++){if(this.startingColor[i]>15){rectColor+=this.startingColor[i].toString(16);}else{rectColor+="0"+this.startingColor[i].toString(16);}}
+          var xOffset=10;
+          ctx.fillStyle="#cccccc"; ctx.fillRect(realCanvasWidth/2-menuWidth/2, canvasHeightDefault/2-menuHeight/2, menuWidth, menuHeight);
+          ctx.strokeStyle="#000000"; ctx.strokeRect(realCanvasWidth/2-menuWidth/2, canvasHeightDefault/2-menuHeight/2, menuWidth, menuHeight);
+          ctx.fillStyle=rectColor; ctx.fillRect(realCanvasWidth/2+menuWidth/2-xOffset-rectDimension, 2+canvasHeightDefault/2-menuHeight/2+2*(menuHeight-8)/12, rectDimension*0.91, rectDimension*0.91);
+          disegnaTestoConBordino(rectColor, realCanvasWidth/2+menuWidth/2-xOffset-rectDimension+rectDimension*0.91/2, -3+canvasHeightDefault/2-menuHeight/2+2*(menuHeight-8)/12+rectDimension*0.91, "#000000", "#cccccc");
+          disegnaTestoConBordino(string1,realCanvasWidth/2,4+canvasHeightDefault/2-menuHeight/2+ctx.measureText("O").width,"#000000");
+          ctx.textAlign="left";
+          for(i=0; i<4; i++){
+          	xOffset=10;
+          	var textColor=""; switch (i) {case 0: textColor="#ff0000";break; case 1: textColor="#00ff00";break; case 2: textColor="#0000ff";break; default: textColor="#000000";break;}
+          	disegnaTestoConBordino(string2[i],realCanvasWidth/2-menuWidth/2+xOffset,4+canvasHeightDefault/2-menuHeight/2+ctx.measureText("O").width+2*(i+1)*(menuHeight-8)/12,textColor);
+          	xOffset+=10+ctx.measureText("α:").width;
+          	disegnaTestoConBordino("-",realCanvasWidth/2-menuWidth/2+xOffset,4+canvasHeightDefault/2-menuHeight/2+ctx.measureText("O").width+2*(i+1)*(menuHeight-8)/12,textColor);
+          	ctx.strokeStyle="#676767"; ctx.lineWidth="1"; ctx.strokeRect(realCanvasWidth/2-menuWidth/2+xOffset-ctx.measureText("O").width/2, 2+canvasHeightDefault/2-menuHeight/2+2*(i+1)*(menuHeight-8)/12, ctx.measureText("O").width*1.5, ctx.measureText("O").width*1.5);
+          	if(this.startingColor[i]>0 && this.mouseTimer==1 && checkMouseBox(realCanvasWidth/2-menuWidth/2+xOffset-ctx.measureText("O").width/2, 2+canvasHeightDefault/2-menuHeight/2+2*(i+1)*(menuHeight-8)/12, ctx.measureText("O").width*1.5, ctx.measureText("O").width*1.5)){
+          		ctx.strokeStyle="#000000"; ctx.lineWidth="2"; ctx.strokeRect(realCanvasWidth/2-menuWidth/2+xOffset-ctx.measureText("O").width/2, 2+canvasHeightDefault/2-menuHeight/2+2*(i+1)*(menuHeight-8)/12, ctx.measureText("O").width*1.5, ctx.measureText("O").width*1.5);
+          		if(mouseClick){ this.startingColor[i]--; this.mouseTimer=10;}	
+          	}
+          	xOffset+=5+ctx.measureText("O").width;
+          	var barLength=menuWidth-xOffset*2-rectDimension-ctx.measureText("000").width;
+          	ctx.fillStyle="#676767"; ctx.fillRect(realCanvasWidth/2-menuWidth/2+xOffset,-2+canvasHeightDefault/2-menuHeight/2+ctx.measureText("O").width+2*(i+1)*(menuHeight-8)/12, barLength, 3);
+          	var sliderWidth=5; var sliderX=realCanvasWidth/2-menuWidth/2+xOffset-sliderWidth/2;
+          	if(checkMouseBox(realCanvasWidth/2-menuWidth/2+xOffset,-2+canvasHeightDefault/2-menuHeight/2+2*(i+1)*(menuHeight-8)/12, barLength, ctx.measureText("O").width*2) && mouseClick){
+          		this.startingColor[i]=-4+Math.round((mouseX-sliderX)*255/barLength);
+          		if(this.startingColor[i]<0){this.startingColor[i]=0;} if(this.startingColor[i]>255){this.startingColor[i]=255;}
+          	}
+          	sliderX+=barLength*this.startingColor[i]/255;
+          	ctx.fillStyle="#272727"; ctx.fillRect(sliderX, -1+canvasHeightDefault/2-menuHeight/2+2*(i+1)*(menuHeight-8)/12+ctx.measureText("O").width/2, sliderWidth, ctx.measureText("O").width);
+          	disegnaTestoConBordino("+  "+this.startingColor[i],realCanvasWidth/2-menuWidth/2+xOffset+barLength+10,4+canvasHeightDefault/2-menuHeight/2+ctx.measureText("O").width+2*(i+1)*(menuHeight-8)/12,textColor);
+          	ctx.strokeStyle="#676767"; ctx.lineWidth="1"; ctx.strokeRect(realCanvasWidth/2-menuWidth/2+xOffset+barLength+13.5-ctx.measureText("O").width/2, 2+canvasHeightDefault/2-menuHeight/2+2*(i+1)*(menuHeight-8)/12, ctx.measureText("O").width*1.5, ctx.measureText("O").width*1.5);
+          	if(this.startingColor[i]<255 && this.mouseTimer==1 && checkMouseBox(realCanvasWidth/2-menuWidth/2+xOffset+barLength+13.5-ctx.measureText("O").width/2, 2+canvasHeightDefault/2-menuHeight/2+2*(i+1)*(menuHeight-8)/12, ctx.measureText("O").width*1.5, ctx.measureText("O").width*1.5)){
+          		ctx.strokeStyle="#000000"; ctx.lineWidth="2"; ctx.strokeRect(realCanvasWidth/2-menuWidth/2+xOffset+barLength+13.5-ctx.measureText("O").width/2, 2+canvasHeightDefault/2-menuHeight/2+2*(i+1)*(menuHeight-8)/12, ctx.measureText("O").width*1.5, ctx.measureText("O").width*1.5);
+          		if(mouseClick){ this.startingColor[i]++; this.mouseTimer=10;}	
+          	}	
+          }
+          ctx.textAlign="center"; ctx.font = "small-caps bold 18px Lucida Console";
+          disegnaTestoConBordino("confirm",realCanvasWidth/2-menuWidth/4,4+canvasHeightDefault/2-menuHeight/2+ctx.measureText("O").width+10*(menuHeight-8)/12,"#000000");
+          if(checkMouseBox(realCanvasWidth/2-menuWidth/4-ctx.measureText("confirm").width,5+canvasHeightDefault/2-menuHeight/2-ctx.measureText("O").width/2+10*(menuHeight-8)/12,ctx.measureText("confirm").width*2,4*ctx.measureText("O").width/2)){
+            ctx.strokeStyle="#000000"; ctx.lineWidth="2";
+            ctx.strokeRect(realCanvasWidth/2-menuWidth/4-ctx.measureText("confirm").width,5+canvasHeightDefault/2-menuHeight/2-ctx.measureText("O").width/2+10*(menuHeight-8)/12,ctx.measureText("confirm").width*2,4*ctx.measureText("O").width/2);
+            if(mouseClick){
+            	stringToLevel(modificaColore(rectColor,this.modifyBlockLetter));
+		        this.showAnotherMenu=false; this.showModifyBlockMenu=false;
+				this.startingColor=[0,0,0,255]; this.modifyBlockLetter="";
+            }
+          }
+          disegnaTestoConBordino("cancel",realCanvasWidth/2+menuWidth/4,4+canvasHeightDefault/2-menuHeight/2+ctx.measureText("O").width+10*(menuHeight-8)/12,"#000000");
+          if(checkMouseBox(realCanvasWidth/2+menuWidth/4-ctx.measureText("cancel").width,5+canvasHeightDefault/2-menuHeight/2-ctx.measureText("O").width/2+10*(menuHeight-8)/12,ctx.measureText("cancel").width*2,4*ctx.measureText("O").width/2)){
+            ctx.strokeStyle="#000000"; ctx.lineWidth="2";
+            ctx.strokeRect(realCanvasWidth/2+menuWidth/4-ctx.measureText("cancel").width,5+canvasHeightDefault/2-menuHeight/2-ctx.measureText("O").width/2+10*(menuHeight-8)/12,ctx.measureText("cancel").width*2,4*ctx.measureText("O").width/2);
+            if(mouseClick){
+		        this.showAnotherMenu=false; this.showModifyBlockMenu=false;
+				this.startingColor=[0,0,0,255]; this.modifyBlockLetter="";	            
+            }
+          }          
+          ctx.textAlign="left";
+          function modificaColore(colore,lettera){
+          	var puntoVirgolaPrima=0; var puntoVirgolaLetti=0;
+          	var inizioColore=0; var fineColore=0;
+        	switch(lettera){
+        		case "a": puntoVirgolaPrima= 2; break; 
+        		case "b": puntoVirgolaPrima= 3; break;
+        		case "c": puntoVirgolaPrima= 4; break;
+        		case "d": puntoVirgolaPrima= 5; break;
+        		case "e": puntoVirgolaPrima= 6; break;
+        		case "f": puntoVirgolaPrima= 7; break;
+        		case "g": puntoVirgolaPrima= 8; break;
+        		case "h": puntoVirgolaPrima= 9; break;
+        		case "i": puntoVirgolaPrima= 10; break;
+        		case "j": puntoVirgolaPrima= 11; break;
+        		case "k": puntoVirgolaPrima= 12; break;
+        		case "m": puntoVirgolaPrima= 13; break;
+        		case "n": puntoVirgolaPrima= 14; break;
+        		case "o": puntoVirgolaPrima= 15; break;
+        		case "p": puntoVirgolaPrima= 16; break;
+        		case "q": puntoVirgolaPrima= 17; break;
+        		case "r": puntoVirgolaPrima= 18; break;
+        	}
+        	for(k=0; k<stringaLivello.length; k++){
+        		if (stringaLivello[k] == ";"){
+					puntoVirgolaLetti++;
+        		}
+        		if(puntoVirgolaLetti==puntoVirgolaPrima && inizioColore==0){inizioColore=k+1;}
+        		if(puntoVirgolaLetti==puntoVirgolaPrima+1){fineColore=k; break;}
+        	}        	          	
+        	stringaLivello=stringaLivello.slice(0,inizioColore)+colore+stringaLivello.slice(fineColore);
+          	return stringaLivello;
+          }
         }
         this.entityTabCode = function (){
 			var offesetY=this.selectAndEraserCode()+20;
@@ -1415,7 +1522,6 @@
         if(tastoGiaSchiacciato && !(keys[destrakey] || keys[sinistrakey] || keys[sukey] || keys[giukey])){ //azzera tasto gia schiacciato
           tastoGiaSchiacciato=false;
         }
-        //qui sotto implementero' cosa succede col mouse
       } //fine della funzione playerPhysics - se riesco la faccio diventare un metodo di player invece che una funzione sestante
           
       function collisionBetween(p1, lvl) {//this function detects the collision between the two given objects - la uso anche con le entità lol
