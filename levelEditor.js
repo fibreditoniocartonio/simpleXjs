@@ -715,7 +715,7 @@
 	}
   
   function drawWater(){  //disegna l'acqua
-      ctx.fillStyle = player.defaultColor1 + "50";
+      ctx.fillStyle = "#0400f850";
       var ydisegnata=0
       if (player.y < canvasHeight/2){
         ydisegnata=level.waterLevel;
