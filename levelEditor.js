@@ -1,5 +1,5 @@
       var versioneDiGioco = "v0.20220718"; //inserire blocchi! inoltre aggiunto il blocco "posizione iniziale", se no il livello non era giocabile
-      debugMode=true;    //you can enable debugMode with the console (press f12 in the browser)
+      debugMode=false;    //you can enable debugMode with the console (press f12 in the browser)
       showMouseBox=false; //you can enable showMouseBox with the console (press f12 in the browser)
       
       //crea il canvas
@@ -1496,7 +1496,7 @@
 			return voceHeight; 
         }//fine di selectAndEraserCode()
         this.piazzaBloccoCode = function (){
-          if(mouseClick && mouseY>25 && mouseX>25 && mouseY<level.maxHeight-5 && mouseX<level.maxWidth-5){
+          if(mouseClick && mouseY>25 && mouseX>25 && mouseX<canvasWidth-25 && mouseY<canvasHeight-25){
             var indice=(level.maxWidth/20-1)*lvlCanvasMouseY+lvlCanvasMouseX;
             if(indice<level.indiceZ){
               switch(stringaLivello[indice]){
