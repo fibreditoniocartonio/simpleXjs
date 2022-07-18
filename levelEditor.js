@@ -1496,7 +1496,7 @@
 			return voceHeight; 
         }//fine di selectAndEraserCode()
         this.piazzaBloccoCode = function (){
-          if(mouseClick && mouseY>25 && mouseX>25 && mouseY<level.maxHeight-5 && mouseX<level.maxWidth-5){
+          if(mouseClick && mouseY>25 && mouseX>25 && mouseX<canvasWidth-25 && mouseY<canvasHeight-25){
             var indice=(level.maxWidth/20-1)*lvlCanvasMouseY+lvlCanvasMouseX;
             if(indice<level.indiceZ){
               switch(stringaLivello[indice]){
