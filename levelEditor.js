@@ -1,4 +1,4 @@
-      var versioneDiGioco = "v0.20220717"; //blocks tab e mod. colore blocco (manca solo la possibilita' di applicarli), vettore lista entity e entities tab (solo iniziata), dato un senso alla debug mode(ora mostra le lettere)
+      var versioneDiGioco = "v0.20220718"; //inserire blocchi! inoltre aggiunto il blocco "posizione iniziale", se no il livello non era giocabile
       debugMode=false;    //you can enable debugMode with the console (press f12 in the browser)
       showMouseBox=false; //you can enable showMouseBox with the console (press f12 in the browser)
       
@@ -114,6 +114,8 @@
 					level['xStartingPos'] = (i%widthTot)*20;
 					level['yStartingPos'] = (heightTot-2)*20;
 					if(lvlString[i-1]=='p' || lvlString[i-1]=='q' || lvlString[i-1]=='r' ){blockBackground(lvlString[i-1]);} //se il blocco prima era un background lo carica sotto il player
+          leggiBlocco(level,lvlString[i]);
+          level[level.length-1].color="#0400f8";
 					break;
 
 				case 't': // t è il top floor/ceiling
@@ -228,12 +230,13 @@
 					break;	
 											
 				case 'z': // 'z' indica la fine del livello. Da qui in poi non sto leggendo piu blocchi e entita' ma le caratteristiche del livello come gravita', posizione iniziale del player e colore dei blocchi del livello
+          level['indiceZ']=i;
 					widthTot++;
 					heightTot++;
 					level['gravity'] = readNumber();
 					level['friction'] = readNumber();
-			        level['gravityWater'] = level.gravity*4/7;
-			        level['frictionWater'] = level.friction*9/10;
+			    level['gravityWater'] = level.gravity*4/7;
+			    level['frictionWater'] = level.friction*9/10;
 					blocksColors(level,11);//this will push color[] to level, it will contain the blocks colors
 					blocksColors(foreground,3);
 					blocksColors(background,3);
@@ -756,7 +759,7 @@
           }
           //ora disegno il livello[i]
           if(xdisegnata+lvl[i].width>-1 && xdisegnata<canvasWidth+1){ctx.fillRect(xdisegnata, ydisegnata, lvl[i].width, lvl[i].height);}                    
-          if(debugMode){ ctx.font="bold 10px Lucida Console"; ctx.textAlign="center"; disegnaTestoConBordino(lvl[i].lettera, xdisegnata+lvl[i].width/2, ydisegnata+lvl[i].height/2+ctx.measureText("O").width/2, "#000000","#cccccc"); ctx.textAlign="left";}
+          if(debugMode || lvl[i].lettera=="X"){ ctx.font="bold 10px Lucida Console"; ctx.textAlign="center"; disegnaTestoConBordino(lvl[i].lettera, xdisegnata+lvl[i].width/2, ydisegnata+lvl[i].height/2+ctx.measureText("O").width/2, "#000000","#cccccc"); ctx.textAlign="left";}
         }
       }
        
@@ -862,7 +865,7 @@
 		this.showModifyBlockMenu=false;
 		this.startingColor=[0,0,0,255];
 		this.modifyBlockLetter="";        
-        this.drawSideMenu = function (){
+        this.drawSideMenu = async function (){
           if(this.mouseTimer>0 && !this.showAnotherMenu){this.mouseTimer--;}//timer mouse
           ctx.fillStyle="#cccccc"; ctx.fillRect(canvasWidthDefault, 0, this.width, this.height); //sfondo
           this.tabCode(); //disegno la parte in alto delle tab e le gestisco (mouse input)
@@ -876,6 +879,7 @@
           if(this.showAnotherMenu && this.showExtendLevelMenu){this.drawExtendLevelMenu();}
           if(this.showAnotherMenu && this.showModifyBackgroundMenu){this.drawModifyBackgroundMenu();}
           if(this.showAnotherMenu && this.showModifyBlockMenu){this.drawModifyBlockMenu();}
+          if(this.selected!="NIENTE"){await this.piazzaBloccoCode();}
           ctx.textAlign="left";//sistemo almeno non si buggano gli altri menu
         }//fine drawSideMenu()
         this.tabCode = function (){
@@ -1246,7 +1250,7 @@
             }
             offsetY+=voceHeight;
             ctx.textAlign="center"; ctx.font = "bold 15px Lucida Console";
-            var blockLetter=["PLATFORM BLOCKS","a","b","c","d","e","f","g","h","i","j","k","FOREGROUND BLOCKS","m","n","o","BACKGROUND BLOCKS","p","q","r"];
+            var blockLetter=["PLATFORM BLOCKS","a","b","c","d","e","f","g","h","i","j","k","X","FOREGROUND BLOCKS","m","n","o","BACKGROUND BLOCKS","p","q","r"];
             var altezzaTotale=canvasHeightDefault-offsetY-30;
             var numeroRighe=9; var rigaCorrente=0;
             var altezzaRiga=altezzaTotale/numeroRighe;
@@ -1258,20 +1262,30 @@
             	}else{
             		for(j=0; j<3;j++){
             			if(blockLetter[i].length<2){
-            				var rectColor=this.getBlockColor(blockLetter[i]);
+                    var latoRect=ctx.measureText("O").width*2;
+            				var rectColor="";
             				if(this.selected==blockLetter[i]){ctx.fillStyle="#8c8c8c"; ctx.fillRect(canvasWidthDefault+j*larghezzaScritta+2, offsetY+2+altezzaRiga*(rigaCorrente), larghezzaScritta-4, altezzaRiga-4);}
+                    if(blockLetter[i]=="X"){
+                      rectColor=player.color;
+                      ctx.font = "small-caps bold 10px Lucida Console";
+                      disegnaTestoConBordino("starting", canvasWidthDefault+j*larghezzaScritta+larghezzaScritta/2, offsetY-2+altezzaRiga*(rigaCorrente)+altezzaRiga/2+ctx.measureText("O").width-latoRect, "#000000","#cccccc");
+                      disegnaTestoConBordino("position", canvasWidthDefault+j*larghezzaScritta+larghezzaScritta/2, offsetY-2+altezzaRiga*(rigaCorrente)+altezzaRiga/2+ctx.measureText("O").width/2+latoRect, "#000000","#cccccc");
+                      ctx.font = "bold 15px Lucida Console";
+                    }else{rectColor=this.getBlockColor(blockLetter[i]);}                    
             				ctx.strokeStyle="#676767"; ctx.lineWidth="1"; ctx.strokeRect(canvasWidthDefault+j*larghezzaScritta+2, offsetY+2+altezzaRiga*(rigaCorrente), larghezzaScritta-4, altezzaRiga-4);
             				if(checkMouseBox(canvasWidthDefault+j*larghezzaScritta+2, offsetY+2+altezzaRiga*(rigaCorrente), larghezzaScritta-4, altezzaRiga-4)){
             					ctx.strokeStyle="#000000"; ctx.lineWidth="2"; ctx.strokeRect(canvasWidthDefault+j*larghezzaScritta+2, offsetY+2+altezzaRiga*(rigaCorrente), larghezzaScritta-4, altezzaRiga-4); 
             					if(mouseClick && this.mouseTimer==0){
             						this.mouseTimer=10;
             						if(this.modifyBlock){
-							          	var k=0; for(l=1; l<rectColor.length; l+=2){
-							          		this.startingColor[k]=parseInt(rectColor[l]+rectColor[l+1],16);
-							          		k++;
-							          	}            						
-            							this.showModifyBlockMenu=true; this.showAnotherMenu=true;
-            							this.modifyBlockLetter=blockLetter[i];
+                          if(blockLetter[i]!="X"){
+  							          	var k=0; for(l=1; l<rectColor.length; l+=2){
+  							          		this.startingColor[k]=parseInt(rectColor[l]+rectColor[l+1],16);
+  							          		k++;
+  							          	}            						
+              							this.showModifyBlockMenu=true; this.showAnotherMenu=true;
+              							this.modifyBlockLetter=blockLetter[i];
+                          }
             							this.modifyBlock=false;
             						}else{
             							if(this.selected==blockLetter[i]){
@@ -1283,10 +1297,9 @@
             						}
             					}
             				}
-            				var latoRect=ctx.measureText("O").width*2;
             				ctx.fillStyle=rectColor; ctx.fillRect(canvasWidthDefault+j*larghezzaScritta+larghezzaScritta/2-latoRect/2, offsetY-2+altezzaRiga*(rigaCorrente)+altezzaRiga/2-latoRect/2+ctx.measureText("o").width/4, latoRect, latoRect);
             				ctx.strokeStyle="#222222"; ctx.strokeRect(canvasWidthDefault+j*larghezzaScritta+larghezzaScritta/2-latoRect/2, offsetY-2+altezzaRiga*(rigaCorrente)+altezzaRiga/2-latoRect/2+ctx.measureText("o").width/4, latoRect, latoRect);
-            				if(debugMode){disegnaTestoConBordino(blockLetter[i], canvasWidthDefault+j*larghezzaScritta+larghezzaScritta/2, offsetY-2+altezzaRiga*(rigaCorrente)+altezzaRiga/2+ctx.measureText("O").width/2, "#000000","#cccccc");}
+            				if(debugMode || blockLetter[i]=="X"){disegnaTestoConBordino(blockLetter[i], canvasWidthDefault+j*larghezzaScritta+larghezzaScritta/2, offsetY-2+altezzaRiga*(rigaCorrente)+altezzaRiga/2+ctx.measureText("O").width/2, "#000000","#cccccc");}
             				i++;
             			}
             		}
@@ -1299,7 +1312,7 @@
         this.getBlockColor = function (blockLetter){
         	var puntiVirgola=0;
         	var colore=[];
-        	for(k=0; k<stringaLivello.length; k++){
+        	for(k=level.indiceZ; k<stringaLivello.length; k++){
         		if (stringaLivello[k] == ";"){
 					puntiVirgola++;
         		}
@@ -1429,7 +1442,7 @@
         		case "q": puntoVirgolaPrima= 17; break;
         		case "r": puntoVirgolaPrima= 18; break;
         	}
-        	for(k=0; k<stringaLivello.length; k++){
+        	for(k=level.indiceZ; k<stringaLivello.length; k++){
         		if (stringaLivello[k] == ";"){
 					puntoVirgolaLetti++;
         		}
@@ -1482,6 +1495,20 @@
 	        ctx.textAlign="left";				
 			return voceHeight; 
         }//fine di selectAndEraserCode()
+        this.piazzaBloccoCode = function (){
+          if(mouseClick && mouseY>25 && mouseX>25 && mouseY<level.maxHeight-5 && mouseX<level.maxWidth-5){
+            var indice=(level.maxWidth/20-1)*lvlCanvasMouseY+lvlCanvasMouseX;
+            if(indice<level.indiceZ){
+              switch(stringaLivello[indice]){
+                case "t": case "l": case "w": break;//nei casi dei blocchi speciali non fare nulla
+                default: 
+                  stringaLivello=stringaLivello.slice(0,indice)+this.selected+stringaLivello.slice(indice+1);
+                  stringToLevel(stringaLivello);
+                  break; 
+              }
+            }
+          }
+        }//fine di piazzaBloccoCode()
       }//fine di sideMenu
       
       function playerPhysics(p1, lvl) {//this function handles the platformer physics - in realta' solo del player
@@ -1825,29 +1852,40 @@
     }
 	}
 
-  function salvaLivello(){  
-    //creo il file simpleXjs.dataDiOggi.savegame da scaricare
-        const dataDiOggi=creaData(); //prende la data di oggi
-        var element = document.createElement('a');
-        element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(stringaLivello));
-        element.setAttribute('download', "simpleXjs."+dataDiOggi+".level");
-        element.style.display = 'none';
-        document.body.appendChild(element);
-        element.click();
-        document.body.removeChild(element);
-        document.getElementById('canvasDivId').focus();
-        return;
-        
-        function creaData(){
-          var temp = new Date();
-          var dateStr = padStr(temp.getFullYear()) +"."+
-                        padStr(1 + temp.getMonth()) +"."+
-                        padStr(temp.getDate()) +"-"+
-                        padStr(temp.getHours()) +"."+
-                        padStr(temp.getMinutes());
-          return dateStr;
-          function padStr(i) {//sistema tipo 01 e 11 per avere tutto su due cifre
-              return (i < 10) ? "0" + i : "" + i;
-          }        
+  function salvaLivello(){
+        //controllo prima che ci sia la starting position
+        var xCount=0;
+        for(i=0; i<stringaLivello.length;i++){
+          if(stringaLivello[i]=="X"){xCount++;}
+        }
+        if(xCount==0){
+          objAlert = new newAlert("you must set the player starting position", gamestate); gamestate=5;
+        }else if(xCount>1){
+          objAlert = new newAlert("you must set only one player starting position", gamestate); gamestate=5;
+        }else{  
+          //creo il file simpleXjs.dataDiOggi.savegame da scaricare
+          const dataDiOggi=creaData(); //prende la data di oggi
+          var element = document.createElement('a');
+          element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(stringaLivello));
+          element.setAttribute('download', "simpleXjs."+dataDiOggi+".level");
+          element.style.display = 'none';
+          document.body.appendChild(element);
+          element.click();
+          document.body.removeChild(element);
+          document.getElementById('canvasDivId').focus();
+          return;
+          
+          function creaData(){
+            var temp = new Date();
+            var dateStr = padStr(temp.getFullYear()) +"."+
+                          padStr(1 + temp.getMonth()) +"."+
+                          padStr(temp.getDate()) +"-"+
+                          padStr(temp.getHours()) +"."+
+                          padStr(temp.getMinutes());
+            return dateStr;
+            function padStr(i) {//sistema tipo 01 e 11 per avere tutto su due cifre
+                return (i < 10) ? "0" + i : "" + i;
+            }        
+          }
         }
   }
