@@ -1,4 +1,4 @@
-      var versioneDiGioco = "v0.20220718"; //fixata lettura background che si rompeva se leggeva " "
+      var versioneDiGioco = "v0.20220719"; //aggiunta possibilita' di caricare costumLevel, fixate alcune cose che rompevano il livello
       debugMode=false; //you can enable debugMode with the console (press f12 in the browser)
       
       //crea il canvas
@@ -239,11 +239,12 @@ i livelli sono disposti cosi in realta':1 8
 		for (i = 0; i < lvlString.length; i++) { //ciclo la stringa livello per trasformarlo da stringa a livello vero
 			switch (lvlString[i]){
 				case 'X'://posizione iniziale del player
+          var currentIndex=i;
 					level['xStartingPos'] = (i%widthTot)*20;
 					level['yStartingPos'] = (heightTot-2)*20;
-					if(lvlString[i-1]=='p' || lvlString[i-1]=='q' || lvlString[i-1]=='r' ){blockBackground(lvlString[i-1]);} //se il blocco prima era un background lo carica sotto il player
+					if(lvlString[i-1]=='p' || lvlString[i-1]=='q' || lvlString[i-1]=='r'){leggiBlocco(background,lvlString[i-1]);} //se il blocco prima era un background lo carica sotto il player
+          i=currentIndex;
 					break;
-
 				case 't': // t è il top floor/ceiling
 					widthTot++;
 					break;
@@ -3767,15 +3768,17 @@ i livelli sono disposti cosi in realta':1 8
         this.isClosing=false;
         this.apriLivello=false;
         this.confermaUscita=false;
+        this.loadCostumLevel=false;
+        this.costumLevelString="";
         this.width=0;
         this.height=0;
         this.widthMax=canvasWidth-440;
         this.heightMax=canvasHeight-400;
         this.indice=0;
         this.indiceUscita=0;
-        this.numeroDiVoci=3;
+        this.numeroDiVoci=4;
         this.staCambiandoTasto=false;
-        this.drawMenu = function (){
+        this.drawMenu = async function (){
           if (!this.isOpen && !this.isClosing){//animazione di apertura del menu
             if (this.width < this.widthMax){this.width+=10;}
             if (this.height < this.heightMax){this.height+=15;}
@@ -3788,7 +3791,7 @@ i livelli sono disposti cosi in realta':1 8
           ctx.fillStyle = "#52b58b"; ctx.fillRect((canvasWidth/2)-this.width/2,(canvasHeight/2)-this.height/2, this.width, this.height); //disegna lo sfondo verde
 
           if(this.isOpen){ //quando il menu e' tutto aperto
-            if (!this.confermaUscita){//se non e' attivo il conferma uscita - caso del menu normale
+            if (!this.confermaUscita && !this.loadCostumLevel){//se non e' attivo il conferma uscita e non e' un costum level - caso del menu normale
                 ctx.font = "small-caps bold 20px Lucida Console"; //tipo di font per le scritte
                 for(var i=0;i<this.numeroDiVoci;i++){//disegno tutte le scritte
                   var ydisegnata=6+((canvasHeight/2)-(this.height/2))+(((this.height)/this.numeroDiVoci)*i)+(this.height/(this.numeroDiVoci*2));
@@ -3798,9 +3801,12 @@ i livelli sono disposti cosi in realta':1 8
           						disegnaTestoConBordino("open the level selected", canvasWidth/2, ydisegnata,"#d2d2d2","#000000");
           						break;
           					case 1:
+          						disegnaTestoConBordino("open a costum level", canvasWidth/2, ydisegnata,"#d2d2d2","#000000");
+          						break;                      
+          					case 2:
           						disegnaTestoConBordino("save game", canvasWidth/2, ydisegnata,"#d2d2d2","#000000");
           						break;
-          					case 2:
+          					case 3:
           						disegnaTestoConBordino("back to the main menu", canvasWidth/2, ydisegnata,"#d2d2d2","#000000");
                       break;									
           				}
@@ -3831,10 +3837,18 @@ i livelli sono disposti cosi in realta':1 8
                       this.isClosing=true;
                       this.isOpen=false;
                       break;
-                    case 1: //salva la partita
+                    case 1: //carica livello costum
+                      document.getElementById("fileCaricaPartita").value="";
+                      document.getElementById("caricaPartitaDiv").style.zIndex = "10";
+                      document.getElementById("fileCaricaPartita").disabled=false;                      
+                      this.indiceUscita=1;
+                      this.loadCostumLevel=true;
+                      break;                      
+                    case 2: //salva la partita
                       SalvaPartita();
                       break;
-                    case 2: //chiedi conferma uscita
+                    case 3: //chiedi conferma uscita
+                      this.indiceUscita=0;
                       this.confermaUscita=true;
                       break;
                   }
@@ -3848,7 +3862,7 @@ i livelli sono disposti cosi in realta':1 8
                 }else{
                   tastoGiaSchiacciato=false;
                 }
-            }else{ //se e' attivo il conferma uscita
+            }else if (this.confermaUscita){ //se e' attivo il conferma uscita
                 ctx.textAlign = "center"; ctx.font = "small-caps bold 20px Lucida Console"; //tipo di font per le scritte
                 disegnaTestoConBordino("do you want to go back", (canvasWidth/2), ((canvasHeight/2)+15-this.heightMax/2),"#d2d2d2","#000000");
                 disegnaTestoConBordino("to the main menu?", (canvasWidth/2), ((canvasHeight/2)+35-this.heightMax/2),"#d2d2d2","#000000");
@@ -3878,9 +3892,9 @@ i livelli sono disposti cosi in realta':1 8
                           case 1: xdisegnata = (canvasWidth/2); break;
                         }
                       	ctx.fillRect(xdisegnata, ydisegnata, this.width/2, 9);
-                      	ctx.fillRect(xdisegnata, ydisegnata-9+(this.height)/this.numeroDiVoci, this.width/2, 9);
-                      	ctx.fillRect(xdisegnata, ydisegnata, 9, (this.height)/this.numeroDiVoci-8);
-                      	ctx.fillRect(xdisegnata+(this.width/2)-9, ydisegnata, 9, (this.height)/this.numeroDiVoci-8);			
+                      	ctx.fillRect(xdisegnata, ydisegnata-9+(this.height)/3, this.width/2, 9);
+                      	ctx.fillRect(xdisegnata, ydisegnata, 9, (this.height)/3-8);
+                      	ctx.fillRect(xdisegnata+(this.width/2)-9, ydisegnata, 9, (this.height)/3-8);			
           			}
                 //ora gestisco gli input
                 if(keys[destrakey] && !tastoGiaSchiacciato) {
@@ -3892,7 +3906,7 @@ i livelli sono disposti cosi in realta':1 8
                 if((keys[dashkey] || keys[startkey]) && !tastoGiaSchiacciato) {
                   switch (this.indiceUscita){
                     case 0: //no
-                      this.confermaUscita=false;
+                      this.confermaUscita=false;                      
                       break;
                     case 1: //si
                       objMenuPrincipale= new newMenuPrincipale(); 
@@ -3908,9 +3922,95 @@ i livelli sono disposti cosi in realta':1 8
                 }else{
                   tastoGiaSchiacciato=false;
                 }                
-            }				          	
-        }//fine di if(is.Open)
-          
+            }else if (this.loadCostumLevel){ //se e' attivo il conferma uscita
+                ctx.textAlign = "center"; ctx.font = "small-caps bold 25px Lucida Console"; //tipo di font per le scritte
+                disegnaTestoConBordino("load costum level", (canvasWidth/2), ((canvasHeight/2)+25-this.heightMax/2),"#d2d2d2","#000000");
+                for(var j=0;j<2;j++){//disegno tutte le scritte
+                  ctx.textAlign = "center";
+                  var ydisegnata=57+canvasHeight/2;
+          				switch (j){//scrive le scritte
+          					case 0:
+                      var xdisegnata=(canvasWidth/2)-((this.width/4));
+          						disegnaTestoConBordino("confirm", xdisegnata, ydisegnata,"#d2d2d2","#000000");
+          						break;
+          					case 1:
+                      var xdisegnata=(canvasWidth/2)+((this.width/4));
+          						disegnaTestoConBordino("cancel", xdisegnata, ydisegnata,"#d2d2d2","#000000");
+          						break;								
+          				}
+                  ctx.textAlign = "left"; //lo reimposto left se no si bugga tutto
+          			}		
+          			{//disegno il quadrato intorno all'opzione selezionata - uso le {} per ridurre lo scope di xdisegnata e ydisegnata
+                        ctx.fillStyle = "#ffc000";
+                        var ydisegnata = 25+canvasHeight/2;
+                        switch (this.indiceUscita){
+                          case 0: xdisegnata = (canvasWidth/2)-(this.width/2); break;
+                          case 1: xdisegnata = (canvasWidth/2); break;
+                        }
+                      	ctx.fillRect(xdisegnata, ydisegnata, this.width/2, 9);
+                      	ctx.fillRect(xdisegnata, ydisegnata-9+(this.height)/3, this.width/2, 9);
+                      	ctx.fillRect(xdisegnata, ydisegnata, 9, (this.height)/3-8);
+                      	ctx.fillRect(xdisegnata+(this.width/2)-9, ydisegnata, 9, (this.height)/3-8);			
+          			}
+                //ora gestisco gli input
+                if(keys[destrakey] && !tastoGiaSchiacciato) {
+                    this.indiceUscita=1;
+                }
+                if(keys[sinistrakey] && !tastoGiaSchiacciato) {
+                    this.indiceUscita=0;
+                }
+                if((keys[dashkey] || keys[startkey]) && !tastoGiaSchiacciato) {              
+                  switch (this.indiceUscita){
+                    case 0: //conferma carica livello costum
+                      this.costumLevelString=await controllaFile();
+                      if(this.costumLevelString!=""){
+                        chiudiInputFile();
+                        this.apriLivello=true;
+                        this.isClosing=true;
+                        this.isOpen=false;
+                      }                                            
+                      break;                    
+                    case 1: //cancella
+                      chiudiInputFile();
+                      this.loadCostumLevel=false;
+                      break;
+                  }
+                }                            			
+                if(keys[jumpkey] && !tastoGiaSchiacciato) {//chiude il menu
+                  chiudiInputFile();
+                  this.loadCostumLevel=false;
+                }
+                function chiudiInputFile(){
+                  document.getElementById("fileCaricaPartita").value="";
+                  document.getElementById("caricaPartitaDiv").style.zIndex = "-1";
+                  document.getElementById("fileCaricaPartita").disabled=true;
+                  document.getElementById('canvasDivId').focus(); //riporta il focus sul canvas                
+                }
+                if(keys[startkey] || keys[sukey] || keys[giukey] || keys[sinistrakey] || keys[destrakey] || keys[dashkey] || keys[jumpkey]){
+                  tastoGiaSchiacciato=true;
+                }else{
+                  tastoGiaSchiacciato=false;
+                }                
+            }
+            async function controllaFile(){ //controlla che il file sia caricato correttamente
+                var uploadedFile = document.getElementById("fileCaricaPartita").files[0];
+                var stringaCaricaPartita="";
+                if(uploadedFile.size > (5*1024*1024)){//controlla la dimensione del file - non deve essere superiore a 1MB
+                   objAlert = new newAlert("The file size limit is 5MB. Upload a smaller file.",gamestate); gamestate=5;
+                   return false;
+                }
+                async function readFileAsText(uploadedFile) {
+                    let text = await new Promise((resolve) => {
+                        let fileReader = new FileReader();
+                        fileReader.onload = (e) => resolve(fileReader.result);
+                        fileReader.readAsText(uploadedFile);
+                    });
+                    return text;
+                }          
+                stringaCaricaPartita = await readFileAsText(uploadedFile);
+                return stringaCaricaPartita;                          
+            }//fine di controllaFile()            				          	
+        }//fine di if(is.Open)          
         if(this.isClosing){//animazione di chiusura del menu
             stageSelect(); //disegna stageSelect() - serve per pulire lo schermo disegnando quello che sara' lo sfondo sotto il menu
             if (this.width > 0){this.width-=20;}
@@ -3920,7 +4020,14 @@ i livelli sono disposti cosi in realta':1 8
             if (this.height-1 < 0 && this.width-1 < 0){//quando il menu e' tutto chiuso:
             	if(this.apriLivello){
                 gamestate=-1;
-            	  nuovoLivello();
+                if(this.costumLevelString==""){
+                  nuovoLivello();
+                }else{
+              		player = new Player();
+              		stringToLevel(this.costumLevelString);
+                  player.x = level.xStartingPos;
+                  player.y = level.yStartingPos;                
+                }
             	}else{
                 gamestate=1;
               }
@@ -4222,7 +4329,7 @@ i livelli sono disposti cosi in realta':1 8
                objAlert = new newAlert("The file size limit is 512Byte (half a kB). Upload a smaller file.",gamestate); gamestate=5;
                return false;
             }
-            async function readFileAsDataURL(uploadedFile) {
+            async function readFileAsText(uploadedFile) {
                 let text = await new Promise((resolve) => {
                     let fileReader = new FileReader();
                     fileReader.onload = (e) => resolve(fileReader.result);
@@ -4230,7 +4337,7 @@ i livelli sono disposti cosi in realta':1 8
                 });
                 return text;
             }          
-            stringaCaricaPartita = await readFileAsDataURL(uploadedFile);
+            stringaCaricaPartita = await readFileAsText(uploadedFile);
             return caricaDatiSalvataggio(stringaCaricaPartita);
             
             function caricaDatiSalvataggio(stringaCaricaPartita) { //carica effettivamente la partita dal risultato della lettura del file

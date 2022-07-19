@@ -1,4 +1,4 @@
-      var versioneDiGioco = "v0.20220718"; //inserire blocchi! inoltre aggiunto il blocco "posizione iniziale", se no il livello non era giocabile
+      var versioneDiGioco = "v0.20220719"; //fixati alcuni testi nella scheda blocco del sideMenu(), fixato il bug per cui se piazzavi un blocco Background subito prima dello startingBlock crashava tutto, ottimizzato la schermata Blocks quando il livello ha uno sfondo (non ciclo piu nel base64 dell'immagine ma mi fermo prima) 
       debugMode=false;    //you can enable debugMode with the console (press f12 in the browser)
       showMouseBox=false; //you can enable showMouseBox with the console (press f12 in the browser)
       
@@ -38,14 +38,14 @@
           keys[e.key] = false;
       });
       
-      canvas.addEventListener('mouseup', function(e) {
+      document.addEventListener('mouseup', function(e) {//legge se smetto di cliccare
           mouseClick=false;
       });      
-      canvas.addEventListener('mousedown', function(e) {
+      document.addEventListener('mousedown', function(e) {//legge se clicco
           mouseClick=true;
       });                     
       
-      canvas.addEventListener("mousemove", function(e) {//events - legge il mouse
+      canvas.addEventListener("mousemove", function(e) {//legge la posizione del mouse - questo e' solo un evento di canvas e non di document perche' la posizione mi serve solo sul canvas (ottimizzo)
           var cRect = canvas.getBoundingClientRect(); // Gets CSS pos, and width/height
           mouseX=Math.round(((e.clientX - cRect.left)/(cRect.right-cRect.left))*realCanvasWidth); //coordinate acquisite riproporzionate perche' il canvas ha grandezza variabile, ma coordinate fisse
           mouseY=Math.round(((e.clientY - cRect.top)/window.innerHeight)*canvasHeightDefault); //coordinate acquisite riproporzionate perche' il canvas ha grandezza variabile, ma coordinate fisse  
@@ -58,7 +58,7 @@
         this.width= 24;
         this.height= 24;
         this.color="#0400f8";
-        this.showPlayerCamera=true; //mostra l'iconcina della telecamera che serve per spostarsi nel livello e simula la visione del player
+        this.showPlayerCamera=false; //mostra l'iconcina della telecamera che serve per spostarsi nel livello e simula la visione del player
         this.snapMode=false;
         this.showCoordinates=true;
         this.showGrid=true;
@@ -111,9 +111,11 @@
 		for (i = 0; i < lvlString.length; i++) { //ciclo la stringa livello per trasformarlo da stringa a livello vero
 			switch (lvlString[i]){
 				case 'X'://posizione iniziale del player
+          var currentIndex=i;
 					level['xStartingPos'] = (i%widthTot)*20;
 					level['yStartingPos'] = (heightTot-2)*20;
-					if(lvlString[i-1]=='p' || lvlString[i-1]=='q' || lvlString[i-1]=='r' ){blockBackground(lvlString[i-1]);} //se il blocco prima era un background lo carica sotto il player
+					if(lvlString[i-1]=='p' || lvlString[i-1]=='q' || lvlString[i-1]=='r'){leggiBlocco(background,lvlString[i-1]);} //se il blocco prima era un background lo carica sotto il player
+          i=currentIndex;
           leggiBlocco(level,lvlString[i]);
           level[level.length-1].color="#0400f8";
 					break;
@@ -862,9 +864,9 @@
         this.selected="NIENTE";//blocco/entita' selezionata - se vuoto deve essere == "NIENTE"
         this.isSelecting=false;
         this.modifyBlock=false;
-		this.showModifyBlockMenu=false;
-		this.startingColor=[0,0,0,255];
-		this.modifyBlockLetter="";        
+    		this.showModifyBlockMenu=false;
+    		this.startingColor=[0,0,0,255];
+    		this.modifyBlockLetter="";        
         this.drawSideMenu = async function (){
           if(this.mouseTimer>0 && !this.showAnotherMenu){this.mouseTimer--;}//timer mouse
           ctx.fillStyle="#cccccc"; ctx.fillRect(canvasWidthDefault, 0, this.width, this.height); //sfondo
@@ -1186,12 +1188,12 @@
             ctx.strokeRect(realCanvasWidth/2-menuWidth/4-ctx.measureText("confirm").width, -offsetY+5+canvasHeightDefault/2-menuHeight/2-ctx.measureText("O").width/2+3*(menuHeight-8)/4, ctx.measureText("confirm").width*2,4*ctx.measureText("O").width/2);
             if(mouseClick){
             	var immagineLetta = await controllaFile();
-				stringaLivello = rimuoviBackgroundCorrente(stringaLivello)+immagineLetta;
-				stringToLevel(stringaLivello);
-              	document.getElementById("caricaPartitaDiv").style.zIndex = "-1";
-              	document.getElementById("fileCaricaPartita").value="";
-              	document.getElementById("fileCaricaPartita").disabled=true;
-              	document.getElementById('canvasDivId').focus(); //riporta il focus sul canvas
+      				stringaLivello = rimuoviBackgroundCorrente(stringaLivello)+immagineLetta;
+      				stringToLevel(stringaLivello);
+            	document.getElementById("caricaPartitaDiv").style.zIndex = "-1";
+            	document.getElementById("fileCaricaPartita").value="";
+            	document.getElementById("fileCaricaPartita").disabled=true;
+            	document.getElementById('canvasDivId').focus(); //riporta il focus sul canvas
             	this.showModifyBackgroundMenu=false; this.showAnotherMenu=false;
             }
           }
@@ -1208,7 +1210,7 @@
             }
           }
           function rimuoviBackgroundCorrente(lvlString){
-          	var i=0;
+          	var i=level.indiceZ; //parti da dopo la z
           	for (; i < lvlString.length; i++) { //ciclo fino all'ultimo colore
 				if(lvlString[i]==" "){break;}//lo spazio c'e' solo prima dell'immagine di sfondo
 			}
@@ -1268,8 +1270,8 @@
                     if(blockLetter[i]=="X"){
                       rectColor=player.color;
                       ctx.font = "small-caps bold 10px Lucida Console";
-                      disegnaTestoConBordino("starting", canvasWidthDefault+j*larghezzaScritta+larghezzaScritta/2, offsetY-2+altezzaRiga*(rigaCorrente)+altezzaRiga/2+ctx.measureText("O").width-latoRect, "#000000","#cccccc");
-                      disegnaTestoConBordino("position", canvasWidthDefault+j*larghezzaScritta+larghezzaScritta/2, offsetY-2+altezzaRiga*(rigaCorrente)+altezzaRiga/2+ctx.measureText("O").width/2+latoRect, "#000000","#cccccc");
+                      disegnaTestoConBordino("starting", canvasWidthDefault+j*larghezzaScritta+larghezzaScritta/2, offsetY+3+altezzaRiga*(rigaCorrente)+ctx.measureText("O").width, "#000000","#cccccc");
+                      disegnaTestoConBordino("position", canvasWidthDefault+j*larghezzaScritta+larghezzaScritta/2, offsetY-5+altezzaRiga*(rigaCorrente+1), "#000000","#cccccc");
                       ctx.font = "bold 15px Lucida Console";
                     }else{rectColor=this.getBlockColor(blockLetter[i]);}                    
             				ctx.strokeStyle="#676767"; ctx.lineWidth="1"; ctx.strokeRect(canvasWidthDefault+j*larghezzaScritta+2, offsetY+2+altezzaRiga*(rigaCorrente), larghezzaScritta-4, altezzaRiga-4);
@@ -1313,25 +1315,26 @@
         	var puntiVirgola=0;
         	var colore=[];
         	for(k=level.indiceZ; k<stringaLivello.length; k++){
+            if(stringaLivello[k]==" "){break;}
         		if (stringaLivello[k] == ";"){
-					puntiVirgola++;
+					     puntiVirgola++;
         		}
         		if(puntiVirgola>1){
         			var coloreLetto="";
-					for (; k < stringaLivello.length; k++) {
-						if (stringaLivello[k] != ";"){
-							coloreLetto+=stringaLivello[k]
-						}else{
-							if (coloreLetto==""){
-								colore[(puntiVirgola-2)]="#155261";
-								break;
-							}else{
-								colore[(puntiVirgola-2)]=coloreLetto;
-								coloreLetto="";
-								k--; break;
-							}
-						}
-					}        			
+    					for (; k < stringaLivello.length; k++) {
+    						if (stringaLivello[k] != ";"){
+    							coloreLetto+=stringaLivello[k]
+    						}else{
+    							if (coloreLetto==""){
+    								colore[(puntiVirgola-2)]="#155261";
+    								break;
+    							}else{
+    								colore[(puntiVirgola-2)]=coloreLetto;
+    								coloreLetto="";
+    								k--; break;
+    							}
+    						}
+    					}        			
         		}
         	}
         	switch(blockLetter){
@@ -1443,8 +1446,9 @@
         		case "r": puntoVirgolaPrima= 18; break;
         	}
         	for(k=level.indiceZ; k<stringaLivello.length; k++){
+            if(stringaLivello[k]==" "){break;}
         		if (stringaLivello[k] == ";"){
-					puntoVirgolaLetti++;
+					     puntoVirgolaLetti++;
         		}
         		if(puntoVirgolaLetti==puntoVirgolaPrima && inizioColore==0){inizioColore=k+1;}
         		if(puntoVirgolaLetti==puntoVirgolaPrima+1){fineColore=k; break;}
@@ -1857,6 +1861,7 @@
         var xCount=0;
         for(i=0; i<stringaLivello.length;i++){
           if(stringaLivello[i]=="X"){xCount++;}
+          if(stringaLivello[i]=="z"){break;}
         }
         if(xCount==0){
           objAlert = new newAlert("you must set the player starting position", gamestate); gamestate=5;
