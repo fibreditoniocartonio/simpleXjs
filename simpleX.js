@@ -1,4 +1,4 @@
-      var versioneDiGioco = "v0.20220719"; //aggiunta possibilita' di caricare costumLevel, fixate alcune cose che rompevano il livello
+      var versioneDiGioco = "v0.20220720"; //sistemato in inglese le categorie dei mostri e degli ostacoli, aggiunto bordino alle spine, fixata l'acqua nei livelli piu alti di canvasHeight
       debugMode=false; //you can enable debugMode with the console (press f12 in the browser)
       
       //crea il canvas
@@ -2290,7 +2290,7 @@ i livelli sono disposti cosi in realta':1 8
 
       function newPipistrello() {//mostro pipistrello
         this.life= 1;
-        this.type= "mostro";
+        this.type= "monster";
         this.damage= 1;
         this.x= 0;
         this.y= 0;
@@ -2388,7 +2388,7 @@ i livelli sono disposti cosi in realta':1 8
                   
       function newSpike() {//le spine per terra
         this.life= 9999999999;
-        this.type= "ostacolo";
+        this.type= "obstacle";
         this.damage= 9999999999;
         this.x= 0;
         this.y= 0;
@@ -2398,15 +2398,15 @@ i livelli sono disposti cosi in realta':1 8
         this.hasPhysics=false;
         this.color= '#bcbcbc';
         this.selfDraw= function( xdisegnata, ydisegnata, indiceDiQuestaEntity){
-          //funzione per disegnare la spina
         	ctx.beginPath();
 		      ctx.lineWidth = "1";
 		      ctx.fillStyle = this.color;
 		      ctx.moveTo(xdisegnata, ydisegnata+this.height);
 		      ctx.lineTo(xdisegnata+this.width, ydisegnata+this.height);
-	          ctx.lineTo(xdisegnata+(this.width/2), ydisegnata-2);
-	          ctx.lineTo(xdisegnata, ydisegnata+this.height);
+	        ctx.lineTo(xdisegnata+(this.width/2), ydisegnata-2);
+	        ctx.lineTo(xdisegnata, ydisegnata+this.height);
 		      ctx.fill();
+          ctx.strokeStile="#000000"; ctx.stroke();
         }              
       }
 
@@ -2802,18 +2802,28 @@ i livelli sono disposti cosi in realta':1 8
 	}
   
   function drawWater(){  //disegna l'acqua
-      ctx.fillStyle = player.defaultColor1 + "50";
-      var ydisegnata=0
-      if (player.y < canvasHeight/2){
-        ydisegnata=level.waterLevel;
-      }else{
-        if (player.y > level.maxHeight-canvasHeight/2){
-        ydisegnata=level.waterLevel-level.maxHeight+canvasHeight;
+      if(level.waterLevel){//disegnala solo se esiste
+        ctx.fillStyle = "#0400f850";
+        var ydisegnata=0
+        if (player.y < canvasHeight/2){
+            ydisegnata=level.waterLevel;
         }else{
-          ydisegnata=level.waterLevel-player.y+canvasHeight/2;
+          if (player.y > level.maxHeight-canvasHeight/2){
+            if(level.waterLevel<level.maxHeight-canvasHeight){
+              ydisegnata=0;
+            }else{
+              ydisegnata=level.waterLevel-level.maxHeight+canvasHeight;
+            }
+          }else{
+            if(level.waterLevel<player.y-canvasHeight/2){
+              ydisegnata=0;
+            }else{
+              ydisegnata=level.waterLevel-player.y+canvasHeight/2;
+            }
+          }
         }
-      }
-      ctx.fillRect(0, ydisegnata, canvasWidth, canvasHeight);        
+        ctx.fillRect(0, ydisegnata, canvasWidth, canvasHeight);
+      }        
   }
 	          
       //this function draws the level (usata anche per level.foreground e level.background - basta che sia un arrey di oggetti blocco)
