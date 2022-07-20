@@ -1,4 +1,4 @@
-      var versioneDiGioco = "v0.20220719"; //fixati alcuni testi nella scheda blocco del sideMenu(), fixato il bug per cui se piazzavi un blocco Background subito prima dello startingBlock crashava tutto, ottimizzato la schermata Blocks quando il livello ha uno sfondo (non ciclo piu nel base64 dell'immagine ma mi fermo prima) 
+      var versioneDiGioco = "v1.20220720"; //schermata Entities e' pronta. Editor in versione 1.x 
       debugMode=false;    //you can enable debugMode with the console (press f12 in the browser)
       showMouseBox=false; //you can enable showMouseBox with the console (press f12 in the browser)
       
@@ -65,25 +65,57 @@
         this.showLevelBar=true;
         this.permanentLevelBar=false;
       }
+      player= new Player();
 
+    //inizializzo le entita' che sara' possibile inserire tramite l'editor
 	  var listaEntityStringa="01234567⁰¹²³⁴⁵⁶⁷àÀèÈPS";
-	  var listaEntity=creaListaEntity(listaEntityStringa);
-      function creaListaEntity(listaEntityStringa){
-      	var entity=[];
-      	for (i = 0; i < listaEntityStringa.length; i++) {
-	      	switch(listaEntityStringa[i]){
-			        case '0': case '1': case '2': case '3': var armatura = new newPickUp_Armor(parseInt(listaEntityStringa[i],10)); entity.push(armatura); break;
-			        case '4': case '5': case '6': case '7': var subtankLetta = new newPickUp_Subtank(parseInt(listaEntityStringa[i],10)-4); entity.push(subtankLetta); break;
-					case '⁰': case '¹': case '²': case '³': case '⁴': case '⁵': case '⁶': case '⁷': var cuore = new newPickUp_Cuore(listaEntityStringa[i]); entity.push(cuore); break;				    
-					case 'à': var lifeRec/*small*/ = new newPickUp_LifeEnergy(2); entity.push(lifeRec); break;
-					case 'À': var lifeRec/*big*/ = new newPickUp_LifeEnergy(8); entity.push(lifeRec); break;
-					case 'è': var weaponRec/*small*/ = new newPickUp_WeaponEnergy(2); entity.push(weaponRec); break;
-					case 'È': var weaponRec/*big*/ = new newPickUp_WeaponEnergy(8); entity.push(weaponRec); break;      		
-					case 'P': var pipistrello = new newPipistrello(); entity.push(pipistrello); break;
-					case 'S': var spike= new newSpike(); entity.push(spike); break;
+    var listaEntity=creaListaEntity(listaEntityStringa, false);
+    var listaTipoEntity=creaListaTipoEntity(listaEntity);
+	  listaEntity=creaListaEntity(listaEntityStringa, listaTipoEntity);
+      function creaListaEntity(listaEntityStringa, listaTipoEntity){
+        var tuttiItipiEntity=[];
+        if(listaTipoEntity){
+          for(j=0; j<listaTipoEntity.length; j++){
+            var entity=[];
+          	for (i=0; i < listaEntityStringa.length; i++) {
+              entitaLetta=costruisciEntita(listaEntityStringa[i]);
+              if(entitaLetta.type == listaTipoEntity[j]){entity.push(entitaLetta);}
+    	      }
+            tuttiItipiEntity.push(entity);
+          }
+        }else{
+        	for (i=0; i < listaEntityStringa.length; i++){tuttiItipiEntity.push(costruisciEntita(listaEntityStringa[i]));}        
+        }
+      	return tuttiItipiEntity;
+        function costruisciEntita(lettera){
+          var entita;
+	      	switch(lettera){
+			        case '0': case '1': case '2': case '3': entita = new newPickUp_Armor(parseInt(listaEntityStringa[i],10)); break;
+			        case '4': case '5': case '6': case '7': entita = new newPickUp_Subtank(parseInt(listaEntityStringa[i],10)-4);  break;
+    					case '⁰': case '¹': case '²': case '³': case '⁴': case '⁵': case '⁶': case '⁷': entita = new newPickUp_Cuore(listaEntityStringa[i]); break;				    
+    					case 'à': entita/*lifeRec small*/ = new newPickUp_LifeEnergy(2);  entita.width=10; entita.height=10; break;
+    					case 'À': entita/*lifeRec big*/ = new newPickUp_LifeEnergy(8);  entita.width=18; entita.height=18; break;
+    					case 'è': entita/*weaponRec small*/ = new newPickUp_WeaponEnergy(2);  entita.width=10; entita.height=10; break;
+    					case 'È': entita/*weaponRec big*/ = new newPickUp_WeaponEnergy(8);  entita.width=18; entita.height=18; break;      		
+    					case 'P': entita = new newPipistrello();  break;
+    					case 'S': entita = new newSpike();  break;
 	      	}
-	    }
-      	return entity;
+          entita["letter"]=lettera;
+          return entita;        
+        }
+      }
+      function creaListaTipoEntity(listaEntity){
+        var listaTipi=[]; //starting, vengono aggiunti in automatico
+        for(i=0; i<listaEntity.length; i++){
+          var isNuovoTipo=true;
+          for(j=0; j<listaTipi.length; j++){
+            if(listaEntity[i].type==listaTipi[j]){
+              isNuovoTipo=false;
+            }
+          }
+          if(isNuovoTipo){listaTipi.push(listaEntity[i].type);}
+        }
+        return listaTipi;
       }
             
   //gamestate - se == -1: stato nel level editor
@@ -139,83 +171,92 @@
 		        //ora le entita' (lettere maiuscole)
 		        case 'P': // P indica un pipistrello
 		        	var pipistrello = new newPipistrello();
+              pipistrello['letter'] = lvlString[i];
 		         	pipistrello.x= (i%widthTot)*20;
 		        	pipistrello.y= (heightTot-1)*20+10;
-					entity.push(pipistrello);
-					if(lvlString[i-1]=='p' || lvlString[i-1]=='q' || lvlString[i-1]=='r' ){leggiBlocco(background,lvlString[i-1]);} //se il blocco prima era un background lo carica sotto la entita' letta
-					break;
+    					entity.push(pipistrello);
+    					if(lvlString[i-1]=='p' || lvlString[i-1]=='q' || lvlString[i-1]=='r' ){leggiBlocco(background,lvlString[i-1]);} //se il blocco prima era un background lo carica sotto la entita' letta
+    					break;
 		          
 		        case 'S': //S sono le spike (le spine che instaKillano)
 		          var spike= new newSpike();
+              spike['letter'] = lvlString[i];
 		          spike.x= (i%widthTot)*20;
 		          spike.y= (heightTot-1)*20; 
-				  entity.push(spike);
-				  if(lvlString[i-1]=='p' || lvlString[i-1]=='q' || lvlString[i-1]=='r' ){leggiBlocco(background,lvlString[i-1]);} //se il blocco prima era un background lo carica sotto la entita' letta
+				      entity.push(spike);
+				      if(lvlString[i-1]=='p' || lvlString[i-1]=='q' || lvlString[i-1]=='r' ){leggiBlocco(background,lvlString[i-1]);} //se il blocco prima era un background lo carica sotto la entita' letta
 		          break;
 
 		        case '0': case '1': case '2': case '3': //sono i pezzi di armatura
 			        var armatura = new newPickUp_Armor(parseInt(lvlString[i],10));
-				    armatura.x= (i%widthTot)*20;
-				    armatura.y= (heightTot-1)*20; 
-					entity.push(armatura);
-					if(lvlString[i-1]=='p' || lvlString[i-1]=='q' || lvlString[i-1]=='r' ){leggiBlocco(background,lvlString[i-1]);} //se il blocco prima era un background lo carica sotto la entita' letta
-				    break;
+              armatura['letter'] = lvlString[i];
+  				    armatura.x= (i%widthTot)*20;
+  				    armatura.y= (heightTot-1)*20; 
+    					entity.push(armatura);
+    					if(lvlString[i-1]=='p' || lvlString[i-1]=='q' || lvlString[i-1]=='r' ){leggiBlocco(background,lvlString[i-1]);} //se il blocco prima era un background lo carica sotto la entita' letta
+  				    break;
 
 		        case '4': case '5': case '6': case '7': //sono le subtank
 			        var subtankLetta = new newPickUp_Subtank(parseInt(lvlString[i],10)-4);
-				    subtankLetta.x= (i%widthTot)*20;
-				    subtankLetta.y= (heightTot-1)*20; 
-					entity.push(subtankLetta);
-					if(lvlString[i-1]=='p' || lvlString[i-1]=='q' || lvlString[i-1]=='r' ){leggiBlocco(background,lvlString[i-1]);} //se il blocco prima era un background lo carica sotto la entita' letta
-				    break;
+              subtankLetta['letter'] = lvlString[i];
+  				    subtankLetta.x= (i%widthTot)*20;
+  				    subtankLetta.y= (heightTot-1)*20; 
+    					entity.push(subtankLetta);
+    					if(lvlString[i-1]=='p' || lvlString[i-1]=='q' || lvlString[i-1]=='r' ){leggiBlocco(background,lvlString[i-1]);} //se il blocco prima era un background lo carica sotto la entita' letta
+  				    break;
 
 				case '⁰': case '¹': case '²': case '³': case '⁴': case '⁵': case '⁶': case '⁷': //sono i cuori che aumentano la vita
 					//caratteri per copiare/incollare:  ⁰ ¹ ² ³ ⁴ ⁵ ⁶ ⁷ ⁸ ⁹
 			        var cuore = new newPickUp_Cuore(lvlString[i]);
-				    cuore.x= (i%widthTot)*20;
-				    cuore.y= (heightTot-1)*20-1; 
-					entity.push(cuore);
-					if(lvlString[i-1]=='p' || lvlString[i-1]=='q' || lvlString[i-1]=='r' ){leggiBlocco(background,lvlString[i-1]);} //se il blocco prima era un background lo carica sotto la entita' letta
-				    break;				    
+              cuore['letter'] = lvlString[i];
+  				    cuore.x= (i%widthTot)*20;
+  				    cuore.y= (heightTot-1)*20-1; 
+    					entity.push(cuore);
+    					if(lvlString[i-1]=='p' || lvlString[i-1]=='q' || lvlString[i-1]=='r' ){leggiBlocco(background,lvlString[i-1]);} //se il blocco prima era un background lo carica sotto la entita' letta
+  				    break;				    
 
 				case 'à'://small life recovery
 			        var lifeRec = new newPickUp_LifeEnergy(2);
+              lifeRec['letter'] = lvlString[i];
 			        lifeRec.width=10;
 			        lifeRec.height=10;
-				    lifeRec.x= (i%widthTot)*20+(10-lifeRec.width/2);
-				    lifeRec.y= (heightTot-1)*20+1; 
-					entity.push(lifeRec);
-					if(lvlString[i-1]=='p' || lvlString[i-1]=='q' || lvlString[i-1]=='r' ){leggiBlocco(background,lvlString[i-1]);} //se il blocco prima era un background lo carica sotto la entita' letta
-				    break;
+  				    lifeRec.x= (i%widthTot)*20+(10-lifeRec.width/2);
+  				    lifeRec.y= (heightTot-1)*20+1; 
+    					entity.push(lifeRec);
+    					if(lvlString[i-1]=='p' || lvlString[i-1]=='q' || lvlString[i-1]=='r' ){leggiBlocco(background,lvlString[i-1]);} //se il blocco prima era un background lo carica sotto la entita' letta
+  				    break;
 
 				case 'À'://big life recovery
 			        var lifeRec = new newPickUp_LifeEnergy(8);
+              lifeRec['letter'] = lvlString[i];
 			        lifeRec.width=18;
 			        lifeRec.height=18;			        
-				    lifeRec.x= (i%widthTot)*20+(10-lifeRec.width/2);
-				    lifeRec.y= (heightTot-1)*20+1; 
-					entity.push(lifeRec);
-					if(lvlString[i-1]=='p' || lvlString[i-1]=='q' || lvlString[i-1]=='r' ){leggiBlocco(background,lvlString[i-1]);} //se il blocco prima era un background lo carica sotto la entita' letta
-				    break;
+  				    lifeRec.x= (i%widthTot)*20+(10-lifeRec.width/2);
+  				    lifeRec.y= (heightTot-1)*20+1; 
+    					entity.push(lifeRec);
+    					if(lvlString[i-1]=='p' || lvlString[i-1]=='q' || lvlString[i-1]=='r' ){leggiBlocco(background,lvlString[i-1]);} //se il blocco prima era un background lo carica sotto la entita' letta
+  				    break;
 
 				case 'è'://small weapon recovery
 			        var weaponRec = new newPickUp_WeaponEnergy(2);
+              weaponRec['letter'] = lvlString[i];
 			        weaponRec.width=10;
 			        weaponRec.height=10;			        
-				    weaponRec.x= (i%widthTot)*20+(10-weaponRec.width/2);
-				    weaponRec.y= (heightTot-1)*20+1; 
-					entity.push(weaponRec);
-					if(lvlString[i-1]=='p' || lvlString[i-1]=='q' || lvlString[i-1]=='r' ){leggiBlocco(background,lvlString[i-1]);} //se il blocco prima era un background lo carica sotto la entita' letta
-				    break;
+  				    weaponRec.x= (i%widthTot)*20+(10-weaponRec.width/2);
+  				    weaponRec.y= (heightTot-1)*20+1; 
+  					  entity.push(weaponRec);
+					    if(lvlString[i-1]=='p' || lvlString[i-1]=='q' || lvlString[i-1]=='r' ){leggiBlocco(background,lvlString[i-1]);} //se il blocco prima era un background lo carica sotto la entita' letta
+				      break;
 				case 'È'://big weapon recovery
 			        var weaponRec = new newPickUp_WeaponEnergy(8);
+              weaponRec['letter'] = lvlString[i];
 			        weaponRec.width=18;
 			        weaponRec.height=18;			        
-				    weaponRec.x= (i%widthTot)*20+(10-weaponRec.width/2);
-				    weaponRec.y= (heightTot-1)*20+1;
-					entity.push(weaponRec);
-					if(lvlString[i-1]=='p' || lvlString[i-1]=='q' || lvlString[i-1]=='r' ){leggiBlocco(background,lvlString[i-1]);} //se il blocco prima era un background lo carica sotto la entita' letta
-				    break;																		    	        	 							
+  				    weaponRec.x= (i%widthTot)*20+(10-weaponRec.width/2);
+  				    weaponRec.y= (heightTot-1)*20+1;
+    					entity.push(weaponRec);
+    					if(lvlString[i-1]=='p' || lvlString[i-1]=='q' || lvlString[i-1]=='r' ){leggiBlocco(background,lvlString[i-1]);} //se il blocco prima era un background lo carica sotto la entita' letta
+				      break;																		    	        	 							
 
 				//i blocchi
 				case 'a': case 'b': case 'c': case 'd': case 'e': case 'f': case 'g': case 'h': case 'i': case 'j': case 'k': 
@@ -394,7 +435,7 @@
       //adesso inizio i prototipi delle entita' - disattivo le physics e le cancello che non servono nel level editor      
       function newPipistrello() {//mostro pipistrello
         this.life= 1;
-        this.type= "mostro";
+        this.type= "monster";
         this.damage= 1;
         this.x= 0;
         this.y= 0;
@@ -403,7 +444,7 @@
         this.slope = 0;
         this.width= 34;
         this.height= 16;
-        this.color1= '#8500b5';
+        this.color= '#8500b5';
         this.color2= '#d7b600';
         this.speed= 0.5;
         this.hasPhysics=false;
@@ -414,7 +455,7 @@
 		      ctx.fillStyle = this.color2;
           halfBatDraw(xdisegnata,this.width,ydisegnata,this.height,unitX,unitY);
           halfBatDraw(xdisegnata,this.width,ydisegnata,this.height,-unitX,unitY);
-          ctx.fillStyle = this.color1;
+          ctx.fillStyle = this.color;
           halfBatDraw(xdisegnata+1.5,this.width-3,ydisegnata+1.5,this.height-3,unitX,unitY);
           halfBatDraw(xdisegnata+1.5,this.width-3,ydisegnata+1.5,this.height-3,-unitX,unitY);          
           function halfBatDraw(xdisegnata,width,ydisegnata,height,unitX,unitY){
@@ -437,7 +478,7 @@
                   
       function newSpike() {//le spine per terra
         this.life= 9999999999;
-        this.type= "ostacolo";
+        this.type= "obstacle";
         this.damage= 9999999999;
         this.x= 0;
         this.y= 0;
@@ -453,9 +494,10 @@
 		      ctx.fillStyle = this.color;
 		      ctx.moveTo(xdisegnata, ydisegnata+this.height);
 		      ctx.lineTo(xdisegnata+this.width, ydisegnata+this.height);
-	          ctx.lineTo(xdisegnata+(this.width/2), ydisegnata-2);
-	          ctx.lineTo(xdisegnata, ydisegnata+this.height);
+	        ctx.lineTo(xdisegnata+(this.width/2), ydisegnata-2);
+	        ctx.lineTo(xdisegnata, ydisegnata+this.height);
 		      ctx.fill();
+          ctx.strokeStile="#000000"; ctx.stroke();
         }              
       }
 
@@ -468,21 +510,23 @@
         this.y= 0;
         this.width= 20;
         this.height= 20;
+        this.color=player.color;
+        this.color2="#cccccc"; 
         this.canSelfDraw=true;
         this.hasPhysics=false;
         this.selfDraw= function( xdisegnata, ydisegnata, indiceDiQuestaEntity){//funzione per disegnare l'entita
-        	ctx.fillStyle=player.defaultColor1;
+        	ctx.fillStyle=this.color;
 			    ctx.fillRect(xdisegnata, ydisegnata, this.width, this.height);        	
-        	ctx.fillStyle=player.defaultColoreArmatura;
+        	ctx.fillStyle=this.color2;
 			    ctx.fillRect(xdisegnata+1, ydisegnata+1, this.width-2, this.height-2);
 			    ctx.textAlign = "center";
 			    ctx.font = "small-caps bold 18px Lucida Console";
     			var textHeight=ctx.measureText("O").width; //dato che la O normalmente e' alta quanto larga (font monospace) imposto la larghezza di O come altezza approssimativa del testo
     			switch(this.indice){
-    				case 0: disegnaTestoConBordino("H",xdisegnata+(this.width/2), (ydisegnata+(this.height-2)/2+textHeight/2),player.defaultColor1,player.defaultColoreArmatura);break;
-    				case 1: disegnaTestoConBordino("L",xdisegnata+(this.width/2), (ydisegnata+(this.height-2)/2+textHeight/2),player.defaultColor1,player.defaultColoreArmatura);break;
-    				case 2: disegnaTestoConBordino("B",xdisegnata+(this.width/2), (ydisegnata+(this.height-2)/2+textHeight/2),player.defaultColor1,player.defaultColoreArmatura);break;
-    				case 3: disegnaTestoConBordino("C",xdisegnata+(this.width/2), (ydisegnata+(this.height-2)/2+textHeight/2),player.defaultColor1,player.defaultColoreArmatura);break;
+    				case 0: disegnaTestoConBordino("H",xdisegnata+(this.width/2), (ydisegnata+(this.height-2)/2+textHeight/2),this.color,this.color2);break;
+    				case 1: disegnaTestoConBordino("L",xdisegnata+(this.width/2), (ydisegnata+(this.height-2)/2+textHeight/2),this.color,this.color2);break;
+    				case 2: disegnaTestoConBordino("B",xdisegnata+(this.width/2), (ydisegnata+(this.height-2)/2+textHeight/2),this.color,this.color2);break;
+    				case 3: disegnaTestoConBordino("C",xdisegnata+(this.width/2), (ydisegnata+(this.height-2)/2+textHeight/2),this.color,this.color2);break;
     			}
     			ctx.textAlign = "left";//lo azzero se no mi si bugga in alcuni menu
         }//fine di selfDraw	              
@@ -497,15 +541,16 @@
         this.y= 0;
         this.width= 20;
         this.height= 20;
+        this.color=player.color;
         this.canSelfDraw=true;
         this.hasPhysics=false;
         this.selfDraw= function(xdisegnata, ydisegnata, indiceDiQuestaEntity){//funzione per disegnare l'entita
-        	ctx.fillStyle=player.defaultColor1;
+        	ctx.fillStyle=this.color;
     			ctx.fillRect(xdisegnata, ydisegnata, this.width, this.height);
     			ctx.textAlign = "center";
-    			ctx.font = "small-caps bold 18px Lucida Console";
+    			ctx.font = "small-caps bold 12px Lucida Console";
     			var textHeight=ctx.measureText("O").width; //dato che la O normalmente e' alta quanto larga (font monospace) imposto la larghezza di O come altezza approssimativa del testo			
-    			disegnaTestoConBordino("S",xdisegnata+(this.width/2), (ydisegnata+(this.height-2)/2+textHeight/2),player.charge0color,player.defaultColor1);
+    			disegnaTestoConBordino("S"+(this.indice+1),xdisegnata+(this.width/2), (ydisegnata+(this.height-2)/2+textHeight/2),"#ffcc00","#000000");
     			ctx.textAlign = "left";//lo azzero se no mi si bugga in alcuni menu
         }//fine di selfDraw           
       }
@@ -517,6 +562,7 @@
         this.damage= 0;
         this.x= 0;
         this.y= 0;
+        this.color="#ff2f97";
         this.width= 20;
         this.height= 20;
         this.canSelfDraw=true;
@@ -524,7 +570,7 @@
         this.selfDraw= function(xdisegnata, ydisegnata, indiceDiQuestaEntity){//funzione per disegnare l'entita
           ctx.beginPath();
   		    ctx.lineWidth = "2";
-  		    ctx.fillStyle = "#ff2f97"; //rosa
+  		    ctx.fillStyle = this.color; //rosa
   		    ctx.strokeStyle = "#999999"; //grigio
   		    ctx.moveTo(xdisegnata, ydisegnata);
   		    ctx.lineTo(xdisegnata+(this.width/2)-(this.width/10), ydisegnata);
@@ -537,6 +583,7 @@
   		    ctx.lineTo(xdisegnata, ydisegnata);
   		    ctx.fill();
   		    ctx.stroke();
+          ctx.font="small-caps bold 10px Lucida Console"; ctx.textAlign="center"; disegnaTestoConBordino(this.indice, xdisegnata+this.width/2, ydisegnata+this.height/2+ctx.measureText("O").width/2, "#000000","#cccccc"); ctx.textAlign="left";
         }//fine di selfDraw
         function parsaApici(stringaDiApici){//parsa ⁰ ¹ ² ³ ⁴ ⁵ ⁶ ⁷ ⁸ ⁹ in numeri
     			switch(stringaDiApici){
@@ -563,6 +610,7 @@
         this.yv = 0;
         this.width= 20;
         this.height= 20;
+        this.color="#d70000";
         this.isInWater = false;
         this.canSelfDraw=true;
         this.hasPhysics=false;
@@ -586,6 +634,7 @@
         this.yv = 0;
         this.width= 20;
         this.height= 20;
+        this.color="#003ef0";
         this.isInWater = false;
         this.canSelfDraw=true;
         this.hasPhysics=false;
@@ -720,18 +769,28 @@
 	}
   
   function drawWater(){  //disegna l'acqua
-      ctx.fillStyle = "#0400f850";
-      var ydisegnata=0
-      if (player.y < canvasHeight/2){
-        ydisegnata=level.waterLevel;
-      }else{
-        if (player.y > level.maxHeight-canvasHeight/2){
-        ydisegnata=level.waterLevel-level.maxHeight+canvasHeight;
+      if(level.waterLevel){//disegnala solo se esiste
+        ctx.fillStyle = "#0400f850";
+        var ydisegnata=0
+        if (player.y < canvasHeight/2){
+            ydisegnata=level.waterLevel;
         }else{
-          ydisegnata=level.waterLevel-player.y+canvasHeight/2;
+          if (player.y > level.maxHeight-canvasHeight/2){
+            if(level.waterLevel<level.maxHeight-canvasHeight){
+              ydisegnata=0;
+            }else{
+              ydisegnata=level.waterLevel-level.maxHeight+canvasHeight;
+            }
+          }else{
+            if(level.waterLevel<player.y-canvasHeight/2){
+              ydisegnata=0;
+            }else{
+              ydisegnata=level.waterLevel-player.y+canvasHeight/2;
+            }
+          }
         }
-      }
-      ctx.fillRect(0, ydisegnata, canvasWidth, canvasHeight);        
+        ctx.fillRect(0, ydisegnata, canvasWidth, canvasHeight);
+      }        
   }
 	          
       //this function draws the level (usata anche per level.foreground e level.background - basta che sia un arrey di oggetti blocco)
@@ -866,7 +925,9 @@
         this.modifyBlock=false;
     		this.showModifyBlockMenu=false;
     		this.startingColor=[0,0,0,255];
-    		this.modifyBlockLetter="";        
+    		this.modifyBlockLetter=""; 
+        this.showEntityTimer=0;
+        this.incrementaTimer=false;       
         this.drawSideMenu = async function (){
           if(this.mouseTimer>0 && !this.showAnotherMenu){this.mouseTimer--;}//timer mouse
           ctx.fillStyle="#cccccc"; ctx.fillRect(canvasWidthDefault, 0, this.width, this.height); //sfondo
@@ -911,7 +972,7 @@
           }          
         }//fine tabCode()
         this.toolTabCode = function (){
-          var numeroVoci=9;         
+          var numeroVoci=10;         
           var voceHeight=(this.height-20)/numeroVoci;
           ctx.textAlign="left"; ctx.font = "small-caps bold 15px Lucida Console";
           for(k=0; k<numeroVoci; k++){
@@ -924,7 +985,7 @@
                 if(checkMouseBox(canvasWidthDefault+2,20+voceHeight*k+2,this.width-4,voceHeight-4)){
                   ctx.strokeStyle="#000000"; ctx.lineWidth="2";
                   ctx.strokeRect(canvasWidthDefault+2,20+voceHeight*k+2,this.width-4,voceHeight-4);
-                  if(mouseClick && this.mouseTimer==0){player.showCoordinates=!player.showCoordinates; this.mouseTimer=10;}
+                  if(mouseClick && this.mouseTimer==0){player.showCoordinates=!player.showCoordinates; this.selected="NIENTE"; this.mouseTimer=10;}
                 }
                 break;             
               case 1://show player camera 
@@ -935,7 +996,7 @@
                 if(checkMouseBox(canvasWidthDefault+2,20+voceHeight*k+2,this.width-4,voceHeight-4)){
                   ctx.strokeStyle="#000000"; ctx.lineWidth="2";
                   ctx.strokeRect(canvasWidthDefault+2,20+voceHeight*k+2,this.width-4,voceHeight-4);
-                  if(mouseClick && this.mouseTimer==0){player.showPlayerCamera=!player.showPlayerCamera; this.mouseTimer=10;}
+                  if(mouseClick && this.mouseTimer==0){player.showPlayerCamera=!player.showPlayerCamera; this.selected="NIENTE"; this.mouseTimer=10;}
                 }
                 break;            
               case 2://show grid
@@ -946,7 +1007,7 @@
                 if(checkMouseBox(canvasWidthDefault+2,20+voceHeight*k+2,this.width-4,voceHeight-4)){
                   ctx.strokeStyle="#000000"; ctx.lineWidth="2";
                   ctx.strokeRect(canvasWidthDefault+2,20+voceHeight*k+2,this.width-4,voceHeight-4);
-                  if(mouseClick && this.mouseTimer==0){player.showGrid=!player.showGrid; this.mouseTimer=10;}
+                  if(mouseClick && this.mouseTimer==0){player.showGrid=!player.showGrid; this.selected="NIENTE"; this.mouseTimer=10;}
                 }
                 break;
               case 3://snap mode 
@@ -957,7 +1018,7 @@
                 if(checkMouseBox(canvasWidthDefault+2,20+voceHeight*k+2,this.width-4,voceHeight-4)){
                   ctx.strokeStyle="#000000"; ctx.lineWidth="2";
                   ctx.strokeRect(canvasWidthDefault+2,20+voceHeight*k+2,this.width-4,voceHeight-4);
-                  if(mouseClick && this.mouseTimer==0){player.snapMode=!player.snapMode; this.mouseTimer=10;}
+                  if(mouseClick && this.mouseTimer==0){player.snapMode=!player.snapMode; this.selected="NIENTE"; this.mouseTimer=10;}
                 }
                 break;
               case 4://level bars
@@ -976,15 +1037,35 @@
                   	if(player.permanentLevelBar){player.permanentLevelBar=false; player.showLevelBar=false;
                   	}else if(player.showLevelBar){player.permanentLevelBar=true;
                   	}else{player.showLevelBar=true;}
-                  	this.mouseTimer=10;}
+                  	this.mouseTimer=10; this.selected="NIENTE"; }
                 }
-                break;                
+                break;
+              case 5://modify water level - Attenzione: per rimuovere completamente l'acqua bisogna metterla nella riga di blocchi del livello piu in basso e poi ridurre l'altezza del livello di un blocco
+                var word="Modify water level";
+                if(this.selected=="w"){
+                  ctx.fillStyle="#979797"; ctx.fillRect(canvasWidthDefault+2,20+voceHeight*k+2,this.width-4,voceHeight-4);
+                  ctx.strokeStyle="#222222"; ctx.lineWidth="1"; ctx.strokeRect(canvasWidthDefault+2,20+voceHeight*k+2,this.width-4,voceHeight-4);
+                } 
+                disegnaTestoConBordino(word, canvasWidthDefault+5, 20+(voceHeight*k)+voceHeight/2+ctx.measureText("o").width/2, "#000000");
+                if(checkMouseBox(canvasWidthDefault+2,20+voceHeight*k+2,this.width-4,voceHeight-4)){
+                  ctx.strokeStyle="#000000"; ctx.lineWidth="2";
+                  ctx.strokeRect(canvasWidthDefault+2,20+voceHeight*k+2,this.width-4,voceHeight-4);
+                  if(mouseClick && this.mouseTimer==0){
+                    this.mouseTimer=10;
+                    if(this.selected=="w"){
+                      this.selected="NIENTE";
+                    }else{
+                      this.selected="w";
+                    }
+                  }
+                }
+                break;                                
               case numeroVoci-4://extend level
                 disegnaTestoConBordino("Modify level lenght", canvasWidthDefault+5, 20+(voceHeight*k)+voceHeight/2+ctx.measureText("o").width/2, "#000000"); 
                 if(checkMouseBox(canvasWidthDefault+2,20+voceHeight*k+2,this.width-4,voceHeight-4)){
                   ctx.strokeStyle="#000000"; ctx.lineWidth="2";
                   ctx.strokeRect(canvasWidthDefault+2,20+voceHeight*k+2,this.width-4,voceHeight-4);
-                  if(mouseClick && this.mouseTimer==0){this.showExtendLevelMenu=true;this.showAnotherMenu=true; this.newNumberWidth=0; this.newNumberHeight=0; this.mouseTimer=10;}                  
+                  if(mouseClick && this.mouseTimer==0){this.showExtendLevelMenu=true;this.showAnotherMenu=true; this.newNumberWidth=0; this.newNumberHeight=0; this.selected="NIENTE"; this.mouseTimer=10;}                  
                 }
                 break;
               case numeroVoci-3://exit to main menu
@@ -995,7 +1076,7 @@
                   if(mouseClick && this.mouseTimer==0){
 			        document.getElementById("caricaPartitaDiv").style.zIndex = "10";
 			        document.getElementById("fileCaricaPartita").disabled=false; 
-                  	this.showModifyBackgroundMenu=true;this.showAnotherMenu=true; this.mouseTimer=10;
+                  	this.showModifyBackgroundMenu=true;this.showAnotherMenu=true; this.selected="NIENTE"; this.mouseTimer=10;
                   }
                 }
                 break;                                                
@@ -1004,7 +1085,7 @@
                 if(checkMouseBox(canvasWidthDefault+2,20+voceHeight*k+2,this.width-4,voceHeight-4)){
                   ctx.strokeStyle="#000000"; ctx.lineWidth="2";
                   ctx.strokeRect(canvasWidthDefault+2,20+voceHeight*k+2,this.width-4,voceHeight-4);
-                  if(mouseClick && this.mouseTimer==0){salvaLivello(); this.mouseTimer=10;}
+                  if(mouseClick && this.mouseTimer==0){salvaLivello(); this.selected="NIENTE"; this.mouseTimer=10;}
                 }
                 break;
               case numeroVoci-1://exit to main menu
@@ -1012,7 +1093,7 @@
                 if(checkMouseBox(canvasWidthDefault+2,20+voceHeight*k+2,this.width-4,voceHeight-4)){
                   ctx.strokeStyle="#000000"; ctx.lineWidth="2";
                   ctx.strokeRect(canvasWidthDefault+2,20+voceHeight*k+2,this.width-4,voceHeight-4);
-                  if(mouseClick && this.mouseTimer==0){this.showExitMenu=true;this.showAnotherMenu=true; this.mouseTimer=10;}
+                  if(mouseClick && this.mouseTimer==0){this.showExitMenu=true;this.showAnotherMenu=true; this.selected="NIENTE"; this.mouseTimer=10;}
                 }
                 break;                                              
             }//fine switch
@@ -1238,8 +1319,8 @@
 	      }//fine di controllaFile()          
         }//fine di drawModifyBackground()        
         this.blockTabCode = function (){
-			var offsetY=this.selectAndEraserCode()+20;
-			var voceHeight=ctx.measureText("O").width*2;
+      			var offsetY=this.selectAndEraserCode()+20;
+      			var voceHeight=ctx.measureText("O").width*2;
             var word="modify block color";
             ctx.textAlign="center"; ctx.font = "small-caps bold 15px Lucida Console";
             if(this.modifyBlock){ctx.fillStyle="#8c8c8c"; ctx.fillRect(canvasWidthDefault+2, offsetY+2, this.width-4, voceHeight-4);}
@@ -1457,8 +1538,57 @@
           	return stringaLivello;
           }
         }
-        this.entityTabCode = function (){
-			var offesetY=this.selectAndEraserCode()+20;
+        this.entityTabCode = function (){        
+      			var offsetY=this.selectAndEraserCode()+23+ctx.measureText("O").width;
+            ctx.textAlign="center"; ctx.font = "small-caps bold 15px Lucida Console";
+            var quantitaPerRiga=8;
+            var larghezzaScritta=this.width/quantitaPerRiga;
+            var altezzaTotale=canvasHeightDefault-offsetY+5;
+            var numeroRighe=listaTipoEntity.length;
+            for(o=0; o<listaEntity.length; o++){numeroRighe+=Math.ceil(listaEntity[o].length/quantitaPerRiga);} 
+            var rigaCorrente=0;
+            var altezzaRiga=altezzaTotale/numeroRighe;
+            offsetY-=10;
+            this.incrementaTimer=false;
+            for(o=0;o<listaTipoEntity.length;o++){
+            	disegnaTestoConBordino(listaTipoEntity[o], canvasWidthDefault+this.width/2, offsetY-2+altezzaRiga*(rigaCorrente+1)-ctx.measureText("O").width/2, "#000000");
+              rigaCorrente++
+              for(i=0; i<listaEntity[o].length; i++){
+                for(j=0;j<quantitaPerRiga;j++){
+                  var latoRect=ctx.measureText("O").width*2;
+                  if(this.selected==listaEntity[o][i].letter){ctx.fillStyle="#8c8c8c"; ctx.fillRect(canvasWidthDefault+j*larghezzaScritta+2, offsetY+2+altezzaRiga*(rigaCorrente), larghezzaScritta-4, altezzaRiga-4);}
+                  ctx.strokeStyle="#676767"; ctx.lineWidth="1"; ctx.strokeRect(canvasWidthDefault+j*larghezzaScritta+2, offsetY+2+altezzaRiga*(rigaCorrente), larghezzaScritta-4, altezzaRiga-4);
+                  var rectColor=listaEntity[o][i].color;
+                  if(checkMouseBox(canvasWidthDefault+j*larghezzaScritta+2, offsetY+2+altezzaRiga*(rigaCorrente), larghezzaScritta-4, altezzaRiga-4)){
+            					ctx.strokeStyle="#000000"; ctx.lineWidth="2"; ctx.strokeRect(canvasWidthDefault+j*larghezzaScritta+2, offsetY+2+altezzaRiga*(rigaCorrente), larghezzaScritta-4, altezzaRiga-4);
+                      ctx.fillStyle="#cccccc"; ctx.fillRect(canvasWidthDefault/2-listaEntity[o][i].width/2-10, canvasHeightDefault/2-listaEntity[o][i].height/2-10, listaEntity[o][i].width+20, listaEntity[o][i].height+20);
+                      ctx.strokeStyle="#000000"; ctx.lineWidth="2"; ctx.strokeRect(canvasWidthDefault/2-listaEntity[o][i].width/2-10, canvasHeightDefault/2-listaEntity[o][i].height/2-10, listaEntity[o][i].width+20, listaEntity[o][i].height+20);  
+                      if(listaEntity[o][i].canSelfDraw==true){
+                          listaEntity[o][i].selfDraw(canvasWidthDefault/2-listaEntity[o][i].width/2, canvasHeightDefault/2-listaEntity[o][i].height/2, i); 
+                      }else{
+                      	  ctx.fillStyle = listaEntity[o][i].color;
+                          ctx.fillRect(canvasWidthDefault/2-listaEntity[o][i].width/2, canvasHeightDefault/2-listaEntity[o][i].height/2, listaEntity[o][i].width, listaEntity[o][i].height);
+                      }
+                      ctx.textAlign="center"; ctx.font="small-caps bold 15px Lucida Console"; //sistemo se no si bugga                        
+            					if(mouseClick && this.mouseTimer==0){
+            						this.mouseTimer=10;
+          							if(this.selected==listaEntity[o][i].letter){
+          								this.selected="NIENTE";
+          							}else{
+          								this.selected=listaEntity[o][i].letter;
+          							}
+          							this.isSelecting=false;
+            					}
+            				}
+            				ctx.fillStyle=rectColor; ctx.fillRect(canvasWidthDefault+j*larghezzaScritta+larghezzaScritta/2-latoRect/2, offsetY-2+altezzaRiga*(rigaCorrente)+altezzaRiga/2-latoRect/2+ctx.measureText("o").width/4, latoRect, latoRect);
+            				ctx.strokeStyle="#222222"; ctx.strokeRect(canvasWidthDefault+j*larghezzaScritta+larghezzaScritta/2-latoRect/2, offsetY-2+altezzaRiga*(rigaCorrente)+altezzaRiga/2-latoRect/2+ctx.measureText("o").width/4, latoRect, latoRect);
+            				if(true){disegnaTestoConBordino(listaEntity[o][i].letter, canvasWidthDefault+j*larghezzaScritta+larghezzaScritta/2, offsetY-2+altezzaRiga*(rigaCorrente)+altezzaRiga/2+ctx.measureText("O").width/2, "#000000","#cccccc");}
+            				i++;
+                    if(i>listaEntity[o].length-1){break;}
+                }rigaCorrente++;i--;
+              }                  
+            }
+            ctx.textAlign="left";      
         }//fine di entityTabCode()        
         this.selectAndEraserCode = function (){
         	ctx.textAlign="center"; ctx.font = "small-caps bold 15px Lucida Console";
@@ -1501,14 +1631,28 @@
         }//fine di selectAndEraserCode()
         this.piazzaBloccoCode = function (){
           if(mouseClick && mouseY>25 && mouseX>25 && mouseX<canvasWidth-25 && mouseY<canvasHeight-25){
-            var indice=(level.maxWidth/20-1)*lvlCanvasMouseY+lvlCanvasMouseX;
-            if(indice<level.indiceZ){
-              switch(stringaLivello[indice]){
-                case "t": case "l": case "w": break;//nei casi dei blocchi speciali non fare nulla
-                default: 
-                  stringaLivello=stringaLivello.slice(0,indice)+this.selected+stringaLivello.slice(indice+1);
-                  stringToLevel(stringaLivello);
-                  break; 
+            var indice=(level.maxWidth/20-1)*lvlCanvasMouseY;
+            if(this.selected=="w"){
+              if(stringaLivello[indice]!="t"){
+                for(i=level.maxWidth/20-1; i<level.indiceZ; i++){
+                  if(stringaLivello[i]=="w"){
+                    stringaLivello=stringaLivello.slice(0,i)+"l"+stringaLivello.slice(i+1);
+                  }
+                }
+                stringaLivello=stringaLivello.slice(0,indice)+"w"+stringaLivello.slice(indice+1);
+                this.selected="NIENTE";
+                stringToLevel(stringaLivello);
+              }
+            }else{
+              indice+=lvlCanvasMouseX;
+              if(indice<level.indiceZ){
+                switch(stringaLivello[indice]){
+                  case "t": case "l": case "w": break;//nei casi dei blocchi speciali non fare nulla
+                  default: 
+                    stringaLivello=stringaLivello.slice(0,indice)+this.selected+stringaLivello.slice(indice+1);
+                    stringToLevel(stringaLivello);
+                    break; 
+                }
               }
             }
           }
