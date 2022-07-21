@@ -1,4 +1,4 @@
-      var versioneDiGioco = "v1.20220720"; //schermata Entities e' pronta. Editor in versione 1.x 
+      var versioneDiGioco = "v1.20220721"; //aggiunta la possibilita' di togliere l'acqua 
       debugMode=false;    //you can enable debugMode with the console (press f12 in the browser)
       showMouseBox=false; //you can enable showMouseBox with the console (press f12 in the browser)
       
@@ -160,9 +160,9 @@
 					heightTot++;
 					break;
         
-        		case 'w': // w funziona come left floor ma indica anche il water level
+        case 'w': // w funziona come left floor ma indica anche il water level
 					heightTot++;
-          			level['waterLevel'] = ((heightTot-1)*20)+7; //setta il waterlevel
+          level['waterLevel'] = ((heightTot-1)*20)+7; //setta il waterlevel
 					break;
 
 				case '.': // . è vuoto/aria
@@ -1040,8 +1040,11 @@
                   	this.mouseTimer=10; this.selected="NIENTE"; }
                 }
                 break;
-              case 5://modify water level - Attenzione: per rimuovere completamente l'acqua bisogna metterla nella riga di blocchi del livello piu in basso e poi ridurre l'altezza del livello di un blocco
-                var word="Modify water level";
+              case 5://modify water level
+                var word="Add water level";
+                if(level.waterLevel){
+                  word="Remove water";
+                }
                 if(this.selected=="w"){
                   ctx.fillStyle="#979797"; ctx.fillRect(canvasWidthDefault+2,20+voceHeight*k+2,this.width-4,voceHeight-4);
                   ctx.strokeStyle="#222222"; ctx.lineWidth="1"; ctx.strokeRect(canvasWidthDefault+2,20+voceHeight*k+2,this.width-4,voceHeight-4);
@@ -1052,10 +1055,21 @@
                   ctx.strokeRect(canvasWidthDefault+2,20+voceHeight*k+2,this.width-4,voceHeight-4);
                   if(mouseClick && this.mouseTimer==0){
                     this.mouseTimer=10;
-                    if(this.selected=="w"){
-                      this.selected="NIENTE";
-                    }else{
-                      this.selected="w";
+                    if(level.waterLevel){//se c'e' l'acqua la toglie
+                      var indice=-1;
+                      for(o=0; o<level.indiceZ; o++){
+                        if(stringaLivello[o]=="w"){
+                          indice=o; break;
+                        }
+                      }
+                      stringaLivello=stringaLivello.slice(0,indice)+"l"+stringaLivello.slice(indice+1);
+                      stringToLevel(stringaLivello);                      
+                    }else{//se non c'e' l'acqua invece la puoi mettere
+                      if(this.selected=="w"){
+                        this.selected="NIENTE";
+                      }else{
+                        this.selected="w";
+                      }
                     }
                   }
                 }

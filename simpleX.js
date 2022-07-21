@@ -1,4 +1,4 @@
-      var versioneDiGioco = "v0.20220720"; //sistemato in inglese le categorie dei mostri e degli ostacoli, aggiunto bordino alle spine, fixata l'acqua nei livelli piu alti di canvasHeight
+      var versioneDiGioco = "v0.20220721"; //cambiato impostazione iniziale del menu carica costum level, ora il cursore parte sempre su conferma
       debugMode=false; //you can enable debugMode with the console (press f12 in the browser)
       
       //crea il canvas
@@ -3851,7 +3851,7 @@ i livelli sono disposti cosi in realta':1 8
                       document.getElementById("fileCaricaPartita").value="";
                       document.getElementById("caricaPartitaDiv").style.zIndex = "10";
                       document.getElementById("fileCaricaPartita").disabled=false;                      
-                      this.indiceUscita=1;
+                      this.indiceUscita=0;
                       this.loadCostumLevel=true;
                       break;                      
                     case 2: //salva la partita
