@@ -1,4 +1,4 @@
-      var versioneDiGioco = "v0.20220721"; //cambiato impostazione iniziale del menu carica costum level, ora il cursore parte sempre su conferma
+      var versioneDiGioco = "v0.20220722"; //migliorato ai pipistrello - ora tornano sul soffitto dopo averti attaccato, fedelmente al gioco originale
       debugMode=false; //you can enable debugMode with the console (press f12 in the browser)
       
       //crea il canvas
@@ -2286,6 +2286,13 @@ i livelli sono disposti cosi in realta':1 8
             this.active=false;
           }
         }
+      }
+      
+      function rectTest(x,y,width,height){
+        this.x=x;
+        this.y=y;
+        this.width=width;
+        this.height=height;
       }            
 
       function newPipistrello() {//mostro pipistrello
@@ -2296,6 +2303,8 @@ i livelli sono disposti cosi in realta':1 8
         this.y= 0;
         this.xv= 0;
         this.yv= 0;
+        this.timer=0;
+        this.alSoffitto=false;
         this.slope = 0;
         this.width= 34;
         this.height= 16;
@@ -2305,14 +2314,21 @@ i livelli sono disposti cosi in realta':1 8
         this.hasPhysics=true;
         this.canSelfDraw=true;
         this.selfDraw= function( xdisegnata, ydisegnata, indiceDiQuestaEntity){
+          if(this.alSoffitto){
+            this.height=-1*this.height;
+            ydisegnata=ydisegnata-this.height;
+            xdisegnata+=this.width/8;
+            this.width=this.width*3/4;
+          }
           var unitX=this.width/10;
-          var unitY=this.height/10;
+          var unitY=this.height/10;          
 		      ctx.fillStyle = this.color2;
           halfBatDraw(xdisegnata,this.width,ydisegnata,this.height,unitX,unitY);
           halfBatDraw(xdisegnata,this.width,ydisegnata,this.height,-unitX,unitY);
           ctx.fillStyle = this.color1;
           halfBatDraw(xdisegnata+1.5,this.width-3,ydisegnata+1.5,this.height-3,unitX,unitY);
-          halfBatDraw(xdisegnata+1.5,this.width-3,ydisegnata+1.5,this.height-3,-unitX,unitY);          
+          halfBatDraw(xdisegnata+1.5,this.width-3,ydisegnata+1.5,this.height-3,-unitX,unitY);
+          if(this.alSoffitto){this.height=-1*this.height; this.width=this.width*4/3;}                    
           function halfBatDraw(xdisegnata,width,ydisegnata,height,unitX,unitY){
           	ctx.beginPath();
   		      ctx.lineWidth = "1";          
@@ -2330,21 +2346,28 @@ i livelli sono disposti cosi in realta':1 8
           }
         }          
         this.physics= function( xdisegnata, ydisegnata, indiceDiQuestaEntity){
-          //movimento
-          if (this.x < player.x-1){
-            this.xv -= this.speed;
-          }else if(this.x > player.x+player.width-1){
-            this.xv += this.speed;
-          }
-          if (this.y < player.y+1){
-            this.yv -= this.speed;
-          }else{
-            this.yv += this.speed;
-          }
-          this.xv *= level.friction;
-          this.yv *= level.friction;
-          this.x += -this.xv;
-          this.y += -this.yv;   
+          if(this.timer<1){//movimento verso il player
+            this.alSoffitto=false;
+            if (this.x < player.x-1){
+              this.xv -= this.speed;
+            }else if(this.x > player.x+player.width-1){
+              this.xv += this.speed;
+            }
+            if (this.y < player.y+1){
+              this.yv -= this.speed;
+            }else{
+              this.yv += this.speed;
+            }
+            this.xv *= level.friction;
+            this.yv *= level.friction;
+            this.x += -this.xv;
+            this.y += -this.yv;
+          }else{//movimento verso l'alto
+            if(!this.alSoffitto){
+               this.yv = this.speed*8;
+               this.y += -this.yv;
+             }
+          }   
           
           this.slope = 0;	//serve per i bordi tipo
           for(var i = 0; i < level.length; i++) {
@@ -2355,33 +2378,41 @@ i livelli sono disposti cosi in realta':1 8
               }
             }
           }
-          // level collision
-          for(var i = 0; i < level.length; i++) {
+          
+          for(var i = 0; i < level.length; i++) {//level collision
             if(collisionBetween(this, level[i])) {
+              var latoSopra = new rectTest(this.x, this.y, this.width, 2);
+              if(this.timer>0 && collisionBetween(latoSopra, level[i])){this.alSoffitto=true;}            
               this.y += this.slope;
               this.x += this.xv*2;
               this.xv = 0;
-            } 
-            if(collisionBetween(this, level[i])) {
-              this.y += this.yv*2;
-              this.yv = 0;
+              if(this.alSoffitto){
+                this.y += this.yv;
+                this.yv = 0;              
+              }else{
+                this.y += this.yv*2;
+                this.yv = 0;              
+              }              
             }   
           }
+          if(this.alSoffitto){this.timer--;}
+          
           //other entity mostro collision - e' un po buggata
           for(var i = 0; i < entity.length; i++) {
           	if (entity[i].life > 0 && entity[i].type=="mostro" && !(i==indiceDiQuestaEntity)){
             	if(collisionBetween(this, entity[i])) {
               		this.x += this.xv*1.95;
               		this.xv = 0;
-					this.y += this.yv*1.95;
-					this.yv = 0;
+        					this.y += this.yv*1.95;
+        					this.yv = 0;
             	}  
             }
           }
           //collision col player
           if(collisionBetween(this, player)) {
         	 this.xv = 0;
-			     this.yv = 0;		
+			     this.yv = 0;
+           this.timer=50; 		
           }            
         }              
       }
