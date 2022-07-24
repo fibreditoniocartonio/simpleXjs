@@ -1,4 +1,4 @@
-      var versioneDiGioco = "v1.20220721"; //aggiunta la possibilita' di togliere l'acqua 
+      var versioneDiGioco = "v1.20220724"; //fixato un problema con la coordinata y del mouse nei livelli piu alti di 27 blocchi
       debugMode=false;    //you can enable debugMode with the console (press f12 in the browser)
       showMouseBox=false; //you can enable showMouseBox with the console (press f12 in the browser)
       
@@ -704,7 +704,7 @@
             if (player.y > level.maxHeight-canvasHeight/2){
               lvlCanvasMouseY=mouseY+level.maxHeight-canvasHeight;
             }else{
-              lvlCanvasMouseY=mouseY+player.y+(player.height/2)-canvasHeight/2;
+              lvlCanvasMouseY=mouseY+player.y-canvasHeight/2;
             }
           }
           lvlCanvasMouseX=Math.floor(lvlCanvasMouseX/20);//converte in blocchi
