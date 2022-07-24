@@ -1,4 +1,4 @@
-      var versioneDiGioco = "v1.20220724"; //fixato un problema con la coordinata y del mouse nei livelli piu alti di 27 blocchi
+      var versioneDiGioco = "v1.20220724"; //fixato un problema con la coordinata y del mouse nei livelli piu alti di 27 blocchi, aggiunta la funzione fill nella schermata blocchi, aggiunti i nomi delle entita' che vengono mostrati nella schermata entity
       debugMode=false;    //you can enable debugMode with the console (press f12 in the browser)
       showMouseBox=false; //you can enable showMouseBox with the console (press f12 in the browser)
       
@@ -436,6 +436,7 @@
       function newPipistrello() {//mostro pipistrello
         this.life= 1;
         this.type= "monster";
+        this.name="bat";
         this.damage= 1;
         this.x= 0;
         this.y= 0;
@@ -479,6 +480,7 @@
       function newSpike() {//le spine per terra
         this.life= 9999999999;
         this.type= "obstacle";
+        this.name="spike";
         this.damage= 9999999999;
         this.x= 0;
         this.y= 0;
@@ -504,7 +506,14 @@
       function newPickUp_Armor(indicePassato) {//le spine per terra
         this.life= 9999999999;
         this.type= "pickup";
+        this.name="armor pickup";
         this.indice=indicePassato;//indicePassato=0 -> helmet, indicePassato=1 -> legs, indicePassato=2 -> buster, indicePassato=3 -> corpo
+        switch(this.indice){
+        	case 0: this.name="helmet upgrade"; break;
+        	case 1: this.name="boots upgrade"; break;
+        	case 2: this.name="buster upgrade"; break;
+        	case 3: this.name="body upgrade"; break;
+        }
         this.damage= 0;
         this.x= 0;
         this.y= 0;
@@ -535,6 +544,7 @@
       function newPickUp_Subtank(indicePassato) {//le spine per terra
         this.life= 9999999999;
         this.type= "pickup";
+        this.name="subtank";
         this.indice=indicePassato;
         this.damage= 0;
         this.x= 0;
@@ -558,6 +568,7 @@
       function newPickUp_Cuore(indicePassatoNonParsato) {//le spine per terra
         this.life= 9999999999;
         this.type= "pickup";
+        this.name="heart tank";
         this.indice=parsaApici(indicePassatoNonParsato);
         this.damage= 0;
         this.x= 0;
@@ -604,6 +615,7 @@
       function newPickUp_LifeEnergy(vitaRecuperata) {
         this.life= 9999999999;
         this.type= "pickup";
+        this.name="life recovery";
         this.damage= -vitaRecuperata;
         this.x= 0;
         this.y= 0;
@@ -627,6 +639,7 @@
       function newPickUp_WeaponEnergy(usageRecuparato) {
         this.life= 9999999999;
         this.type= "pickup";
+        this.name="weapon e. recovery";
         this.damage= 0;
         this.usageRestore=usageRecuparato;
         this.x= 0;
@@ -921,6 +934,7 @@
         this.newNumberWidth=0;
         this.newNumberHeight=0;
         this.selected="NIENTE";//blocco/entita' selezionata - se vuoto deve essere == "NIENTE"
+        this.fill=false;
         this.isSelecting=false;
         this.modifyBlock=false;
     		this.showModifyBlockMenu=false;
@@ -966,7 +980,7 @@
             }
             disegnaTestoConBordino(tabTitle, canvasWidthDefault+i*tabWidth+(tabWidth/2), tabHeight/2+ctx.measureText("o").width/2, "#000000");//testo della tab
             if(checkMouseBox(canvasWidthDefault+i*tabWidth,0,tabWidth,tabHeight) && mouseClick && !this.showAnotherMenu){
-			  if(i!=this.openedTab){this.selected="NIENTE"; this.isSelecting=false; this.modifyBlock=false;} //azzero la selezione al cambio di tab
+			  if(i!=this.openedTab){this.selected="NIENTE"; this.isSelecting=false; this.modifyBlock=false; this.fill=false;} //azzero la selezione al cambio di tab
               this.openedTab=i; 
             }
           }          
@@ -1333,8 +1347,8 @@
 	      }//fine di controllaFile()          
         }//fine di drawModifyBackground()        
         this.blockTabCode = function (){
-      			var offsetY=this.selectAndEraserCode()+20;
-      			var voceHeight=ctx.measureText("O").width*2;
+      		var offsetY=this.selectAndEraserCode()+20;
+      		var voceHeight=ctx.measureText("O").width*2;
             var word="modify block color";
             ctx.textAlign="center"; ctx.font = "small-caps bold 15px Lucida Console";
             if(this.modifyBlock){ctx.fillStyle="#8c8c8c"; ctx.fillRect(canvasWidthDefault+2, offsetY+2, this.width-4, voceHeight-4);}
@@ -1343,9 +1357,23 @@
             if(checkMouseBox(canvasWidthDefault+2, offsetY+2, this.width-4, voceHeight-4)){
               ctx.strokeStyle="#000000"; ctx.lineWidth="2";
               ctx.strokeRect(canvasWidthDefault+2, offsetY+2, this.width-4, voceHeight-4);
-              if(mouseClick && this.mouseTimer==0){this.modifyBlock=!this.modifyBlock; this.selected="NIENTE"; this.isSelecting=false; this.mouseTimer=10;}			
+              if(mouseClick && this.mouseTimer==0){this.modifyBlock=!this.modifyBlock; this.selected="NIENTE"; this.fill=false; this.isSelecting=false; this.mouseTimer=10;}			
             }
             offsetY+=voceHeight;
+            word="fill rectangle";
+            if(this.fill){ctx.fillStyle="#8c8c8c"; ctx.fillRect(canvasWidthDefault+2, offsetY+2, this.width-4, voceHeight-4);}
+            ctx.strokeStyle="#676767"; ctx.lineWidth="1"; ctx.strokeRect(canvasWidthDefault+2, offsetY+2, this.width-4, voceHeight-4);
+            if(this.selected!="NIENTE"){
+	            disegnaTestoConBordino(word, canvasWidthDefault+this.width/2, offsetY-2+voceHeight-ctx.measureText("O").width/2, "#000000");
+	            if (checkMouseBox(canvasWidthDefault+2, offsetY+2, this.width-4, voceHeight-4)){
+	              ctx.strokeStyle="#000000"; ctx.lineWidth="2";
+	              ctx.strokeRect(canvasWidthDefault+2, offsetY+2, this.width-4, voceHeight-4);
+	              if(mouseClick && this.mouseTimer==0){this.fill=!this.fill; this.isSelecting=false; this.modifyBlock=false; this.mouseTimer=10;}			
+	            }
+            }else{
+            	disegnaTestoConBordino(word, canvasWidthDefault+this.width/2, offsetY-2+voceHeight-ctx.measureText("O").width/2, "#676767");
+            }
+            offsetY+=voceHeight;            
             ctx.textAlign="center"; ctx.font = "bold 15px Lucida Console";
             var blockLetter=["PLATFORM BLOCKS","a","b","c","d","e","f","g","h","i","j","k","X","FOREGROUND BLOCKS","m","n","o","BACKGROUND BLOCKS","p","q","r"];
             var altezzaTotale=canvasHeightDefault-offsetY-30;
@@ -1375,14 +1403,14 @@
             					if(mouseClick && this.mouseTimer==0){
             						this.mouseTimer=10;
             						if(this.modifyBlock){
-                          if(blockLetter[i]!="X"){
-  							          	var k=0; for(l=1; l<rectColor.length; l+=2){
-  							          		this.startingColor[k]=parseInt(rectColor[l]+rectColor[l+1],16);
-  							          		k++;
-  							          	}            						
-              							this.showModifyBlockMenu=true; this.showAnotherMenu=true;
-              							this.modifyBlockLetter=blockLetter[i];
-                          }
+                         				 if(blockLetter[i]!="X"){
+	  							          	var k=0; for(l=1; l<rectColor.length; l+=2){
+	  							          		this.startingColor[k]=parseInt(rectColor[l]+rectColor[l+1],16);
+	  							          		k++;
+	  							          	}            						
+	              							this.showModifyBlockMenu=true; this.showAnotherMenu=true;
+	              							this.modifyBlockLetter=blockLetter[i];
+	                          			}
             							this.modifyBlock=false;
             						}else{
             							if(this.selected==blockLetter[i]){
@@ -1391,6 +1419,7 @@
             								this.selected=blockLetter[i];
             							}
             							this.isSelecting=false;
+            							this.fill=false;
             						}
             					}
             				}
@@ -1574,16 +1603,19 @@
                   ctx.strokeStyle="#676767"; ctx.lineWidth="1"; ctx.strokeRect(canvasWidthDefault+j*larghezzaScritta+2, offsetY+2+altezzaRiga*(rigaCorrente), larghezzaScritta-4, altezzaRiga-4);
                   var rectColor=listaEntity[o][i].color;
                   if(checkMouseBox(canvasWidthDefault+j*larghezzaScritta+2, offsetY+2+altezzaRiga*(rigaCorrente), larghezzaScritta-4, altezzaRiga-4)){
-            					ctx.strokeStyle="#000000"; ctx.lineWidth="2"; ctx.strokeRect(canvasWidthDefault+j*larghezzaScritta+2, offsetY+2+altezzaRiga*(rigaCorrente), larghezzaScritta-4, altezzaRiga-4);
-                      ctx.fillStyle="#cccccc"; ctx.fillRect(canvasWidthDefault/2-listaEntity[o][i].width/2-10, canvasHeightDefault/2-listaEntity[o][i].height/2-10, listaEntity[o][i].width+20, listaEntity[o][i].height+20);
-                      ctx.strokeStyle="#000000"; ctx.lineWidth="2"; ctx.strokeRect(canvasWidthDefault/2-listaEntity[o][i].width/2-10, canvasHeightDefault/2-listaEntity[o][i].height/2-10, listaEntity[o][i].width+20, listaEntity[o][i].height+20);  
+            		  ctx.strokeStyle="#000000"; ctx.lineWidth="2"; ctx.strokeRect(canvasWidthDefault+j*larghezzaScritta+2, offsetY+2+altezzaRiga*(rigaCorrente), larghezzaScritta-4, altezzaRiga-4);
+            		  ctx.textAlign="center"; ctx.font="small-caps bold 10px Lucida Console";
+            		  var entityRectWidth=listaEntity[o][i].width+10; if(entityRectWidth<ctx.measureText(listaEntity[o][i].name).width+10){entityRectWidth=ctx.measureText(listaEntity[o][i].name).width+10;}
+                      ctx.fillStyle="#cccccc"; ctx.fillRect(canvasWidthDefault/2-entityRectWidth/2, canvasHeightDefault/2-listaEntity[o][i].height/2-10, entityRectWidth, listaEntity[o][i].height+20+ctx.measureText("O").width);
+                      ctx.strokeStyle="#000000"; ctx.lineWidth="2"; ctx.strokeRect(canvasWidthDefault/2-entityRectWidth/2, canvasHeightDefault/2-listaEntity[o][i].height/2-10, entityRectWidth, listaEntity[o][i].height+20+ctx.measureText("O").width);  
+                      disegnaTestoConBordino(listaEntity[o][i].name, canvasWidthDefault/2, canvasHeightDefault/2+listaEntity[o][i].height/2+8-2+ctx.measureText("O").width, "#000000");
                       if(listaEntity[o][i].canSelfDraw==true){
                           listaEntity[o][i].selfDraw(canvasWidthDefault/2-listaEntity[o][i].width/2, canvasHeightDefault/2-listaEntity[o][i].height/2, i); 
                       }else{
                       	  ctx.fillStyle = listaEntity[o][i].color;
                           ctx.fillRect(canvasWidthDefault/2-listaEntity[o][i].width/2, canvasHeightDefault/2-listaEntity[o][i].height/2, listaEntity[o][i].width, listaEntity[o][i].height);
                       }
-                      ctx.textAlign="center"; ctx.font="small-caps bold 15px Lucida Console"; //sistemo se no si bugga                        
+                      ctx.textAlign="center"; ctx.font="small-caps bold 15px Lucida Console";
             					if(mouseClick && this.mouseTimer==0){
             						this.mouseTimer=10;
           							if(this.selected==listaEntity[o][i].letter){
@@ -1617,14 +1649,14 @@
 		        if(checkMouseBox(canvasWidthDefault+2, 22, voceWidth-4, voceHeight-4)){
 		          ctx.strokeStyle="#000000"; ctx.lineWidth="2";
 		          ctx.strokeRect(canvasWidthDefault+2, 22, voceWidth-4, voceHeight-4);
-		          if(mouseClick && this.mouseTimer==0){this.isSelecting=!this.isSelecting; this.modifyBlock=false; this.mouseTimer=10;}
+		          if(mouseClick && this.mouseTimer==0){this.isSelecting=!this.isSelecting; this.modifyBlock=false; this.fill=false; this.mouseTimer=10;}
 		        }
 	        }else{
 	        	disegnaTestoConBordino(word3, canvasWidthDefault+voceWidth/2, 20+voceHeight/2+ctx.measureText("o").width/2, "#000000");
 		        if(checkMouseBox(canvasWidthDefault+2, 22, voceWidth-4, voceHeight-4)){
 		          ctx.strokeStyle="#000000"; ctx.lineWidth="2";
 		          ctx.strokeRect(canvasWidthDefault+2, 22, voceWidth-4, voceHeight-4);
-		          if(mouseClick && this.mouseTimer==0){this.selected="NIENTE"; this.mouseTimer=10;}
+		          if(mouseClick && this.mouseTimer==0){this.selected="NIENTE"; this.fill=false; this.mouseTimer=10;}
 		        }	        	
 	        }
         	disegnaTestoConBordino(word2, canvasWidthDefault+voceWidth+voceWidth/2, 20+voceHeight/2+ctx.measureText("o").width/2, "#000000");
@@ -1637,7 +1669,7 @@
 	          	}else{
 	          		this.selected="."; 
 	          	}
-	          	this.isSelecting=false; this.modifyBlock=false; this.mouseTimer=10;
+	          	this.isSelecting=false; this.modifyBlock=false; this.fill=false; this.mouseTimer=10;
 	          }
 	        }	        
 	        ctx.textAlign="left";				
@@ -1658,16 +1690,54 @@
                 stringToLevel(stringaLivello);
               }
             }else{
-              indice+=lvlCanvasMouseX;
-              if(indice<level.indiceZ){
-                switch(stringaLivello[indice]){
-                  case "t": case "l": case "w": break;//nei casi dei blocchi speciali non fare nulla
-                  default: 
-                    stringaLivello=stringaLivello.slice(0,indice)+this.selected+stringaLivello.slice(indice+1);
-                    stringToLevel(stringaLivello);
-                    break; 
-                }
-              }
+            	if(this.fill){
+					indiceX=lvlCanvasMouseX;
+					var bloccoDaCambiare=stringaLivello[indice+indiceX];
+					var startY=indice;
+					var y=startY; 
+					var x=indiceX;
+					var miFermo=false;
+					for(; y>-1; y-=(level.maxWidth/20-1)){if(stringaLivello[y+x]!=bloccoDaCambiare){ y+=(level.maxWidth/20-1); startY=y; break;}}
+					for(; y<level.indiceZ; y+=(level.maxWidth/20-1)){
+						if(stringaLivello[y+indiceX]!=bloccoDaCambiare){
+							break;
+						}else{
+							if(miFermo){break;}
+							var stringaBlocchi=this.selected;
+							x=indiceX; var startX=x+y;
+							for(;x>-1; x--){
+								if(stringaLivello[y+x]!=bloccoDaCambiare){ 
+									if(stringaLivello[y+x]!="l"){miFermo=true;}
+									x+=2; startX=x+y-1; break;
+								}
+							}
+							for(;x<level.maxWidth/20-1; x++){
+								if(stringaLivello[y+x]!=bloccoDaCambiare){
+									x--;
+									miFermo=true;
+									break;
+								}else{
+									stringaBlocchi+=this.selected;
+								}	
+							}
+							var stringa1=stringaLivello.slice(0,startX);
+							var stringa2=stringaLivello.slice(startX+(stringaBlocchi.length))
+							stringaLivello=stringa1+stringaBlocchi+stringa2;
+							stringToLevel(stringaLivello);
+						}	
+					}
+            	}else{
+	              indice+=lvlCanvasMouseX;
+	              if(indice<level.indiceZ){
+	                switch(stringaLivello[indice]){
+	                  case "t": case "l": case "w": break;//nei casi dei blocchi speciali non fare nulla
+	                  default: 
+	                    stringaLivello=stringaLivello.slice(0,indice)+this.selected+stringaLivello.slice(indice+1);
+	                    stringToLevel(stringaLivello);
+	                    break; 
+	                }
+	              }
+            	}
             }
           }
         }//fine di piazzaBloccoCode()
