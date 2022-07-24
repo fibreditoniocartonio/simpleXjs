@@ -1,4 +1,4 @@
-      var versioneDiGioco = "v1.20220724"; //fixato un problema con la coordinata y del mouse nei livelli piu alti di 27 blocchi, aggiunta la funzione fill nella schermata blocchi, aggiunti i nomi delle entita' che vengono mostrati nella schermata entity
+      var versioneDiGioco = "v1.20220724"; //fixato un problema con la coordinata y del mouse nei livelli piu alti di 27 blocchi, aggiunta la funzione fill nella schermata blocchi, aggiunti i nomi delle entita' che vengono mostrati nella schermata entity, creata funzione apposita per riconoscere le entity nei foreground/background
       debugMode=false;    //you can enable debugMode with the console (press f12 in the browser)
       showMouseBox=false; //you can enable showMouseBox with the console (press f12 in the browser)
       
@@ -146,7 +146,7 @@
           var currentIndex=i;
 					level['xStartingPos'] = (i%widthTot)*20;
 					level['yStartingPos'] = (heightTot-2)*20;
-					if(lvlString[i-1]=='p' || lvlString[i-1]=='q' || lvlString[i-1]=='r'){leggiBlocco(background,lvlString[i-1]);} //se il blocco prima era un background lo carica sotto il player
+					checkBackAndForGround(background,foreground,lvlString[i-1]); //se il blocco prima era un background o foreground lo carica sotto il player
           i=currentIndex;
           leggiBlocco(level,lvlString[i]);
           level[level.length-1].color="#0400f8";
@@ -175,7 +175,7 @@
 		         	pipistrello.x= (i%widthTot)*20;
 		        	pipistrello.y= (heightTot-1)*20+10;
     					entity.push(pipistrello);
-    					if(lvlString[i-1]=='p' || lvlString[i-1]=='q' || lvlString[i-1]=='r' ){leggiBlocco(background,lvlString[i-1]);} //se il blocco prima era un background lo carica sotto la entita' letta
+    					checkBackAndForGround(background,foreground,lvlString[i-1]); //se il blocco prima era un background o foreground lo carica sotto il player
     					break;
 		          
 		        case 'S': //S sono le spike (le spine che instaKillano)
@@ -193,7 +193,7 @@
   				    armatura.x= (i%widthTot)*20;
   				    armatura.y= (heightTot-1)*20; 
     					entity.push(armatura);
-    					if(lvlString[i-1]=='p' || lvlString[i-1]=='q' || lvlString[i-1]=='r' ){leggiBlocco(background,lvlString[i-1]);} //se il blocco prima era un background lo carica sotto la entita' letta
+    					checkBackAndForGround(background,foreground,lvlString[i-1]); //se il blocco prima era un background o foreground lo carica sotto il player
   				    break;
 
 		        case '4': case '5': case '6': case '7': //sono le subtank
@@ -202,7 +202,7 @@
   				    subtankLetta.x= (i%widthTot)*20;
   				    subtankLetta.y= (heightTot-1)*20; 
     					entity.push(subtankLetta);
-    					if(lvlString[i-1]=='p' || lvlString[i-1]=='q' || lvlString[i-1]=='r' ){leggiBlocco(background,lvlString[i-1]);} //se il blocco prima era un background lo carica sotto la entita' letta
+    					checkBackAndForGround(background,foreground,lvlString[i-1]); //se il blocco prima era un background o foreground lo carica sotto il player
   				    break;
 
 				case '⁰': case '¹': case '²': case '³': case '⁴': case '⁵': case '⁶': case '⁷': //sono i cuori che aumentano la vita
@@ -212,7 +212,7 @@
   				    cuore.x= (i%widthTot)*20;
   				    cuore.y= (heightTot-1)*20-1; 
     					entity.push(cuore);
-    					if(lvlString[i-1]=='p' || lvlString[i-1]=='q' || lvlString[i-1]=='r' ){leggiBlocco(background,lvlString[i-1]);} //se il blocco prima era un background lo carica sotto la entita' letta
+    					checkBackAndForGround(background,foreground,lvlString[i-1]); //se il blocco prima era un background o foreground lo carica sotto il player
   				    break;				    
 
 				case 'à'://small life recovery
@@ -223,7 +223,7 @@
   				    lifeRec.x= (i%widthTot)*20+(10-lifeRec.width/2);
   				    lifeRec.y= (heightTot-1)*20+1; 
     					entity.push(lifeRec);
-    					if(lvlString[i-1]=='p' || lvlString[i-1]=='q' || lvlString[i-1]=='r' ){leggiBlocco(background,lvlString[i-1]);} //se il blocco prima era un background lo carica sotto la entita' letta
+    					checkBackAndForGround(background,foreground,lvlString[i-1]); //se il blocco prima era un background o foreground lo carica sotto il player
   				    break;
 
 				case 'À'://big life recovery
@@ -234,7 +234,7 @@
   				    lifeRec.x= (i%widthTot)*20+(10-lifeRec.width/2);
   				    lifeRec.y= (heightTot-1)*20+1; 
     					entity.push(lifeRec);
-    					if(lvlString[i-1]=='p' || lvlString[i-1]=='q' || lvlString[i-1]=='r' ){leggiBlocco(background,lvlString[i-1]);} //se il blocco prima era un background lo carica sotto la entita' letta
+    					checkBackAndForGround(background,foreground,lvlString[i-1]); //se il blocco prima era un background o foreground lo carica sotto il player
   				    break;
 
 				case 'è'://small weapon recovery
@@ -245,7 +245,7 @@
   				    weaponRec.x= (i%widthTot)*20+(10-weaponRec.width/2);
   				    weaponRec.y= (heightTot-1)*20+1; 
   					  entity.push(weaponRec);
-					    if(lvlString[i-1]=='p' || lvlString[i-1]=='q' || lvlString[i-1]=='r' ){leggiBlocco(background,lvlString[i-1]);} //se il blocco prima era un background lo carica sotto la entita' letta
+					    checkBackAndForGround(background,foreground,lvlString[i-1]); //se il blocco prima era un background o foreground lo carica sotto il player
 				      break;
 				case 'È'://big weapon recovery
 			        var weaponRec = new newPickUp_WeaponEnergy(8);
@@ -255,7 +255,7 @@
   				    weaponRec.x= (i%widthTot)*20+(10-weaponRec.width/2);
   				    weaponRec.y= (heightTot-1)*20+1;
     					entity.push(weaponRec);
-    					if(lvlString[i-1]=='p' || lvlString[i-1]=='q' || lvlString[i-1]=='r' ){leggiBlocco(background,lvlString[i-1]);} //se il blocco prima era un background lo carica sotto la entita' letta
+    					checkBackAndForGround(background,foreground,lvlString[i-1]); //se il blocco prima era un background o foreground lo carica sotto il player
 				      break;																		    	        	 							
 
 				//i blocchi
@@ -428,7 +428,14 @@
             this.width= 20;
       		this.height= 20+1;
             this.color= '#155261';            													
-		}					
+		}
+		function checkBackAndForGround(background,foreground,bloccoPrima){
+			if(bloccoPrima =='p' || bloccoPrima=='q' || bloccoPrima=='r'){
+				leggiBlocco(background,bloccoPrima);
+			}else if(bloccoPrima=='m' || bloccoPrima=='n' || bloccoPrima=='o' ){
+				leggiBlocco(foreground,bloccoPrima);
+			}
+		}							
 	}//fine di stringToLevel()
       
       var entity = []; //create the entity array. Ogni entità deve avere: x, y, width, height e il metodo physics che determinerà come si comporta l'entità
