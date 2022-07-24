@@ -1376,7 +1376,7 @@
             offsetY+=voceHeight;            
             ctx.textAlign="center"; ctx.font = "bold 15px Lucida Console";
             var blockLetter=["PLATFORM BLOCKS","a","b","c","d","e","f","g","h","i","j","k","X","FOREGROUND BLOCKS","m","n","o","BACKGROUND BLOCKS","p","q","r"];
-            var altezzaTotale=canvasHeightDefault-offsetY-30;
+            var altezzaTotale=canvasHeightDefault-offsetY+10;
             var numeroRighe=9; var rigaCorrente=0;
             var altezzaRiga=altezzaTotale/numeroRighe;
             var larghezzaScritta=this.width/3;
@@ -1393,8 +1393,8 @@
                     if(blockLetter[i]=="X"){
                       rectColor=player.color;
                       ctx.font = "small-caps bold 10px Lucida Console";
-                      disegnaTestoConBordino("starting", canvasWidthDefault+j*larghezzaScritta+larghezzaScritta/2, offsetY+3+altezzaRiga*(rigaCorrente)+ctx.measureText("O").width, "#000000","#cccccc");
-                      disegnaTestoConBordino("position", canvasWidthDefault+j*larghezzaScritta+larghezzaScritta/2, offsetY-5+altezzaRiga*(rigaCorrente+1), "#000000","#cccccc");
+                      disegnaTestoConBordino("starting", canvasWidthDefault+j*larghezzaScritta+larghezzaScritta/2, offsetY+altezzaRiga*(rigaCorrente)+ctx.measureText("O").width, "#000000","#cccccc");
+                      disegnaTestoConBordino("position", canvasWidthDefault+j*larghezzaScritta+larghezzaScritta/2, offsetY-4+altezzaRiga*(rigaCorrente+1), "#000000","#cccccc");
                       ctx.font = "bold 15px Lucida Console";
                     }else{rectColor=this.getBlockColor(blockLetter[i]);}                    
             				ctx.strokeStyle="#676767"; ctx.lineWidth="1"; ctx.strokeRect(canvasWidthDefault+j*larghezzaScritta+2, offsetY+2+altezzaRiga*(rigaCorrente), larghezzaScritta-4, altezzaRiga-4);
