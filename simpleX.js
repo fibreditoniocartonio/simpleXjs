@@ -1,4 +1,4 @@
-      var versioneDiGioco = "v0.20220724"; //creata funzione apposita per riconoscere le entity nei foreground/background
+      var versioneDiGioco = "v0.20220730"; //aggiunto il mostro coniglio (newBunny), migliorato il modo in cui i colpi colpiscono le cose
       debugMode=false; //you can enable debugMode with the console (press f12 in the browser)
       
       //crea il canvas
@@ -8,7 +8,7 @@
           document.body.innerHTML += "".concat("<div class='caricaPartitaDiv' id='caricaPartitaDiv'><input type='file' id='fileCaricaPartita' disabled></div><div class='canvasDiv' id='canvasDivId' tabIndex='1'><canvas id='canvas' width=" , canvasWidth , " height=" , canvasHeight , "></canvas></div>");
       }   var ctx = document.getElementById('canvas').getContext('2d');
 
-    var stringaSalvataggio="";
+      var stringaSalvataggio="";
 
 	  //variabili dei tasti - prima o poi faro' un'opzione nel menu per poterli cambiare ingame
       var keys = []; //vettore associativo dei tasti (tiene dentro dei bool)
@@ -261,7 +261,7 @@ i livelli sono disposti cosi in realta':1 8
 				case '.': // . è vuoto/aria
 					break;
               
-		        //ora le entita' (lettere maiuscole)
+		        //ora le entita' (lettere maiuscole) 
 		        case 'P': // P indica un pipistrello
 		        	var pipistrello = new newPipistrello();
 		         	pipistrello.x= (i%widthTot)*20;
@@ -269,6 +269,14 @@ i livelli sono disposti cosi in realta':1 8
 					entity.push(pipistrello);
 					checkBackAndForGround(background,foreground,lvlString[i-1]); //se il blocco prima era un background o foreground lo carica sotto il player
 					break;
+
+		        case 'B': // B indica un bunny (coniglio)
+		        	var entita = new newBunny();
+		         	entita.x= (i%widthTot)*20;
+		        	entita.y= (heightTot-1)*20-2;
+					entity.push(entita);
+					checkBackAndForGround(background,foreground,lvlString[i-1]); //se il blocco prima era un background o foreground lo carica sotto il player
+					break;					
 		          
 		        case 'S': //S sono le spike (le spine che instaKillano)
 		          var spike= new newSpike();
@@ -516,6 +524,7 @@ i livelli sono disposti cosi in realta':1 8
 	}//fine di stringToLevel()
       
       var entity = []; //create the entity array. Ogni entità deve avere: x, y, width, height e il metodo physics che determinerà come si comporta l'entità
+
       //adesso inizio i prototipi delle entita'
       
       function newSparo(larghezza,altezza) {//lo sparo creato dal player
@@ -560,15 +569,17 @@ i livelli sono disposti cosi in realta':1 8
 	        	}          
           }
           //collisione dello sparo con altre entita'
-          for (i=0; i<entity.length;i++){
-            if (!(i == indiceDiQuestaEntity)){
-              if ( entity[i].life > 0 && !(this.type == entity[i].type || entity[i].type=="pickup" )  && collisionBetween(this,entity[i]) ){	//controlla che l'entita da colpire sia viva, che non siano lo stesso proiettile e infine se c'è una collisione
-                entity[i].life-=this.damage;
-                if (!(entity[i].life < 1 && this.perforation)){
-                  this.life=-1;
-                }
-              }
-            }
+          if(this.type!="enemyShot"){
+	          for (i=0; i<entity.length;i++){
+	            if (!(i == indiceDiQuestaEntity)){
+	              if ( entity[i].life > 0 && !(this.type == entity[i].type || entity[i].type=="pickup" || entity[i].type=="enemyShot")  && collisionBetween(this,entity[i]) ){	//controlla che l'entita da colpire sia viva, che non siano lo stesso proiettile e infine se c'è una collisione
+	                if(entity[i].getHit){entity[i].getHit("sparo",this.damage);}
+	                if (!(entity[i].life < 1 && this.perforation)){
+	                  this.life=-1;
+	                }
+	              }
+	            }
+	          }
           }
           
           if(this.active && (this.life<1 || ((xdisegnata > canvasWidth)||( xdisegnata+this.width < 0)))){
@@ -583,7 +594,7 @@ i livelli sono disposti cosi in realta':1 8
       	this.numeroFigli=5;
         this.life= 1;
         this.type= "sparoDelPlayer";
-        this.damage= 1;
+        this.damage= 4;
         this.facingRight=faceRight;
         this.x=xPassata;       
         this.startingX=this.x;
@@ -647,8 +658,8 @@ i livelli sono disposti cosi in realta':1 8
 	        //collisione dello sparo con altre entita'
 	        for (i=0; i<entity.length;i++){
 	          if (!(i == indiceDiQuestaEntity)){
-	            if ( entity[i].life > 0 && !(this.type==entity[i].type || entity[i].type=="pickup" || entity[i].type=="ostacolo" || entity[i].type=="piattaforma" )  && collisionBetween(this,entity[i]) ){	//controlla che l'entita da colpire sia viva, che non siano lo stesso proiettile e infine se c'è una collisione
-	              entity[i].life-=this.damage;
+	            if ( entity[i].life > 0 && !(this.type==entity[i].type || entity[i].type=="pickup" || entity[i].type=="ostacolo" || entity[i].type=="piattaforma" || entity[i].type=="enemyShot")  && collisionBetween(this,entity[i]) ){	//controlla che l'entita da colpire sia viva, che non siano lo stesso proiettile e infine se c'è una collisione
+	              if(entity[i].getHit){entity[i].getHit("sparoCh3",this.damage);}
 	              if (!(entity[i].life < 1 && this.perforation)){
 	                this.life=-1;
 	              }
@@ -831,8 +842,8 @@ i livelli sono disposti cosi in realta':1 8
           //collisione dello sparo con altre entita'
           for (i=0; i<entity.length;i++){
             if (!(i == indiceDiQuestaEntity)){
-              if ( entity[i].life > 0 && !(this.type == entity[i].type || entity[i].type=="pickup" )  && collisionBetween(this,entity[i]) ){	//controlla che l'entita da colpire sia viva, che non siano lo stesso proiettile e infine se c'è una collisione
-                entity[i].life-=this.damage;
+              if ( entity[i].life > 0 && !(this.type == entity[i].type || entity[i].type=="pickup" || entity[i].type=="enemyShot")  && collisionBetween(this,entity[i]) ){	//controlla che l'entita da colpire sia viva, che non siano lo stesso proiettile e infine se c'è una collisione
+                if(entity[i].getHit){entity[i].getHit("missle",this.damage);}
                 if (!(entity[i].life < 1 && this.perforation)){
                   this.life=-1;
                 }
@@ -849,7 +860,7 @@ i livelli sono disposti cosi in realta':1 8
           	var closestEntityIndex=-1;
           	for (i=0; i<entity.length;i++){
 				if(entity[i].life > 0){
-					if(entity[i].type=="mostro"){
+					if(entity[i].type=="mostro" || entity[i].type=="monster"){
 						if(((entity[i].x<x && entity[i].x>x-canvasWidth/1.25)||(entity[i].x>x && entity[i].x<x+canvasWidth/1.25))&&((entity[i].y<y && entity[i].y>y-canvasHeight/1.25)||(entity[i].y>y && entity[i].y<y+canvasHeight/1.25))){//se e' circa nello schermo
 							var entX=entity[i].x+entity[i].width/2;
 							var entY=entity[i].y+entity[i].height/2;
@@ -898,8 +909,8 @@ i livelli sono disposti cosi in realta':1 8
 	        //collisione dello sparo con altre entita'
 	        for (i=0; i<entity.length;i++){
 	          if (!(i == indiceDiQuestaEntity)){
-	            if ( entity[i].life > 0 && !(this.type == entity[i].type || entity[i].type=="pickup" )  && collisionBetween(this,entity[i]) ){	//controlla che l'entita da colpire sia viva, che non siano lo stesso proiettile e infine se c'è una collisione
-	              entity[i].life-=this.damage;
+	            if ( entity[i].life > 0 && !(this.type == entity[i].type || entity[i].type=="pickup")  && collisionBetween(this,entity[i]) ){	//controlla che l'entita da colpire sia viva, che non siano lo stesso proiettile e infine se c'è una collisione
+	              if(entity[i].getHit){entity[i].getHit("chameleonCh1",this.damage);}
 	              if (!(entity[i].life < 1)){
 	                this.life=-1;
 	              }
@@ -980,8 +991,8 @@ i livelli sono disposti cosi in realta':1 8
           //collisione dello sparo con altre entita'
           for (i=0; i<entity.length;i++){
             if (!(i == indiceDiQuestaEntity)){
-              if ( entity[i].life > 0 && !(this.type == entity[i].type || entity[i].type=="pickup" )  && collisionBetween(this,entity[i]) ){	//controlla che l'entita da colpire sia viva, che non siano lo stesso proiettile e infine se c'è una collisione
-                entity[i].life-=this.damage;
+              if ( entity[i].life > 0 && !(this.type == entity[i].type || entity[i].type=="pickup" || entity[i].type=="enemyShot")  && collisionBetween(this,entity[i]) ){	//controlla che l'entita da colpire sia viva, che non siano lo stesso proiettile e infine se c'è una collisione
+                if(entity[i].getHit){entity[i].getHit("chameleonCh1",this.damage);}
                 if (!(entity[i].life < 1 && this.perforation)){
                   this.life=-1;
                 }
@@ -1100,8 +1111,8 @@ i livelli sono disposti cosi in realta':1 8
           //collisione dello sparo con altre entita'
           for (i=0; i<entity.length;i++){
             if (!(i == indiceDiQuestaEntity)){
-              if ( entity[i].life > 0 && !(this.type == entity[i].type || entity[i].type=="pickup" )  && collisionBetween(this,entity[i]) ){	//controlla che l'entita da colpire sia viva, che non siano lo stesso proiettile e infine se c'è una collisione
-                entity[i].life-=this.damage;
+              if ( entity[i].life > 0 && !(this.type == entity[i].type || entity[i].type=="pickup" || entity[i].type=="enemyShot")  && collisionBetween(this,entity[i]) ){	//controlla che l'entita da colpire sia viva, che non siano lo stesso proiettile e infine se c'è una collisione
+                if(entity[i].getHit){entity[i].getHit("shieldCh1",this.damage);}
                 if (!(entity[i].life < 1 && this.perforation)){
                   this.life=-1;
                 }
@@ -1171,7 +1182,7 @@ i livelli sono disposti cosi in realta':1 8
                 if (!(entity[i].life < this.life)){
                   this.life=-1;
                 }
-                entity[i].life-=this.damage;
+                if(entity[i].getHit){entity[i].getHit("shieldCh3",this.damage);}
               }
             }
           }
@@ -1244,8 +1255,8 @@ i livelli sono disposti cosi in realta':1 8
           //collisione dello sparo con altre entita'
           for (i=0; i<entity.length;i++){
             if (!(i == indiceDiQuestaEntity)){
-              if ( entity[i].life > 0 && !(this.type == entity[i].type || entity[i].type=="pickup" )  && collisionBetween(this,entity[i]) ){	//controlla che l'entita da colpire sia viva, che non siano lo stesso proiettile e infine se c'è una collisione
-                entity[i].life-=this.damage;
+              if ( entity[i].life > 0 && !(this.type == entity[i].type || entity[i].type=="pickup" || entity[i].type=="enemyShot")  && collisionBetween(this,entity[i]) ){	//controlla che l'entita da colpire sia viva, che non siano lo stesso proiettile e infine se c'è una collisione
+                if(entity[i].getHit){entity[i].getHit("fireCh1",this.damage);}
               }
             }
           }
@@ -1339,8 +1350,8 @@ i livelli sono disposti cosi in realta':1 8
           //collisione dello sparo con altre entita'
           for (i=0; i<entity.length;i++){
             if (!(i == indiceDiQuestaEntity)){
-              if ( entity[i].life > 0 && !(this.type == entity[i].type || entity[i].type=="pickup" )  && collisionBetween(this,entity[i]) ){	//controlla che l'entita da colpire sia viva, che non siano lo stesso proiettile e infine se c'è una collisione
-                entity[i].life-=this.damage;
+              if ( entity[i].life > 0 && !(this.type == entity[i].type || entity[i].type=="pickup" || entity[i].type=="enemyShot")  && collisionBetween(this,entity[i]) ){	//controlla che l'entita da colpire sia viva, che non siano lo stesso proiettile e infine se c'è una collisione
+                if(entity[i].getHit){entity[i].getHit("fireCh3",this.damage);}
                 if (!(entity[i].life < 1 && this.perforation)){
                   this.life=-1;
                 }
@@ -1423,8 +1434,8 @@ i livelli sono disposti cosi in realta':1 8
           //collisione dello sparo con altre entita'
           for (i=0; i<entity.length;i++){
             if (!(i == indiceDiQuestaEntity)){
-              if ( entity[i].life > 0 && !(this.type == entity[i].type || entity[i].type=="pickup" )  && collisionBetween(this,entity[i]) ){	//controlla che l'entita da colpire sia viva, che non siano lo stesso proiettile e infine se c'è una collisione
-                entity[i].life-=this.damage;
+              if ( entity[i].life > 0 && !(this.type == entity[i].type || entity[i].type=="pickup" || entity[i].type=="enemyShot")  && collisionBetween(this,entity[i]) ){	//controlla che l'entita da colpire sia viva, che non siano lo stesso proiettile e infine se c'è una collisione
+                if(entity[i].getHit){entity[i].getHit("fireCh3",this.damage);}
               }
             }
           }          
@@ -1455,7 +1466,7 @@ i livelli sono disposti cosi in realta':1 8
       	this.numeroFigli=40;
         this.life= 1;
         this.type= "sparoDelPlayer";
-        this.damage= 0.2;
+        this.damage= 2;
         this.xv= 0;
         this.yv= 0;
         this.width=larghezza;
@@ -1527,12 +1538,9 @@ i livelli sono disposti cosi in realta':1 8
 	        //collisione dello sparo con altre entita'
 	        for (i=0; i<entity.length;i++){
 	          if (!(i == indiceDiQuestaEntity)){
-	            if ( entity[i].life > 0 && !(this.type==entity[i].type || entity[i].type=="pickup" || entity[i].type=="ostacolo" || entity[i].type=="piattaforma" )  && collisionBetween(this,entity[i]) ){	//controlla che l'entita da colpire sia viva, che non siano lo stesso proiettile e infine se c'è una collisione
-	              entity[i].life-=this.damage;
+	            if ( entity[i].life > 0 && !(this.type==entity[i].type || entity[i].type=="pickup" || entity[i].type=="ostacolo" || entity[i].type=="piattaforma" || entity[i].type=="enemyShot")  && collisionBetween(this,entity[i]) ){	//controlla che l'entita da colpire sia viva, che non siano lo stesso proiettile e infine se c'è una collisione
+	              if(entity[i].getHit){entity[i].getHit("stormCh1",this.damage);}
 	              this.damage= 0;
-	              if (!(entity[i].life < 1 && this.perforation)){
-	                this.life=-1;
-	              }
 	            }
 	          }
 	        }
@@ -1615,8 +1623,8 @@ i livelli sono disposti cosi in realta':1 8
           //collisione dello sparo con altre entita'
           for (i=0; i<entity.length;i++){
             if (!(i == indiceDiQuestaEntity)){
-              if ( entity[i].life > 0 && !(this.type == entity[i].type || entity[i].type=="pickup" )  && collisionBetween(this,entity[i]) ){	//controlla che l'entita da colpire sia viva, che non siano lo stesso proiettile e infine se c'è una collisione
-                entity[i].life-=this.damage;
+              if ( entity[i].life > 0 && !(this.type == entity[i].type || entity[i].type=="pickup")  && collisionBetween(this,entity[i]) ){	//controlla che l'entita da colpire sia viva, che non siano lo stesso proiettile e infine se c'è una collisione
+                if(entity[i].getHit){entity[i].getHit("stormCh3",this.damage);}
               }
             }
           }
@@ -1719,8 +1727,8 @@ i livelli sono disposti cosi in realta':1 8
           //collisione dello sparo con altre entita'
           for (i=0; i<entity.length;i++){
             if (!(i == indiceDiQuestaEntity)){
-              if ( entity[i].life > 0 && !(this.type == entity[i].type || entity[i].type=="pickup" )  && collisionBetween(this,entity[i]) ){	//controlla che l'entita da colpire sia viva, che non siano lo stesso proiettile e infine se c'è una collisione
-                entity[i].life-=this.damage;
+              if ( entity[i].life > 0 && !(this.type == entity[i].type || entity[i].type=="pickup" || entity[i].type=="enemyShot")  && collisionBetween(this,entity[i]) ){	//controlla che l'entita da colpire sia viva, che non siano lo stesso proiettile e infine se c'è una collisione
+                if(entity[i].getHit){entity[i].getHit("electricCh1",this.damage);}
                 if (!(entity[i].life < 1 && this.perforation)){
                   this.life=-1;
                 }
@@ -1796,8 +1804,8 @@ i livelli sono disposti cosi in realta':1 8
           //collisione dello sparo con altre entita'
           for (i=0; i<entity.length;i++){
             if (!(i == indiceDiQuestaEntity)){
-              if ( entity[i].life > 0 && !(this.type == entity[i].type || entity[i].type=="pickup" )  && collisionBetween(this,entity[i]) ){	//controlla che l'entita da colpire sia viva, che non siano lo stesso proiettile e infine se c'è una collisione
-                entity[i].life-=this.damage;
+              if ( entity[i].life > 0 && !(this.type == entity[i].type || entity[i].type=="pickup" || entity[i].type=="enemyShot")  && collisionBetween(this,entity[i]) ){	//controlla che l'entita da colpire sia viva, che non siano lo stesso proiettile e infine se c'è una collisione
+                if(entity[i].getHit){entity[i].getHit("electricCh3",this.damage);}
               }
             }
           }
@@ -1926,8 +1934,8 @@ i livelli sono disposti cosi in realta':1 8
           //collisione dello sparo con altre entita'
           for (i=0; i<entity.length;i++){
             if (!(i == indiceDiQuestaEntity)){//danno ai mostri
-              if ( entity[i].life > 0 && !(this.type == entity[i].type || entity[i].type=="pickup" )  && collisionBetween(this,entity[i]) ){	//controlla che l'entita da colpire sia viva, che non siano lo stesso proiettile e infine se c'è una collisione
-                entity[i].life-=this.damage;
+              if ( entity[i].life > 0 && !(this.type == entity[i].type || entity[i].type=="pickup" || entity[i].type=="enemyShot")  && collisionBetween(this,entity[i]) ){	//controlla che l'entita da colpire sia viva, che non siano lo stesso proiettile e infine se c'è una collisione
+                if(entity[i].getHit){entity[i].getHit("boomerangCh1",this.damage);}
                 this.hitSomething=true;
                 if (!(entity[i].life < 1 && this.perforation)){
                   this.life=-1;
@@ -2074,8 +2082,8 @@ i livelli sono disposti cosi in realta':1 8
           //collisione dello sparo con altre entita'
           for (i=0; i<entity.length;i++){
             if (!(i == indiceDiQuestaEntity)){
-              if ( entity[i].life > 0 && !(this.type == entity[i].type || entity[i].type=="pickup" )  && collisionBetween(this,entity[i]) ){	//controlla che l'entita da colpire sia viva, che non siano lo stesso proiettile e infine se c'è una collisione
-                entity[i].life-=this.damage;                
+              if ( entity[i].life > 0 && !(this.type == entity[i].type || entity[i].type=="pickup" || entity[i].type=="enemyShot")  && collisionBetween(this,entity[i]) ){	//controlla che l'entita da colpire sia viva, che non siano lo stesso proiettile e infine se c'è una collisione
+                if(entity[i].getHit){entity[i].getHit("boomerangCh3",this.damage);}
               }
             }
           }
@@ -2171,8 +2179,8 @@ i livelli sono disposti cosi in realta':1 8
           //collisione dello sparo con altre entita'
           for (i=0; i<entity.length;i++){
             if (!(i == indiceDiQuestaEntity)){
-              if ( entity[i].life > 0 && !(this.type == entity[i].type || entity[i].type=="pickup" )  && collisionBetween(this,entity[i]) ){	//controlla che l'entita da colpire sia viva, che non siano lo stesso proiettile e infine se c'è una collisione
-                entity[i].life-=this.damage;
+              if ( entity[i].life > 0 && !(this.type == entity[i].type || entity[i].type=="pickup" || entity[i].type=="enemyShot")  && collisionBetween(this,entity[i]) ){	//controlla che l'entita da colpire sia viva, che non siano lo stesso proiettile e infine se c'è una collisione
+                if(entity[i].getHit){entity[i].getHit("iceCh1",this.damage);}
                 if (!(entity[i].life < 1 && this.perforation)){
                   this.isDying=true;
                 }
@@ -2282,8 +2290,8 @@ i livelli sono disposti cosi in realta':1 8
           //collisione dello sparo con altre entita'
           for (i=0; i<entity.length;i++){
             if (!(i == indiceDiQuestaEntity)){
-              if ( entity[i].life > 0 && !(this.type == entity[i].type || entity[i].type=="pickup" )  && collisionBetween(this,entity[i]) ){	//controlla che l'entita da colpire sia viva, che non siano lo stesso proiettile e infine se c'è una collisione
-                entity[i].life-=this.damageToEnemy;
+              if ( entity[i].life > 0 && !(this.type == entity[i].type || entity[i].type=="pickup" || entity[i].type=="enemyShot" )  && collisionBetween(this,entity[i]) ){	//controlla che l'entita da colpire sia viva, che non siano lo stesso proiettile e infine se c'è una collisione
+                if(entity[i].getHit){entity[i].getHit("iceCh3",this.damage);}
               }
             }
           }
@@ -2351,7 +2359,10 @@ i livelli sono disposti cosi in realta':1 8
             ctx.lineTo(xdisegnata+width/2, ydisegnata+unitY*2);
             ctx.fill();
           }
-        }          
+        }
+        this.getHit= function(nome,danno){
+        	this.life-=danno;
+        }                  
         this.physics= function( xdisegnata, ydisegnata, indiceDiQuestaEntity){
           if(this.timer<1){//movimento verso il player
             this.alSoffitto=false;
@@ -2418,11 +2429,132 @@ i livelli sono disposti cosi in realta':1 8
           //collision col player
           if(collisionBetween(this, player)) {
         	 this.xv = 0;
-			     this.yv = 0;
-           this.timer=50; 		
+			 this.yv = 0;
+           	 this.timer=50; 		
           }            
         }              
       }
+
+      function newBunny() {//mostro coniglio
+        this.life= 2;
+        this.type= "monster";
+        this.damage= 4;
+        this.invulnerability=0;
+        this.facingRight=false;
+        this.gotHit=false;
+        this.x= 0;
+        this.y= 0;
+        this.xv= 0;
+        this.yv= 0;
+        this.timer=0;
+        this.slope = 0;
+        this.isOnGround=false;
+        this.width= 28;
+        this.height= 28;
+        this.color= '#a57aff';
+        this.color2= '#ffc925';
+        this.color3= '#dddddd';
+        this.color4= '#69ff00';
+        this.speed= 12;
+        this.jumpHeight=10;
+        this.hasPhysics=true;
+        this.canSelfDraw=true;
+        this.selfDraw= function( xdisegnata, ydisegnata, indiceDiQuestaEntity){
+		  color1=this.color;
+		  color2=this.color2;
+          if(this.gotHit){
+          	this.gotHit=false;
+			color1=this.color3;
+			color2=this.color3;          	
+          }
+          head=this.width/10*4;
+          ctx.fillStyle = color1;
+          ctx.fillRect(xdisegnata, ydisegnata+head, this.width, this.height-head);
+          if(this.facingRight){
+          	drawHead(xdisegnata+this.width-head,ydisegnata+1,head,color2);
+          }else{
+          	drawHead(xdisegnata,ydisegnata+1,head,color2);
+          }
+          function drawHead(x,y,head, eyeColor){
+          	ctx.fillRect(x, y, head, head);	
+          	ctx.fillRect(x+head-head/5*2, y-head/3*2, head/5*2, head/3*2);	
+          	ctx.fillRect(x, y-head/3*2, head/5*2, head/3*2);	
+          	ctx.fillStyle = eyeColor;
+          	ctx.fillRect(x+head-head/5*2, y+head/5, head/5, head/5);	
+          	ctx.fillRect(x+head/5, y+head/5, head/5, head/5);	
+          }
+        }
+        this.getHit= function(nome,danno){
+        	if(this.invulnerability<1){
+        		this.gotHit=true;
+        		this.life-=danno;
+        		this.invulnerability=3;
+        	}
+        }          
+        this.physics= function(xdisegnata, ydisegnata, indiceDiQuestaEntity){
+			this.timer++;
+			if(this.invulnerability>0){this.invulnerability--;}
+        	
+	      	var gravityApplicata = 0; var frizioneApplicata = 0;
+	        if (this.y > level.waterLevel){  //determina se sei in acqua o no
+	            if (!this.isInWater){
+	                this.isInWater = true;
+	                this.yv = 0;
+	            }
+	            gravityApplicata = level.gravityWater;
+	            frizioneApplicata = level.frictionWater;
+	        }else{
+	            this.isInWater = false;
+	            gravityApplicata = level.gravity;
+	            frizioneApplicata = level.friction;            
+	        }      
+	        this.yv += gravityApplicata;//get level gravity
+	        if(this.yv>(this.height)){//limita la gravita' massima raggiungibile
+	        	this.yv=this.height;
+	        }
+	        if(!this.isOnGround){this.y += this.yv;}//apply gravity
+	        this.xv = this.xv*frizioneApplicata; //riduce gradualmente xv
+	        this.x += this.xv;//apply movimento x
+	        
+	        for(var i = 0; i < level.length; i++) {//collision with level
+              var latoSotto = new rectTest(this.x+this.width/2-2, this.y+this.height-3, 4, 2);
+              if(collisionBetween(latoSotto, level[i])){ //collisione y col pavimento
+              	this.y=level[i].y-this.height;
+              	this.yv=0;
+              	this.isOnGround=true;
+              }else if(collisionBetween(this, level[i])){ //tutte altre collisioni con level
+                this.x += -this.xv;
+                //this.xv=0;
+              } 	        
+	        }
+
+	        if(this.timer>250 && this.isOnGround && Math.floor(Math.random()*100) < 50){ //sparo
+				this.timer=1;
+				var sparo = new newSparo(20,10);
+				if(this.facingRight){
+					sparo.x=this.x+this.width-sparo.width; 	
+				}else{
+					sparo.x=this.x; 
+				}
+				sparo.y=this.y-this.width/6;
+				sparo.facingRight=this.facingRight;
+				sparo.type="enemyShot"; sparo.color=this.color4;
+				sparo.damage=2;
+				sparo.speed=sparo.speed/2;
+				entity.push(sparo); 
+	        }
+
+	        if(this.timer%100==0 && this.isOnGround){ //salto
+	        	var siGira=25;
+	        	if((this.facingRight && this.x>player.x)||(!this.facingRight && this.x<player.x)){siGira=85;}
+	        	if(Math.floor(Math.random()*100) < siGira){ this.facingRight=!this.facingRight}
+	        	this.yv = -this.jumpHeight;
+	        	this.isOnGround=false;
+	        	this.xv = -this.speed;
+	        	if(this.facingRight){this.xv=-this.xv;}
+	        }           
+        }              
+      }//fine newBunny()      
                   
       function newSpike() {//le spine per terra
         this.life= 9999999999;
@@ -2608,7 +2740,7 @@ i livelli sono disposti cosi in realta':1 8
 			ctx.fillRect(xdisegnata+2, ydisegnata+2, this.width-4, this.height-4);			
         }//fine di selfDraw
         this.physics= function( xdisegnata, ydisegnata, indiceDiQuestaEntity){
-	      var gravityApplicata = 0; var frizioneApplicata = 0;
+	      	var gravityApplicata = 0; var frizioneApplicata = 0;
 	        if (this.y > level.waterLevel){  //determina se sei in acqua o no
 	            if (!this.isInWater){
 	                this.isInWater = true;
@@ -3237,9 +3369,10 @@ i livelli sono disposti cosi in realta':1 8
     	     				        }
 	     		                sparo.color= player.charge3color;
 	     		                sparoInvisibile.color= "#00000000";//sono 8 zeri invece che 6, gli ultimi due indicano il canale alpha(trasparenza)
+	     		                sparoInvisibile.damage=sparo.damage;
 	     		                sparoInvisibile.speed=sparo.speed;
-    	     			        	sparoInvisibile.y=sparo.startingY-20;
-    	     			        	sparoInvisibile.canPassWall=true;		                
+    	     			        sparoInvisibile.y=sparo.startingY-20;
+    	     			        sparoInvisibile.canPassWall=true;		                
 	     		                entity.push(sparo);
 	     		                entity.push(sparoInvisibile);
   	     	            		var latoCubottiSparo=15;
@@ -3248,19 +3381,21 @@ i livelli sono disposti cosi in realta':1 8
     	     				        }else{
     	     				        	var sparo = new newSparoCharge3((player.x-6-latoCubottiSparo),(player.y+3+(latoCubottiSparo/2)),latoCubottiSparo,latoCubottiSparo,0,player.facingRight,false);
     	     				        }
-  	     		              sparo.color= player.charge3color;
+  	     		              	sparo.color= player.charge3color;
 	     		                entity.push(sparo);		                	                            		
 	     	             }else{//charge 2 shoot
-	     	            	  var sparo = new newSparo(50,25);
+	     	            	var sparo = new newSparo(50,25);
 	     	                sparo.y= sparo.y-7;
 	     	                sparo.color= player.charge2color;
+	     	                sparo.damage=3;
 	     	                sparo.perforation=true;
 	     	                entity.push(sparo);
 	     	             }
 	     	            }else if (player.carica > 25){//charge 1 shoot
 	                     player.activeShot++;
 	     	            	var sparo = new newSparo(35,15);
-	     	              sparo.y= sparo.y-2;
+	     	              	sparo.y= sparo.y-2;
+	     	              	sparo.damage=2;
 	     	            	sparo.color= player.charge1color;
 	     	            	entity.push(sparo);
 	     	            }

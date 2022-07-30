@@ -1,4 +1,4 @@
-      var versioneDiGioco = "v1.20220724"; //fixato un problema con la coordinata y del mouse nei livelli piu alti di 27 blocchi, aggiunta la funzione fill nella schermata blocchi, aggiunti i nomi delle entita' che vengono mostrati nella schermata entity, creata funzione apposita per riconoscere le entity nei foreground/background
+      var versioneDiGioco = "v1.20220730"; //aggiunto il mostro Bunny
       debugMode=false;    //you can enable debugMode with the console (press f12 in the browser)
       showMouseBox=false; //you can enable showMouseBox with the console (press f12 in the browser)
       
@@ -68,7 +68,7 @@
       player= new Player();
 
     //inizializzo le entita' che sara' possibile inserire tramite l'editor
-	  var listaEntityStringa="01234567⁰¹²³⁴⁵⁶⁷àÀèÈPS";
+	  var listaEntityStringa="01234567⁰¹²³⁴⁵⁶⁷àÀèÈPSB";
     var listaEntity=creaListaEntity(listaEntityStringa, false);
     var listaTipoEntity=creaListaTipoEntity(listaEntity);
 	  listaEntity=creaListaEntity(listaEntityStringa, listaTipoEntity);
@@ -99,6 +99,7 @@
     					case 'È': entita/*weaponRec big*/ = new newPickUp_WeaponEnergy(8);  entita.width=18; entita.height=18; break;      		
     					case 'P': entita = new newPipistrello();  break;
     					case 'S': entita = new newSpike();  break;
+    					case 'B': entita = new newBunny();  break;
 	      	}
           entita["letter"]=lettera;
           return entita;        
@@ -171,12 +172,20 @@
 		        //ora le entita' (lettere maiuscole)
 		        case 'P': // P indica un pipistrello
 		        	var pipistrello = new newPipistrello();
-              pipistrello['letter'] = lvlString[i];
+              		pipistrello['letter'] = lvlString[i];
 		         	pipistrello.x= (i%widthTot)*20;
 		        	pipistrello.y= (heightTot-1)*20+10;
-    					entity.push(pipistrello);
-    					checkBackAndForGround(background,foreground,lvlString[i-1]); //se il blocco prima era un background o foreground lo carica sotto il player
-    					break;
+    				entity.push(pipistrello);
+    				checkBackAndForGround(background,foreground,lvlString[i-1]); //se il blocco prima era un background o foreground lo carica sotto il player
+    				break;
+
+		        case 'B': // B indica un bunny (coniglio)
+		        	var entita = new newBunny();
+		         	entita.x= (i%widthTot)*20;
+		        	entita.y= (heightTot-1)*20-2;
+					entity.push(entita);
+					checkBackAndForGround(background,foreground,lvlString[i-1]); //se il blocco prima era un background o foreground lo carica sotto il player
+					break;    					
 		          
 		        case 'S': //S sono le spike (le spine che instaKillano)
 		          var spike= new newSpike();
@@ -483,6 +492,52 @@
           }
         }                    
       }
+
+      function newBunny(){//mostro coniglio
+        this.life= 2;
+        this.type= "monster";
+        this.name="bunny";
+        this.damage= 4;
+        this.facingRight=false;
+        this.gotHit=false;
+        this.x= 0;
+        this.y= 0;
+        this.xv= 0;
+        this.yv= 0;
+        this.timer=0;
+        this.slope = 0;
+        this.isOnGround=false;
+        this.width= 28;
+        this.height= 28;
+        this.color= '#a57aff';
+        this.color2= '#ffc925';
+        this.color3= '#b20101';
+        this.color4= '#69ff00';
+        this.speed= 8;
+        this.jumpHeight=10;
+        this.hasPhysics=true;
+        this.canSelfDraw=true;
+        this.selfDraw= function( xdisegnata, ydisegnata, indiceDiQuestaEntity){
+		  color1=this.color;
+		  color2=this.color2;
+          head=this.width/10*4;
+          ctx.fillStyle = color1;
+          ctx.fillRect(xdisegnata, ydisegnata+head, this.width, this.height-head);
+          if(this.facingRight){
+          	drawHead(xdisegnata+this.width-head,ydisegnata+1,head,color2);
+          }else{
+          	drawHead(xdisegnata,ydisegnata+1,head,color2);
+          }
+          function drawHead(x,y,head, eyeColor){
+          	ctx.fillRect(x, y, head, head);	
+          	ctx.fillRect(x+head-head/5*2, y-head/3*2, head/5*2, head/3*2);	
+          	ctx.fillRect(x, y-head/3*2, head/5*2, head/3*2);	
+          	ctx.fillStyle = eyeColor;
+          	ctx.fillRect(x+head-head/5*2, y+head/5, head/5, head/5);	
+          	ctx.fillRect(x+head/5, y+head/5, head/5, head/5);	
+          }
+        }
+      }      
                   
       function newSpike() {//le spine per terra
         this.life= 9999999999;
