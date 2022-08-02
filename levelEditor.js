@@ -1,4 +1,4 @@
-      var versioneDiGioco = "v1.20220730"; //aggiunto il mostro Bunny
+      var versioneDiGioco = "v1.20220802"; //aggiunto il mostro Bomb Wasp
       debugMode=false;    //you can enable debugMode with the console (press f12 in the browser)
       showMouseBox=false; //you can enable showMouseBox with the console (press f12 in the browser)
       
@@ -68,7 +68,7 @@
       player= new Player();
 
     //inizializzo le entita' che sara' possibile inserire tramite l'editor
-	  var listaEntityStringa="01234567⁰¹²³⁴⁵⁶⁷àÀèÈPSB";
+	  var listaEntityStringa="01234567⁰¹²³⁴⁵⁶⁷àÀèÈPSBA";
     var listaEntity=creaListaEntity(listaEntityStringa, false);
     var listaTipoEntity=creaListaTipoEntity(listaEntity);
 	  listaEntity=creaListaEntity(listaEntityStringa, listaTipoEntity);
@@ -100,6 +100,7 @@
     					case 'P': entita = new newPipistrello();  break;
     					case 'S': entita = new newSpike();  break;
     					case 'B': entita = new newBunny();  break;
+    					case 'A': entita = new newBombBee();  break;
 	      	}
           entita["letter"]=lettera;
           return entita;        
@@ -178,6 +179,14 @@
     				entity.push(pipistrello);
     				checkBackAndForGround(background,foreground,lvlString[i-1]); //se il blocco prima era un background o foreground lo carica sotto il player
     				break;
+
+		        case 'A': // A indica un ape (bomb bee)
+		        	var entita = new newBombBee();
+		         	entita.x= (i%widthTot)*20;
+		        	entita.y= (heightTot-1)*20-2;
+					entity.push(entita);
+					checkBackAndForGround(background,foreground,lvlString[i-1]); //se il blocco prima era un background o foreground lo carica sotto il player
+					break;     				
 
 		        case 'B': // B indica un bunny (coniglio)
 		        	var entita = new newBunny();
@@ -537,7 +546,46 @@
           	ctx.fillRect(x+head/5, y+head/5, head/5, head/5);	
           }
         }
-      }      
+      }
+
+      function newBombBee() {//mostro ape
+        this.life= 2;
+        this.type= "monster";
+        this.name= "bomb wasp";
+        this.damage= 2;
+        this.x= 0;
+        this.y= 0;
+        this.width= 17;
+        this.height= 36;
+        this.color = '#ffdd22';
+        this.color2= '#ccaa00';
+        this.color4= '#00ddff';
+        this.canSelfDraw=true;
+        this.selfDraw= function( xdisegnata, ydisegnata, indiceDiQuestaEntity){
+		  color1=this.color;
+		  color2=this.color2;
+          color3=this.color4;
+          unit=this.height/4;
+          ctx.fillStyle = color3+"55";
+          ctx.strokeStyle = color3;
+          ctx.lineWidth = "1";
+          ctx.beginPath();
+	      ctx.moveTo(xdisegnata-unit/2, ydisegnata-unit/2);
+	      ctx.lineTo(xdisegnata+this.width/2, ydisegnata+this.height/2-unit-unit/2);
+          ctx.lineTo(xdisegnata-unit/2+this.width+unit*2, ydisegnata-unit/2);
+          ctx.lineTo(xdisegnata-unit/2+this.width+unit*2, ydisegnata-unit/2+this.height-unit);
+          ctx.lineTo(xdisegnata+this.width/2, ydisegnata+this.height/2-unit/2);
+          ctx.lineTo(xdisegnata-unit/2, ydisegnata-unit/2+this.height-unit);
+          ctx.lineTo(xdisegnata-unit/2, ydisegnata-unit/2);
+	      ctx.fill(); ctx.stroke();
+          ctx.fillStyle = color1;
+          ctx.fillRect(xdisegnata+unit/2, ydisegnata, unit*2, unit*2+1);
+          ctx.fillRect(xdisegnata+unit/2, ydisegnata+unit*3-1, unit*2, unit-1);
+          ctx.fillStyle = color2;         
+          ctx.fillRect(xdisegnata, ydisegnata+unit/2, unit, unit);
+          ctx.fillRect(xdisegnata+unit, ydisegnata+unit*2, unit+unit/2, unit);
+        }    
+      }//fine newBombBee()             
                   
       function newSpike() {//le spine per terra
         this.life= 9999999999;
@@ -553,15 +601,16 @@
         this.color= '#bcbcbc';
         this.selfDraw= function( xdisegnata, ydisegnata, indiceDiQuestaEntity){
           //funzione per disegnare la spina
+			ctx.fillStyle = this.color;
+          	ctx.strokeStyle="#000000";
+          	ctx.lineWidth = "1";
         	ctx.beginPath();
-		      ctx.lineWidth = "1";
-		      ctx.fillStyle = this.color;
-		      ctx.moveTo(xdisegnata, ydisegnata+this.height);
-		      ctx.lineTo(xdisegnata+this.width, ydisegnata+this.height);
+		    ctx.moveTo(xdisegnata, ydisegnata+this.height);
+		    ctx.lineTo(xdisegnata+this.width, ydisegnata+this.height);
 	        ctx.lineTo(xdisegnata+(this.width/2), ydisegnata-2);
 	        ctx.lineTo(xdisegnata, ydisegnata+this.height);
-		      ctx.fill();
-          ctx.strokeStile="#000000"; ctx.stroke();
+		    ctx.fill();
+          	ctx.stroke();
         }              
       }
 
