@@ -1,4 +1,4 @@
-      var versioneDiGioco = "v0.20221218"; //provo ad aggiungere il supporto ai gamepad
+      var versioneDiGioco = "v0.20221218"; //Troppo difficile, usa Joy2Key oppure AntimicroX per i gamepad ;D
       debugMode=false; //you can enable debugMode with the console (press f12 in the browser)
       
       //crea il canvas
@@ -10,7 +10,7 @@
 
       var stringaSalvataggio="";
 
-	  //variabili dei tasti - prima o poi faro' un'opzione nel menu per poterli cambiare ingame
+	//variabili dei tasti - prima o poi faro' un'opzione nel menu per poterli cambiare ingame
       var keys = []; //vettore associativo dei tasti (tiene dentro dei bool)
       var tastoGiaSchiacciato = false;  //mi serve per alcune funzioni tipo selectScreen()
       var jumpkey = "z";         		//salta - default z
