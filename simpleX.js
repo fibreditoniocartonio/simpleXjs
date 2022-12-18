@@ -1,4 +1,4 @@
-      var versioneDiGioco = "v0.20220802"; //aggiunto il mostro ape (bomb bee)
+      var versioneDiGioco = "v0.20221218"; //provo ad aggiungere il supporto ai gamepad
       debugMode=false; //you can enable debugMode with the console (press f12 in the browser)
       
       //crea il canvas
