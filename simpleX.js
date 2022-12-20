@@ -1,4 +1,4 @@
-      var versioneDiGioco = "v0.20221219"; //Tentato di fixare l'indentazione (si spera); Messo playerPhysics come metodo di Player() e sistemato il macello con player e p1 -> ora è tutto player (ma come override e non prendendola da fuori), Player() inoltre e' stato cambiato a PlayerX(); Fixato il contorno della spina newSpike(); aggiunto inizio possibilita' di avere piu personaggi :D
+      var versioneDiGioco = "v0.20221220"; //iniziato a lavorare su riccardo belmonte
       debugMode = false; //you can enable debugMode with the console (press f12 in the browser)
 
       //crea il canvas
@@ -64,7 +64,7 @@
       var maxCurrentPlayer=2; //numero di personaggi
       function getCurrentPlayerName(currentPlayer){
 	switch (currentPlayer){
-		case 1: return "ziro";
+		case 1: return "riccardo belmonte";
 		default: return "ics";
 	}
       }
@@ -107,6 +107,10 @@
 
             case 7:
                stringToLevel("tttttttttttttttttttttttttttttttttttttttttttttttttttl...................................................l..................................................l..................................................l......................................P...........l..................................................l..................................................l..................................................l..................................................l..................................................l..................................................l..................................................l..................................................l..................................................l..................................................w...bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb................l..................................................l..................................................l..................................................l..................................................l..................................................l..................................................l..................................................l..................................................l..................................................l..............................P...................l..X.................................P.............l..................................................z0.62;0.85;");
+               break;
+
+            case 6:
+	       stringToLevel("tttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttlbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbpppppppppppppppppppppppppppppplbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbqqrrrrqqqqqqqnfqqqqqqqrrrrqqbbbpppppppppppppppppppppppppppppplbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbqqrrrrqqqqqqqnfqqqqqqqrrrrqqbbbpppppppppppppppppppppppppppppplbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbqqqrrqqqcqcqqnfqqcqcqqqrrqqqbbbpppppppppppppppmmmmppppppppppplbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbqqqrrqqqoqoqqnfqqoqoqqqrrqqqbbbppppppppppppmmmmmmmmmmpppppppplbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbqqqrrqqqnqnqqnfqqnqnqqqrrqqqbbbpppppppppppmmmmmmmmmmmmppppppplbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbqqqrrqqqnnnnqnfqnnnnqqqrrqqqbbbppppppppppmmmnnmmmmmmmmmpppppplbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbqqqrrqqqqqnnnnfnnnqqqqqrrqqqbbbpppppppppmmmnnnmmmnnnmmmpppppplbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbqqqrrqqqqqqqnnfnqqqqqqqrrqqqbbbpppppppppmmmnmmmmmnnnmmmmppppplbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbqqqrrqqqqqqqqffqqqqqqqqrrqqqbbbpppppppppmmmmmmmmmnnnmmmmppppplbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbqqqrrqqqqqqqqeeqqqqqqqqrrqqqbbbpppppppppmmmmmmmmmmmmmmmmppppplbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbqqqrrqqqqqqqqqeqqqqqqqqrrqqqbbbpppppppppmmmmmmmmmmmmmmmmppppplbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbqqqrrqqqqqqqqqeqqqqqqqqrrqqqbbbpppppppppmmnnmmmmmmmmmmmmppppplbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbqqqrrqqqqqqqqqeqqqqqqqqrrqqqbbbpppppppppmmnnnmmmmmmnmmmmppppplbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbqqqrrqqqqqqqqqeqqqqqqqqrrqqqbbbpppppppppmmmnnnmmmmnnnmmmpppppl..................................abbqqqrrqqqqqqqqqeqqqqqqqqrrqqqbbbppppppppppmmmnnmmmmnnnmmppppppl..................................abbqqqrrqqqqqqqqqeqqqqqqqqrrqqqbbbpppppppppppmmmmmmmmmnmmmppppppl..................................abbqqqrrqqqqqqqqqeqqqqqqqqrrqqqbbbpppppppppppppmmmmmmmmmmpppppppl..................................abbqqqrrqqqqqqqqqeqqqqqqqqrrqqqqqpppppppppppppppmmmmmmmpppppppppl..................................abbqqqrrqqqqqqqqqeqqqqqqqqrrqqqqqpppppppppppppppppppppppppppppppl..................................abbqqqrrqqqqqqqqqeqqqqqqqqrrqqqqqpppppppppppppppppppppppppppppppl..................................abbqqqrrqqqqqqqqqeqqqqqqqqrrqqqqqpppppppppppppppppppppppppppppppl..................................abbqqrrrrqqqqqqqqeqqqqqqqrrrrqqqqpppppppppppppppppppppppppppppppl..................................abbqqrrrrqqqqqqqqeqqqqqqqrrrrqqqqppppppppppppppppppppppppppppppplddddddddddddddddddddddddddddddddddabbbbbbbbqqqqqqqrrqqqqqqqbbbbbbbccpppppppppppppppppppppppppppppplddddddddddddddddddddddddddddddddddabbbbbbbbqqqqqqqrrqqqqqqqbbbbbbbbbccppppppppppppppppppppppppppppl..................................aaaqqqqqqqqqqqqqrrqqqqqqqqqqqqqbbbbbccppppppppppppppppppppppppppl..................................aaaqqqqqqqqqqqrqrrqrqqqqqqqqqqqbbbpbbbccppppppppppppppppppppppppl..................................aaaqqqqqqqqqqqrrrrrrqqqqqqqqqqqbbbpppbbbccppppppppppppppppppppppl..................................aaaqqqqqqqqqqqqrrrrqqqqqqqqqqqqbbbpppppbbbccppppppppppppppppppppl..................................aaaqqqqqqqqqqqqqrrqqqqqqqqqqqqqbbbpppppppbbbccppppppppppppppppppl..................................aaaqqqqqqqqqqqqqqqqqqqqqqqqqqqqbbbpppppppppbbbccppppppppppppppppl..................................aaaqqqqqqqqqqqqqqqqqqqqqqqqqqqqbbbpppppppppppbbbccppppppppppppppl...................................qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqbbbpppppppppppppbbbccppppppppppXpl...................................qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqbbbpppppppppppppppbbbccppppppppppl...................................qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqbbbpppppppppppppppppbbbccppppppppl...................................qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqbbbpppppppppppppppppppbbbccppppppl...................................qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqbbbpppppppppppppppppppppbbbccppppl...................................qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqbbbpppppppppppppppppppppppbbbccccl...................................qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqbbbpppppppppppppppppppppppppbbbbbz0.62;0.85;#2d2d2c;#2d2d2c;#fa1e4c;#df520a00;#7466ba;#d0b98a;#155261;#155261;#155261;#155261;#155261;#eed3a5;#d0b98a;#b0aac1;#121b4d;#7466ba;#7a296f; data:image/png;base64,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");
                break;
 
             case 5:
@@ -3311,16 +3315,8 @@
 
       //this function is called at the start
       function start() {
-	 //var player = nuovoPlayer(currentPlayer);
+	 var player = nuovoPlayer(currentPlayer);
          update();
-      }
-
-      function nuovoPlayer(currentPlayer){
-      	var player;
-	switch (currentPlayer) {
-		default: player = new PlayerX(); break;
-	}
-	return player;
       }
 
       function nuovoLivello() { //azzera i dati del player e carica un nuovo livello (da stringa e non da file...)
@@ -3392,20 +3388,22 @@
 
       function drawPlayer() {
          var xdisegnata = xDisegnata(); //mi serve per semplificare le scritture dopo, praticamente gestisce la visuale sull asse x
-         var ydisegnata = yDisegnata(); //mi serve per semplificare le scritture dopo, praticamente gestisce la visuale sull'asse y  
-         //ombre del dash
-         if (player.speed > player.defaultspeed) {
-            if (player.xv < -10) {
-               player.disegnaPlayer(xdisegnata - 50, ydisegnata + 3, player.width - 3, player.height - 6, false, player.color1 + 'AA', player.color2, player.coloreArmatura);
-               player.disegnaPlayer(xdisegnata - 26, ydisegnata + 1, player.width - 1, player.height - 2, false, player.color1, player.color2, player.coloreArmatura);
-            } else if (player.xv > 10) {
-               player.disegnaPlayer(xdisegnata + 50 + 3, ydisegnata + 3, player.width - 3, player.height - 6, false, player.color1 + 'AA', player.color2, player.coloreArmatura);
-               player.disegnaPlayer(xdisegnata + 26 + 1, ydisegnata + 1, player.width - 1, player.height - 2, false, player.color1, player.color2, player.coloreArmatura);
-            }
-         }
-         //ora disegna effettivamente il player
-         //ctx.fillStyle = player.color1+"80"; ctx.fillRect(xdisegnata, ydisegnata, player.width, player.height); //hitbox */
-         player.disegnaPlayer(xdisegnata, ydisegnata, player.width, player.height, true, player.color1, player.color2, player.coloreArmatura);
+         var ydisegnata = yDisegnata(); //mi serve per semplificare le scritture dopo, praticamente gestisce la visuale sull'asse y
+	 switch (currentPlayer){
+	  case 1: /*riccardo*/ player.disegnaPlayer(xdisegnata, ydisegnata, player.stance, player.sprite, player.facingRight); break;
+	  default: //X
+         	if (player.speed > player.defaultspeed) {
+            		if (player.xv < -10) {
+               		player.disegnaPlayer(xdisegnata - 50, ydisegnata + 3, player.width - 3, player.height - 6, false, player.color1 + 'AA', player.color2, player.coloreArmatura);
+               		player.disegnaPlayer(xdisegnata - 26, ydisegnata + 1, player.width - 1, player.height - 2, false, player.color1, player.color2, player.coloreArmatura);
+            		} else if (player.xv > 10) {
+               		player.disegnaPlayer(xdisegnata + 50 + 3, ydisegnata + 3, player.width - 3, player.height - 6, false, player.color1 + 'AA', player.color2, player.coloreArmatura);
+               		player.disegnaPlayer(xdisegnata + 26 + 1, ydisegnata + 1, player.width - 1, player.height - 2, false, player.color1, player.color2, player.coloreArmatura);
+            		}
+         	}
+         	player.disegnaPlayer(xdisegnata, ydisegnata, player.width, player.height, true, player.color1, player.color2, player.coloreArmatura);
+		break;
+	 }
       }
 
       function drawBackgroundImage() { //disegna immagine di sfondo
@@ -3609,8 +3607,13 @@
          }
       }
 
+
+//crea Player (funzione molto sporca)
+function nuovoPlayer(currentPlayer){
+if(currentPlayer==0){
+  var player = new Player(); return player;
       //prototipo del player X
-      function PlayerX() {
+      function Player() {
       	 this.name="ics";
          this.lifeMax = 16;
          for (i = 0; i < 8; i++) {
@@ -4416,6 +4419,377 @@
       } //fine della funzione playerPhysics - se riesco la faccio diventare un metodo di player invece che una funzione sestante
     } //fine di PlayerX
 
+}else if(currentPlayer==1){
+  var player = new Player(); return player;
+      
+      //prototipo di Riccardo
+      function Player() {
+      	 this.name="riccardo belmonte";
+         this.lifeMax = 8;
+         for (i = 0; i < 8; i++) {
+            if (heartAcquired[i]) {
+               this.lifeMax++;
+            }
+         } //aumenta la vita massima di 2 per ogni cuore trovato
+         this.life = this.lifeMax;
+	 this.sprite = new Image();
+         this.sprite.src = "data:image/jpeg;base64,iVBORw0KGgoAAAANSUhEUgAAAGAAAAAgCAYAAADtwH1UAAAAAXNSR0IArs4c6QAABMtJREFUaIHtWrFu20AMpYx8gjzHv5ChYwYZcPcu+pPmI5w/0dDsMSANGVMgv5DM0j9cB4cKRZM83p2MLnlAkEYWyXc8Ho+kW8EV0TQh0L+Hoaquae8bBE0TQnh9DuM4hvD6HJomBL4h3wC48byUGsn4/v7hAAAAXXeXSa+Mx5r4b7ZTIxk/p3JrRH/JiaKccnhc8zRvYoYBzpHctjVMu7xI7ropS24NHk0TQn88QddN0B9PC33Xtu2BmoIoyf54gml3B21bA4B+/PjC9g+HWTYXOTy4bG4qLLHtxcUGWNHRddNMwCuHi/fCE50WD0lP7sbl2k7BIgVZTqzf36LK8KhzDENVeSIm5nwPDys/e1JhqQ9SMW8A5koOfIY5UALKSqmmP56Scm5/PIHEA6HxQMdL8l7nSTypLssHudig4f54ukgX6FQk4Y3kHNBNtO4MyoXLdt2kysacJwUgXz/aXdMHZhWEsBxCHVe/vy0WKW1qTIcGjGyuT5LVbGonSzv9iLUrHwrXBgCc86eWSpAgXXiJ83mkoi7Up0Vg29ZqlKOO3OjF+4P2ODl6ODYA5wVJzuK5E/M5J4Dv0Etu/3CA/vEJUL9FAm1zB1pRz+XbtlbtUB0pDZm0fsS0uwPPJsSawPkEaOSROL/EOAGefrpugun2HvrHJ9clHIt6+ty62Pk6qPPRgVyHFoAA+vo98DSBYiPGa93zv2WCZ/LrtOV4glIqDZq+ttsvPegw7WTznE/XweX5+oehqtCWBm8TuIiWpgkBjXPiVhoZxzFYTvM0Pv3jE0y391B/vMD+96+FY1E3Og2bqmGoKjyF1Y+fFXKh0YrFgbQRnNe8/k8O3OZ2u3XdHylN4OIPJI+kASB68aGMdeF6Lr7w9885Yj4XTsEXoem1uHg4lMoDXKYYHkjqBkjGMSXU729zhMWM0sYthXzsFMX0SPxp/o9x4PJ8HSWdPA0grmejkQf4qkr2DwfzIkWlvJGyamuKcRxD/fHieleVF5zPm6gUeQBwywPYkwSrCbwBgDm3oZP5kf+KhhCu0Qlz+5Q8hWZfkwfwNVGl8p5JgtaDXDRiVkeaMtfxNmIx4ImadndmMxjDGl8IlchrcHXC/GhLZLCWxss7tX2XdEpDtJRNuMb0MgeWL9QN4DnLG81rTAz5BJI6kjtV6jJLTx/KezeQNnJdN82NF9WhBe7ciGENPIG+W9aiaB7sjyfYt3nVg3SRLe1ecpAqL8TZAfEZEL3/8HfKJg5DVS0v88PMyZrSzuNo7H7xRyIsjYKld1JKN01Wkrfsax1vzIn8ewSebr2gzqejBwAwT8F8Atq2NiPJighagpU4n9qxZjoxSE60KjjpC5wUcOcDwKL6weeS3g3ffbp4nouliCh1Pi/htHJNs0+BX5bkfmmCtiV5LYfzHkK7/+jzcRxnPfMlLDmPLnqtslKDFvk0GKyJZWyaG4Nl2wI2qvyZBjwhOMOaN0CKLj6m1SKQt+858DhK4xi7k0oR04EZhP7w/0PE7wQc7UT7AFwgdbJW9pWWfhYHy34prBMk2dZ00N+4CfTz/niaJ7OoZ7EB3k5Xm3mURluJ/VzdqfeFpoenSJq+tWoOAKDSSPFn2nteeQ2l9lP1586yND3Sc/pMew8/+wfcFEzWV3ZGTAAAAABJRU5ErkJggg==";
+	 this.spriteTimer=0;
+         this.x = 0;
+         this.y = 0;
+         this.yv = 0;
+         this.xv = 0;
+         this.slope = 0;
+         this.width = 30;
+	 this.standingHeight = 57;
+	 this.crouchedHeight = 20;
+	 this.height = this.standingHeight;
+	 this.subWeaponHeart = 0;
+         this.color1 = '#003ef0';
+         this.color2 = '#3AB7D4';
+         this.coloreArmatura = '#e1e1e1';
+         this.defaultColor1 = '#003ef0';
+         this.defaultColor2 = '#3AB7D4';
+         this.defaultColoreArmatura = '#e1e1e1';
+         this.damagedColor = '#990003';
+         this.charge0color = '#ffc000';
+         this.charge1color = '#49ff37';
+         this.charge2color = '#14dfff';
+         this.charge3color = '#ff3788';
+         this.speed = 0.7;
+	 this.stance=0;
+         this.defaultspeed = 0.7;
+         this.jumpheight = 11.5;
+         this.giasaltato = false;
+         this.giasparato = false;
+         this.facingRight = true;
+         this.isInWater = false;
+         this.invulnerability = 0;
+         this.canMove = true;
+         this.canChangeWeap = true;
+         this.carica = 0;
+         this.activePower = 0;
+         this.activeShot = 0;
+         this.power = [ //vettore dei poteri
+            {
+               usageMax: 0,
+               usage: 0,
+               color1: '#687968',
+               color2: '#d9b289',
+               nome: 'Dagger'
+            },
+            {
+               usageMax: 0,
+               usage: 0,
+               color1: '#1a914f',
+               color2: '#60d1aa',
+               nome: 'Axe'
+            },
+            {
+               usageMax: 0,
+               usage: 0,
+               color1: '#e13e60',
+               color2: '#a1c1aa',
+               nome: 'Cross'
+            },
+            {
+               usageMax: 0,
+               usage: 0,
+               color1: '#f14f02',
+               color2: '#f8e179',
+               nome: 'Holy Water'
+            },
+            {
+               usageMax: 0,
+               usage: 0,
+               color1: '#e40097',
+               color2: '#e191c1',
+               nome: 'Salt & Garlic'
+            },
+            {
+               usageMax: 0,
+               usage: 0,
+               color1: '#f8b202',
+               color2: '#a1a1a1',
+               nome: 'Bible'
+            },
+            {
+               usageMax: 0,
+               usage: 0,
+               color1: '#606081',
+               color2: '#81aa89',
+               nome: 'Diamond'
+            },
+            {
+               usageMax: 0,
+               usage: 0,
+               color1: '#35e1f8',
+               color2: '#f8e14f',
+               nome: 'Thunder'
+            },
+         ];
+         this.disegnaPlayer = function (xdisegnata, ydisegnata, stance, sprite, facingRight) {
+	 	if(facingRight){
+			ctx.drawImage(sprite, 16*stance, 0, 16, 32, xdisegnata, ydisegnata-6, 32, 64);
+		}else{
+			ctx.drawImage(sprite, 16*stance, 0, 16, 32, xdisegnata, ydisegnata-6, 32, 64);
+		}
+      	 }
+
+      	 this.physics = function (player, lvl) { //this function handles the platformer physics - in realta' solo del player
+         var gravityApplicata = 0;
+         var frizioneApplicata = 0;
+         if (player.y > level.waterLevel) { //determina se sei in acqua o no
+            if (!player.isInWater) {
+               player.isInWater = true;
+               player.yv = 0;
+            }
+            gravityApplicata = level.gravityWater;
+            frizioneApplicata = level.frictionWater;
+         } else {
+            player.isInWater = false;
+            gravityApplicata = level.gravity;
+            frizioneApplicata = level.friction;
+         }
+
+         player.yv += gravityApplicata; //get level gravity
+         player.y += player.yv; //apply gravity
+
+         for (var i = 0; i < lvl.length; i++) { //y collision con level
+            if (collisionBetween(player, lvl[i])) {
+               player.y += -player.yv;
+               player.yv = 0;
+               if (keys[dashkey] && player.canMove && armaturaAcquired[1]) { //dash
+                  player.speed = player.defaultspeed * 2.25;
+               } else {
+                  player.speed = player.defaultspeed;
+               }
+               if (keys[jumpkey] && player.canMove) { //jump
+                  if (!player.giasaltato) {
+                     player.yv = -player.jumpheight;
+                     player.giasaltato = true;
+                  } else {
+                     player.yv = 0;
+                  }
+               } else {
+                  player.giasaltato = false;
+               }
+            }
+         }
+
+         for (var i = 0; i < entity.length; i++) { //y collision con entity (piattaforma e ostacolo)
+            if (entity[i].life > 0 && entity[i].type == "piattaforma") {
+               if (collisionBetween(player, entity[i])) {
+                  if (((player.y + player.height) > entity[i].y) && ((player.y + player.height) < entity[i].y + 19)) { //collisione con y
+                     player.y = entity[i].y - player.height;
+                     player.yv = entity[i].yv * 1.1;
+                     if (keys[dashkey] && player.canMove && armaturaAcquired[1]) { //dash
+                        player.speed = player.defaultspeed * 2.25;
+                     } else {
+                        player.speed = player.defaultspeed;
+                     }
+                     if (keys[jumpkey] && player.canMove) { //jump
+                        if (!player.giasaltato) {
+                           player.yv = -player.jumpheight;
+                           player.giasaltato = true;
+                        } else {
+                           player.yv = 0;
+                        }
+                     } else {
+                        player.giasaltato = false;
+                     }
+                     if (entity[i].speed) {
+                        player.xv += entity[i].xv;
+                        if (entity[i].xv > 0) {
+                           if (player.xv > entity[i].xv) {
+                              player.xv = entity[i].xv / 1.85;
+                           }
+                        } else {
+                           if (player.xv < entity[i].xv) {
+                              player.xv = entity[i].xv / 1.85;
+                           }
+                        }
+                        player.x -= player.xv;
+                        for (var j = 0; j < lvl.length; j++) {
+                           if (collisionBetween(player, lvl[j])) {
+                              player.x += player.xv * 2;
+                           }
+                        }
+                     }
+                  } else { //collisione con x
+                     player.y += player.slope;
+                     player.x -= -player.xv;
+                     if (keys[dashkey] && player.canMove && armaturaAcquired[1]) { //wall dash
+                        player.speed = player.defaultspeed * 2.25;
+                     } else {
+                        player.speed = player.defaultspeed;
+                     }
+                  }
+               }
+            }
+         }
+
+         if (keys[destrakey] && player.canMove) { //x movement
+            player.xv -= player.speed;
+            player.facingRight = true;
+         }
+         if (keys[sinistrakey] && player.canMove) {
+            player.xv += player.speed;
+            player.facingRight = false;
+         }
+         player.xv *= frizioneApplicata;
+         player.x += -player.xv;
+ 	
+	 player.slope = 0; //serve per i bordi tipo - serve anche per le collision
+         for (var i = 0; i < lvl.length; i++) {
+            if (collisionBetween(player, lvl[i])) {
+               if (player.slope != -8) {
+                  player.y -= 1;
+                  player.slope += 1;
+               }
+            }
+         }
+
+         for (var i = 0; i < lvl.length; i++) { //x collision
+            if (collisionBetween(player, lvl[i])) {
+               player.y += player.slope;
+               player.x -= -player.xv;
+               if (keys[dashkey] && player.canMove && armaturaAcquired[1]) { //wall dash
+                  player.speed = player.defaultspeed * 2.25;
+               } else {
+                  player.speed = player.defaultspeed;
+               }
+            }
+         }
+
+         for (var i = 0; i < entity.length; i++) { //contatto con entita'
+            if (entity[i].life > 0 && !(entity[i].type == "sparoDelPlayer")) {
+               if (collisionBetween(player, entity[i])) {
+                  if (entity[i].damage > 0) {
+                     if (player.invulnerability < 1) { //entity collison								            		
+                        player.color1 = player.damagedColor;
+                        player.color2 = player.damagedColor;
+                        player.coloreArmatura = player.damagedColor;
+                        if (armaturaAcquired[3] && (entity[i].damage > 1)) {
+                           player.life = player.life - (entity[i].damage - 1);
+                        } else {
+                           player.life = player.life - entity[i].damage;
+                        }
+                        player.invulnerability = 40;
+                        player.canMove = false;
+                        break;
+                     }
+                  } else { //qui stiamo parlando delle entita' con danno<1, praticamente i pickup (se hanno il danno in negativo restituiscono la vita a X)
+                     if ((player.life - entity[i].damage) > player.lifeMax) {
+                        var vitaRecuperabile = (0 - entity[i].damage) - (player.lifeMax - player.life);
+                        player.life = player.lifeMax;
+                        for (j = 0; j < 4; j++) { //qui inizia a riempire le subtank
+                           if (subtank[j].acquired) {
+                              if ((subtank[j].life + vitaRecuperabile) > subtank[j].lifeMax) {
+                                 vitaRecuperabile = vitaRecuperabile - (subtank[j].lifeMax - subtank[j].life);
+                                 subtank[j].life = subtank[j].lifeMax;
+                                 i++;
+                              } else {
+                                 subtank[j].life = subtank[j].life + vitaRecuperabile;
+                                 break;
+                              }
+                           }
+                        }
+                     } else {
+                        player.life = player.life - entity[i].damage;
+                     }
+                  }
+               }
+            }
+         }
+         if (player.invulnerability > 0) { //se l'invulnerabilita' e' >=1 la riduce e colora x in base a che punto e'
+            player.invulnerability--;
+            if (player.invulnerability == 90000) {
+               player.invulnerability = 5;
+               player.canChangeWeap = true;
+            } //fine sting cham charge3
+            if (player.invulnerability > 90000) { //potere di sting chameleon charge3
+               calcolaPlayerColor();
+            }
+            if (player.invulnerability < 30) {
+               calcolaPlayerColor();
+               player.color1 = player.color2;
+               player.color2 = player.color2;
+               player.coloreArmatura = player.color2;
+            }
+            if (player.invulnerability < 20) {
+               player.canMove = true;
+            }
+            if (player.invulnerability < 5) {
+               calcolaPlayerColor();
+               player.coloreArmatura = player.defaultColoreArmatura;
+            }
+         }
+
+         if (player.life < 1) { //gameover
+            disegnaSchermoDiGioco(false);
+            objAlert = new newAlert("Gameover", 1);
+            gamestate = 5;
+         }
+
+         if (keys[startkey]) { //menu di pausa
+            if (!tastoGiaSchiacciato && !(player.life < 1)) { //ho dovuto fare il check della vita se no era possibile far aprire il menu dopo essere morti se si schiacciava INVIO nello stesso frame in cui si moriva
+               if (player.canChangeWeap) { //menu di pausa completo non apribile se si sta usando il potere di sting cham, almeno non si cambia potere
+                  objMenuDiPausa = new newMenuDiPausa();
+                  disegnaSchermoDiGioco(false);
+                  tastoGiaSchiacciato = true;
+                  gamestate = 2;
+               } else {
+                  objAlert = new newAlert("pause", -1);
+                  gamestate = 5;
+               }
+            }
+         }
+
+         if (player.canMove && tastoGiaSchiacciato && !(keys[startkey] || keys[lkey] || keys[rkey])) { //azzera tasto gia schiacciato
+            tastoGiaSchiacciato = false;
+         }
+
+	 player.calculateStance(player);
+      	}//fine di Riccardo.physics()
+	
+	this.calculateStance = function (player){ //calcola a che animazione della spritesheet e' il player
+		var previousStance=player.stance;
+		var maxTimer=9;
+		if(player.yv < 0.3){ //se il player e' a terra o in ascesa
+			if(player.xv > 0.3 || player.xv < -0.3){ //se il player si sta muovendo
+				if(player.speed>player.defaultspeed+0.1){ //running
+					switch (player.spriteTimer){
+						case 0: player.stance=1; break;
+						case 1*maxTimer: player.stance=3; break;
+						case 2*maxTimer: player.stance=1; break;
+						case 3*maxTimer: player.stance=4; break;
+						case 4*maxTimer: player.stance=1; player.spriteTimer=0; break;
+					}
+				}else{//walking
+					switch (player.spriteTimer){
+						case 0: player.stance=1; break;
+						case 1*maxTimer: player.stance=2; break;
+						case 2*maxTimer: player.stance=1; break;
+						case 3*maxTimer: player.stance=0; break;
+						case 4*maxTimer: player.stance=1; player.spriteTimer=0; break;
+					}
+				}
+			}else{
+				if(player.crouching){
+					player.stance=5;
+				}else{	player.stance=0;}
+				player.spriteTimer=0;
+			}
+		}else{ //se invece il player e' in aria (discesa)
+			player.stance=0; player.spriteTimer=0;
+		}
+		if(previousStance==player.stance){player.spriteTimer++;}
+	}	
+      }//fine di new Riccardo()
+
+}}//fine di creaPlayer
+
       function collisionBetween(p1, lvl) { //this function detects the collision between the two given objects - la uso anche con le entità lol
          if (lvl.x < p1.x + p1.width &&
             lvl.x + lvl.width > p1.x &&
@@ -4434,7 +4808,8 @@
 	 //scrivo il nome del player corrente
          ctx.textAlign = "right";
          ctx.font = "small-caps bold 20px Lucida Console";
-         disegnaTestoConBordino("playing as: "+getCurrentPlayerName(currentPlayer), canvasWidth - 3, canvasHeight - 2, "#d2d2d2bb", "#020219");
+         disegnaTestoConBordino("playing as", canvasWidth - 3, canvasHeight - 18, "#d2d2d2bb", "#020219");
+         disegnaTestoConBordino(getCurrentPlayerName(currentPlayer), canvasWidth - 3, canvasHeight - 2, "#d2d2d2bb", "#020219");
          ctx.textAlign = "left";
          //leggo che tasto viene schiacciato. Con invio o dash si inizia a giocare, con le freccie si cicla tra i livelli
          if ((keys[dashkey]) && !tastoGiaSchiacciato) { //avvia il livello selezionato
@@ -4469,7 +4844,125 @@
          }
          if (keys[giukey] && !tastoGiaSchiacciato) {
             if (lvlNumber == 1) {
-               lvlNumber = 6;
+               lvlNumber = 6;         var gravityApplicata = 0;
+         var frizioneApplicata = 0;
+         if (player.y > level.waterLevel) { //determina se sei in acqua o no
+            if (!player.isInWater) {
+               player.isInWater = true;
+               player.yv = 0;
+            }
+            gravityApplicata = level.gravityWater;
+            frizioneApplicata = level.frictionWater;
+         } else {
+            player.isInWater = false;
+            gravityApplicata = level.gravity;
+            frizioneApplicata = level.friction;
+         }
+
+         player.yv += gravityApplicata; //get level gravity
+         player.y += player.yv; //apply gravity
+
+         for (var i = 0; i < lvl.length; i++) { //y collision con level
+            if (collisionBetween(player, lvl[i])) {
+               player.y += -player.yv;
+               player.yv = 0;
+               if (keys[dashkey] && player.canMove && armaturaAcquired[1]) { //dash
+                  player.speed = player.defaultspeed * 2.25;
+               } else {
+                  player.speed = player.defaultspeed;
+               }
+               if (keys[jumpkey] && player.canMove) { //jump
+                  if (!player.giasaltato) {
+                     player.yv = -player.jumpheight;
+                     player.giasaltato = true;
+                  } else {
+                     player.yv = 0;
+                  }
+               } else {
+                  player.giasaltato = false;
+               }
+            }
+         }
+
+         for (var i = 0; i < entity.length; i++) { //y collision con entity (piattaforma e ostacolo)
+            if (entity[i].life > 0 && entity[i].type == "piattaforma") {
+               if (collisionBetween(player, entity[i])) {
+                  if (((player.y + player.height) > entity[i].y) && ((player.y + player.height) < entity[i].y + 19)) { //collisione con y
+                     player.y = entity[i].y - player.height;
+                     player.yv = entity[i].yv * 1.1;
+                     if (keys[dashkey] && player.canMove && armaturaAcquired[1]) { //dash
+                        player.speed = player.defaultspeed * 2.25;
+                     } else {
+                        player.speed = player.defaultspeed;
+                     }
+                     if (keys[jumpkey] && player.canMove) { //jump
+                        if (!player.giasaltato) {
+                           player.yv = -player.jumpheight;
+                           player.giasaltato = true;
+                        } else {
+                           player.yv = 0;
+                        }
+                     } else {
+                        player.giasaltato = false;
+                     }
+                     if (entity[i].speed) {
+                        player.xv += entity[i].xv;
+                        if (entity[i].xv > 0) {
+                           if (player.xv > entity[i].xv) {
+                              player.xv = entity[i].xv / 1.85;
+                           }
+                        } else {
+                           if (player.xv < entity[i].xv) {
+                              player.xv = entity[i].xv / 1.85;
+                           }
+                        }
+                        player.x -= player.xv;
+                        for (var j = 0; j < lvl.length; j++) {
+                           if (collisionBetween(player, lvl[j])) {
+                              player.x += player.xv * 2;
+                           }
+                        }
+                     }
+                  } else { //collisione con x
+                     player.y += player.slope;
+                     player.x -= -player.xv;
+                     if (keys[dashkey] && player.canMove && armaturaAcquired[1]) { //wall dash
+                        player.speed = player.defaultspeed * 2.25;
+                     } else {
+                        player.speed = player.defaultspeed;
+                     }
+                     if (keys[jumpkey] && player.canMove) { //wall jumping
+                        if (!player.giasaltato) {
+                           player.yv = -player.jumpheight + 1;
+                           if (player.xv > 0) {
+                              player.xv = -9.9;
+                           } else {
+                              player.xv = 9.9;
+                           }
+                           player.giasaltato = true;
+                        } else {
+                           player.xv = 0;
+                        }
+                     } else {
+                        player.xv = 0;
+                        player.giasaltato = false;
+                     }
+                  }
+               }
+            }
+         }
+
+         if (keys[destrakey] && player.canMove) { //x movement
+            player.xv -= player.speed;
+            player.facingRight = true;
+         }
+         if (keys[sinistrakey] && player.canMove) {
+            player.xv += player.speed;
+            player.facingRight = false;
+         }
+         player.xv *= frizioneApplicata;
+         player.x += -player.xv;
+
             } else if (lvlNumber == 5) {
                lvlNumber = 6;
             } else if (lvlNumber == 3) {
