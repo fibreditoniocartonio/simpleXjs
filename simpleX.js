@@ -1,4 +1,4 @@
-      var versioneDiGioco = "v0.20221220"; //iniziato a lavorare su riccardo belmonte
+      var versioneDiGioco = "v0.20221221"; //fixed Riccardo not mirroring when facing left
       debugMode = false; //you can enable debugMode with the console (press f12 in the browser)
 
       //crea il canvas
@@ -3110,8 +3110,10 @@
                   objAlert = new newAlert("You have found a Heart! Max life augmented.", gamestate);
                   gamestate = 5;
                   heartAcquired[this.indice] = true;
-                  player.lifeMax += 2;
-                  player.life += 2;
+                  switch (currentPlayer){
+                        case 1:  player.lifeMax += 1; player.life += 1; break; //riccardo
+                        default: player.lifeMax += 2; player.life += 2; break;
+                  }
                }
             }
          } //fine di physics
@@ -4530,9 +4532,12 @@ if(currentPlayer==0){
          ];
          this.disegnaPlayer = function (xdisegnata, ydisegnata, stance, sprite, facingRight) {
 	 	if(facingRight){
-			ctx.drawImage(sprite, 16*stance, 0, 16, 32, xdisegnata, ydisegnata-6, 32, 64);
+			ctx.drawImage(sprite, 16*stance, 0, 16-0.2, 32, xdisegnata, ydisegnata-6, 32, 64);
 		}else{
-			ctx.drawImage(sprite, 16*stance, 0, 16, 32, xdisegnata, ydisegnata-6, 32, 64);
+            ctx.save(); //salvo il canvas attuale
+            ctx.scale(-1, 1); //flippa il canvas per fare lo sprite mirrorato
+            ctx.drawImage(sprite, 16*stance, 0, 16-0.2, 32, -xdisegnata, ydisegnata-6, -32, 64); //uso -xdisegnata perche' le coordinate del canvas sono mirrorate in negativo
+            ctx.restore(); //faccio tornare come prima al punto di save() altrimenti rimane buggato
 		}
       	 }
 
@@ -4755,7 +4760,7 @@ if(currentPlayer==0){
 	
 	this.calculateStance = function (player){ //calcola a che animazione della spritesheet e' il player
 		var previousStance=player.stance;
-		var maxTimer=9;
+		var maxTimer=9; //quanti "frame" rimane un animazione. Dico "frame" ma in realta' e' un numero calcolato sui cicli dell'engine
 		if(player.yv < 0.3){ //se il player e' a terra o in ascesa
 			if(player.xv > 0.3 || player.xv < -0.3){ //se il player si sta muovendo
 				if(player.speed>player.defaultspeed+0.1){ //running
