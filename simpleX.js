@@ -1,4 +1,4 @@
-      var versioneDiGioco = "v0.20221221"; //fixed Riccardo not mirroring when facing left
+      var versioneDiGioco = "v0.20221222"; //fixed spaghetti code at Armor and Subtank Upgrades (was using player.color...); added new Hud to Riccardo; fixed Riccardo walking and running animation; added jumping and crouching animiation to Riccardo and worked in general on him
       debugMode = false; //you can enable debugMode with the console (press f12 in the browser)
 
       //crea il canvas
@@ -2984,27 +2984,29 @@
          this.width = 20;
          this.height = 20;
          this.canSelfDraw = true;
+	 this.color1='#003ef0';
+	 this.color2='#e1e1e1';
          this.hasPhysics = true;
          this.selfDraw = function (xdisegnata, ydisegnata, indiceDiQuestaEntity) { //funzione per disegnare l'entita
-            ctx.fillStyle = player.defaultColor1;
+            ctx.fillStyle = this.color1;
             ctx.fillRect(xdisegnata, ydisegnata, this.width, this.height);
-            ctx.fillStyle = player.defaultColoreArmatura;
+            ctx.fillStyle = this.color2;
             ctx.fillRect(xdisegnata + 1, ydisegnata + 1, this.width - 2, this.height - 2);
             ctx.textAlign = "center";
             ctx.font = "small-caps bold 18px Lucida Console";
             var textHeight = ctx.measureText("O").width; //dato che la O normalmente e' alta quanto larga (font monospace) imposto la larghezza di O come altezza approssimativa del testo
             switch (this.indice) {
                case 0:
-                  disegnaTestoConBordino("H", xdisegnata + (this.width / 2), (ydisegnata + (this.height - 2) / 2 + textHeight / 2), player.defaultColor1, player.defaultColoreArmatura);
+                  disegnaTestoConBordino("H", xdisegnata + (this.width / 2), (ydisegnata + (this.height - 2) / 2 + textHeight / 2), this.color1, this.color2);
                   break;
                case 1:
-                  disegnaTestoConBordino("L", xdisegnata + (this.width / 2), (ydisegnata + (this.height - 2) / 2 + textHeight / 2), player.defaultColor1, player.defaultColoreArmatura);
+                  disegnaTestoConBordino("L", xdisegnata + (this.width / 2), (ydisegnata + (this.height - 2) / 2 + textHeight / 2), this.color1, this.color2);
                   break;
                case 2:
-                  disegnaTestoConBordino("B", xdisegnata + (this.width / 2), (ydisegnata + (this.height - 2) / 2 + textHeight / 2), player.defaultColor1, player.defaultColoreArmatura);
+                  disegnaTestoConBordino("B", xdisegnata + (this.width / 2), (ydisegnata + (this.height - 2) / 2 + textHeight / 2), this.color1, this.color2);
                   break;
                case 3:
-                  disegnaTestoConBordino("C", xdisegnata + (this.width / 2), (ydisegnata + (this.height - 2) / 2 + textHeight / 2), player.defaultColor1, player.defaultColoreArmatura);
+                  disegnaTestoConBordino("C", xdisegnata + (this.width / 2), (ydisegnata + (this.height - 2) / 2 + textHeight / 2), this.color1, this.color2);
                   break;
             }
             ctx.textAlign = "left"; //lo azzero se no mi si bugga in alcuni menu
@@ -3017,15 +3019,15 @@
                   this.life = -1;
                   switch (this.indice) {
                      case 0:
-                        objAlert = new newAlert("You have found the helmet upgrade! You can break some blocks with a headbutt.", gamestate);
+                        objAlert = new newAlert("You have found the head upgrade! You can break some blocks with a headbutt.", gamestate);
                         gamestate = 5;
                         break;
                      case 1:
-                        objAlert = new newAlert("You have found the boots upgrade! Press " + dashkey + " to dash.", gamestate);
+                        objAlert = new newAlert("You have found the boots upgrade! Press " + dashkey + " to move faster.", gamestate);
                         gamestate = 5;
                         break;
                      case 2:
-                        objAlert = new newAlert("You have found the buster upgrade! You can charge a more powerfull shot.", gamestate);
+                        objAlert = new newAlert("You have found the weapon upgrade! You can now perform more powerful attacks.", gamestate);
                         gamestate = 5;
                         break;
                      case 3:
@@ -3051,12 +3053,12 @@
          this.canSelfDraw = true;
          this.hasPhysics = true;
          this.selfDraw = function (xdisegnata, ydisegnata, indiceDiQuestaEntity) { //funzione per disegnare l'entita
-            ctx.fillStyle = player.defaultColor1;
+            ctx.fillStyle = '#003ef0';
             ctx.fillRect(xdisegnata, ydisegnata, this.width, this.height);
             ctx.textAlign = "center";
             ctx.font = "small-caps bold 18px Lucida Console";
             var textHeight = ctx.measureText("O").width; //dato che la O normalmente e' alta quanto larga (font monospace) imposto la larghezza di O come altezza approssimativa del testo			
-            disegnaTestoConBordino("S", xdisegnata + (this.width / 2), (ydisegnata + (this.height - 2) / 2 + textHeight / 2), player.charge0color, player.defaultColor1);
+            disegnaTestoConBordino("S", xdisegnata + (this.width / 2), (ydisegnata + (this.height - 2) / 2 + textHeight / 2), '#ffc000', '#003ef0');
             ctx.textAlign = "left"; //lo azzero se no mi si bugga in alcuni menu
          } //fine di selfDraw
          this.physics = function (xdisegnata, ydisegnata, indiceDiQuestaEntity) {
@@ -3110,10 +3112,7 @@
                   objAlert = new newAlert("You have found a Heart! Max life augmented.", gamestate);
                   gamestate = 5;
                   heartAcquired[this.indice] = true;
-                  switch (currentPlayer){
-                        case 1:  player.lifeMax += 1; player.life += 1; break; //riccardo
-                        default: player.lifeMax += 2; player.life += 2; break;
-                  }
+                  player.lifeMax += 2; player.life += 2;
                }
             }
          } //fine di physics
@@ -3490,8 +3489,10 @@
          } //fine debugMode       
          var barLenght = 16 * 6 + 40;
          var barHeight = 30;
+	 var barAccentColor=player.defaultColor1;
          if (player.activePower != 0) { //barra potere - la disegno prima cosi' va sotto
-            ctx.fillStyle = player.color1;
+	    barAccentColor=player.power[player.activePower - 1].color1;
+            ctx.fillStyle = barAccentColor;
             ctx.fillRect(8, 8 + barHeight - 5, barLenght - 4 - 1, 16 - 1);
             ctx.fillStyle = '#3d3b3b';
             ctx.fillRect(10, 10 + barHeight - 5, barLenght - 4, 16);
@@ -3505,67 +3506,77 @@
                ctx.fillRect(13 + (i * (lineWidth + 1)), 15 + barHeight - 5, lineWidth, 8);
             }
          }
-         ctx.fillStyle = player.color1;
+         ctx.fillStyle = barAccentColor;
          ctx.fillRect(8, 8, barLenght - 1, barHeight - 1);
          ctx.fillStyle = '#3d3b3b';
          ctx.fillRect(10, 10, barLenght, barHeight);
-         ctx.beginPath(); //ora inizio a disegnare la x che sara' del colore del player attivo
-         ctx.lineWidth = "7";
-         ctx.strokeStyle = player.color2;
-         ctx.moveTo(15, 15);
-         ctx.lineTo(35, 35);
-         ctx.moveTo(35, 15);
-         ctx.lineTo(15, 35);
-         ctx.stroke(); // Disegna il contorno della X
-         ctx.lineWidth = "5";
-         ctx.strokeStyle = player.color1;
-         ctx.stroke(); // Disegna la parte interna della X
+	 var barLeng=6; var barWidth=5;
+	 var barColor1="#ffc000"; var barColor2="#14dfff"
+	 switch(currentPlayer){
+	 	case 1: //riccardo
+			barWidth=6; barColor1="#ca0000"; 
+			barColor2=player.defaultColor1;
+			ctx.drawImage(player.subWeaponImg, 15*player.activePower, 0, 15-0.2, 15, 10, 10, 30, 30);
+			break;
+		default: //X
+         		ctx.beginPath(); //ora inizio a disegnare la x che sara' del colore del player attivo
+	         	ctx.lineWidth = "7";
+	         	ctx.strokeStyle = player.color2;
+	         	ctx.moveTo(15, 15);
+	         	ctx.lineTo(35, 35);
+	         	ctx.moveTo(35, 15);
+	         	ctx.lineTo(15, 35);
+	         	ctx.stroke(); // Disegna il contorno della X
+	         	ctx.lineWidth = "5";
+	         	ctx.strokeStyle = player.color1;
+	         	ctx.stroke(); // Disegna la parte interna della X
+			break;
+	 }//fine switch currentPlayer
          if (player.lifeMax > 16) {
-            if (player.life > 16) {
-               for (i = 16; i < player.lifeMax; i++) { //disegno le barre della vita
-                  if (i < player.life) {
-                     ctx.fillStyle = player.charge2color;
-                  } else {
-                     ctx.fillStyle = '#909090';
-                  }
-                  ctx.fillRect((i - 16) * 6 + 43, 14, 5, 21);
-               }
-               for (i = 0; i < 16; i++) { //disegno le barre della vita
-                  if (i + 16 > player.lifeMax - 1) {
-                     ctx.fillStyle = player.charge0color;
-                     ctx.fillRect(i * 6 + 43, 17, 5, 18);
-                  } else {
-                     if (i + 16 > player.life - 1) {
-                        ctx.fillStyle = player.charge0color;
-                        ctx.fillRect(i * 6 + 43, 17, 5, 18);
-                     }
-
-                  }
-               }
-            } else {
-               for (i = 16; i < player.lifeMax; i++) {
-                  ctx.fillStyle = '#707070';
-                  ctx.fillRect((i - 16) * 6 + 43, 14, 5, 21);
-               }
-               for (i = 0; i < 16; i++) { //disegno le barre della vita
-                  if (i < player.life) {
-                     ctx.fillStyle = player.charge0color;
-                  } else {
-                     ctx.fillStyle = '#909090';
-                  }
-                  //ctx.fillRect(i*6+43, 15, 5, 20);
-                  ctx.fillRect(i * 6 + 43, 17, 5, 18);
-               }
-            }
+            	if (player.life > 16) {
+               		for (i = 16; i < player.lifeMax; i++) { //disegno le barre della vita
+                  		if (i < player.life) {
+                     			ctx.fillStyle = barColor2;
+                  		} else {
+                     			ctx.fillStyle = '#909090';
+                  		}
+                  		ctx.fillRect((i - 16) * barLeng + 43, 14, barWidth, 21);
+               		}
+               		for (i = 0; i < 16; i++) { //disegno le barre della vita
+                  		if (i + 16 > player.lifeMax - 1) {
+                     			ctx.fillStyle = barColor1;
+                     			ctx.fillRect(i * barLeng + 43, 17, barWidth, 18);
+                  		} else {
+                     			if (i + 16 > player.life - 1) {
+                        			ctx.fillStyle = barColor1;
+                        			ctx.fillRect(i * barLeng + 43, 17, barWidth, 18);
+                     			}
+                  		}
+               		}
+            	} else {
+               		for (i = 16; i < player.lifeMax; i++) {
+                  		ctx.fillStyle = '#707070';
+                  		ctx.fillRect((i - 16) * barLeng + 43, 14, barWidth, 21);
+               		}
+               		for (i = 0; i < 16; i++) { //disegno le barre della vita
+                  		if (i < player.life) {
+                     			ctx.fillStyle = barColor1;
+                  		} else {
+                     			ctx.fillStyle = '#909090';
+                  		}
+                  	//ctx.fillRect(i*6+43, 15, 5, 20);
+                  	ctx.fillRect(i * barLeng + 43, 17, barWidth, 18);
+               		}
+            	}
          } else {
-            for (i = 0; i < player.lifeMax; i++) { //disegno le barre della vita
-               if (i < player.life) {
-                  ctx.fillStyle = player.charge0color;
-               } else {
-                  ctx.fillStyle = '#808080';
-               }
-               ctx.fillRect(i * 6 + 43, 15, 5, 20);
-            }
+            	for (i = 0; i < player.lifeMax; i++) { //disegno le barre della vita
+               		if (i < player.life) {
+                  		ctx.fillStyle = barColor1;
+               		} else {
+                  		ctx.fillStyle = '#808080';
+               		}
+               		ctx.fillRect(i * barLeng + 43, 15, barWidth, 20);
+            	}
          }
       } //fine drawHUD    
 
@@ -4427,16 +4438,19 @@ if(currentPlayer==0){
       //prototipo di Riccardo
       function Player() {
       	 this.name="riccardo belmonte";
-         this.lifeMax = 8;
+         this.lifeMax = 16;
          for (i = 0; i < 8; i++) {
             if (heartAcquired[i]) {
-               this.lifeMax++;
+               this.lifeMax+=2;
             }
          } //aumenta la vita massima di 2 per ogni cuore trovato
          this.life = this.lifeMax;
 	 this.sprite = new Image();
-         this.sprite.src = "data:image/jpeg;base64,iVBORw0KGgoAAAANSUhEUgAAAGAAAAAgCAYAAADtwH1UAAAAAXNSR0IArs4c6QAABMtJREFUaIHtWrFu20AMpYx8gjzHv5ChYwYZcPcu+pPmI5w/0dDsMSANGVMgv5DM0j9cB4cKRZM83p2MLnlAkEYWyXc8Ho+kW8EV0TQh0L+Hoaquae8bBE0TQnh9DuM4hvD6HJomBL4h3wC48byUGsn4/v7hAAAAXXeXSa+Mx5r4b7ZTIxk/p3JrRH/JiaKccnhc8zRvYoYBzpHctjVMu7xI7ropS24NHk0TQn88QddN0B9PC33Xtu2BmoIoyf54gml3B21bA4B+/PjC9g+HWTYXOTy4bG4qLLHtxcUGWNHRddNMwCuHi/fCE50WD0lP7sbl2k7BIgVZTqzf36LK8KhzDENVeSIm5nwPDys/e1JhqQ9SMW8A5koOfIY5UALKSqmmP56Scm5/PIHEA6HxQMdL8l7nSTypLssHudig4f54ukgX6FQk4Y3kHNBNtO4MyoXLdt2kysacJwUgXz/aXdMHZhWEsBxCHVe/vy0WKW1qTIcGjGyuT5LVbGonSzv9iLUrHwrXBgCc86eWSpAgXXiJ83mkoi7Up0Vg29ZqlKOO3OjF+4P2ODl6ODYA5wVJzuK5E/M5J4Dv0Etu/3CA/vEJUL9FAm1zB1pRz+XbtlbtUB0pDZm0fsS0uwPPJsSawPkEaOSROL/EOAGefrpugun2HvrHJ9clHIt6+ty62Pk6qPPRgVyHFoAA+vo98DSBYiPGa93zv2WCZ/LrtOV4glIqDZq+ttsvPegw7WTznE/XweX5+oehqtCWBm8TuIiWpgkBjXPiVhoZxzFYTvM0Pv3jE0y391B/vMD+96+FY1E3Og2bqmGoKjyF1Y+fFXKh0YrFgbQRnNe8/k8O3OZ2u3XdHylN4OIPJI+kASB68aGMdeF6Lr7w9885Yj4XTsEXoem1uHg4lMoDXKYYHkjqBkjGMSXU729zhMWM0sYthXzsFMX0SPxp/o9x4PJ8HSWdPA0grmejkQf4qkr2DwfzIkWlvJGyamuKcRxD/fHieleVF5zPm6gUeQBwywPYkwSrCbwBgDm3oZP5kf+KhhCu0Qlz+5Q8hWZfkwfwNVGl8p5JgtaDXDRiVkeaMtfxNmIx4ImadndmMxjDGl8IlchrcHXC/GhLZLCWxss7tX2XdEpDtJRNuMb0MgeWL9QN4DnLG81rTAz5BJI6kjtV6jJLTx/KezeQNnJdN82NF9WhBe7ciGENPIG+W9aiaB7sjyfYt3nVg3SRLe1ecpAqL8TZAfEZEL3/8HfKJg5DVS0v88PMyZrSzuNo7H7xRyIsjYKld1JKN01Wkrfsax1vzIn8ewSebr2gzqejBwAwT8F8Atq2NiPJighagpU4n9qxZjoxSE60KjjpC5wUcOcDwKL6weeS3g3ffbp4nouliCh1Pi/htHJNs0+BX5bkfmmCtiV5LYfzHkK7/+jzcRxnPfMlLDmPLnqtslKDFvk0GKyJZWyaG4Nl2wI2qvyZBjwhOMOaN0CKLj6m1SKQt+858DhK4xi7k0oR04EZhP7w/0PE7wQc7UT7AFwgdbJW9pWWfhYHy34prBMk2dZ00N+4CfTz/niaJ7OoZ7EB3k5Xm3mURluJ/VzdqfeFpoenSJq+tWoOAKDSSPFn2nteeQ2l9lP1586yND3Sc/pMew8/+wfcFEzWV3ZGTAAAAABJRU5ErkJggg==";
+         this.sprite.src = "data:image/png;base64,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";
 	 this.spriteTimer=0;
+	 this.subWeaponImg= new Image(); this.subWeaponImg.src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAIcAAAAPCAYAAADOBNy/AAAAAXNSR0IArs4c6QAABURJREFUWIXtWT2I5DYU/rxcMVW4anE55ZTmiqBSpHJ1uApTiiuW4YpgUrmcKqgKqo7hikPlkMps5Sq4Co8UwVVwFaYctrrS1SqFLa//5PXsbkIu3APBjKRP7+npe09PMx4cUt1eGft59fbec837iv3/Yl+5QF3AVN+cwq/YC7A3152+u4uw7Lc/On1vLrfZ9w3OZ2+RzdXtlQHXJkiKydZlm0vpU8ar2ytDMXvS2s/V+xwsxczkVI6aVHq5r3zfSKWNVNrA981im33fBElhcioN+IXYBk8xa3FT2KvugGVOQcWoATWzppR3sS6Zxd5cQymCiyD/mN5nYMXbewBAst9Daw0iatsivb7fO5hWfN+sfvhm8pBfbL++b2i7RrXVoO0a1o5JbK+D65qJXWmyydT8x6JvyshJrO+bLVBH0KXY5+h9IlYymCoVpkqFoZj1WpWKeV91soXNGCzcGoqZkQzGEmeEtYRq2ihzdNrsfps5beYYkNTOH9UczxWptElicVFxBAA4n70jgGMs2jX0Tpm1CMHZZtl63U2ez4ttsIdZ5CWYIg8AKGZGKXoUu9plAIA8zcEjDgCYRfm+kYkEAJRlCQCQiQQ/HaAUIY4ZJAicMQB3PWggMuey47E3bv3rMzhjdeaAQE6EBHX90Z36ypmqhtmjI930o366h2Ro5zLGwMKticKwh0mzDJQdvS7WlSItMQDgpDPkVBrONvNY3zd5mj+YH/HeZl3YbpQHfIOKb0yRl1CKoFMBEWmIt/ejQrOgmkxW7HUy56vVzTXyNAcRoSxLCCGQ7PcoTycg3CGO0RIEANRfn1DdvmuxgQBUtBrpyCXrfecJYaWvnQVu+nqLRB09qA0AgIVbAzz4ztq8OHPYumMoNcMfpAIQhSHYoJ8xBgpDk2YZgF9G61gCWGMPJ8JuXa9x0u6IAVAXZyJDnFZQ0Qo8IWAjASSjaOjZ2hBDRBoAoFMBoCYJFPUO3yX2sIE6AzDGgKOYnMsCDh5xyES2xABqf6VZBrbXCGhTR/LJh0z6+IIK8AEHc8nq/S4R3zciEtAH2fMJZUdP7BKjU93z1yw5AhagkMFseh6m3t22zhI1CfpC2bFe6/30nS+VNn75GQBwOBEsQcQhnr8izmev0GFLEABAmSy6WpTUiGOGfBD5R8CLAWf2DBru26tEJhJJc5q0XU9iqMjBAo5EJmABb/uiMAQVOZL9HlKVICJI1Bk07tYLZZ8tvatkMDaS5jpL0joQWz81oqmwe2gJ8sqmkKkUX1CBICnMkCDd+UNsQGRaEkzIHBYAzpvX8MvP2K0ZDieCOMSerUFmsR2CTBHDheWsJkacCBR5WUctoYfVt1eYs3lO+nrvDP9QZxAq8naODSRLEJtJhtie3qmXTmfPo/3eLLX4AevOHLnwwLVxEcQlTypGG2GMgYhagliSLV6zIcglxShT5FWpMErqESlscapnMsilYknRyzQdolhidPteSsqyBE4H8ESNB08xynLX67oC3G9j5KL93cM+ZYeR48ROyBy2rTeaWuW8eb0Y25MJYriwq0h7ALCKtDckxmPYYnDND2ssJ/Zj/QJJswz21WJFJrIlRvXxDi/q54930KmGCHeQEXpNbErIWEGnuqd3nHp//lR/yTvR2rxcqh/fOV8Yj6XbufHuWE5lzwGcbZzX3kvopes/nU/lx7DFr9+61CL47vd5X91cgwW8Ld6JyEmMSZuaIrwtwJur9FFfdX6uH40P9E5GGfCF/k/xBWL5h+/bvvx9/YpbrNcGMurAfWmbZyPOfv6v/Vv4FfvvYP8GVuonnZsE/ksAAAAASUVORK5CYII=";
+         this.defaultColor1 = '#f8b202'; //per hud
+	 this.color1=this.defaultColor1;
          this.x = 0;
          this.y = 0;
          this.yv = 0;
@@ -4446,18 +4460,10 @@ if(currentPlayer==0){
 	 this.standingHeight = 57;
 	 this.crouchedHeight = 20;
 	 this.height = this.standingHeight;
+	 this.crouching=false;
+	 this.sliding=false;
+	 this.attacking=false;
 	 this.subWeaponHeart = 0;
-         this.color1 = '#003ef0';
-         this.color2 = '#3AB7D4';
-         this.coloreArmatura = '#e1e1e1';
-         this.defaultColor1 = '#003ef0';
-         this.defaultColor2 = '#3AB7D4';
-         this.defaultColoreArmatura = '#e1e1e1';
-         this.damagedColor = '#990003';
-         this.charge0color = '#ffc000';
-         this.charge1color = '#49ff37';
-         this.charge2color = '#14dfff';
-         this.charge3color = '#ff3788';
          this.speed = 0.7;
 	 this.stance=0;
          this.defaultspeed = 0.7;
@@ -4468,76 +4474,79 @@ if(currentPlayer==0){
          this.isInWater = false;
          this.invulnerability = 0;
          this.canMove = true;
+	 this.stun=false;
          this.canChangeWeap = true;
          this.carica = 0;
          this.activePower = 0;
          this.activeShot = 0;
+	 this.inputBuffer="";
          this.power = [ //vettore dei poteri
             {
-               usageMax: 0,
-               usage: 0,
+               usageMax: 28,
+               usage: 28,
                color1: '#687968',
                color2: '#d9b289',
-               nome: 'Dagger'
+               nome: 'Knife'
             },
             {
-               usageMax: 0,
-               usage: 0,
+               usageMax: 28,
+               usage: 28,
                color1: '#1a914f',
                color2: '#60d1aa',
                nome: 'Axe'
             },
             {
-               usageMax: 0,
-               usage: 0,
+               usageMax: 28,
+               usage: 28,
                color1: '#e13e60',
                color2: '#a1c1aa',
-               nome: 'Cross'
+               nome: 'Rebound Stone'
             },
             {
-               usageMax: 0,
-               usage: 0,
+               usageMax: 28,
+               usage: 28,
                color1: '#f14f02',
                color2: '#f8e179',
-               nome: 'Holy Water'
+               nome: 'Vibhuti'
             },
             {
-               usageMax: 0,
-               usage: 0,
+               usageMax: 28,
+               usage: 28,
                color1: '#e40097',
                color2: '#e191c1',
-               nome: 'Salt & Garlic'
-            },
-            {
-               usageMax: 0,
-               usage: 0,
-               color1: '#f8b202',
-               color2: '#a1a1a1',
                nome: 'Bible'
             },
             {
-               usageMax: 0,
-               usage: 0,
-               color1: '#606081',
-               color2: '#81aa89',
-               nome: 'Diamond'
+               usageMax: 28,
+               usage: 28,
+               color1: '#f8b202',
+               color2: '#a1a1a1',
+               nome: 'Agunea'
             },
             {
-               usageMax: 0,
-               usage: 0,
+               usageMax: 28,
+               usage: 28,
+               color1: '#606081',
+               color2: '#81aa89',
+               nome: 'Cross'
+            },
+            {
+               usageMax: 28,
+               usage: 28,
                color1: '#35e1f8',
                color2: '#f8e14f',
-               nome: 'Thunder'
+               nome: 'Holy Water'
             },
          ];
          this.disegnaPlayer = function (xdisegnata, ydisegnata, stance, sprite, facingRight) {
+	 	if(player.crouching){ydisegnata-=13;}
 	 	if(facingRight){
 			ctx.drawImage(sprite, 16*stance, 0, 16-0.2, 32, xdisegnata, ydisegnata-6, 32, 64);
 		}else{
-            ctx.save(); //salvo il canvas attuale
-            ctx.scale(-1, 1); //flippa il canvas per fare lo sprite mirrorato
-            ctx.drawImage(sprite, 16*stance, 0, 16-0.2, 32, -xdisegnata, ydisegnata-6, -32, 64); //uso -xdisegnata perche' le coordinate del canvas sono mirrorate in negativo
-            ctx.restore(); //faccio tornare come prima al punto di save() altrimenti rimane buggato
+            		ctx.save(); //salvo il canvas attuale
+            		ctx.scale(-1, 1); //flippa il canvas per fare lo sprite mirrorato
+            		ctx.drawImage(sprite, 16*stance, 0, 16-0.2, 32, -xdisegnata, ydisegnata-6, -32, 64); //uso -xdisegnata perche' le coordinate del canvas sono mirrorate in negativo
+            		ctx.restore(); //faccio tornare come prima al punto di save() altrimenti rimane buggato
 		}
       	 }
 
@@ -4633,6 +4642,35 @@ if(currentPlayer==0){
                }
             }
          }
+	
+	 if (player.crouching && keys[jumpkey] && !tastoGiaSchiacciato){ //sliding
+		player.sliding=true;
+		tastoGiaSchiacciato=true;
+		player.invulnerability=820; //800-820 range per lo sliding (fa anche da timer)
+	 }
+	 if (player.sliding){
+		if(player.invulnerability<801 || player.yv > 1){ //disattiva slide
+			player.sliding=false; player.invulnerability=1;
+			player.xv=player.xv*0.1;
+		}else if (player.invulnerability>801){ //movimento
+			if(player.facingRight){ player.xv -= player.defaultspeed*2.5;
+			}else{			player.xv += player.defaultspeed*2.5;}
+		}
+	 }
+        
+	if (keys[giukey]) { //crouching
+		if(player.yv < 1 && player.yv > -1 && player.xv < 3 && player.xv > -3 && player.canMove){ //solo quando il player e' a terra ed e' quasi fermo
+			player.crouching=true; 
+			player.y+=(player.standingHeight-player.crouchedHeight);
+			player.height=player.crouchedHeight;
+		}
+	 }else{ if (player.crouching && !player.sliding){ 
+	 	player.crouching=false; 
+		player.y-=(player.standingHeight-player.crouchedHeight);
+		player.height=player.standingHeight;
+		player.stance=0;
+	}}
+
 
          if (keys[destrakey] && player.canMove) { //x movement
             player.xv -= player.speed;
@@ -4681,7 +4719,7 @@ if(currentPlayer==0){
                            player.life = player.life - entity[i].damage;
                         }
                         player.invulnerability = 40;
-                        player.canMove = false;
+                        player.stun = true;
                         break;
                      }
                   } else { //qui stiamo parlando delle entita' con danno<1, praticamente i pickup (se hanno il danno in negativo restituiscono la vita a X)
@@ -4707,27 +4745,40 @@ if(currentPlayer==0){
                }
             }
          }
-         if (player.invulnerability > 0) { //se l'invulnerabilita' e' >=1 la riduce e colora x in base a che punto e'
+         
+	 if (keys[lkey] && !tastoGiaSchiacciato && player.canMove && player.canChangeWeap) { //previous available power
+            tastoGiaSchiacciato = true;
+            for (i = player.activePower - 1;; i--) {
+               if (i == -1) {
+                  i = 8;
+               } else if (i == 0) {
+                  player.activePower = 0;
+                  break;
+               }
+               if (levelDefeated[i - 1]) {
+                  player.activePower = i;
+                  break;
+               }
+            }
+         }
+
+         if (keys[rkey] && !tastoGiaSchiacciato && player.canMove && player.canChangeWeap) { //next available power
+            tastoGiaSchiacciato = true;
+            for (i = player.activePower + 1;; i++) {
+               if (i == 9) {
+                  player.activePower = 0;
+                  break;
+               } else if (levelDefeated[i - 1]) {
+                  player.activePower = i;
+                  break;
+               }
+            }
+         }
+         
+	 if (player.invulnerability > 0) { //se l'invulnerabilita' e' >=1 la riduce
             player.invulnerability--;
-            if (player.invulnerability == 90000) {
-               player.invulnerability = 5;
-               player.canChangeWeap = true;
-            } //fine sting cham charge3
-            if (player.invulnerability > 90000) { //potere di sting chameleon charge3
-               calcolaPlayerColor();
-            }
-            if (player.invulnerability < 30) {
-               calcolaPlayerColor();
-               player.color1 = player.color2;
-               player.color2 = player.color2;
-               player.coloreArmatura = player.color2;
-            }
             if (player.invulnerability < 20) {
-               player.canMove = true;
-            }
-            if (player.invulnerability < 5) {
-               calcolaPlayerColor();
-               player.coloreArmatura = player.defaultColoreArmatura;
+               player.stun = false;
             }
          }
 
@@ -4754,40 +4805,53 @@ if(currentPlayer==0){
          if (player.canMove && tastoGiaSchiacciato && !(keys[startkey] || keys[lkey] || keys[rkey])) { //azzera tasto gia schiacciato
             tastoGiaSchiacciato = false;
          }
+	 
+	 if(!player.stun && !player.crouching && !player.sliding){ 
+	 	player.canMove=true;
+	 }else{	player.canMove=false; }
 
-	 player.calculateStance(player);
+	 player.calculateStance(player); //calcola lo sprite attuale da mostrare a schermo
       	}//fine di Riccardo.physics()
 	
 	this.calculateStance = function (player){ //calcola a che animazione della spritesheet e' il player
 		var previousStance=player.stance;
 		var maxTimer=9; //quanti "frame" rimane un animazione. Dico "frame" ma in realta' e' un numero calcolato sui cicli dell'engine
-		if(player.yv < 0.3){ //se il player e' a terra o in ascesa
-			if(player.xv > 0.3 || player.xv < -0.3){ //se il player si sta muovendo
-				if(player.speed>player.defaultspeed+0.1){ //running
-					switch (player.spriteTimer){
-						case 0: player.stance=1; break;
-						case 1*maxTimer: player.stance=3; break;
-						case 2*maxTimer: player.stance=1; break;
-						case 3*maxTimer: player.stance=4; break;
-						case 4*maxTimer: player.stance=1; player.spriteTimer=0; break;
+		if(player.yv < 3){ //se il player e' a terra o in ascesa
+			if(player.yv > 0){ player.stance=0; player.spriteTimer=0; //player sta atterando
+			}else if(player.yv > -1){ //player a terra
+				if((player.xv > 0.3 || player.xv < -0.3) && !player.crouching){ //se il player si sta muovendo
+					if(player.speed>player.defaultspeed+0.1){ //running
+						switch (player.spriteTimer){
+							case 0: player.stance=4; break;
+							case 1*maxTimer: player.stance=1; break;
+							case 2*maxTimer: player.stance=3; break;
+							case 3*maxTimer: player.stance=1; break;
+							case 4*maxTimer: player.stance=4; player.spriteTimer=0; break;
+						}
+					}else{//walking
+						switch (player.spriteTimer){
+							case 0: player.stance=0; break;
+							case 1*maxTimer: player.stance=1; break;
+							case 2*maxTimer: player.stance=2; break;
+							case 3*maxTimer: player.stance=1; break;
+							case 4*maxTimer: player.stance=0; player.spriteTimer=0; break;
+						}
 					}
-				}else{//walking
-					switch (player.spriteTimer){
-						case 0: player.stance=1; break;
-						case 1*maxTimer: player.stance=2; break;
-						case 2*maxTimer: player.stance=1; break;
-						case 3*maxTimer: player.stance=0; break;
-						case 4*maxTimer: player.stance=1; player.spriteTimer=0; break;
-					}
+				}else{
+					if(player.crouching){
+						if(player.sliding){
+							player.stance=8;
+						}else{
+							player.stance=5;
+						}
+					}else{	player.stance=0;}
+					player.spriteTimer=0;
 				}
-			}else{
-				if(player.crouching){
-					player.stance=5;
-				}else{	player.stance=0;}
-				player.spriteTimer=0;
+			}else{ //player in ascesa
+				player.stance=7; player.spriteTimer=0;
 			}
 		}else{ //se invece il player e' in aria (discesa)
-			player.stance=0; player.spriteTimer=0;
+			player.stance=6; player.spriteTimer=0;
 		}
 		if(previousStance==player.stance){player.spriteTimer++;}
 	}	
