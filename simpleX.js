@@ -1,4 +1,4 @@
-      var versioneDiGioco = "v0.20221222"; //fixed spaghetti code at Armor and Subtank Upgrades (was using player.color...); added new Hud to Riccardo; fixed Riccardo walking and running animation; added jumping and crouching animiation to Riccardo and worked in general on him
+      var versioneDiGioco = "v0.20221226"; //new Riccardo animation, added attacks; changed Riccardo's palette color; added Riccardo attacks physics; fixed Riccardo crouching animation
       debugMode = false; //you can enable debugMode with the console (press f12 in the browser)
 
       //crea il canvas
@@ -4446,7 +4446,7 @@ if(currentPlayer==0){
          } //aumenta la vita massima di 2 per ogni cuore trovato
          this.life = this.lifeMax;
 	 this.sprite = new Image();
-         this.sprite.src = "data:image/png;base64,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";
+         this.sprite.src = " data:image/png;base64,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";
 	 this.spriteTimer=0;
 	 this.subWeaponImg= new Image(); this.subWeaponImg.src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAIcAAAAPCAYAAADOBNy/AAAAAXNSR0IArs4c6QAABURJREFUWIXtWT2I5DYU/rxcMVW4anE55ZTmiqBSpHJ1uApTiiuW4YpgUrmcKqgKqo7hikPlkMps5Sq4Co8UwVVwFaYctrrS1SqFLa//5PXsbkIu3APBjKRP7+npe09PMx4cUt1eGft59fbec837iv3/Yl+5QF3AVN+cwq/YC7A3152+u4uw7Lc/On1vLrfZ9w3OZ2+RzdXtlQHXJkiKydZlm0vpU8ar2ytDMXvS2s/V+xwsxczkVI6aVHq5r3zfSKWNVNrA981im33fBElhcioN+IXYBk8xa3FT2KvugGVOQcWoATWzppR3sS6Zxd5cQymCiyD/mN5nYMXbewBAst9Daw0iatsivb7fO5hWfN+sfvhm8pBfbL++b2i7RrXVoO0a1o5JbK+D65qJXWmyydT8x6JvyshJrO+bLVBH0KXY5+h9IlYymCoVpkqFoZj1WpWKeV91soXNGCzcGoqZkQzGEmeEtYRq2ihzdNrsfps5beYYkNTOH9UczxWptElicVFxBAA4n70jgGMs2jX0Tpm1CMHZZtl63U2ez4ttsIdZ5CWYIg8AKGZGKXoUu9plAIA8zcEjDgCYRfm+kYkEAJRlCQCQiQQ/HaAUIY4ZJAicMQB3PWggMuey47E3bv3rMzhjdeaAQE6EBHX90Z36ypmqhtmjI930o366h2Ro5zLGwMKticKwh0mzDJQdvS7WlSItMQDgpDPkVBrONvNY3zd5mj+YH/HeZl3YbpQHfIOKb0yRl1CKoFMBEWmIt/ejQrOgmkxW7HUy56vVzTXyNAcRoSxLCCGQ7PcoTycg3CGO0RIEANRfn1DdvmuxgQBUtBrpyCXrfecJYaWvnQVu+nqLRB09qA0AgIVbAzz4ztq8OHPYumMoNcMfpAIQhSHYoJ8xBgpDk2YZgF9G61gCWGMPJ8JuXa9x0u6IAVAXZyJDnFZQ0Qo8IWAjASSjaOjZ2hBDRBoAoFMBoCYJFPUO3yX2sIE6AzDGgKOYnMsCDh5xyES2xABqf6VZBrbXCGhTR/LJh0z6+IIK8AEHc8nq/S4R3zciEtAH2fMJZUdP7BKjU93z1yw5AhagkMFseh6m3t22zhI1CfpC2bFe6/30nS+VNn75GQBwOBEsQcQhnr8izmev0GFLEABAmSy6WpTUiGOGfBD5R8CLAWf2DBru26tEJhJJc5q0XU9iqMjBAo5EJmABb/uiMAQVOZL9HlKVICJI1Bk07tYLZZ8tvatkMDaS5jpL0joQWz81oqmwe2gJ8sqmkKkUX1CBICnMkCDd+UNsQGRaEkzIHBYAzpvX8MvP2K0ZDieCOMSerUFmsR2CTBHDheWsJkacCBR5WUctoYfVt1eYs3lO+nrvDP9QZxAq8naODSRLEJtJhtie3qmXTmfPo/3eLLX4AevOHLnwwLVxEcQlTypGG2GMgYhagliSLV6zIcglxShT5FWpMErqESlscapnMsilYknRyzQdolhidPteSsqyBE4H8ESNB08xynLX67oC3G9j5KL93cM+ZYeR48ROyBy2rTeaWuW8eb0Y25MJYriwq0h7ALCKtDckxmPYYnDND2ssJ/Zj/QJJswz21WJFJrIlRvXxDi/q54930KmGCHeQEXpNbErIWEGnuqd3nHp//lR/yTvR2rxcqh/fOV8Yj6XbufHuWE5lzwGcbZzX3kvopes/nU/lx7DFr9+61CL47vd5X91cgwW8Ld6JyEmMSZuaIrwtwJur9FFfdX6uH40P9E5GGfCF/k/xBWL5h+/bvvx9/YpbrNcGMurAfWmbZyPOfv6v/Vv4FfvvYP8GVuonnZsE/ksAAAAASUVORK5CYII=";
          this.defaultColor1 = '#f8b202'; //per hud
@@ -4458,14 +4458,15 @@ if(currentPlayer==0){
          this.slope = 0;
          this.width = 30;
 	 this.standingHeight = 57;
-	 this.crouchedHeight = 20;
+	 this.crouchedHeight = 33;
 	 this.height = this.standingHeight;
 	 this.crouching=false;
 	 this.sliding=false;
 	 this.attacking=false;
+	 this.attackTimer=0;
 	 this.subWeaponHeart = 0;
          this.speed = 0.7;
-	 this.stance=0;
+	 this.stance=[0,0]; //colonna, riga
          this.defaultspeed = 0.7;
          this.jumpheight = 11.5;
          this.giasaltato = false;
@@ -4539,13 +4540,15 @@ if(currentPlayer==0){
             },
          ];
          this.disegnaPlayer = function (xdisegnata, ydisegnata, stance, sprite, facingRight) {
-	 	if(player.crouching){ydisegnata-=13;}
+		var mostraWhip=0;
+		if(player.attackTimer>14){mostraWhip=41;
+		}
 	 	if(facingRight){
-			ctx.drawImage(sprite, 16*stance, 0, 16-0.2, 32, xdisegnata, ydisegnata-6, 32, 64);
+			ctx.drawImage(sprite, 16*stance[0], 32*stance[1], 16-0.2+mostraWhip, 32, xdisegnata, ydisegnata-6, (16+mostraWhip)*2, 32*2);
 		}else{
             		ctx.save(); //salvo il canvas attuale
             		ctx.scale(-1, 1); //flippa il canvas per fare lo sprite mirrorato
-            		ctx.drawImage(sprite, 16*stance, 0, 16-0.2, 32, -xdisegnata, ydisegnata-6, -32, 64); //uso -xdisegnata perche' le coordinate del canvas sono mirrorate in negativo
+            		ctx.drawImage(sprite, 16*stance[0], 32*stance[1], 16-0.2+mostraWhip, 32, -xdisegnata+(mostraWhip*2), ydisegnata-6, (-16-mostraWhip)*2, 32*2); //uso -xdisegnata perche' le coordinate del canvas sono mirrorate in negativo
             		ctx.restore(); //faccio tornare come prima al punto di save() altrimenti rimane buggato
 		}
       	 }
@@ -4646,12 +4649,12 @@ if(currentPlayer==0){
 	 if (player.crouching && keys[jumpkey] && !tastoGiaSchiacciato){ //sliding
 		player.sliding=true;
 		tastoGiaSchiacciato=true;
-		player.invulnerability=820; //800-820 range per lo sliding (fa anche da timer)
+		player.invulnerability=825; //800-825 range per lo sliding (fa anche da timer)
 	 }
 	 if (player.sliding){
 		if(player.invulnerability<801 || player.yv > 1){ //disattiva slide
 			player.sliding=false; player.invulnerability=1;
-			player.xv=player.xv*0.1;
+			player.xv=player.xv*0.01;
 		}else if (player.invulnerability>801){ //movimento
 			if(player.facingRight){ player.xv -= player.defaultspeed*2.5;
 			}else{			player.xv += player.defaultspeed*2.5;}
@@ -4664,12 +4667,48 @@ if(currentPlayer==0){
 			player.y+=(player.standingHeight-player.crouchedHeight);
 			player.height=player.crouchedHeight;
 		}
-	 }else{ if (player.crouching && !player.sliding){ 
-	 	player.crouching=false; 
-		player.y-=(player.standingHeight-player.crouchedHeight);
-		player.height=player.standingHeight;
-		player.stance=0;
+	 }else{ if (player.crouching && !player.sliding && !player.attacking){ 
+	 	player.crouching=false; player.y-=(player.standingHeight-player.crouchedHeight); player.height=player.standingHeight; //stop crouching and make the player stand up
 	}}
+	if (player.crouching && !player.sliding && !(player.yv < 1 && player.yv > -1 && player.xv < 3 && player.xv > -3)){
+	 	player.crouching=false; player.y-=(player.standingHeight-player.crouchedHeight); player.height=player.standingHeight; //stop crouching and make the player stand up
+	}
+
+
+	if(keys[sparokey] && (player.canMove || (player.crouching && !player.sliding))){ //attacking
+		player.attacking=true; 
+	}
+	if(player.attacking){
+		player.attackTimer++;
+		if((player.yv > 0.4 || player.yv < -0.4) && (player.xv > 1 || player.xv < -1)){ //se il player e' in salto e si stava gia muovendo
+         		if (keys[destrakey] ){ player.xv -= player.speed;}
+         		if (keys[sinistrakey]){player.xv += player.speed;}
+		}
+		if(player.attackTimer>14){
+			var corda=[];
+			corda["damage"]=2;
+			corda["width"]=84;
+			corda["height"]=24;
+         		if (player.facingRight) {
+	            		corda["x"] = player.x + player.width;
+        		}else{	corda["x"] = player.x - corda.width; }
+         		corda["y"] = player.y + 2;
+         		for (var i = 0; i < entity.length; i++) { //contatto con entita'
+            			if (entity[i].life > 0 && !(entity[i].type == "sparoDelPlayer" || entity[i].type == "pickup" || entity[i].type == "enemyShot")){
+               				if (collisionBetween(corda, entity[i])) {
+                        			if (entity[i].getHit) {
+				                       	entity[i].getHit("corda", corda.damage);
+                        			}
+					}
+				}
+			}
+		}
+		if(player.attackTimer>40){
+			player.attackTimer=0;
+			player.xv=player.xv/10;
+			player.attacking=false;
+		}
+	}
 
 
          if (keys[destrakey] && player.canMove) { //x movement
@@ -4697,11 +4736,6 @@ if(currentPlayer==0){
             if (collisionBetween(player, lvl[i])) {
                player.y += player.slope;
                player.x -= -player.xv;
-               if (keys[dashkey] && player.canMove && armaturaAcquired[1]) { //wall dash
-                  player.speed = player.defaultspeed * 2.25;
-               } else {
-                  player.speed = player.defaultspeed;
-               }
             }
          }
 
@@ -4710,9 +4744,6 @@ if(currentPlayer==0){
                if (collisionBetween(player, entity[i])) {
                   if (entity[i].damage > 0) {
                      if (player.invulnerability < 1) { //entity collison								            		
-                        player.color1 = player.damagedColor;
-                        player.color2 = player.damagedColor;
-                        player.coloreArmatura = player.damagedColor;
                         if (armaturaAcquired[3] && (entity[i].damage > 1)) {
                            player.life = player.life - (entity[i].damage - 1);
                         } else {
@@ -4806,7 +4837,7 @@ if(currentPlayer==0){
             tastoGiaSchiacciato = false;
          }
 	 
-	 if(!player.stun && !player.crouching && !player.sliding){ 
+	 if(!player.stun && !player.crouching && !player.sliding &&!player.attacking){ 
 	 	player.canMove=true;
 	 }else{	player.canMove=false; }
 
@@ -4814,47 +4845,56 @@ if(currentPlayer==0){
       	}//fine di Riccardo.physics()
 	
 	this.calculateStance = function (player){ //calcola a che animazione della spritesheet e' il player
-		var previousStance=player.stance;
+		var previousStance=[player.stance[0], player.stance[1]];
 		var maxTimer=9; //quanti "frame" rimane un animazione. Dico "frame" ma in realta' e' un numero calcolato sui cicli dell'engine
-		if(player.yv < 3){ //se il player e' a terra o in ascesa
-			if(player.yv > 0){ player.stance=0; player.spriteTimer=0; //player sta atterando
-			}else if(player.yv > -1){ //player a terra
-				if((player.xv > 0.3 || player.xv < -0.3) && !player.crouching){ //se il player si sta muovendo
-					if(player.speed>player.defaultspeed+0.1){ //running
-						switch (player.spriteTimer){
-							case 0: player.stance=4; break;
-							case 1*maxTimer: player.stance=1; break;
-							case 2*maxTimer: player.stance=3; break;
-							case 3*maxTimer: player.stance=1; break;
-							case 4*maxTimer: player.stance=4; player.spriteTimer=0; break;
+		if(player.attacking){
+			var riga=1; if(player.crouching){riga=2;}
+			if (player.attackTimer<14){
+				player.stance=[0,riga];
+			}else{
+				player.stance=[1,riga];
+			}	
+		}else{
+			if(player.yv < 3){ //se il player e' a terra o in ascesa
+				if(player.yv > 0 && !player.crouching){ player.stance=[0,0]; player.spriteTimer=0; //player sta atterando
+				}else if(player.yv > -1){ //player a terra
+					if((player.xv > 0.3 || player.xv < -0.3) && !player.crouching){ //se il player si sta muovendo
+						if(player.speed>player.defaultspeed+0.1){ //running
+							switch (player.spriteTimer){
+								case 0: player.stance=[4,0]; break;
+								case 1*maxTimer: player.stance=[1,0]; break;
+								case 2*maxTimer: player.stance=[3,0]; break;
+								case 3*maxTimer: player.stance=[1,0]; break;
+								case 4*maxTimer: player.stance=[4,0]; player.spriteTimer=0; break;
+							}	
+						}else{//walking
+							switch (player.spriteTimer){
+								case 0: player.stance=[0,0]; break;
+								case 1*maxTimer: player.stance=[1,0]; break;
+								case 2*maxTimer: player.stance=[2,0]; break;
+								case 3*maxTimer: player.stance=[1,0]; break;
+								case 4*maxTimer: player.stance=[0,0]; player.spriteTimer=0; break;
+							}
 						}
-					}else{//walking
-						switch (player.spriteTimer){
-							case 0: player.stance=0; break;
-							case 1*maxTimer: player.stance=1; break;
-							case 2*maxTimer: player.stance=2; break;
-							case 3*maxTimer: player.stance=1; break;
-							case 4*maxTimer: player.stance=0; player.spriteTimer=0; break;
-						}
+					}else{
+						if(player.crouching){
+							if(player.sliding){
+								player.stance=[5,1];
+							}else{
+								player.stance=[5,0];
+							}
+						}else{	player.stance=[0,0];}
+						player.spriteTimer=0;
 					}
-				}else{
-					if(player.crouching){
-						if(player.sliding){
-							player.stance=8;
-						}else{
-							player.stance=5;
-						}
-					}else{	player.stance=0;}
-					player.spriteTimer=0;
+				}else{ //player in ascesa
+					player.stance=[6,1]; player.spriteTimer=0;
 				}
-			}else{ //player in ascesa
-				player.stance=7; player.spriteTimer=0;
+			}else{ //se invece il player e' in aria (discesa)
+				player.stance=[6,0]; player.spriteTimer=0;
 			}
-		}else{ //se invece il player e' in aria (discesa)
-			player.stance=6; player.spriteTimer=0;
 		}
-		if(previousStance==player.stance){player.spriteTimer++;}
-	}	
+		if(previousStance[0]==player.stance[0] && previousStance[1]==player.stance[1]){player.spriteTimer++;}
+	}//fine di calculateStance()
       }//fine di new Riccardo()
 
 }}//fine di creaPlayer
