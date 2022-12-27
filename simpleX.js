@@ -3502,21 +3502,28 @@
               if(level.tileset==""){
                   ctx.fillRect(xdisegnata, ydisegnata, lvl[i].width, lvl[i].height);
               }else{
-                  var offsetX=lvl[i].lettera.charCodeAt(0)-97; 
-                  var offsetY=0;
-                  //copro le posizioni dello spritesheet contenente il tileset in base alla lettera (convertita in numero codice ascii per usare i numeri)
-                  if(lvl[i].lettera.charCodeAt(0)<112 && lvl[i].lettera.charCodeAt(0)>108){ offsetX=lvl[i].lettera.charCodeAt(0)-109; offsetY=1;}
-                  if(lvl[i].lettera.charCodeAt(0)<115 && lvl[i].lettera.charCodeAt(0)>111){ offsetX=lvl[i].lettera.charCodeAt(0)-112; offsetY=2;}
-                  for(volteX=0; volteX<(lvl[i].width/blockDimension -1); volteX++){
-                      for(volteY=0; volteY<(lvl[i].height/(blockDimension+1)); volteY++){
-                          ctx.drawImage(level.tileset, 16*offsetX, 16*offsetY, 16, 16, xdisegnata+(blockDimension*volteX), ydisegnata+(blockDimension*volteY), blockDimension, blockDimension);
-                      }
+                  for(volteX=0; volteX<(lvl[i].width/blockDimension-1); volteX++){
+		    if(xdisegnata+(blockDimension*(volteX+1)) > 0){
+		      if(!(xdisegnata+(blockDimension*volteX) < canvasWidth)){ break;
+		      }else{
+                      	for(volteY=0; volteY<(lvl[i].height/(blockDimension+1)); volteY++){
+			  if(ydisegnata+(blockDimension*(volteY+1)) > 0){
+			    if(!(ydisegnata+(blockDimension*volteY) < canvasHeight)){ break;
+			    }else{
+			      var offsetX=lvl[i].lettera.charCodeAt(0)-97; var offsetY=0;
+			      if(lvl[i].lettera.charCodeAt(0)<112 && lvl[i].lettera.charCodeAt(0)>108){ offsetX=lvl[i].lettera.charCodeAt(0)-109; offsetY=1;}
+                  	      if(lvl[i].lettera.charCodeAt(0)<115 && lvl[i].lettera.charCodeAt(0)>111){ offsetX=lvl[i].lettera.charCodeAt(0)-112; offsetY=2;}
+                              ctx.drawImage(level.tileset, 16*offsetX, 16*offsetY, 16, 16, xdisegnata+(blockDimension*volteX)-1, ydisegnata+(blockDimension*volteY)-1, blockDimension+1, blockDimension+1);
+			    }
+			  }
+                      	}
+		      }
+		    }
                   }
               }
             }
          }
       }
-
       function drawHUD() {
          if (debugMode) {
             ctx.font = "small-caps bold 12px Lucida Console";
