@@ -623,8 +623,8 @@
         this.damage= 9999999999;
         this.x= 0;
         this.y= 0;
-        this.width= 20;
-        this.height= 20;
+        this.width= blockDimension;
+        this.height= blockDimension;
         this.canSelfDraw=true;
         this.hasPhysics=false;
         this.color= '#bcbcbc';
