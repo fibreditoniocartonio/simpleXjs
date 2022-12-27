@@ -1,4 +1,4 @@
-      var versioneDiGioco = "v1.20220802"; //aggiunto il mostro Bomb Wasp
+      var versioneDiGioco = "v1.20221227"; //aggiornata grandezze blocchi in previsione dei tiles
       debugMode=false;    //you can enable debugMode with the console (press f12 in the browser)
       showMouseBox=false; //you can enable showMouseBox with the console (press f12 in the browser)
       
@@ -68,6 +68,7 @@
       player= new Player();
 
     //inizializzo le entita' che sara' possibile inserire tramite l'editor
+    var blockDimension=32; //dimensioni standard blocco
 	  var listaEntityStringa="01234567⁰¹²³⁴⁵⁶⁷àÀèÈPSBA";
     var listaEntity=creaListaEntity(listaEntityStringa, false);
     var listaTipoEntity=creaListaTipoEntity(listaEntity);
@@ -133,7 +134,7 @@
   
 	//caricare il livello
 	var level = []; //create the level array      					
-  stringaLivelloDefault="tttttttttttttttttttttttttttttttttttl..................................l..................................l..................................l..................................l..................................l..................................l..................................l..................................l..................................l..................................l..................................l..................................l..................................l..................................l..................................l..................................l..................................l..................................l..................................l..................................l..................................l..................................l..X...............................l..................................l..................................z0.62;0.85;#155261;#155261;#155261;#155261;#155261;#155261;#155261;#155261;#155261;#155261;#155261;#155261;#155261;#155261;#155261;#155261;#155261; ";//livello base - lo spazio alla fine e' importante
+  stringaLivelloDefault="ttttttttttttttttttttttl.....................l.....................l.....................l.....................l.....................l.....................l.....................l.....................l.....................l.....................l.....................l.....................l..X..................l.....................l.....................z0.62;0.85;#155261;#155261;#155261;#155261;#155261;#155261;#155261;#155261;#155261;#155261;#155261;#155261;#155261;#155261;#155261;#155261;#155261;;;;;"; //spazio alla fine necessario
   stringaLivello=stringaLivelloDefault;         
 	function stringToLevel(lvlString){			
 		level = []; //azzera level
@@ -146,8 +147,8 @@
 			switch (lvlString[i]){
 				case 'X'://posizione iniziale del player
           var currentIndex=i;
-					level['xStartingPos'] = (i%widthTot)*20;
-					level['yStartingPos'] = (heightTot-2)*20;
+					level['xStartingPos'] = (i%widthTot)*blockDimension;
+					level['yStartingPos'] = (heightTot-2)*blockDimension;
 					checkBackAndForGround(background,foreground,lvlString[i-1]); //se il blocco prima era un background o foreground lo carica sotto il player
           i=currentIndex;
           leggiBlocco(level,lvlString[i]);
@@ -164,7 +165,7 @@
         
         case 'w': // w funziona come left floor ma indica anche il water level
 					heightTot++;
-          level['waterLevel'] = ((heightTot-1)*20)+7; //setta il waterlevel
+          level['waterLevel'] = ((heightTot-1)*blockDimension)+7; //setta il waterlevel
 					break;
 
 				case '.': // . è vuoto/aria
@@ -174,24 +175,24 @@
 		        case 'P': // P indica un pipistrello
 		        	var pipistrello = new newPipistrello();
               		pipistrello['letter'] = lvlString[i];
-		         	pipistrello.x= (i%widthTot)*20;
-		        	pipistrello.y= (heightTot-1)*20+10;
+		         	pipistrello.x= (i%widthTot)*blockDimension;
+		        	pipistrello.y= (heightTot-1)*blockDimension+10;
     				entity.push(pipistrello);
     				checkBackAndForGround(background,foreground,lvlString[i-1]); //se il blocco prima era un background o foreground lo carica sotto il player
     				break;
 
 		        case 'A': // A indica un ape (bomb bee)
 		        	var entita = new newBombBee();
-		         	entita.x= (i%widthTot)*20;
-		        	entita.y= (heightTot-1)*20-2;
+		         	entita.x= (i%widthTot)*blockDimension;
+		        	entita.y= (heightTot-1)*blockDimension-2;
 					entity.push(entita);
 					checkBackAndForGround(background,foreground,lvlString[i-1]); //se il blocco prima era un background o foreground lo carica sotto il player
 					break;     				
 
 		        case 'B': // B indica un bunny (coniglio)
 		        	var entita = new newBunny();
-		         	entita.x= (i%widthTot)*20;
-		        	entita.y= (heightTot-1)*20-2;
+		         	entita.x= (i%widthTot)*blockDimension;
+		        	entita.y= (heightTot-1)*blockDimension-2;
 					entity.push(entita);
 					checkBackAndForGround(background,foreground,lvlString[i-1]); //se il blocco prima era un background o foreground lo carica sotto il player
 					break;    					
@@ -199,8 +200,8 @@
 		        case 'S': //S sono le spike (le spine che instaKillano)
 		          var spike= new newSpike();
               spike['letter'] = lvlString[i];
-		          spike.x= (i%widthTot)*20;
-		          spike.y= (heightTot-1)*20; 
+		          spike.x= (i%widthTot)*blockDimension;
+		          spike.y= (heightTot-1)*blockDimension; 
 				      entity.push(spike);
 				      if(lvlString[i-1]=='p' || lvlString[i-1]=='q' || lvlString[i-1]=='r' ){leggiBlocco(background,lvlString[i-1]);} //se il blocco prima era un background lo carica sotto la entita' letta
 		          break;
@@ -208,8 +209,8 @@
 		        case '0': case '1': case '2': case '3': //sono i pezzi di armatura
 			        var armatura = new newPickUp_Armor(parseInt(lvlString[i],10));
               armatura['letter'] = lvlString[i];
-  				    armatura.x= (i%widthTot)*20;
-  				    armatura.y= (heightTot-1)*20; 
+  				    armatura.x= (i%widthTot)*blockDimension;
+  				    armatura.y= (heightTot-1)*blockDimension; 
     					entity.push(armatura);
     					checkBackAndForGround(background,foreground,lvlString[i-1]); //se il blocco prima era un background o foreground lo carica sotto il player
   				    break;
@@ -217,8 +218,8 @@
 		        case '4': case '5': case '6': case '7': //sono le subtank
 			        var subtankLetta = new newPickUp_Subtank(parseInt(lvlString[i],10)-4);
               subtankLetta['letter'] = lvlString[i];
-  				    subtankLetta.x= (i%widthTot)*20;
-  				    subtankLetta.y= (heightTot-1)*20; 
+  				    subtankLetta.x= (i%widthTot)*blockDimension;
+  				    subtankLetta.y= (heightTot-1)*blockDimension; 
     					entity.push(subtankLetta);
     					checkBackAndForGround(background,foreground,lvlString[i-1]); //se il blocco prima era un background o foreground lo carica sotto il player
   				    break;
@@ -227,8 +228,8 @@
 					//caratteri per copiare/incollare:  ⁰ ¹ ² ³ ⁴ ⁵ ⁶ ⁷ ⁸ ⁹
 			        var cuore = new newPickUp_Cuore(lvlString[i]);
               cuore['letter'] = lvlString[i];
-  				    cuore.x= (i%widthTot)*20;
-  				    cuore.y= (heightTot-1)*20-1; 
+  				    cuore.x= (i%widthTot)*blockDimension;
+  				    cuore.y= (heightTot-1)*blockDimension-1; 
     					entity.push(cuore);
     					checkBackAndForGround(background,foreground,lvlString[i-1]); //se il blocco prima era un background o foreground lo carica sotto il player
   				    break;				    
@@ -238,8 +239,8 @@
               lifeRec['letter'] = lvlString[i];
 			        lifeRec.width=10;
 			        lifeRec.height=10;
-  				    lifeRec.x= (i%widthTot)*20+(10-lifeRec.width/2);
-  				    lifeRec.y= (heightTot-1)*20+1; 
+  				    lifeRec.x= (i%widthTot)*blockDimension+(blockDimension/2-lifeRec.width/2);
+  				    lifeRec.y= (heightTot-1)*blockDimension+1; 
     					entity.push(lifeRec);
     					checkBackAndForGround(background,foreground,lvlString[i-1]); //se il blocco prima era un background o foreground lo carica sotto il player
   				    break;
@@ -249,8 +250,8 @@
               lifeRec['letter'] = lvlString[i];
 			        lifeRec.width=18;
 			        lifeRec.height=18;			        
-  				    lifeRec.x= (i%widthTot)*20+(10-lifeRec.width/2);
-  				    lifeRec.y= (heightTot-1)*20+1; 
+  				    lifeRec.x= (i%widthTot)*blockDimension+(blockDimension/2-lifeRec.width/2);
+  				    lifeRec.y= (heightTot-1)*blockDimension+1; 
     					entity.push(lifeRec);
     					checkBackAndForGround(background,foreground,lvlString[i-1]); //se il blocco prima era un background o foreground lo carica sotto il player
   				    break;
@@ -260,8 +261,8 @@
               weaponRec['letter'] = lvlString[i];
 			        weaponRec.width=10;
 			        weaponRec.height=10;			        
-  				    weaponRec.x= (i%widthTot)*20+(10-weaponRec.width/2);
-  				    weaponRec.y= (heightTot-1)*20+1; 
+  				    weaponRec.x= (i%widthTot)*blockDimension+(blockDimension/2-weaponRec.width/2);
+  				    weaponRec.y= (heightTot-1)*blockDimension+1; 
   					  entity.push(weaponRec);
 					    checkBackAndForGround(background,foreground,lvlString[i-1]); //se il blocco prima era un background o foreground lo carica sotto il player
 				      break;
@@ -270,15 +271,15 @@
               weaponRec['letter'] = lvlString[i];
 			        weaponRec.width=18;
 			        weaponRec.height=18;			        
-  				    weaponRec.x= (i%widthTot)*20+(10-weaponRec.width/2);
-  				    weaponRec.y= (heightTot-1)*20+1;
+  				    weaponRec.x= (i%widthTot)*blockDimension+(blockDimension/2-weaponRec.width/2);
+  				    weaponRec.y= (heightTot-1)*blockDimension+1;
     					entity.push(weaponRec);
     					checkBackAndForGround(background,foreground,lvlString[i-1]); //se il blocco prima era un background o foreground lo carica sotto il player
 				      break;																		    	        	 							
 
 				//i blocchi
 				case 'a': case 'b': case 'c': case 'd': case 'e': case 'f': case 'g': case 'h': case 'i': case 'j': case 'k': 
-					// le lettere dalla a alla k indicano un blocco da 20px*20px di colori diversi
+					// le lettere dalla a alla k indicano un blocco da blockDimension*blockDimension di colori diversi
 					leggiBlocco(level,lvlString[i]);
 					break;
 
@@ -291,25 +292,26 @@
 					break;	
 											
 				case 'z': // 'z' indica la fine del livello. Da qui in poi non sto leggendo piu blocchi e entita' ma le caratteristiche del livello come gravita', posizione iniziale del player e colore dei blocchi del livello
-          level['indiceZ']=i;
+                    level['indiceZ']=i;
 					widthTot++;
 					heightTot++;
 					level['gravity'] = readNumber();
 					level['friction'] = readNumber();
-			    level['gravityWater'] = level.gravity*4/7;
-			    level['frictionWater'] = level.friction*9/10;
+			        level['gravityWater'] = level.gravity*4/7;
+			        level['frictionWater'] = level.friction*9/10;
 					blocksColors(level,11);//this will push color[] to level, it will contain the blocks colors
 					blocksColors(foreground,3);
 					blocksColors(background,3);
 					level['foreground'] = foreground;
 					level['background'] = background;
-					level['backGroundImg'] = readBackground();
+                    level['tileset'] = readTileset();
+					level['backGroundImg'] = readBackgroundImg();
 					break;
 			}//fine dello switch case															
 		}//fine del for					        
 		//imposto la grandezza del livello e lo confronto con la grandezza del canvas
-		level['maxWidth'] = widthTot*20;
-		level['maxHeight'] = heightTot*20;
+		level['maxWidth'] = widthTot*blockDimension;
+		level['maxHeight'] = heightTot*blockDimension;
         if (level.maxWidth < canvasWidth){ //controlla che il livello non sia piu piccolo del canvas, che se no si bugga tutto - le x
            		canvasWidth=level.maxWidth;
         }else{
@@ -359,10 +361,10 @@
 			}
 		}				
     //ora inizializzo i bordi - ho schiacciato il codice perche' occupava righe inutili. e' molto simile al prototipo di blocco    
-		var ground = {x: 0, width: level.maxWidth, height: (20)+1, color: level.color[0], lettera: "a"};  ground['y']=level.maxHeight-ground.height;
-  	var ceiling = {x: 0, y: 0, width: level.maxWidth, height: (20)+1, color: level.color[0], lettera: "a"};        	            
-  	var leftWall = {x: 0, y: 0, width: (20)+1, height: level.maxHeight, color: level.color[0], lettera: "a"};
-  	var rightWall = {y: 0, width: (20)+1, height: level.maxHeight, color: level.color[0], lettera: "a"}; rightWall['x']= level.maxWidth-rightWall.width;	            				
+		var ground = {x: 0, width: level.maxWidth, height: (blockDimension)+1, color: level.color[0], lettera: "a"};  ground['y']=level.maxHeight-ground.height;
+  	    var ceiling = {x: 0, y: 0, width: level.maxWidth, height: (blockDimension)+1, color: level.color[0], lettera: "a"};        	            
+  	    var leftWall = {x: 0, y: 0, width: (blockDimension)+1, height: level.maxHeight, color: level.color[0], lettera: "a"};
+  	    var rightWall = {y: 0, width: (blockDimension)+1, height: level.maxHeight, color: level.color[0], lettera: "a"}; rightWall['x']= level.maxWidth-rightWall.width;	            				
 		level.push(ground, ceiling, leftWall, rightWall); //this pushes all of the static objects into the level				   
     // ora definisco le funzioni interne di stringToLevel()
 		function readNumber(){//compone i vari caratteri di una stringa in numero. Esempio traduce "10.91;" in numeroLetto=10.91
@@ -387,14 +389,41 @@
 			}
 			return numeroLetto;
 		}
-		function readBackground(){
+		function readTileset(){
 			var immagineLetta="";
+            var contaPV=0;
 			if (i < lvlString.length){
 				for (i++ ; i < lvlString.length; i++) {
-						immagineLetta+=lvlString[i]
+                        if(lvlString[i]==";"){contaPV++;}
+                        if(contaPV==2){
+                            break;
+                        }else{
+                            immagineLetta+=lvlString[i];
+                        }
 				}
 			}
-			if (immagineLetta!="" && immagineLetta!=" "){
+			if (!(immagineLetta=="" || immagineLetta==";")){
+				var img = new Image();
+				img.src = immagineLetta;
+				return img;
+			}else{
+				return "";
+			}
+		}        
+		function readBackgroundImg(){
+			var immagineLetta="";
+            var contaPV=0;
+			if (i < lvlString.length){
+				for (i++ ; i < lvlString.length; i++) {
+                        if(lvlString[i]==";"){contaPV++;}
+                        if(contaPV==2){
+                            break;
+                        }else{
+                            immagineLetta+=lvlString[i];
+                        }
+				}
+			}
+			if (!(immagineLetta=="" || immagineLetta==";")){
 				var img = new Image();
 				img.src = immagineLetta;
 				return img;
@@ -430,7 +459,7 @@
 			var blocco = new Blocco(i,widthTot,heightTot);
 			for (n=1; ;n++){	//controllo che se le lettere dopo sono uguali a questo blocco. Se lo sono non sto a creare tanti blocchetti ma ne faccio solo uno piu' largo per ottimizzare
 					if(lvlString[i+n]==lettera){
-						blocco.width=blocco.width+(20);
+						blocco.width=blocco.width+(blockDimension);
 					}else{
 						i=i+n-1;
 						break; //del for
@@ -441,10 +470,10 @@
 			vettore.push(blocco);
 		}				
 		function Blocco(i,widthTot,heightTot) { //prototipo di blocco
-           	this.x= (i%widthTot)*20;
-            this.y= (heightTot-1)*20;
-            this.width= 20;
-      		this.height= 20+1;
+           	this.x= (i%widthTot)*blockDimension;
+            this.y= (heightTot-1)*blockDimension;
+            this.width= blockDimension;
+      		this.height= blockDimension;
             this.color= '#155261';            													
 		}
 		function checkBackAndForGround(background,foreground,bloccoPrima){
@@ -831,8 +860,8 @@
               lvlCanvasMouseY=mouseY+player.y-canvasHeight/2;
             }
           }
-          lvlCanvasMouseX=Math.floor(lvlCanvasMouseX/20);//converte in blocchi
-          lvlCanvasMouseY=Math.floor(lvlCanvasMouseY/20);
+          lvlCanvasMouseX=Math.floor(lvlCanvasMouseX/blockDimension);//converte in blocchi
+          lvlCanvasMouseY=Math.floor(lvlCanvasMouseY/blockDimension);
     }
       
     function disegnaSchermoDiGioco(doEntityPhysics){
@@ -943,14 +972,27 @@
             }
           }
           //ora disegno il livello[i]
-          if(xdisegnata+lvl[i].width>-1 && xdisegnata<canvasWidth+1){ctx.fillRect(xdisegnata, ydisegnata, lvl[i].width, lvl[i].height);}                    
+          if(xdisegnata+lvl[i].width>-1 && xdisegnata<canvasWidth+1){
+            if(level.tileset==""){
+                ctx.fillRect(xdisegnata, ydisegnata, lvl[i].width, lvl[i].height);
+            }else{
+                var offsetX=lvl[i].lettera.charCodeAt(0)-97; var offsetY=0; //copro le posizioni dello spritesheet contenente il tileset in base alla lettera (convertita in numero codice ascii per usare i numeri)
+                if(lvl[i].lettera.charCodeAt(0)<112 && lvl[i].lettera.charCodeAt(0)>108){ offsetX=lvl[i].lettera.charCodeAt(0)-109; offsetY=1;}
+                if(lvl[i].lettera.charCodeAt(0)<115 && lvl[i].lettera.charCodeAt(0)>111){ offsetX=lvl[i].lettera.charCodeAt(0)-112; offsetY=2;}
+                for(volteX=0; volteX<(lvl[i].width/blockDimension -1); volteX++){
+                    for(volteY=0; volteY<(lvl[i].height/(blockDimension+1)); volteY++){
+                        ctx.drawImage(level.tileset, 16*offsetX, 16*offsetY, 16, 16, xdisegnata+(blockDimension*volteX), ydisegnata+(blockDimension*volteY), blockDimension, blockDimension);
+                    }
+                }
+            }
+          }                    
           if(debugMode || lvl[i].lettera=="X"){ ctx.font="bold 10px Lucida Console"; ctx.textAlign="center"; disegnaTestoConBordino(lvl[i].lettera, xdisegnata+lvl[i].width/2, ydisegnata+lvl[i].height/2+ctx.measureText("O").width/2, "#000000","#cccccc"); ctx.textAlign="left";}
         }
       }
        
       function drawGrid() {
         ctx.fillStyle = "#dcdcdc80";
-        for (var i = 0; i < level.maxWidth; i+=20) {
+        for (var i = 0; i < level.maxWidth; i+=blockDimension) {
           var xdisegnata=0;
           if (player.x+(player.width/2) < canvasWidth/2){
             xdisegnata=i;
@@ -963,7 +1005,7 @@
           }
           ctx.fillRect(xdisegnata, 0, 1, canvasHeight);          
         }
-        for (var i = 0; i < level.maxHeight; i+=20) {
+        for (var i = 0; i < level.maxHeight; i+=blockDimension) {
 		      var ydisegnata=0;
           if (player.y < canvasHeight/2){
             ydisegnata=i;
@@ -983,7 +1025,7 @@
 			ctx.font = "small-caps bold 15px Lucida Console";
 			ctx.textAlign="right"; 
 			if(player.showPlayerCamera){
-				disegnaTestoConBordino("cameraX:"+Math.floor((player.x+player.width/2)/20)+" cameraY:"+Math.floor((player.y+player.height/2)/20), canvasWidth-3, 7+ctx.measureText("O").width/2, "#cccccc", "#000000");
+				disegnaTestoConBordino("cameraX:"+Math.floor((player.x+player.width/2)/blockDimension)+" cameraY:"+Math.floor((player.y+player.height/2)/blockDimension), canvasWidth-3, 7+ctx.measureText("O").width/2, "#cccccc", "#000000");
 			}
 			ctx.textAlign="left"; 
 			if(mouseX<canvasWidthDefault){
@@ -1066,6 +1108,7 @@
           if(this.showAnotherMenu && this.showExitMenu){this.drawExitMenu();}
           if(this.showAnotherMenu && this.showExtendLevelMenu){this.drawExtendLevelMenu();}
           if(this.showAnotherMenu && this.showModifyBackgroundMenu){this.drawModifyBackgroundMenu();}
+          if(this.showAnotherMenu && this.showModifyTilesetMenu){this.drawModifyTileset();}
           if(this.showAnotherMenu && this.showModifyBlockMenu){this.drawModifyBlockMenu();}
           if(this.selected!="NIENTE"){await this.piazzaBloccoCode();}
           ctx.textAlign="left";//sistemo almeno non si buggano gli altri menu
@@ -1097,7 +1140,7 @@
           }          
         }//fine tabCode()
         this.toolTabCode = function (){
-          var numeroVoci=10;         
+          var numeroVoci=11;         
           var voceHeight=(this.height-20)/numeroVoci;
           ctx.textAlign="left"; ctx.font = "small-caps bold 15px Lucida Console";
           for(k=0; k<numeroVoci; k++){
@@ -1199,7 +1242,7 @@
                   }
                 }
                 break;                                
-              case numeroVoci-4://extend level
+              case numeroVoci-5://extend level
                 disegnaTestoConBordino("Modify level lenght", canvasWidthDefault+5, 20+(voceHeight*k)+voceHeight/2+ctx.measureText("o").width/2, "#000000"); 
                 if(checkMouseBox(canvasWidthDefault+2,20+voceHeight*k+2,this.width-4,voceHeight-4)){
                   ctx.strokeStyle="#000000"; ctx.lineWidth="2";
@@ -1207,7 +1250,19 @@
                   if(mouseClick && this.mouseTimer==0){this.showExtendLevelMenu=true;this.showAnotherMenu=true; this.newNumberWidth=0; this.newNumberHeight=0; this.selected="NIENTE"; this.mouseTimer=10;}                  
                 }
                 break;
-              case numeroVoci-3://exit to main menu
+              case numeroVoci-4://Tileset - drawModifyTileset
+                disegnaTestoConBordino("Modify tileset", canvasWidthDefault+5, 20+(voceHeight*k)+voceHeight/2+ctx.measureText("o").width/2, "#000000"); 
+                if(checkMouseBox(canvasWidthDefault+2,20+voceHeight*k+2,this.width-4,voceHeight-4)){
+                  ctx.strokeStyle="#000000"; ctx.lineWidth="2";
+                  ctx.strokeRect(canvasWidthDefault+2,20+voceHeight*k+2,this.width-4,voceHeight-4);
+                  if(mouseClick && this.mouseTimer==0){
+			        document.getElementById("caricaPartitaDiv").style.zIndex = "10";
+			        document.getElementById("fileCaricaPartita").disabled=false; 
+                  	this.showModifyTilesetMenu=true;this.showAnotherMenu=true; this.selected="NIENTE"; this.mouseTimer=10;
+                  }
+                }
+                break;                  
+              case numeroVoci-3://background image
                 disegnaTestoConBordino("Modify background image", canvasWidthDefault+5, 20+(voceHeight*k)+voceHeight/2+ctx.measureText("o").width/2, "#000000"); 
                 if(checkMouseBox(canvasWidthDefault+2,20+voceHeight*k+2,this.width-4,voceHeight-4)){
                   ctx.strokeStyle="#000000"; ctx.lineWidth="2";
@@ -1267,7 +1322,7 @@
         this.drawExtendLevelMenu = function (){
           ctx.textAlign="center"; ctx.font = "small-caps bold 22px Lucida Console";
           var string1="LEVEL LENGHT MENU";
-          var string2="width: "+(level.maxWidth/20)+" blocks - height: "+(level.maxHeight/20)+" blocks";
+          var string2="width: "+(level.maxWidth/blockDimension)+" blocks - height: "+(level.maxHeight/blockDimension)+" blocks";
           var menuWidth=ctx.measureText(string2).width+8;
           var menuHeight=8+(ctx.measureText("O").width+4)*7;
           ctx.fillStyle="#cccccc"; ctx.fillRect(realCanvasWidth/2-menuWidth/2, canvasHeightDefault/2-menuHeight/2, menuWidth, menuHeight);
@@ -1319,41 +1374,41 @@
           }
           function aggiornaLivelloExtend(newWidth,newHeight){
             if(newWidth>0){
-              var differenzaWidth=(newWidth*20)-level.maxWidth;
+              var differenzaWidth=(newWidth*blockDimension)-level.maxWidth;
               if(differenzaWidth>0){
                 var puntiInPiu=""; var tInPiu=""; 
-                for(var i=0; i<(differenzaWidth/20); i++){puntiInPiu+="."; tInPiu+="t";}
-                for(var i=1; i<level.maxHeight/20; i++){
+                for(var i=0; i<(differenzaWidth/blockDimension); i++){puntiInPiu+="."; tInPiu+="t";}
+                for(var i=1; i<level.maxHeight/blockDimension; i++){
                   var newStringaLivello="";
                   if(i==1){
-                    newStringaLivello = stringaLivello.slice(0, (level.maxWidth/20)-1) + tInPiu + stringaLivello.slice(-1+level.maxWidth/20);
+                    newStringaLivello = stringaLivello.slice(0, (level.maxWidth/blockDimension)-1) + tInPiu + stringaLivello.slice(-1+level.maxWidth/blockDimension);
                   }else{
-                    newStringaLivello = stringaLivello.slice(0, (i*(level.maxWidth/20-1)+(i-1)*(puntiInPiu.length)) ) + puntiInPiu + stringaLivello.slice((i*(level.maxWidth/20-1)+(i-1)*(puntiInPiu.length)));
+                    newStringaLivello = stringaLivello.slice(0, (i*(level.maxWidth/blockDimension-1)+(i-1)*(puntiInPiu.length)) ) + puntiInPiu + stringaLivello.slice((i*(level.maxWidth/blockDimension-1)+(i-1)*(puntiInPiu.length)));
                   }
                   stringaLivello=newStringaLivello;  
                 }
               }else if(differenzaWidth<0){
-                for(var i=1; i<level.maxHeight/20; i++){
+                for(var i=1; i<level.maxHeight/blockDimension; i++){
                   var newStringaLivello="";
-				  newStringaLivello = stringaLivello.slice(0, (i*(level.maxWidth/20-1)+(i)*(differenzaWidth/20)))+ stringaLivello.slice(i*(level.maxWidth/20-1)+(i-1)*(differenzaWidth/20));
+				  newStringaLivello = stringaLivello.slice(0, (i*(level.maxWidth/blockDimension-1)+(i)*(differenzaWidth/blockDimension)))+ stringaLivello.slice(i*(level.maxWidth/blockDimension-1)+(i-1)*(differenzaWidth/blockDimension));
                   stringaLivello=newStringaLivello;
                 }
               }
               level.maxWidth+=differenzaWidth; //serve per i calcoli della height, se no viene sbagliato perche' li fa subito dopo
             }
             if(newHeight>0){
-              var differenzaHeight=(newHeight*20)-level.maxHeight;
+              var differenzaHeight=(newHeight*blockDimension)-level.maxHeight;
               if(differenzaHeight>0){
                 var rigaInPiu="l";
-                for(var i=1;i<level.maxWidth/20-1;i++){rigaInPiu+=".";}
-                for(var i=1; i<differenzaHeight/20+1; i++){
+                for(var i=1;i<level.maxWidth/blockDimension-1;i++){rigaInPiu+=".";}
+                for(var i=1; i<differenzaHeight/blockDimension+1; i++){
                   var newStringaLivello="";
-                  newStringaLivello = stringaLivello.slice(0, (level.maxWidth/20-1)*(level.maxHeight/20-1)) + rigaInPiu + stringaLivello.slice((level.maxWidth/20-1)*(level.maxHeight/20-1));
+                  newStringaLivello = stringaLivello.slice(0, (level.maxWidth/blockDimension-1)*(level.maxHeight/blockDimension-1)) + rigaInPiu + stringaLivello.slice((level.maxWidth/blockDimension-1)*(level.maxHeight/blockDimension-1));
                   stringaLivello=newStringaLivello;
                 }  
               }else if(differenzaHeight<0){
                   var newStringaLivello="";
-                  newStringaLivello = stringaLivello.slice(0, (level.maxWidth/20-1)*(level.maxHeight/20-1+(differenzaHeight/20))) + stringaLivello.slice((level.maxWidth/20-1)*(level.maxHeight/20-1));
+                  newStringaLivello = stringaLivello.slice(0, (level.maxWidth/blockDimension-1)*(level.maxHeight/blockDimension-1+(differenzaHeight/blockDimension))) + stringaLivello.slice((level.maxWidth/blockDimension-1)*(level.maxHeight/blockDimension-1));
                   stringaLivello=newStringaLivello;
               }
               level.maxHeight+=differenzaHeight;                          
@@ -1391,6 +1446,76 @@
 	        	ctx.strokeStyle="#000000"; ctx.strokeRect(verBarX, verBarY, verBarWidth, verBarHeight);	        	
         	}        				
         }//fine di drawLevelBar()
+        this.drawModifyTileset = async function (){
+          ctx.textAlign="center"; ctx.font = "small-caps bold 14px Lucida Console";
+          var offsetY=10;
+          var string1="TILESET MENU";
+          var string2="Upload the new image. Confirm without uploading to remove the current tileset.";
+          var menuWidth=8+ctx.measureText(string2).width;
+          var menuHeight=8+(ctx.measureText("O").width+4)*5;
+          ctx.fillStyle="#cccccc"; ctx.fillRect(realCanvasWidth/2-menuWidth/2, -offsetY+canvasHeightDefault/2-menuHeight/2, menuWidth, menuHeight);
+          ctx.strokeStyle="#000000"; ctx.strokeRect(realCanvasWidth/2-menuWidth/2, -offsetY+canvasHeightDefault/2-menuHeight/2, menuWidth, menuHeight);
+          disegnaTestoConBordino(string1, realCanvasWidth/2, -offsetY+4+canvasHeightDefault/2-menuHeight/2+ctx.measureText("O").width,"#000000");
+          disegnaTestoConBordino(string2, realCanvasWidth/2, -offsetY+4+canvasHeightDefault/2-menuHeight/2+ctx.measureText("O").width+(menuHeight-8)/5,"#000000");
+          disegnaTestoConBordino("confirm",realCanvasWidth/2-menuWidth/4, -offsetY+4+canvasHeightDefault/2-menuHeight/2+ctx.measureText("O").width+3*(menuHeight-8)/4,"#000000");
+          if(!(this.extendLevelMenu_staScrivendo) && checkMouseBox(realCanvasWidth/2-menuWidth/4-ctx.measureText("confirm").width, -offsetY+5+canvasHeightDefault/2-menuHeight/2-ctx.measureText("O").width/2+3*(menuHeight-8)/4,ctx.measureText("confirm").width*2,4*ctx.measureText("O").width/2)){
+            ctx.strokeStyle="#000000"; ctx.lineWidth="2";
+            ctx.strokeRect(realCanvasWidth/2-menuWidth/4-ctx.measureText("confirm").width, -offsetY+5+canvasHeightDefault/2-menuHeight/2-ctx.measureText("O").width/2+3*(menuHeight-8)/4, ctx.measureText("confirm").width*2,4*ctx.measureText("O").width/2);
+            if(mouseClick){
+            	var tilesNuovi = await controllaFile();
+      			stringaLivello = caricaTilesNuovi(stringaLivello,tilesNuovi);
+      			stringToLevel(stringaLivello);
+            	document.getElementById("caricaPartitaDiv").style.zIndex = "-1";
+            	document.getElementById("fileCaricaPartita").value="";
+            	document.getElementById("fileCaricaPartita").disabled=true;
+            	document.getElementById('canvasDivId').focus(); //riporta il focus sul canvas
+            	this.showModifyTilesetMenu=false; this.showAnotherMenu=false;
+            }
+          }
+          disegnaTestoConBordino("cancel",realCanvasWidth/2+menuWidth/4,-offsetY+4+canvasHeightDefault/2-menuHeight/2+ctx.measureText("O").width+3*(menuHeight-8)/4,"#000000");
+          if(!(this.extendLevelMenu_staScrivendo) && checkMouseBox(realCanvasWidth/2+menuWidth/4-ctx.measureText("cancel").width, -offsetY+5+canvasHeightDefault/2-menuHeight/2-ctx.measureText("O").width/2+3*(menuHeight-8)/4,ctx.measureText("cancel").width*2,4*ctx.measureText("O").width/2)){
+            ctx.strokeStyle="#000000"; ctx.lineWidth="2";
+            ctx.strokeRect(realCanvasWidth/2+menuWidth/4-ctx.measureText("cancel").width, -offsetY+5+canvasHeightDefault/2-menuHeight/2-ctx.measureText("O").width/2+3*(menuHeight-8)/4,ctx.measureText("cancel").width*2,4*ctx.measureText("O").width/2);
+            if(mouseClick){
+              	document.getElementById("caricaPartitaDiv").style.zIndex = "-1";
+              	document.getElementById("fileCaricaPartita").value="";
+              	document.getElementById("fileCaricaPartita").disabled=true;
+              	document.getElementById('canvasDivId').focus(); //riporta il focus sul canvas
+            	this.showModifyTilesetMenu=false; this.showAnotherMenu=false;
+            }
+          }
+          function caricaTilesNuovi(lvlString,tilesNuovi){
+          	var indice=level.indiceZ; //parti da dopo la  z
+            if(tilesNuovi==""){tilesNuovi+=";";}
+            var contaPV=0;
+          	for (; indice < lvlString.length; indice++) { //ciclo fino all'ultimo colore
+				if(lvlString[indice]==";"){contaPV++;}
+                if(contaPV==18){tilesetStart=indice+1;}
+                if(contaPV==21){break;}
+			}
+			lvlString=lvlString.slice(0,tilesetStart+1)+tilesNuovi+lvlString.slice(indice,lvlString.length);
+			return lvlString;          					
+          }
+	      async function controllaFile(){ //controlla che il file sia caricato correttamente
+	      		if(document.getElementById("fileCaricaPartita").value==""){ return "";}
+	            var uploadedFile = document.getElementById("fileCaricaPartita").files[0];
+	            if(uploadedFile.size > (1024*1024)){//controlla la dimensione del file - non deve essere superiore a 1MB
+	               objAlert = new newAlert("The file size limit is 1MB. Upload a smaller file.",gamestate); gamestate=5;
+	               return false;
+	            }
+	            var immagineBase64Letta = await readFileAsDataURL(uploadedFile);
+	            return immagineBase64Letta;
+	            	            
+	            async function readFileAsDataURL(uploadedFile) {
+	                let stringaLetta = await new Promise((resolve) => {
+	                    let fileReader = new FileReader();
+	                    fileReader.onload = (e) => resolve(fileReader.result);
+	                    fileReader.readAsDataURL(uploadedFile);
+	                });
+	                return stringaLetta;
+	            }                                    
+	      }//fine di controllaFile()          
+        }//fine di drawModifyTileset()         
         this.drawModifyBackgroundMenu = async function (){
           ctx.textAlign="center"; ctx.font = "small-caps bold 14px Lucida Console";
           var offsetY=10;
@@ -1408,8 +1533,9 @@
             ctx.strokeRect(realCanvasWidth/2-menuWidth/4-ctx.measureText("confirm").width, -offsetY+5+canvasHeightDefault/2-menuHeight/2-ctx.measureText("O").width/2+3*(menuHeight-8)/4, ctx.measureText("confirm").width*2,4*ctx.measureText("O").width/2);
             if(mouseClick){
             	var immagineLetta = await controllaFile();
-      				stringaLivello = rimuoviBackgroundCorrente(stringaLivello)+immagineLetta;
-      				stringToLevel(stringaLivello);
+                if(immagineLetta==""){immagineLetta+=";";}
+      			stringaLivello = rimuoviBackgroundCorrente(stringaLivello)+immagineLetta+";";
+      			stringToLevel(stringaLivello);
             	document.getElementById("caricaPartitaDiv").style.zIndex = "-1";
             	document.getElementById("fileCaricaPartita").value="";
             	document.getElementById("fileCaricaPartita").disabled=true;
@@ -1431,17 +1557,19 @@
           }
           function rimuoviBackgroundCorrente(lvlString){
           	var i=level.indiceZ; //parti da dopo la z
-          	for (; i < lvlString.length; i++) { //ciclo fino all'ultimo colore
-				if(lvlString[i]==" "){break;}//lo spazio c'e' solo prima dell'immagine di sfondo
+            var contaPV=0; //conta punti e virgola
+          	for (; i < lvlString.length; i++) { //ciclo fino all'ultimo colore + tileset e si blocca quando inzia background
+				if(lvlString[i]==";"){contaPV++;}
+                if(contaPV==21){break;}
 			}
-			lvlString=lvlString.slice(0,i)+" ";
+			lvlString=lvlString.slice(0,i+1);
 			return lvlString;          					
           }
 	      async function controllaFile(){ //controlla che il file sia caricato correttamente
 	      		if(document.getElementById("fileCaricaPartita").value==""){ return "";}
 	            var uploadedFile = document.getElementById("fileCaricaPartita").files[0];
-	            if(uploadedFile.size > (2*1024*1024)){//controlla la dimensione del file - non deve essere superiore a 1MB
-	               objAlert = new newAlert("The file size limit is 2MB. Upload a smaller file.",gamestate); gamestate=5;
+	            if(uploadedFile.size > (5*1024*1024)){//controlla la dimensione del file - non deve essere superiore a 5MB
+	               objAlert = new newAlert("The file size limit is 5MB. Upload a smaller file.",gamestate); gamestate=5;
 	               return false;
 	            }
 	            var immagineBase64Letta = await readFileAsDataURL(uploadedFile);
@@ -1498,7 +1626,7 @@
             	}else{
             		for(j=0; j<3;j++){
             			if(blockLetter[i].length<2){
-                    var latoRect=ctx.measureText("O").width*2;
+                            var latoRect=blockDimension; //prima era var latoRect=ctx.measureText("O").width*2;
             				var rectColor="";
             				if(this.selected==blockLetter[i]){ctx.fillStyle="#8c8c8c"; ctx.fillRect(canvasWidthDefault+j*larghezzaScritta+2, offsetY+2+altezzaRiga*(rigaCorrente), larghezzaScritta-4, altezzaRiga-4);}
                     if(blockLetter[i]=="X"){
@@ -1507,7 +1635,7 @@
                       disegnaTestoConBordino("starting", canvasWidthDefault+j*larghezzaScritta+larghezzaScritta/2, offsetY+altezzaRiga*(rigaCorrente)+ctx.measureText("O").width, "#000000","#cccccc");
                       disegnaTestoConBordino("position", canvasWidthDefault+j*larghezzaScritta+larghezzaScritta/2, offsetY-4+altezzaRiga*(rigaCorrente+1), "#000000","#cccccc");
                       ctx.font = "bold 15px Lucida Console";
-                    }else{rectColor=this.getBlockColor(blockLetter[i]);}                    
+                    }else{  rectColor=this.getBlockColor(blockLetter[i]);}                    
             				ctx.strokeStyle="#676767"; ctx.lineWidth="1"; ctx.strokeRect(canvasWidthDefault+j*larghezzaScritta+2, offsetY+2+altezzaRiga*(rigaCorrente), larghezzaScritta-4, altezzaRiga-4);
             				if(checkMouseBox(canvasWidthDefault+j*larghezzaScritta+2, offsetY+2+altezzaRiga*(rigaCorrente), larghezzaScritta-4, altezzaRiga-4)){
             					ctx.strokeStyle="#000000"; ctx.lineWidth="2"; ctx.strokeRect(canvasWidthDefault+j*larghezzaScritta+2, offsetY+2+altezzaRiga*(rigaCorrente), larghezzaScritta-4, altezzaRiga-4); 
@@ -1534,7 +1662,14 @@
             						}
             					}
             				}
-            				ctx.fillStyle=rectColor; ctx.fillRect(canvasWidthDefault+j*larghezzaScritta+larghezzaScritta/2-latoRect/2, offsetY-2+altezzaRiga*(rigaCorrente)+altezzaRiga/2-latoRect/2+ctx.measureText("o").width/4, latoRect, latoRect);
+                            if(level.tileset==""){
+                                ctx.fillStyle=rectColor; ctx.fillRect(canvasWidthDefault+j*larghezzaScritta+larghezzaScritta/2-latoRect/2, offsetY-2+altezzaRiga*(rigaCorrente)+altezzaRiga/2-latoRect/2+ctx.measureText("o").width/4, latoRect, latoRect);
+                            }else{
+                                var tilesOffsetX=blockLetter[i].charCodeAt(0)-97; var tilesOffsetY=0; //copro le posizioni dello spritesheet contenente il tileset in base alla lettera (convertita in numero codice ascii per usare i numeri)
+                                if(blockLetter[i].charCodeAt(0)<112 && blockLetter[i].charCodeAt(0)>108){ tilesOffsetX=blockLetter[i].charCodeAt(0)-109; tilesOffsetY=1;}
+                                if(blockLetter[i].charCodeAt(0)<115 && blockLetter[i].charCodeAt(0)>111){ tilesOffsetX=blockLetter[i].charCodeAt(0)-112; tilesOffsetY=2;}
+                                ctx.drawImage(level.tileset, 16*tilesOffsetX, 16*tilesOffsetY, 16, 16, canvasWidthDefault+j*larghezzaScritta+larghezzaScritta/2-latoRect/2, offsetY-2+altezzaRiga*(rigaCorrente)+altezzaRiga/2-latoRect/2+ctx.measureText("o").width/4, latoRect, latoRect);
+                            }                            
             				ctx.strokeStyle="#222222"; ctx.strokeRect(canvasWidthDefault+j*larghezzaScritta+larghezzaScritta/2-latoRect/2, offsetY-2+altezzaRiga*(rigaCorrente)+altezzaRiga/2-latoRect/2+ctx.measureText("o").width/4, latoRect, latoRect);
             				if(debugMode || blockLetter[i]=="X"){disegnaTestoConBordino(blockLetter[i], canvasWidthDefault+j*larghezzaScritta+larghezzaScritta/2, offsetY-2+altezzaRiga*(rigaCorrente)+altezzaRiga/2+ctx.measureText("O").width/2, "#000000","#cccccc");}
             				i++;
@@ -1788,10 +1923,10 @@
         }//fine di selectAndEraserCode()
         this.piazzaBloccoCode = function (){
           if(mouseClick && mouseY>25 && mouseX>25 && mouseX<canvasWidth-25 && mouseY<canvasHeight-25){
-            var indice=(level.maxWidth/20-1)*lvlCanvasMouseY;
+            var indice=(level.maxWidth/blockDimension-1)*lvlCanvasMouseY;
             if(this.selected=="w"){
               if(stringaLivello[indice]!="t"){
-                for(i=level.maxWidth/20-1; i<level.indiceZ; i++){
+                for(i=level.maxWidth/blockDimension-1; i<level.indiceZ; i++){
                   if(stringaLivello[i]=="w"){
                     stringaLivello=stringaLivello.slice(0,i)+"l"+stringaLivello.slice(i+1);
                   }
@@ -1808,8 +1943,8 @@
 					var y=startY; 
 					var x=indiceX;
 					var miFermo=false;
-					for(; y>-1; y-=(level.maxWidth/20-1)){if(stringaLivello[y+x]!=bloccoDaCambiare){ y+=(level.maxWidth/20-1); startY=y; break;}}
-					for(; y<level.indiceZ; y+=(level.maxWidth/20-1)){
+					for(; y>-1; y-=(level.maxWidth/blockDimension-1)){if(stringaLivello[y+x]!=bloccoDaCambiare){ y+=(level.maxWidth/blockDimension-1); startY=y; break;}}
+					for(; y<level.indiceZ; y+=(level.maxWidth/blockDimension-1)){
 						if(stringaLivello[y+indiceX]!=bloccoDaCambiare){
 							break;
 						}else{
@@ -1822,7 +1957,7 @@
 									x+=2; startX=x+y-1; break;
 								}
 							}
-							for(;x<level.maxWidth/20-1; x++){
+							for(;x<level.maxWidth/blockDimension-1; x++){
 								if(stringaLivello[y+x]!=bloccoDaCambiare){
 									x--;
 									miFermo=true;
@@ -1856,36 +1991,36 @@
       
       function playerPhysics(p1, lvl) {//this function handles the platformer physics - in realta' solo del player
         if(player.snapMode){//1 movimento di griglia alla volta
-          var cameraSpeed=20;                                             
-          if(!tastoGiaSchiacciato && keys[destrakey] && (p1.x+p1.width<lvl.maxWidth-20)){//x movement (camera)
+          var cameraSpeed=blockDimension;                                             
+          if(!tastoGiaSchiacciato && keys[destrakey] && (p1.x+p1.width<lvl.maxWidth-blockDimension)){//x movement (camera)
             p1.x += cameraSpeed;
             tastoGiaSchiacciato=true;
           }
-          if(!tastoGiaSchiacciato && keys[sinistrakey] && (p1.x>20)) {
+          if(!tastoGiaSchiacciato && keys[sinistrakey] && (p1.x>blockDimension)) {
             p1.x -= cameraSpeed;
             tastoGiaSchiacciato=true;
           }
-          if(!tastoGiaSchiacciato && keys[sukey]&& (p1.y>20)) {//y movement (camera)
+          if(!tastoGiaSchiacciato && keys[sukey]&& (p1.y>blockDimension)) {//y movement (camera)
             p1.y -= cameraSpeed;
             tastoGiaSchiacciato=true;
           }
-          if(!tastoGiaSchiacciato && keys[giukey]&& (p1.y+p1.height<lvl.maxHeight-20)) {
+          if(!tastoGiaSchiacciato && keys[giukey]&& (p1.y+p1.height<lvl.maxHeight-blockDimension)) {
             p1.y += cameraSpeed;
             tastoGiaSchiacciato=true;
           }          
         }else{
           var cameraSpeed=3;
           if(keys[dashkey]){cameraSpeed=9;}else{cameraSpeed=3;}                                             
-          if(keys[destrakey] && (p1.x+p1.width<lvl.maxWidth-20)){//x movement (camera)
+          if(keys[destrakey] && (p1.x+p1.width<lvl.maxWidth-blockDimension)){//x movement (camera)
             p1.x += cameraSpeed;
           }
-          if(keys[sinistrakey] && (p1.x>20)) {
+          if(keys[sinistrakey] && (p1.x>blockDimension)) {
             p1.x -= cameraSpeed;
           }
-          if(keys[sukey]&& (p1.y>20)) {//y movement (camera)
+          if(keys[sukey]&& (p1.y>blockDimension)) {//y movement (camera)
             p1.y -= cameraSpeed;
           }
-          if(keys[giukey]&& (p1.y+p1.height<lvl.maxHeight-20)) {
+          if(keys[giukey]&& (p1.y+p1.height<lvl.maxHeight-blockDimension)) {
             p1.y += cameraSpeed;
           }        
         }
