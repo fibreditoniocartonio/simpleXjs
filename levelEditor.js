@@ -1140,7 +1140,7 @@
           }          
         }//fine tabCode()
         this.toolTabCode = function (){
-          var numeroVoci=11;         
+          var numeroVoci=12;         
           var voceHeight=(this.height-20)/numeroVoci;
           ctx.textAlign="left"; ctx.font = "small-caps bold 15px Lucida Console";
           for(k=0; k<numeroVoci; k++){
@@ -1189,7 +1189,21 @@
                   if(mouseClick && this.mouseTimer==0){player.snapMode=!player.snapMode; this.selected="NIENTE"; this.mouseTimer=10;}
                 }
                 break;
-              case 4://level bars
+	      case 4://zoom
+                disegnaTestoConBordino("Zoom:"+blockDimension, canvasWidthDefault+5, 20+(voceHeight*k)+voceHeight/2+ctx.measureText("o").width/2, "#000000"); 
+                if(checkMouseBox(canvasWidthDefault+2,20+voceHeight*k+2,this.width-4,voceHeight-4)){
+                  ctx.strokeStyle="#000000"; ctx.lineWidth="2";
+                  ctx.strokeRect(canvasWidthDefault+2,20+voceHeight*k+2,this.width-4,voceHeight-4);
+                  if(mouseClick && this.mouseTimer==0){ this.selected="NIENTE"; this.mouseTimer=10;
+			if(blockDimension==32){
+				blockDimension=16;
+			}else{
+				blockDimension=32;
+			}
+			stringToLevel(stringaLivello); //reload with new zoom
+		  }
+                }break;
+              case 5://level bars
                 var word="Enable level bars"; 
                 disegnaTestoConBordino(word, canvasWidthDefault+5, 20+(voceHeight*k)+voceHeight/2+ctx.measureText("o").width/2, "#000000");
                 disegnaTestoConBordino("[ ]", canvasWidthDefault+5+5+ctx.measureText(word).width, 20+(voceHeight*k)+voceHeight/2+ctx.measureText("o").width/2, "#000000");
@@ -1208,7 +1222,7 @@
                   	this.mouseTimer=10; this.selected="NIENTE"; }
                 }
                 break;
-              case 5://modify water level
+              case 6://modify water level
                 var word="Add water level";
                 if(level.waterLevel){
                   word="Remove water";
