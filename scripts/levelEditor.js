@@ -1,9 +1,9 @@
-      var versioneDiGioco = "v1.20221228"; //made the code modular; added a Zoom function (it's quite bugged for entities but it is what it is
+      var versioneDiGioco = "v1.20221229"; //fastened the code of the editor and made it even more module compatible, now you just have to update stringToLevel.mjs and the const listaEntityStringa in this file to add a new entity; added to lvlObstacles an entity to change level when touched
       debugMode = false; //you can enable debugMode with the console (press f12 in the browser)
       showMouseBox = false; //you can enable showMouseBox with the console (press f12 in the browser)
 
       //elenco entita' - da aggiornare tutte le volte
-      var listaEntityStringa = "01234567⁰¹²³⁴⁵⁶⁷àÀèÈPSBA";
+      const listaEntityStringa = "01234567⁰¹²³⁴⁵⁶⁷àÀèÈPSBA→←↓↑";
 
       //crea il canvas
       const levelEditor = true;
@@ -74,11 +74,18 @@
       }
       player = new Player();
 
-      //inizializzo le entita' che sara' possibile inserire tramite l'editor
+      //caricare il livello
       var blockDimension = 32; //dimensioni standard blocco
-      var listaEntity = creaListaEntity(listaEntityStringa, false);
+      var level = []; //create the level array      					
+      stringaLivelloDefault = "ttttttttttttttttttttttl.....................l.....................l.....................l.....................l.....................l.....................l.....................l.....................l.....................l.....................l.....................l.....................l..X..................l.....................l.....................z0.62;0.85;#155261;#155261;#155261;#155261;#155261;#155261;#155261;#155261;#155261;#155261;#155261;#155261;#155261;#155261;#155261;#155261;#155261;;;;;"; //spazio alla fine necessario
+      stringaLivello = stringaLivelloDefault;
+      var entity = []; //create the entity array. Ogni entità deve avere: x, y, width, height e il metodo physics che determinerà come si comporta l'entità
+      
+      //inizializzo le entity che carico dal modulo stringToLevel e la stringa in cima a questo file
+      stringToLevel("t"+listaEntityStringa+"z;;;;;;;;;;;;;;;;;;;;;;;;;;;");
+      canvasWidth = canvasWidthDefault; canvasHeight = canvasHeightDefault; //li riporto normali xke il comando di prima li rendeva molto piccoli e spaccava tutto
       var listaTipoEntity = creaListaTipoEntity(listaEntity);
-      listaEntity = creaListaEntity(listaEntityStringa, listaTipoEntity);
+      var listaEntity = creaListaEntity(listaEntityStringa,listaTipoEntity);      
 
       //gamestate - se == -1: stato nel level editor
       var gamestate = 0;
@@ -91,18 +98,12 @@
       //stato 6: nel menu carica livello
       var objMenuPrincipale = new newMenuPrincipale(); //inizializza il menu principale
 
-      //caricare il livello
-      var level = []; //create the level array      					
-      stringaLivelloDefault = "ttttttttttttttttttttttl.....................l.....................l.....................l.....................l.....................l.....................l.....................l.....................l.....................l.....................l.....................l.....................l..X..................l.....................l.....................z0.62;0.85;#155261;#155261;#155261;#155261;#155261;#155261;#155261;#155261;#155261;#155261;#155261;#155261;#155261;#155261;#155261;#155261;#155261;;;;;"; //spazio alla fine necessario
-      stringaLivello = stringaLivelloDefault;
-      var entity = []; //create the entity array. Ogni entità deve avere: x, y, width, height e il metodo physics che determinerà come si comporta l'entità
-
       //start the engine
-      var player = new Player(); //creo il player
       window.onload = start;
 
       //this function is called at the start
       function start() {
+        var player = new Player(); //creo il player
       	update();
       }
 
@@ -137,101 +138,29 @@
       	}
       }
 
-      function creaListaEntity(listaEntityStringa, listaTipoEntity) {
-      	var tuttiItipiEntity = [];
-      	if (listaTipoEntity) {
-      		for (j = 0; j < listaTipoEntity.length; j++) {
-      			var entity = [];
-      			for (i = 0; i < listaEntityStringa.length; i++) {
-      				entitaLetta = costruisciEntita(listaEntityStringa[i]);
-      				if (entitaLetta.type == listaTipoEntity[j]) {
-      					entity.push(entitaLetta);
-      				}
-      			}
-      			tuttiItipiEntity.push(entity);
-      		}
-      	} else {
-      		for (i = 0; i < listaEntityStringa.length; i++) {
-      			tuttiItipiEntity.push(costruisciEntita(listaEntityStringa[i]));
-      		}
-      	}
-      	return tuttiItipiEntity;
-
-      	function costruisciEntita(lettera) {
-      		var entita;
-      		switch (lettera) {
-      			case '0':
-      			case '1':
-      			case '2':
-      			case '3':
-      				entita = new newPickUp_Armor(parseInt(listaEntityStringa[i], 10));
-      				break;
-      			case '4':
-      			case '5':
-      			case '6':
-      			case '7':
-      				entita = new newPickUp_Subtank(parseInt(listaEntityStringa[i], 10) - 4);
-      				break;
-      			case '⁰':
-      			case '¹':
-      			case '²':
-      			case '³':
-      			case '⁴':
-      			case '⁵':
-      			case '⁶':
-      			case '⁷':
-      				entita = new newPickUp_Cuore(listaEntityStringa[i]);
-      				break;
-      			case 'à':
-      				entita /*lifeRec small*/ = new newPickUp_LifeEnergy(2);
-      				entita.width = 10;
-      				entita.height = 10;
-      				break;
-      			case 'À':
-      				entita /*lifeRec big*/ = new newPickUp_LifeEnergy(8);
-      				entita.width = 18;
-      				entita.height = 18;
-      				break;
-      			case 'è':
-      				entita /*weaponRec small*/ = new newPickUp_WeaponEnergy(2);
-      				entita.width = 10;
-      				entita.height = 10;
-      				break;
-      			case 'È':
-      				entita /*weaponRec big*/ = new newPickUp_WeaponEnergy(8);
-      				entita.width = 18;
-      				entita.height = 18;
-      				break;
-      			case 'P':
-      				entita = new newPipistrello();
-      				break;
-      			case 'S':
-      				entita = new newSpike();
-      				break;
-      			case 'B':
-      				entita = new newBunny();
-      				break;
-      			case 'A':
-      				entita = new newBombBee();
-      				break;
-      		}
-      		entita["letter"] = lettera;
-      		return entita;
-      	}
-      }
-
-      function creaListaTipoEntity(listaEntity) {
-      	var listaTipi = []; //starting, vengono aggiunti in automatico
-      	for (i = 0; i < listaEntity.length; i++) {
-      		var isNuovoTipo = true;
-      		for (j = 0; j < listaTipi.length; j++) {
-      			if (listaEntity[i].type == listaTipi[j]) {
-      				isNuovoTipo = false;
+function creaListaEntity(listaEntityStringa,listaTipoEntity) {
+	let listaEntityDivisaPerTipo=[]; //array di array che restituisco alla fine della funzione
+	for (j = 0; j < listaTipoEntity.length; j++) {
+      		var entityDelloStessoTipo = [];
+      		for (i = 0; i < entity.length; i++) {
+      			if (entity[i].type == listaTipoEntity[j]) {
+      				entityDelloStessoTipo.push(entity[i]);
       			}
       		}
-      		if (isNuovoTipo) {
-      			listaTipi.push(listaEntity[i].type);
-      		}
+      		listaEntityDivisaPerTipo.push(entityDelloStessoTipo);
       	}
+	return listaEntityDivisaPerTipo;
+}
+
+function creaListaTipoEntity(listaEntityStringa) {
+      	let listaTipi = []; //starting, vengono aggiunti in automatico
+	for (i = 0; i < entity.length; i++) {
+		var nuovoTipo=true;
+		for(j = 0; j < listaTipi.length; j++) {
+			if(listaTipi[j]==entity[i].type){nuovoTipo=false; break;}
+		}
+		if(nuovoTipo){listaTipi.push(entity[i].type);}
+	}
       	return listaTipi;
-      }
+}
+

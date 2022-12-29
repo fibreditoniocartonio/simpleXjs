@@ -2,6 +2,7 @@ function newSpike() { //le spine per terra
 	this.life = 9999999999;
 	this.type = "obstacle";
 	this.name = "spike";
+	this.letter="S";
 	this.damage = 9999999999;
 	this.x = 0;
 	this.y = 0;
@@ -67,4 +68,41 @@ function esplosione(x, y, widthIni, heightIni, widthMax, heightMax, danno) {
 			this.life = -1;
 		}
 	}
-} //fine esplosione()      
+} //fine esplosione()  
+
+function newChangeLevelArrow(direzionePassata) { //cambia livello - unicode: →←↓↑
+	this.life = 9999999999;
+	this.letter= direzionePassata;
+      	this.type = "obstacle";
+      	this.name = "change level "+this.letter;
+	this.deltaLevelNumber=calcolaDeltaLN(direzionePassata);
+      	this.damage = 0;
+      	this.x = 0;
+      	this.y = 0;
+      	this.width = 20;
+      	this.height = 20;
+      	this.color1 = '#003ef0';
+      	this.color2 = '#ffc000';
+      	this.canSelfDraw = true;
+      	this.hasPhysics = true;
+      	this.selfDraw = function (xdisegnata, ydisegnata, indiceDiQuestaEntity) { //funzione per disegnare l'entita
+      		if(levelEditor || debugMode){
+			ctx.textAlign = "center"; ctx.font = "small-caps bold "+blockDimension+"px Lucida Console";
+			disegnaTestoConBordino(this.letter, xdisegnata + (this.width / 2), (ydisegnata + (this.height-4)/2 + ctx.measureText("O").width/2), this.color2, this.color1);
+			ctx.textAlign = "left";
+		}
+      	} //fine di selfDraw
+      	this.physics = async function (xdisegnata, ydisegnata, indiceDiQuestaEntity) {
+      		if (collisionBetween(this, player)) { //quando il player lo raccoglie
+			//draw all the screen black, sleep 100ms then load new level
+      		}
+      	} //fine di physics
+	function calcolaDeltaLN(direzione){
+		switch(direzione){
+			case "→": return 100 
+			case "←": return -100
+			case "↓": return 10000
+			case "↑": return -10000
+		}
+	}
+}

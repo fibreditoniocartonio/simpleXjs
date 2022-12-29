@@ -1,5 +1,6 @@
       function newPipistrello() { //mostro pipistrello
       	this.name = "bat";
+	this.letter = "P";
       	this.life = 1;
       	this.type = "monster";
       	this.damage = 1;
@@ -136,6 +137,7 @@
       	this.life = 2;
       	this.type = "monster";
       	this.name = "bunny";
+	this.letter = "B";
       	this.damage = 4;
       	this.invulnerability = 0;
       	this.facingRight = false;
@@ -271,6 +273,7 @@
       	this.life = 2;
       	this.type = "monster";
       	this.name = "bomb wasp";
+	this.letter = "A";
       	this.damage = 2;
       	this.invulnerability = 0;
       	this.facingRight = false;

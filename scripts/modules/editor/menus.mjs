@@ -166,7 +166,7 @@
       	this.drawMenuPrincipale = function (canInput) {
       		ctx.clearRect(0, 0, realCanvasWidth, canvasHeight); //pulisce tutto
       		ctx.fillStyle = "#020219";
-      		ctx.fillRect(0, 0, realCanvasWidth + 1, canvasHeight + 1); //sfondo nero
+      		ctx.fillRect(0, 0, realCanvasWidth + 1, canvasHeightDefault + 1); //sfondo nero
       		ctx.textAlign = "right";
       		ctx.font = "small-caps bold 15px Lucida Console";
       		disegnaTestoConBordino("by lordf", realCanvasWidth - 3, canvasHeight - 2, "#d2d2d2bb", "#020219");

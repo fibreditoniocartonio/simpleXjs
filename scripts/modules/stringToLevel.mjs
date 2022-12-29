@@ -37,7 +37,6 @@ function stringToLevel(lvlString) {
 				//ora le entita' (lettere maiuscole) 
 			case 'P': // P indica un pipistrello
 				var pipistrello = new newPipistrello();
-				pipistrello['letter'] = lvlString[i];
 				pipistrello.x = (i % widthTot) * blockDimension;
 				pipistrello.y = (heightTot - 1) * blockDimension + 10;
 				entity.push(pipistrello);
@@ -62,7 +61,6 @@ function stringToLevel(lvlString) {
 
 			case 'S': //S sono le spike (le spine che instaKillano)
 				var spike = new newSpike();
-				spike['letter'] = lvlString[i];
 				spike.x = (i % widthTot) * blockDimension;
 				spike.y = (heightTot - 1) * blockDimension;
 				entity.push(spike);
@@ -153,6 +151,16 @@ function stringToLevel(lvlString) {
 				checkBackAndForGround(background, foreground, lvlString[i - 1]); //se il blocco prima era un background o foreground lo carica sotto il player
 				break;
 
+			case '→': case '←': case '↓': case '↑': //change level Direction
+				let changeLevelDirection = new newChangeLevelArrow(lvlString[i]);
+				changeLevelDirection.x = (i % widthTot) * blockDimension;
+				changeLevelDirection.y = (heightTot - 1) * blockDimension;
+				changeLevelDirection.width = blockDimension;
+				changeLevelDirection.height = blockDimension + 1;
+				entity.push(changeLevelDirection);
+				checkBackAndForGround(background, foreground, lvlString[i - 1]); //se il blocco prima era un background o foreground lo carica sotto il player
+				break;
+				
 				//i blocchi
 			case 'a':
 			case 'b':
