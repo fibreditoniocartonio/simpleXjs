@@ -1,4 +1,4 @@
-      var versioneDiGioco = "v0.20221228"; //finally found a way to use modules with the file:/// protocol (standard dynamic import doesn't work with that protocol because of vulnerabilities). Made the code modular
+      var versioneDiGioco = "v0.20221230"; //ChangeLevel is now implemented both in game and in the editor. It has a lot of limitation so experiment a little to learn it.
       debugMode = false; //you can enable debugMode with the console (press f12 in the browser)
 
       //crea il canvas

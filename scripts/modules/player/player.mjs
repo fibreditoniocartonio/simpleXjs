@@ -722,6 +722,7 @@
       				if (player.life < 1) { //gameover
       					disegnaSchermoDiGioco(false);
       					objAlert = new newAlert("Gameover", 1);
+					lvlNumber=1;
       					gamestate = 5;
       				}
 
@@ -1220,6 +1221,7 @@
 
       				if (player.life < 1) { //gameover
       					disegnaSchermoDiGioco(false);
+					lvlNumber=1;
       					objAlert = new newAlert("Gameover", 1);
       					gamestate = 5;
       				}

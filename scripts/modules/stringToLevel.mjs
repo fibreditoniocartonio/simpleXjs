@@ -73,8 +73,8 @@ function stringToLevel(lvlString) {
 			case '3': //sono i pezzi di armatura
 				var armatura = new newPickUp_Armor(parseInt(lvlString[i], 10));
 				armatura['letter'] = lvlString[i];
-				armatura.x = (i % widthTot) * blockDimension;
-				armatura.y = (heightTot - 1) * blockDimension;
+				armatura.x = (i % widthTot) * blockDimension + (blockDimension / 2 - armatura.width / 2);
+				armatura.y = (heightTot - 1) * blockDimension + (blockDimension / 2 - armatura.height / 2);
 				entity.push(armatura);
 				checkBackAndForGround(background, foreground, lvlString[i - 1]); //se il blocco prima era un background o foreground lo carica sotto il player
 				break;
@@ -85,8 +85,8 @@ function stringToLevel(lvlString) {
 			case '7': //sono le subtank
 				var subtankLetta = new newPickUp_Subtank(parseInt(lvlString[i], 10) - 4);
 				subtankLetta['letter'] = lvlString[i];
-				subtankLetta.x = (i % widthTot) * blockDimension;
-				subtankLetta.y = (heightTot - 1) * blockDimension;
+				subtankLetta.x = (i % widthTot) * blockDimension+(blockDimension / 2 - subtankLetta.width / 2);
+				subtankLetta.y = (heightTot - 1) * blockDimension+(blockDimension / 2 - subtankLetta.height / 2);
 				entity.push(subtankLetta);
 				checkBackAndForGround(background, foreground, lvlString[i - 1]); //se il blocco prima era un background o foreground lo carica sotto il player
 				break;
@@ -102,8 +102,10 @@ function stringToLevel(lvlString) {
 				//caratteri per copiare/incollare:  ⁰ ¹ ² ³ ⁴ ⁵ ⁶ ⁷ ⁸ ⁹
 				var cuore = new newPickUp_Cuore(lvlString[i]);
 				cuore['letter'] = lvlString[i];
-				cuore.x = (i % widthTot) * blockDimension;
-				cuore.y = (heightTot - 1) * blockDimension - 1;
+				cuore.width=blockDimension*3/4;
+				cuore.height=blockDimension*3/4;
+				cuore.x = (i % widthTot) * blockDimension+(blockDimension / 2 - cuore.width / 2);
+				cuore.y = (heightTot - 1) * blockDimension - 1 + (blockDimension / 2 - cuore.height / 2);
 				entity.push(cuore);
 				checkBackAndForGround(background, foreground, lvlString[i - 1]); //se il blocco prima era un background o foreground lo carica sotto il player
 				break;
@@ -153,10 +155,11 @@ function stringToLevel(lvlString) {
 
 			case '→': case '←': case '↓': case '↑': //change level Direction
 				let changeLevelDirection = new newChangeLevelArrow(lvlString[i]);
-				changeLevelDirection.x = (i % widthTot) * blockDimension;
-				changeLevelDirection.y = (heightTot - 1) * blockDimension;
-				changeLevelDirection.width = blockDimension;
-				changeLevelDirection.height = blockDimension + 1;
+				let deltaSize=blockDimension/2;
+				changeLevelDirection.x = (i % widthTot) * blockDimension-deltaSize/4;
+				changeLevelDirection.y = (heightTot - 1) * blockDimension-deltaSize/4;
+				changeLevelDirection.width = blockDimension+deltaSize/2;
+				changeLevelDirection.height = blockDimension + 1 + deltaSize/2;
 				entity.push(changeLevelDirection);
 				checkBackAndForGround(background, foreground, lvlString[i - 1]); //se il blocco prima era un background o foreground lo carica sotto il player
 				break;

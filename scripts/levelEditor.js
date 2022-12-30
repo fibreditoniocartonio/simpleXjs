@@ -1,4 +1,4 @@
-      var versioneDiGioco = "v1.20221229"; //fastened the code of the editor and made it even more module compatible, now you just have to update stringToLevel.mjs and the const listaEntityStringa in this file to add a new entity; added to lvlObstacles an entity to change level when touched
+      var versioneDiGioco = "v1.20221230"; //ChangeLevel is now implemented both in game and in the editor. It has a lot of limitation so experiment a little to learn it.
       debugMode = false; //you can enable debugMode with the console (press f12 in the browser)
       showMouseBox = false; //you can enable showMouseBox with the console (press f12 in the browser)
 

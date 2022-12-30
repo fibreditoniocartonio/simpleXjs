@@ -105,7 +105,7 @@ function newChangeLevelArrow(direzionePassata) { //cambia livello - unicode: →
 						case "→": player.x=entity[i].x-blockDimension/3-player.width; player.y=entity[i].y; break;
 						case "←": player.x=entity[i].x+blockDimension+blockDimension/3; player.y=entity[i].y; break;
 						case "↓": player.x=entity[i].x; player.y=entity[i].y-blockDimension-player.height; break;
-						case "↑": player.x=entity[i].x; player.y=entity[i].y+blockDimension/4+blockDimension; break;
+						case "↑": player.x=entity[i].x; player.y=entity[i].y+blockDimension/3+blockDimension; break;
 					}
 				}
 			}
