@@ -82,8 +82,7 @@
       var entity = []; //create the entity array. Ogni entità deve avere: x, y, width, height e il metodo physics che determinerà come si comporta l'entità
       
       //inizializzo le entity che carico dal modulo stringToLevel e la stringa in cima a questo file
-      stringToLevel("t"+listaEntityStringa+"z;;;;;;;;;;;;;;;;;;;;;;;;;;;");
-      canvasWidth = canvasWidthDefault; canvasHeight = canvasHeightDefault; //li riporto normali xke il comando di prima li rendeva molto piccoli e spaccava tutto
+      stringToLevel("lllllllllllllllllllll"+listaEntityStringa+"z");
       var listaTipoEntity = creaListaTipoEntity(listaEntity);
       var listaEntity = creaListaEntity(listaEntityStringa,listaTipoEntity);      
 
