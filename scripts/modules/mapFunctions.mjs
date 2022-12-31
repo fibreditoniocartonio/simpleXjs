@@ -6,9 +6,9 @@ function aggiornaMappaEsplorata(){ //aggiorna la mappa con le stanze nuove
 				lvlAlreadyExplored=true;
 				break;
 			}
-			if(!lvlAlreadyExplored){
-				exploredMapIndex.push(lvlNumber);
-			}
+		}
+		if(!lvlAlreadyExplored){
+			exploredMapIndex.push(lvlNumber);
 		}
 	}else{
 		exploredMapIndex.push(lvlNumber);
