@@ -1262,10 +1262,12 @@
     	} //fine di drawMenu()               
     } //fine di menuCaricaPartita
 
-    function newMenuMappa(previousGameStatePassato) {//map menu
+function newMenuMappa(previousGameStatePassato) {//map menu
     	this.width = 0;
 	this.previousGameState=previousGameStatePassato;
     	this.height = 0;
+	this.mapCameraMovement={"x":0,"y":0};
+	this.mapCameraSpeed=2;
     	this.widthMax = canvasWidth - 50;
     	this.heightMax = canvasHeight - 50;
 	this.startingConfig={"lvlNumber":lvlNumber, "blockDimension":blockDimension, "player":player, "level":level, "entity":entity};
@@ -1291,21 +1293,8 @@
     		ctx.fillStyle = "#52b58b";
     		ctx.fillRect((canvasWidth / 2) - this.width / 2, (canvasHeight / 2) - this.height / 2, this.width, this.height); //disegna lo sfondo verde
     		if (this.isOpen) { //qui dentro devo mostrare il testo del menu e gestire cosa succede quando schiaccio i tasti
-			displayFullMap(); //from script/modules/mapFunction.mjs
-    			if ((keys[jumpkey] || keys[mapkey]) && !tastoGiaSchiacciato) { //chiude il menu
-    				this.isOpen = false;
-				lvlNumber=this.startingConfig.lvlNumber;
-				blockDimension=this.startingConfig.blockDimension;
-				level=this.startingConfig.level;
-				player=this.startingConfig.player;
-				entity=this.startingConfig.entity;
-    				this.isClosing = true;
-    			}
-    			if (keys[startkey] || keys[sukey] || keys[giukey] || keys[sinistrakey] || keys[destrakey] || keys[dashkey] || keys[jumpkey] || keys[mapkey]) {
-    				tastoGiaSchiacciato = true;
-    			} else {
-    				tastoGiaSchiacciato = false;
-    			}
+			displayFullMap(this.mapCameraMovement); //from script/modules/mapFunction.mjs
+			this.calcolaInput();
     		}//fine di if this.isOpen()
     		if (this.isClosing) { //animazione di chiusura del menu + regolazione delle subtanks
     			if (this.width > 0) {
@@ -1323,5 +1312,28 @@
     				gamestate = this.previousGameState;
     			}
     		}
-    	}
-    } //fine menu Mappa   
+    	}//fine di selfDraw()
+
+	this.calcolaInput = function(){
+		var currentSpeed=this.mapCameraSpeed;
+		if(keys[dashkey]){currentSpeed=this.mapCameraSpeed*2;}
+		if(keys[sukey])	{ this.mapCameraMovement.y-=currentSpeed;}
+		if(keys[giukey]){ this.mapCameraMovement.y+=currentSpeed;}
+		if(keys[sinistrakey]){this.mapCameraMovement.x-=currentSpeed;}
+		if(keys[destrakey]) { this.mapCameraMovement.x+=currentSpeed;}
+ 		if ((keys[jumpkey] || keys[mapkey]) && !tastoGiaSchiacciato) { //chiude il menu
+ 			this.isOpen = false;
+			lvlNumber=this.startingConfig.lvlNumber;
+			blockDimension=this.startingConfig.blockDimension;
+			level=this.startingConfig.level;
+			player=this.startingConfig.player;
+			entity=this.startingConfig.entity;
+    			this.isClosing = true;
+    		}
+    		if (keys[startkey] || keys[sukey] || keys[giukey] || keys[sinistrakey] || keys[destrakey] || keys[dashkey] || keys[jumpkey] || keys[mapkey]) {
+    			tastoGiaSchiacciato = true;
+    		} else {
+    			tastoGiaSchiacciato = false;
+    		}
+	}//fine di calcolaInput()
+} //fine menu Mappa   

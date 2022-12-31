@@ -15,10 +15,11 @@ function aggiornaMappaEsplorata(){ //aggiorna la mappa con le stanze nuove
 	}
 }
 
-function displayFullMap(){
+function displayFullMap(mapCameraMovement){
 	var indexGiaDisegnato=[];
 	blockDimension=2;
-	disegnaMappa(lvlNumber,indexGiaDisegnato,"",canvas.width/2,canvas.height/2);
+	disegnaMappa(lvlNumber,indexGiaDisegnato,"",canvas.width/2+mapCameraMovement.x,canvas.height/2+mapCameraMovement.y);
+	drawPlayerLocationOnMap("#00ffff", "#000000",canvas.width/2+mapCameraMovement.x,canvas.height/2+mapCameraMovement.y); //draw a signal in the room where the player is
 }
 
 function disegnaMappa(stanza,indexGiaDisegnato,previousDir,offsetX,offsetY){
@@ -51,7 +52,6 @@ function disegnaMappa(stanza,indexGiaDisegnato,previousDir,offsetX,offsetY){
 				drawLvl(level.foreground, true, offsetX, offsetY);
 			}
 		}
-		drawPlayerLocationOnMap("#00ffff", "#000000"); //draw a signal in the room where the player is
 		//do the same with the other rooms connected with this one
 		let changeRoomEntities=[];
 		for(let j=0; j<entity.length; j++){ //first of all i find all the entity that can change rooms and i store them (because entity[] will reset)
@@ -76,11 +76,13 @@ function disegnaMappa(stanza,indexGiaDisegnato,previousDir,offsetX,offsetY){
 			}
 		}
 	}
-	function drawPlayerLocationOnMap(color1, color2){ //draw the signal of the player
-		signalDimension=blockDimension*8;
-		ctx.fillStyle=color1; ctx.fillRect(canvas.width/2-signalDimension/2, canvas.height/2-signalDimension/2, signalDimension, signalDimension); 
-		ctx.strokeStyle=color2; ctx.lineWidth = "1"; ctx.strokeRect(canvas.width/2-signalDimension/2, canvas.height/2-signalDimension/2, signalDimension, signalDimension); 
-		ctx.textAlign = "center"; ctx.font = "small-caps bold "+signalDimension+"px Lucida Console";
-		disegnaTestoConBordino("P", canvas.width/2 , (canvas.height/2 + ctx.measureText("O").width/2), color2, color1); ctx.textAlign = "left";
-	}
+
+}
+
+function drawPlayerLocationOnMap(color1, color2, xpos, ypos){ //draw the signal of the player
+	signalDimension=blockDimension*8;
+	ctx.fillStyle=color1; ctx.fillRect(xpos-signalDimension/2, ypos-signalDimension/2, signalDimension, signalDimension); 
+	ctx.strokeStyle=color2; ctx.lineWidth = "1"; ctx.strokeRect(xpos-signalDimension/2, ypos-signalDimension/2, signalDimension, signalDimension); 
+	ctx.textAlign = "center"; ctx.font = "small-caps bold "+signalDimension+"px Lucida Console";
+	disegnaTestoConBordino("P", xpos, (ypos + ctx.measureText("O").width/2), color2, color1); ctx.textAlign = "left";
 }
