@@ -1417,3 +1417,67 @@
     		} //fine di controllaFile()                
     	} //fine di drawMenu()               
     } //fine di menuCaricaPartita
+
+    function newMenuMappa(previousGameStatePassato) {//map menu
+    	this.width = 0;
+	this.previousGameState=previousGameStatePassato;
+    	this.height = 0;
+    	this.widthMax = canvasWidth - 50;
+    	this.heightMax = canvasHeight - 50;
+	this.startingConfig={"lvlNumber":lvlNumber, "blockDimension":blockDimension, "player":player, "level":level, "entity":entity};
+    	this.isOpen = false;
+    	this.isClosing = false;
+    	this.canInput = true;
+    	this.selfDraw = function () {
+    		ctx.textAlign = "left";
+    		ctx.font = "small-caps bold 20px Lucida Console"; //tipo di font per le scritte
+    		if (!this.isOpen && !this.isClosing) { //animazione di apertura del menu + lettura subtank acquisite
+    			if (this.width < this.widthMax) {
+    				this.width += this.widthMax/10;
+    			}
+    			if (this.height < this.heightMax) {
+    				this.height += this.heightMax/10;
+    			}
+    			if (this.height > this.heightMax - 1 && this.width > this.widthMax - 1) { //quando il menu e' tutto aperto:
+    				this.isOpen = true;
+    			}
+    		}
+    		ctx.fillStyle = "#d2d2d2";
+    		ctx.fillRect((canvasWidth / 2) - this.width / 2 - 15, (canvasHeight / 2) - this.height / 2 - 15, this.width + 30, this.height + 30); //disegna il bordo grigio 
+    		ctx.fillStyle = "#52b58b";
+    		ctx.fillRect((canvasWidth / 2) - this.width / 2, (canvasHeight / 2) - this.height / 2, this.width, this.height); //disegna lo sfondo verde
+    		if (this.isOpen) { //qui dentro devo mostrare il testo del menu e gestire cosa succede quando schiaccio i tasti
+			displayFullMap(); //from script/modules/mapFunction.mjs
+    			if ((keys[jumpkey] || keys[mapkey]) && !tastoGiaSchiacciato) { //chiude il menu
+    				this.isOpen = false;
+				lvlNumber=this.startingConfig.lvlNumber;
+				blockDimension=this.startingConfig.blockDimension;
+				level=this.startingConfig.level;
+				player=this.startingConfig.player;
+				entity=this.startingConfig.entity;
+    				this.isClosing = true;
+    			}
+    			if (keys[startkey] || keys[sukey] || keys[giukey] || keys[sinistrakey] || keys[destrakey] || keys[dashkey] || keys[jumpkey] || keys[mapkey]) {
+    				tastoGiaSchiacciato = true;
+    			} else {
+    				tastoGiaSchiacciato = false;
+    			}
+    		}//fine di if this.isOpen()
+    		if (this.isClosing) { //animazione di chiusura del menu + regolazione delle subtanks
+    			if (this.width > 0) {
+    				this.width -= this.widthMax/10 ;
+    			}
+    			if (this.height > 0) {
+    				this.height -= this.heightMax/10;
+    			}
+    			disegnaSchermoDiGioco(false);
+    			ctx.fillStyle = "#d2d2d2";
+    			ctx.fillRect((canvasWidth / 2) - this.width / 2 - 15, (canvasHeight / 2) - this.height / 2 - 15, this.width + 30, this.height + 30); //disegna il bordo grigio 
+    			ctx.fillStyle = "#52b58b";
+    			ctx.fillRect((canvasWidth / 2) - this.width / 2, (canvasHeight / 2) - this.height / 2, this.width, this.height); //disegna lo sfondo verde
+    			if (this.height - 1 < 0 && this.width - 1 < 0) { //quando il menu e' tutto chiuso:
+    				gamestate = this.previousGameState;
+    			}
+    		}
+    	}
+    } //fine menu di pausa   

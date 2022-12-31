@@ -1,4 +1,4 @@
-      var versioneDiGioco = "v0.20221231"; //added exitLevelBlock
+      var versioneDiGioco = "v0.20221231"; //added exitLevelBlock, added map system
       debugMode = false; //you can enable debugMode with the console (press f12 in the browser)
 
       //crea il canvas
@@ -25,6 +25,7 @@
       var startkey = "Enter"; //start - default INVIO/ENTER
       var lkey = "d"; //power- - default e
       var rkey = "c"; //power+ - default c
+      var mapkey = "m"; //mappa - default m
 
       var ultimoTastoLetto = "";
       document.addEventListener("keydown", function (e) { //events - leggi tasti schiacciati
@@ -81,10 +82,12 @@
       //stato 4: opzioni nelle stage selection - var nelleOpzioniStageSelect=false; 
       //stato 5: c'e' un alert aperto - var alertAperto=false; 
       //stato 6: nel menu carica partita - var nelMenuCaricaPartita=false; 
+      //stato 7: menu Mappa - map menu
 
       //caricare il livello
       var level = []; //create the level array
       var entity = []; //create the entity array. Ogni entità deve avere: x, y, width, height e il metodo physics che determinerà come si comporta l'entità
+      var exploredMapIndex = []; //mappa esplorata - raccoglie i lvlNumber nelle stanze nuove 
       var lvlNumber = 1;
       var blockDimension = 32; //dimensioni standard dei blocchi
       var objMenuPrincipale = new newMenuPrincipale(); //inizializza il menu principale
@@ -119,6 +122,8 @@
       		objMenuOpzioniStageSelect.drawMenu();
       	} else if (gamestate == 6) {
       		objMenuCaricaPartita.drawMenu();
+	} else if (gamestate == 7) {
+      		objMenuMappa.selfDraw();
       	} else if (gamestate == 5) {
       		objAlert.drawMenu();
       	} else {

@@ -740,6 +740,15 @@
       					}
       				}
 
+				if (keys[mapkey]) { //menu mappa
+      					if (!tastoGiaSchiacciato) { //ho dovuto fare il check della vita se no era possibile far aprire il menu dopo essere morti se si schiacciava INVIO nello stesso frame in cui si moriva
+      						objMenuMappa = new newMenuMappa(gamestate);
+      						disegnaSchermoDiGioco(false);
+      						tastoGiaSchiacciato = true;
+      						gamestate = 7;
+      					}
+      				}
+
       				if (player.canMove && tastoGiaSchiacciato && !(keys[startkey] || keys[lkey] || keys[rkey])) { //azzera tasto gia schiacciato
       					tastoGiaSchiacciato = false;
       				}
@@ -1289,6 +1298,15 @@
       							objAlert = new newAlert("pause", -1);
       							gamestate = 5;
       						}
+      					}
+      				}
+
+				if (keys[mapkey]) { //menu mappa
+      					if (!tastoGiaSchiacciato) { //ho dovuto fare il check della vita se no era possibile far aprire il menu dopo essere morti se si schiacciava INVIO nello stesso frame in cui si moriva
+      						objMenuMappa = new newMenuMappa(gamestate);
+      						disegnaSchermoDiGioco(false);
+      						tastoGiaSchiacciato = true;
+      						gamestate = 7;
       					}
       				}
 

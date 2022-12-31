@@ -90,7 +90,7 @@
       }
 
       //this function draws the level (usata anche per level.foreground e level.background - basta che sia un arrey di oggetti blocco)
-      function drawLvl(lvl) {
+      function drawLvl(lvl, spostaX, spostaY) {
       	for (var i = 0; i < lvl.length; i++) {
       		ctx.fillStyle = lvl[i].color;
       		//variabili per disegnare il livello rispetto alla posizione di x (rispetto ai bordi del canvas) - visuale
@@ -114,6 +114,9 @@
       				ydisegnata = lvl[i].y - player.y + canvasHeight / 2;
       			}
       		}
+		if(spostaX){ 
+			xdisegnata+=spostaX-canvasWidth; ydisegnata+=-spostaY+canvasHeight;
+		} //per mappa - drawMap
       		//ora disegno il livello[i]                    
       		if (xdisegnata + lvl[i].width > -1 && xdisegnata < canvasWidth + 1) {
       			if (level.tileset == "") {
