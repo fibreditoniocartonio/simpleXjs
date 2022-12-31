@@ -1152,7 +1152,7 @@
       						corda["y"] = player.y + 2;
       						for (let i = 0; i < entity.length; i++) { //contatto con entita'
 							for(let j=0; j < player.entityWhippedIndex.length; j++){ //skippa le entita' gia' whippate con questo colpo
-								if(i==player.entityWhippedIndex[j]){i++; j=-1;}
+								if(i==player.entityWhippedIndex[j] && i+1<entity.length){i++; j=-1;}
 							}
       							if (entity[i].life > 0 && !(entity[i].type == "sparoDelPlayer" || entity[i].type == "pickup" || entity[i].type == "enemyShot")) {
       								if (collisionBetween(corda, entity[i])) {
