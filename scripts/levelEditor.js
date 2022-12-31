@@ -1,9 +1,9 @@
-      var versioneDiGioco = "v1.20221230"; //ChangeLevel is now implemented both in game and in the editor. It has a lot of limitation so experiment a little to learn it.
+      var versioneDiGioco = "v1.20221231"; //Added the exitLevelBlock
       debugMode = false; //you can enable debugMode with the console (press f12 in the browser)
       showMouseBox = false; //you can enable showMouseBox with the console (press f12 in the browser)
 
       //elenco entita' - da aggiornare tutte le volte
-      const listaEntityStringa = "01234567⁰¹²³⁴⁵⁶⁷àÀèÈPSBA→←↓↑";
+      const listaEntityStringa = "01234567⁰¹²³⁴⁵⁶⁷àÀèÈPSBA→←↓↑⟑";
 
       //crea il canvas
       const levelEditor = true;

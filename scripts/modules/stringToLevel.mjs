@@ -163,8 +163,15 @@ function stringToLevel(lvlString) {
 				entity.push(changeLevelDirection);
 				checkBackAndForGround(background, foreground, lvlString[i - 1]); //se il blocco prima era un background o foreground lo carica sotto il player
 				break;
-				
-				//i blocchi
+
+			case '⟑': //Exit Level Block
+				let exitLevelBlock = new newExitLevelPickup(blockDimension);
+				exitLevelBlock.x = (i % widthTot) * blockDimension + (blockDimension / 2 - exitLevelBlock.width / 2);
+				exitLevelBlock.y = (heightTot - 1) * blockDimension + 1;
+				entity.push(exitLevelBlock);
+				break;
+			
+			//i blocchi
 			case 'a':
 			case 'b':
 			case 'c':

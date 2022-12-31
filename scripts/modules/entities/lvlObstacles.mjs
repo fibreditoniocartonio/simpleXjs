@@ -128,3 +128,32 @@ function newChangeLevelArrow(direzionePassata) { //cambia livello - unicode: →
 		}
 	}
 }
+
+function newExitLevelPickup(blockDimensionPassata) { //cambia livello - unicode: →←↓↑
+	this.life = 9999999999;
+	this.letter= "⟑";
+      	this.type = "obstacle";
+      	this.name = "exit level";
+      	this.damage = 0;
+      	this.x = 0;
+      	this.y = 0;
+      	this.width = blockDimensionPassata;
+      	this.height = blockDimensionPassata;
+      	this.color1 = '#00ee00';
+      	this.color2 = '#232323';
+      	this.canSelfDraw = true;
+      	this.hasPhysics = true;
+      	this.selfDraw = function (xdisegnata, ydisegnata, indiceDiQuestaEntity) { //funzione per disegnare l'entita
+			ctx.fillStyle=this.color1; ctx.fillRect(xdisegnata, ydisegnata, this.width, this.height);
+			ctx.textAlign = "center"; ctx.font = "small-caps bold "+blockDimension/2+"px Lucida Console";
+			disegnaTestoConBordino("exit", xdisegnata + (this.width / 2), (ydisegnata + (this.height-4)/2 + ctx.measureText("O").width/2), this.color1, this.color2);
+			ctx.textAlign = "left";
+      	} //fine di selfDraw
+      	this.physics = function (xdisegnata, ydisegnata, indiceDiQuestaEntity) {
+      		if (collisionBetween(this, player)) { //quando il player lo raccoglie
+		      	objAlert = new newAlert("congrats, level ended", 1);
+			lvlNumber=1;
+      			gamestate = 5;
+      		}
+      	} //fine di physics
+}
