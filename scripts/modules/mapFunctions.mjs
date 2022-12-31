@@ -32,7 +32,6 @@ function disegnaMappa(stanza,indexGiaDisegnato,previousDir,offsetX,offsetY){
 	if(!giaDis){
 		indexGiaDisegnato.push(stanza); //set the room as already drawn
 		stringToLevel(allLevelStrings[stanza.toString()]); //load the room
-		level.tileset=""; level.backgroundImg="";
 		canvasWidth = canvas.width; canvasHeight = canvas.height;
 		switch(previousDir){ //calculate offsets
 			case "→": break; 
