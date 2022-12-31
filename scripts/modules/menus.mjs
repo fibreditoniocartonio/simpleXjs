@@ -295,10 +295,10 @@
     		ctx.font = "small-caps bold 20px Lucida Console"; //tipo di font per le scritte
     		if (!this.isOpen && !this.isClosing) { //animazione di apertura del menu + lettura subtank acquisite
     			if (this.width < this.widthMax) {
-    				this.width += 10;
+    				this.width += this.widthMax/15;
     			}
     			if (this.height < this.heightMax) {
-    				this.height += 15;
+    				this.height += this.heightMax/15 ;
     			}
     			if (this.height > this.heightMax - 1 && this.width > this.widthMax - 1) { //quando il menu e' tutto aperto:
     				this.isOpen = true;
@@ -560,10 +560,10 @@
     		}
     		if (this.isClosing) { //animazione di chiusura del menu + regolazione delle subtanks
     			if (this.width > 0) {
-    				this.width -= 20;
+    				this.width -= this.widthMax/15;
     			}
     			if (this.height > 0) {
-    				this.height -= 20;
+    				this.height -= this.widthMax/15;
     			}
     			ctx.clearRect((canvasWidth / 2) - this.width / 2 - 15, (canvasHeight / 2) - this.height / 2 - 15, this.width + 30, this.height + 30); //pulisci la parte dove viene mostrato il menu
     			disegnaSchermoDiGioco(false);
@@ -910,15 +910,16 @@
     	this.widthMax = canvasWidth - 150;
     	this.heightMax = canvasHeight - 150;
     	this.indice = 0;
+	this.numeroVoci=11;
     	this.contatoreAnimazione = 0;
     	this.staCambiandoTasto = false;
     	this.drawMenuOpzioni = function () {
     		if (!this.isOpen && !this.isClosing) { //animazione di apertura del menu
     			if (this.width < this.widthMax) {
-    				this.width += 10;
+    				this.width += this.widthMax/15;
     			}
     			if (this.height < this.heightMax) {
-    				this.height += 15;
+    				this.height += this.heightMax/15;
     			}
     			if (this.height > this.heightMax - 1 && this.width > this.widthMax - 1) { //quando il menu e' tutto aperto:
     				this.isOpen = true;
@@ -935,94 +936,100 @@
     			ctx.textAlign = "center";
     			disegnaTestoConBordino("OPTIONS", canvasWidth / 2, 110, "#d2d2d2", "#000000"); //scrive la scritta OPTIONS al centro in alto
     			ctx.font = "small-caps bold 20px Lucida Console"; //tipo di font per le scritte
-    			for (i = 0; i < 10; i++) { //disegno tutte le scritte
+    			for (i = 0; i < this.numeroVoci; i++) { //disegno tutte le scritte
     				var xdisegnata = 75;
-    				var ydisegnata = (128 + (this.heightMax + 75 - 17 - 128) / 10 * (i));
+    				var ydisegnata = (128 + (this.heightMax + 75 - 17 - 128) / this.numeroVoci * (i));
     				switch (i) { //scrive le varie impostazioni dei tasti
     					case 0:
     						ctx.textAlign = "right";
-    						disegnaTestoConBordino("move up :   ", canvasWidth / 2, ydisegnata + 7 + ((this.heightMax + 75 - 17 - 128) / 10) / 2, "#d2d2d2", "#000000");
+    						disegnaTestoConBordino("move up :   ", canvasWidth / 2, ydisegnata + 7 + ((this.heightMax + 75 - 17 - 128) / this.numeroVoci) / 2, "#d2d2d2", "#000000");
     						ctx.textAlign = "left";
-    						disegnaTestoConBordino("   " + tasto(sukey.toLowerCase()), canvasWidth / 2, ydisegnata + 7 + ((this.heightMax + 75 - 17 - 128) / 10) / 2, "#d2d2d2", "#000000");
+    						disegnaTestoConBordino("   " + tasto(sukey.toLowerCase()), canvasWidth / 2, ydisegnata + 7 + ((this.heightMax + 75 - 17 - 128) / this.numeroVoci) / 2, "#d2d2d2", "#000000");
     						break;
     					case 1:
     						ctx.textAlign = "right";
-    						disegnaTestoConBordino("move down :   ", canvasWidth / 2, ydisegnata + 7 + ((this.heightMax + 75 - 17 - 128) / 10) / 2, "#d2d2d2", "#000000");
+    						disegnaTestoConBordino("move down :   ", canvasWidth / 2, ydisegnata + 7 + ((this.heightMax + 75 - 17 - 128) / this.numeroVoci) / 2, "#d2d2d2", "#000000");
     						ctx.textAlign = "left";
-    						disegnaTestoConBordino("   " + tasto(giukey.toLowerCase()), canvasWidth / 2, ydisegnata + 7 + ((this.heightMax + 75 - 17 - 128) / 10) / 2, "#d2d2d2", "#000000");
+    						disegnaTestoConBordino("   " + tasto(giukey.toLowerCase()), canvasWidth / 2, ydisegnata + 7 + ((this.heightMax + 75 - 17 - 128) / this.numeroVoci) / 2, "#d2d2d2", "#000000");
     						break;
     					case 2:
     						ctx.textAlign = "right";
-    						disegnaTestoConBordino("move left :   ", canvasWidth / 2, ydisegnata + 7 + ((this.heightMax + 75 - 17 - 128) / 10) / 2, "#d2d2d2", "#000000");
+    						disegnaTestoConBordino("move left :   ", canvasWidth / 2, ydisegnata + 7 + ((this.heightMax + 75 - 17 - 128) / this.numeroVoci) / 2, "#d2d2d2", "#000000");
     						ctx.textAlign = "left";
-    						disegnaTestoConBordino("   " + tasto(sinistrakey.toLowerCase()), canvasWidth / 2, ydisegnata + 7 + ((this.heightMax + 75 - 17 - 128) / 10) / 2, "#d2d2d2", "#000000");
+    						disegnaTestoConBordino("   " + tasto(sinistrakey.toLowerCase()), canvasWidth / 2, ydisegnata + 7 + ((this.heightMax + 75 - 17 - 128) / this.numeroVoci) / 2, "#d2d2d2", "#000000");
     						break;
     					case 3:
     						ctx.textAlign = "right";
-    						disegnaTestoConBordino("move right :   ", canvasWidth / 2, ydisegnata + 7 + ((this.heightMax + 75 - 17 - 128) / 10) / 2, "#d2d2d2", "#000000");
+    						disegnaTestoConBordino("move right :   ", canvasWidth / 2, ydisegnata + 7 + ((this.heightMax + 75 - 17 - 128) / this.numeroVoci) / 2, "#d2d2d2", "#000000");
     						ctx.textAlign = "left";
-    						disegnaTestoConBordino("   " + tasto(destrakey.toLowerCase()), canvasWidth / 2, ydisegnata + 7 + ((this.heightMax + 75 - 17 - 128) / 10) / 2, "#d2d2d2", "#000000");
+    						disegnaTestoConBordino("   " + tasto(destrakey.toLowerCase()), canvasWidth / 2, ydisegnata + 7 + ((this.heightMax + 75 - 17 - 128) / this.numeroVoci) / 2, "#d2d2d2", "#000000");
     						break;
     					case 4:
     						ctx.textAlign = "right";
-    						disegnaTestoConBordino("confirm & dash :   ", canvasWidth / 2, ydisegnata + 7 + ((this.heightMax + 75 - 17 - 128) / 10) / 2, "#d2d2d2", "#000000");
+    						disegnaTestoConBordino("confirm & dash :   ", canvasWidth / 2, ydisegnata + 7 + ((this.heightMax + 75 - 17 - 128) / this.numeroVoci) / 2, "#d2d2d2", "#000000");
     						ctx.textAlign = "left";
-    						disegnaTestoConBordino("   " + tasto(dashkey.toLowerCase()), canvasWidth / 2, ydisegnata + 7 + ((this.heightMax + 75 - 17 - 128) / 10) / 2, "#d2d2d2", "#000000");
+    						disegnaTestoConBordino("   " + tasto(dashkey.toLowerCase()), canvasWidth / 2, ydisegnata + 7 + ((this.heightMax + 75 - 17 - 128) / this.numeroVoci) / 2, "#d2d2d2", "#000000");
     						break;
     					case 5:
     						ctx.textAlign = "right";
-    						disegnaTestoConBordino("cancel & jump :   ", canvasWidth / 2, ydisegnata + 7 + ((this.heightMax + 75 - 17 - 128) / 10) / 2, "#d2d2d2", "#000000");
+    						disegnaTestoConBordino("cancel & jump :   ", canvasWidth / 2, ydisegnata + 7 + ((this.heightMax + 75 - 17 - 128) / this.numeroVoci) / 2, "#d2d2d2", "#000000");
     						ctx.textAlign = "left";
-    						disegnaTestoConBordino("   " + tasto(jumpkey.toLowerCase()), canvasWidth / 2, ydisegnata + 7 + ((this.heightMax + 75 - 17 - 128) / 10) / 2, "#d2d2d2", "#000000");
+    						disegnaTestoConBordino("   " + tasto(jumpkey.toLowerCase()), canvasWidth / 2, ydisegnata + 7 + ((this.heightMax + 75 - 17 - 128) / this.numeroVoci) / 2, "#d2d2d2", "#000000");
     						break;
     					case 6:
     						ctx.textAlign = "right";
-    						disegnaTestoConBordino("shoot :   ", canvasWidth / 2, ydisegnata + 7 + ((this.heightMax + 75 - 17 - 128) / 10) / 2, "#d2d2d2", "#000000");
+    						disegnaTestoConBordino("shoot :   ", canvasWidth / 2, ydisegnata + 7 + ((this.heightMax + 75 - 17 - 128) / this.numeroVoci) / 2, "#d2d2d2", "#000000");
     						ctx.textAlign = "left";
-    						disegnaTestoConBordino("   " + tasto(sparokey.toLowerCase()), canvasWidth / 2, ydisegnata + 7 + ((this.heightMax + 75 - 17 - 128) / 10) / 2, "#d2d2d2", "#000000");
+    						disegnaTestoConBordino("   " + tasto(sparokey.toLowerCase()), canvasWidth / 2, ydisegnata + 7 + ((this.heightMax + 75 - 17 - 128) / this.numeroVoci) / 2, "#d2d2d2", "#000000");
     						break;
     					case 7:
     						ctx.textAlign = "right";
-    						disegnaTestoConBordino("previous power :   ", canvasWidth / 2, ydisegnata + 7 + ((this.heightMax + 75 - 17 - 128) / 10) / 2, "#d2d2d2", "#000000");
+    						disegnaTestoConBordino("previous power :   ", canvasWidth / 2, ydisegnata + 7 + ((this.heightMax + 75 - 17 - 128) / this.numeroVoci) / 2, "#d2d2d2", "#000000");
     						ctx.textAlign = "left";
-    						disegnaTestoConBordino("   " + tasto(lkey.toLowerCase()), canvasWidth / 2, ydisegnata + 7 + ((this.heightMax + 75 - 17 - 128) / 10) / 2, "#d2d2d2", "#000000");
+    						disegnaTestoConBordino("   " + tasto(lkey.toLowerCase()), canvasWidth / 2, ydisegnata + 7 + ((this.heightMax + 75 - 17 - 128) / this.numeroVoci) / 2, "#d2d2d2", "#000000");
     						break;
     					case 8:
     						ctx.textAlign = "right";
-    						disegnaTestoConBordino("next power :   ", canvasWidth / 2, ydisegnata + 7 + ((this.heightMax + 75 - 17 - 128) / 10) / 2, "#d2d2d2", "#000000");
+    						disegnaTestoConBordino("next power :   ", canvasWidth / 2, ydisegnata + 7 + ((this.heightMax + 75 - 17 - 128) / this.numeroVoci) / 2, "#d2d2d2", "#000000");
     						ctx.textAlign = "left";
-    						disegnaTestoConBordino("   " + tasto(rkey.toLowerCase()), canvasWidth / 2, ydisegnata + 7 + ((this.heightMax + 75 - 17 - 128) / 10) / 2, "#d2d2d2", "#000000");
+    						disegnaTestoConBordino("   " + tasto(rkey.toLowerCase()), canvasWidth / 2, ydisegnata + 7 + ((this.heightMax + 75 - 17 - 128) / this.numeroVoci) / 2, "#d2d2d2", "#000000");
     						break;
     					case 9:
     						ctx.textAlign = "right";
-    						disegnaTestoConBordino("menu & start :   ", canvasWidth / 2, ydisegnata + 7 + ((this.heightMax + 75 - 17 - 128) / 10) / 2, "#d2d2d2", "#000000");
+    						disegnaTestoConBordino("map & select :   ", canvasWidth / 2, ydisegnata + 7 + ((this.heightMax + 75 - 17 - 128) / this.numeroVoci) / 2, "#d2d2d2", "#000000");
     						ctx.textAlign = "left";
-    						disegnaTestoConBordino("   " + tasto(startkey.toLowerCase()), canvasWidth / 2, ydisegnata + 7 + ((this.heightMax + 75 - 17 - 128) / 10) / 2, "#d2d2d2", "#000000");
+    						disegnaTestoConBordino("   " + tasto(mapkey.toLowerCase()), canvasWidth / 2, ydisegnata + 7 + ((this.heightMax + 75 - 17 - 128) / this.numeroVoci) / 2, "#d2d2d2", "#000000");
+    						break;
+    					case 10:
+    						ctx.textAlign = "right";
+    						disegnaTestoConBordino("menu & start :   ", canvasWidth / 2, ydisegnata + 7 + ((this.heightMax + 75 - 17 - 128) / this.numeroVoci) / 2, "#d2d2d2", "#000000");
+    						ctx.textAlign = "left";
+    						disegnaTestoConBordino("   " + tasto(startkey.toLowerCase()), canvasWidth / 2, ydisegnata + 7 + ((this.heightMax + 75 - 17 - 128) / this.numeroVoci) / 2, "#d2d2d2", "#000000");
     						break;
 
-    						function tasto(key) {
-    							if (key == " ") {
-    								return "space bar"
-    							}
-    							return key
+    					function tasto(key) {
+    						if (key == " ") {
+    							return "space bar"
     						}
+    						return key
+    					}
     				}
     			}
 
     			{ //disegno il quadrato intorno all'opzione selezionata - uso le {} per ridurre lo scope di xdisegnata e ydisegnata
     				ctx.fillStyle = "#ffc000";
     				var xdisegnata = 75;
-    				var ydisegnata = (128 + (this.heightMax + 75 - 17 - 128) / 10 * (this.indice));
+    				var ydisegnata = (128 + (this.heightMax + 75 - 17 - 128) / this.numeroVoci * (this.indice));
     				ctx.fillRect(xdisegnata, ydisegnata - 2, this.width, 9);
-    				ctx.fillRect(xdisegnata, ydisegnata + ((this.heightMax + 75 - 17 - 128) / 10) - 5, this.width, 9);
-    				ctx.fillRect(xdisegnata, ydisegnata, 9, ((this.heightMax + 75 - 17 - 128) / 10) - 5);
-    				ctx.fillRect(xdisegnata + this.width - 9, ydisegnata, 9, ((this.heightMax + 75 - 17 - 128) / 10) - 5);
+    				ctx.fillRect(xdisegnata, ydisegnata + ((this.heightMax + 75 - 17 - 128) / this.numeroVoci) - 5, this.width, 9);
+    				ctx.fillRect(xdisegnata, ydisegnata, 9, ((this.heightMax + 75 - 17 - 128) / this.numeroVoci) - 5);
+    				ctx.fillRect(xdisegnata + this.width - 9, ydisegnata, 9, ((this.heightMax + 75 - 17 - 128) / this.numeroVoci) - 5);
     			}
 
     			if (this.staCambiandoTasto) { //da qui in giu determino cosa succede in base a che tasto viene schiacciato. le due grosse distinzioni sono se staCambiandoTasto oppure se siamo nel menu e basta 
     				if (this.contatoreAnimazione < 40) { //fa l'animazione del testo che appare e disappare
     					ctx.fillStyle = "#52b58b";
-    					ctx.fillRect(canvasWidth / 2, (128 + (this.heightMax + 75 - 17 - 128) / 10 * (this.indice)) + 7, this.width / 2 - 9, ((this.heightMax + 75 - 17 - 128) / 10) - 12);
+    					ctx.fillRect(canvasWidth / 2, (128 + (this.heightMax + 75 - 17 - 128) / this.numeroVoci * (this.indice)) + 7, this.width / 2 - 9, ((this.heightMax + 75 - 17 - 128) / this.numeroVoci) - 12);
     					this.contatoreAnimazione++;
     				} else {
     					this.contatoreAnimazione++;
@@ -1060,6 +1067,9 @@
     							rkey = ultimoTastoLetto;
     							break;
     						case 9:
+    							mapkey = ultimoTastoLetto;
+    							break;
+						case 10:
     							startkey = ultimoTastoLetto;
     							break;
     					}
@@ -1070,11 +1080,11 @@
     					if (this.indice > 0) {
     						this.indice--;
     					} else {
-    						this.indice = 9;
+    						this.indice = this.numeroVoci-1;
     					}
     				}
     				if (keys[giukey] && !tastoGiaSchiacciato) {
-    					if (this.indice < 9) {
+    					if (this.indice < this.numeroVoci-1) {
     						this.indice++;
     					} else {
     						this.indice = 0;
@@ -1098,10 +1108,10 @@
 
     		if (this.isClosing) { //animazione di chiusura del menu
     			if (this.width > widthPassata) {
-    				this.width -= 20;
+    				this.width -= this.widthMax/15;
     			}
     			if (this.height > heightPassata) {
-    				this.height -= 20;
+    				this.height -= this.heightMax/15;
     			}
     			ctx.clearRect((canvasWidth / 2) - this.width / 2 - 15, (canvasHeight / 2) - this.height / 2 - 15, this.width + 30, this.height + 30); //pulisci la parte dove viene mostrato il menu
     			if (!apertoDalMenuDiPausa) {
@@ -1114,13 +1124,13 @@
     			if (this.height - 1 < heightPassata && this.width - 1 < widthPassata) { //quando il menu e' tutto chiuso:
     				if (apertoDalMenuDiPausa) {
     					gamestate = 2;
-    				} else { //se viene aperto dal menu principale - devo ancora crearlo pero' lol
+    				} else { 
     					gamestate = 0;
     				}
     			}
     		} //fine di if(is.Closing)
     	}
-    }
+    }//fine di menuOpzioni
 
     function newMenuCaricaPartita() {
     	this.isOpen = false;
@@ -1480,4 +1490,4 @@
     			}
     		}
     	}
-    } //fine menu di pausa   
+    } //fine menu Mappa   

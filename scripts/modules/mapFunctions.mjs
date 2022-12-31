@@ -80,7 +80,7 @@ function disegnaMappa(stanza,indexGiaDisegnato,previousDir,offsetX,offsetY){
 	function drawPlayerLocationOnMap(color1, color2){ //draw the signal of the player
 		signalDimension=blockDimension*8;
 		ctx.fillStyle=color1; ctx.fillRect(canvas.width/2-signalDimension/2, canvas.height/2-signalDimension/2, signalDimension, signalDimension); 
-		ctx.strokeStyle=color2; ctx.strokeRect(canvas.width/2-signalDimension/2, canvas.height/2-signalDimension/2, signalDimension, signalDimension); 
+		ctx.strokeStyle=color2; ctx.lineWidth = "1"; ctx.strokeRect(canvas.width/2-signalDimension/2, canvas.height/2-signalDimension/2, signalDimension, signalDimension); 
 		ctx.textAlign = "center"; ctx.font = "small-caps bold "+signalDimension+"px Lucida Console";
 		disegnaTestoConBordino("P", canvas.width/2 , (canvas.height/2 + ctx.measureText("O").width/2), color2, color1); ctx.textAlign = "left";
 	}
