@@ -25,7 +25,7 @@
       var startkey = "Enter"; //start - default INVIO/ENTER
       var lkey = "d"; //power- - default e
       var rkey = "c"; //power+ - default c
-      var mapkey = "m"; //mappa - default m
+      var mapkey = "Shift"; //mappa - default SHIFT
 
       var ultimoTastoLetto = "";
       document.addEventListener("keydown", function (e) { //events - leggi tasti schiacciati
