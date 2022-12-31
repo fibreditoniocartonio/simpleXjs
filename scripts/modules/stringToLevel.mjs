@@ -1,5 +1,5 @@
 function stringToLevel(lvlString) {
-	if(!levelEditor){aggiornaMappaEsplorata();}
+	if(!levelEditor && !(gamestate==7)){aggiornaMappaEsplorata();}
 	level = []; //azzera level
 	entity = []; //azzera entity
 	var foreground = []; //crea un vettore tipo level per i blocchi di foreground

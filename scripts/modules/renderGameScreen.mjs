@@ -90,33 +90,34 @@
       }
 
       //this function draws the level (usata anche per level.foreground e level.background - basta che sia un arrey di oggetti blocco)
-      function drawLvl(lvl, spostaX, spostaY) {
+      function drawLvl(lvl, perMappa, spostaX, spostaY) {
       	for (var i = 0; i < lvl.length; i++) {
       		ctx.fillStyle = lvl[i].color;
       		//variabili per disegnare il livello rispetto alla posizione di x (rispetto ai bordi del canvas) - visuale
-      		var xdisegnata = 0
-      		if (player.x + (player.width / 2) < canvasWidth / 2) {
-      			xdisegnata = lvl[i].x;
-      		} else {
-      			if (player.x + (player.width / 2) > level.maxWidth - canvasWidth / 2) {
-      				xdisegnata = lvl[i].x - level.maxWidth + canvasWidth;
+		var xdisegnata=0; var ydisegnata=0;
+		if(perMappa){ //map menu game render
+			xdisegnata=lvl[i].x+spostaX;
+			ydisegnata=lvl[i].y+spostaY;
+		}else{ //real game render
+      			if (player.x + (player.width / 2) < canvasWidth / 2) {
+      				xdisegnata = lvl[i].x;
       			} else {
-      				xdisegnata = lvl[i].x - player.x - (player.width / 2) + canvasWidth / 2;
+      				if (player.x + (player.width / 2) > level.maxWidth - canvasWidth / 2) {
+      					xdisegnata = lvl[i].x - level.maxWidth + canvasWidth;
+      				} else {
+      					xdisegnata = lvl[i].x - player.x - (player.width / 2) + canvasWidth / 2;
+      				}
       			}
-      		}
-      		var ydisegnata = 0
-      		if (player.y < canvasHeight / 2) {
-      			ydisegnata = lvl[i].y;
-      		} else {
-      			if (player.y > level.maxHeight - canvasHeight / 2) {
-      				ydisegnata = lvl[i].y - level.maxHeight + canvasHeight;
+      			if (player.y < canvasHeight / 2) {
+      				ydisegnata = lvl[i].y;
       			} else {
-      				ydisegnata = lvl[i].y - player.y + canvasHeight / 2;
+      				if (player.y > level.maxHeight - canvasHeight / 2) {
+      					ydisegnata = lvl[i].y - level.maxHeight + canvasHeight;
+      				} else {
+      					ydisegnata = lvl[i].y - player.y + canvasHeight / 2;
+      				}
       			}
-      		}
-		if(spostaX){ 
-			xdisegnata+=spostaX-canvasWidth; ydisegnata+=-spostaY+canvasHeight;
-		} //per mappa - drawMap
+		}
       		//ora disegno il livello[i]                    
       		if (xdisegnata + lvl[i].width > -1 && xdisegnata < canvasWidth + 1) {
       			if (level.tileset == "") {
