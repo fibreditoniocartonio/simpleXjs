@@ -18,7 +18,7 @@ function aggiornaMappaEsplorata(){ //aggiorna la mappa con le stanze nuove
 function displayFullMap(mapCameraMovement){
 	var indexGiaDisegnato=[];
 	blockDimension=2;
-	disegnaMappa(lvlNumber,indexGiaDisegnato,"",canvas.width/2+mapCameraMovement.x,canvas.height/2+mapCameraMovement.y);
+	disegnaMappa(lvlNumber, indexGiaDisegnato, null, canvas.width/2+mapCameraMovement.x, canvas.height/2+mapCameraMovement.y);
 	drawPlayerLocationOnMap("#00ffff", "#000000",canvas.width/2+mapCameraMovement.x,canvas.height/2+mapCameraMovement.y); //draw a signal in the room where the player is
 }
 
@@ -33,16 +33,48 @@ function disegnaMappa(stanza,indexGiaDisegnato,previousDir,offsetX,offsetY){
 	if(!giaDis){
 		indexGiaDisegnato.push(stanza); //set the room as already drawn
 		stringToLevel(allLevelStrings[stanza.toString()]); //load the room
-		canvasWidth = canvas.width; canvasHeight = canvas.height;
-		switch(previousDir){ //calculate offsets
-			case "→": break; 
-			case "←": offsetX-=level.maxWidth; break;
-			case "↓": break;
-			case "↑": offsetY-=level.maxHeight; break;
-			default: //first room		
-				offsetX-=level.maxWidth/2;
-				offsetY-=level.maxHeight/2;
-				break;
+		canvasWidth = canvas.width; canvasHeight = canvas.height; //fix canvas dimension
+		//find all other rooms connections
+		let changeRoomEntities=[];
+		for(let j=0; j<entity.length; j++){ //first of all i find all the entity that can change rooms and i store them (because entity[] will reset)
+			if(entity[j].letter=="→" || entity[j].letter=="←" || entity[j].letter=="↓" || entity[j].letter=="↑"){
+				changeRoomEntities.push(entity[j]);
+			}
+		}
+		if(previousDir){//calculate offsets to make the changeRoomBlocks visually connected
+			switch(previousDir.letter){ //calculate offsets
+				case "→": offsetX-=blockDimension;
+					for(var g=0; g<changeRoomEntities.length; g++){ //
+						if(changeRoomEntities[g].oppositeDirection==previousDir.letter){
+							offsetY+=previousDir.y-changeRoomEntities[g].y; break;
+						}
+					}
+					break; 
+				case "←": offsetX-=level.maxWidth-blockDimension; 
+					for(var g=0; g<changeRoomEntities.length; g++){
+						if(changeRoomEntities[g].oppositeDirection==previousDir.letter){
+							offsetY+=previousDir.y-changeRoomEntities[g].y; break;
+						}
+					}
+					break;
+				case "↓": offsetY-=blockDimension;
+					for(var g=0; g<changeRoomEntities.length; g++){
+						if(changeRoomEntities[g].oppositeDirection==previousDir.letter){
+							offsetX+=previousDir.x-changeRoomEntities[g].x; break;
+						}
+					}
+					break;
+				case "↑": offsetY-=level.maxHeight-blockDimension; 
+					for(var g=0; g<changeRoomEntities.length; g++){
+						if(changeRoomEntities[g].oppositeDirection==previousDir.letter){
+							offsetX+=previousDir.x-changeRoomEntities[g].x; break;
+						}
+					}
+					break;
+			}
+		}else{//first room
+			offsetX-=level.maxWidth/2;
+			offsetY-=level.maxHeight/2;
 		}
 		//draw the room on the map if explored
 		for(let k=0; k<exploredMapIndex.length; k++){ 
@@ -52,26 +84,20 @@ function disegnaMappa(stanza,indexGiaDisegnato,previousDir,offsetX,offsetY){
 				drawLvl(level.foreground, true, offsetX, offsetY);
 			}
 		}
-		//do the same with the other rooms connected with this one
-		let changeRoomEntities=[];
-		for(let j=0; j<entity.length; j++){ //first of all i find all the entity that can change rooms and i store them (because entity[] will reset)
-			if(entity[j].letter=="→" || entity[j].letter=="←" || entity[j].letter=="↓" || entity[j].letter=="↑"){
-				changeRoomEntities.push(entity[j]);
-			}
-		}
+		//recursively do the same with the connected rooms
 		for(let j=0; j<changeRoomEntities.length; j++){//now i cicle changeRoomEntities that doesn't reset like entity[] does
 			switch(changeRoomEntities[j].letter){
 				case "→":
-					disegnaMappa(stanza+changeRoomEntities[j].deltaLevelNumber,indexGiaDisegnato,changeRoomEntities[j].letter,offsetX+level.maxWidth,offsetY);
+					disegnaMappa(stanza+changeRoomEntities[j].deltaLevelNumber,indexGiaDisegnato,changeRoomEntities[j],offsetX+level.maxWidth,offsetY);
 					break;
 				case "←": 
-					disegnaMappa(stanza+changeRoomEntities[j].deltaLevelNumber,indexGiaDisegnato,changeRoomEntities[j].letter,offsetX,offsetY);
+					disegnaMappa(stanza+changeRoomEntities[j].deltaLevelNumber,indexGiaDisegnato,changeRoomEntities[j],offsetX,offsetY);
 					break;
 				case "↓": 
-					disegnaMappa(stanza+changeRoomEntities[j].deltaLevelNumber,indexGiaDisegnato,changeRoomEntities[j].letter,offsetX,offsetY+level.maxHeight);
+					disegnaMappa(stanza+changeRoomEntities[j].deltaLevelNumber,indexGiaDisegnato,changeRoomEntities[j],offsetX,offsetY+level.maxHeight);
 					break;
 				case "↑": 
-					disegnaMappa(stanza+changeRoomEntities[j].deltaLevelNumber,indexGiaDisegnato,changeRoomEntities[j].letter,offsetX,offsetY);
+					disegnaMappa(stanza+changeRoomEntities[j].deltaLevelNumber,indexGiaDisegnato,changeRoomEntities[j],offsetX,offsetY);
 					break;
 			}
 		}
