@@ -155,8 +155,8 @@ function stringToLevel(lvlString) {
 				break;
 
 			case '→': case '←': case '↓': case '↑': //change level Direction
-				let changeLevelDirection = new newChangeLevelArrow(lvlString[i]);
-				let deltaSize=blockDimension/2;
+				var changeLevelDirection = new newChangeLevelArrow(lvlString[i]);
+				var deltaSize=blockDimension/2;
 				changeLevelDirection.x = (i % widthTot) * blockDimension-deltaSize/4;
 				changeLevelDirection.y = (heightTot - 1) * blockDimension-deltaSize/4;
 				changeLevelDirection.width = blockDimension+deltaSize/2;
@@ -165,8 +165,15 @@ function stringToLevel(lvlString) {
 				checkBackAndForGround(background, foreground, lvlString[i - 1]); //se il blocco prima era un background o foreground lo carica sotto il player
 				break;
 
+			case '⊘': //Disable change level direction
+				var entita = new newDisableChangeLevelArrows(blockDimension);
+				entita.x = (i % widthTot) * blockDimension + (blockDimension / 2 - entita.width / 2);
+				entita.y = (heightTot - 1) * blockDimension + 1;
+				entity.push(entita);
+				break;
+
 			case '⟑': //Exit Level Block
-				let exitLevelBlock = new newExitLevelPickup(blockDimension);
+				var exitLevelBlock = new newExitLevelPickup(blockDimension);
 				exitLevelBlock.x = (i % widthTot) * blockDimension + (blockDimension / 2 - exitLevelBlock.width / 2);
 				exitLevelBlock.y = (heightTot - 1) * blockDimension + 1;
 				entity.push(exitLevelBlock);

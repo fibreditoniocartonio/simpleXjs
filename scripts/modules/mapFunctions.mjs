@@ -43,31 +43,39 @@ function disegnaMappa(stanza,indexGiaDisegnato,previousDir,offsetX,offsetY){
 		}
 		if(previousDir){//calculate offsets to make the changeRoomBlocks visually connected
 			switch(previousDir.letter){ //calculate offsets
-				case "→": offsetX-=blockDimension*2;
+				case "→": //offsetX-=blockDimension*2;
 					for(var g=0; g<changeRoomEntities.length; g++){ //
 						if(changeRoomEntities[g].oppositeDirection==previousDir.letter){
-							offsetY+=previousDir.y-changeRoomEntities[g].y; break;
+							offsetX+=-changeRoomEntities[g].x-blockDimension; 
+							offsetY+=previousDir.y-changeRoomEntities[g].y; 
+							break;
 						}
 					}
 					break; 
-				case "←": offsetX-=level.maxWidth-blockDimension*2; 
+				case "←": //offsetX-=level.maxWidth-blockDimension*2; 
 					for(var g=0; g<changeRoomEntities.length; g++){
 						if(changeRoomEntities[g].oppositeDirection==previousDir.letter){
-							offsetY+=previousDir.y-changeRoomEntities[g].y; break;
+							offsetX+=-changeRoomEntities[g].x; 
+							offsetY+=previousDir.y-changeRoomEntities[g].y; 
+							break;
 						}
 					}
 					break;
-				case "↓": offsetY-=blockDimension*2;
+				case "↓": 
 					for(var g=0; g<changeRoomEntities.length; g++){
 						if(changeRoomEntities[g].oppositeDirection==previousDir.letter){
-							offsetX+=previousDir.x-changeRoomEntities[g].x; break;
+							offsetX+=previousDir.x-changeRoomEntities[g].x; 
+							offsetY+=-changeRoomEntities[g].y-blockDimension; 
+							break;
 						}
 					}
 					break;
-				case "↑": offsetY-=level.maxHeight-blockDimension*2; 
+				case "↑":
 					for(var g=0; g<changeRoomEntities.length; g++){
 						if(changeRoomEntities[g].oppositeDirection==previousDir.letter){
-							offsetX+=previousDir.x-changeRoomEntities[g].x; break;
+							offsetX+=previousDir.x-changeRoomEntities[g].x; 
+							offsetY+=-changeRoomEntities[g].y; 
+							break;
 						}
 					}
 					break;

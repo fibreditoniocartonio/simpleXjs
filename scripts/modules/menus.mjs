@@ -1322,11 +1322,11 @@ function newMenuMappa(previousGameStatePassato) {//map menu
 
 	this.calcolaInput = function(){
 		var currentSpeed=this.mapCameraSpeed;
-		if(keys[dashkey]){currentSpeed=this.mapCameraSpeed*2;}
-		if(keys[sukey])	{ this.mapCameraMovement.y-=currentSpeed;}
-		if(keys[giukey]){ this.mapCameraMovement.y+=currentSpeed;}
-		if(keys[sinistrakey]){this.mapCameraMovement.x-=currentSpeed;}
-		if(keys[destrakey]) { this.mapCameraMovement.x+=currentSpeed;}
+		if(keys[dashkey]){currentSpeed=this.mapCameraSpeed*3;}
+		if(keys[sukey])	{ this.mapCameraMovement.y+=currentSpeed;}
+		if(keys[giukey]){ this.mapCameraMovement.y-=currentSpeed;}
+		if(keys[sinistrakey]){this.mapCameraMovement.x+=currentSpeed;}
+		if(keys[destrakey]) { this.mapCameraMovement.x-=currentSpeed;}
 		if(keys[lkey] && !tastoGiaSchiacciato){if(this.zoomMultiplier>1){this.zoomMultiplier=this.zoomMultiplier/2;}}
 		if(keys[rkey] && !tastoGiaSchiacciato){if(this.zoomMultiplier<8){this.zoomMultiplier=this.zoomMultiplier*2;}}
  		if ((keys[jumpkey] || keys[mapkey]) && !tastoGiaSchiacciato) { //chiude il menu

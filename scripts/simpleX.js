@@ -1,4 +1,4 @@
-      var versioneDiGioco = "v0.20221231"; //added exitLevelBlock, added map system
+      var versioneDiGioco = "v0.20230101"; //Added demonstrational level 2 with tileset. Zoomable map
       debugMode = false; //you can enable debugMode with the console (press f12 in the browser)
 
       //crea il canvas
