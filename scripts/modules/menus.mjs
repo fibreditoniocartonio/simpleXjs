@@ -1268,14 +1268,14 @@ function newMenuMappa(previousGameStatePassato) {//map menu
     	this.height = 0;
 	this.mapCameraMovement={"x":0,"y":0};
 	this.mapCameraSpeed=2;
-    	this.widthMax = canvasWidth - 50;
-    	this.heightMax = canvasHeight - 50;
+    	this.widthMax = canvasWidth - 30;
+    	this.heightMax = canvasHeight - 30;
+	this.zoomMultiplier = 2;
 	this.startingConfig={"lvlNumber":lvlNumber, "blockDimension":blockDimension, "player":player, "level":level, "entity":entity};
     	this.isOpen = false;
     	this.isClosing = false;
     	this.canInput = true;
     	this.selfDraw = function () {
-    		ctx.textAlign = "left";
     		ctx.font = "small-caps bold 20px Lucida Console"; //tipo di font per le scritte
     		if (!this.isOpen && !this.isClosing) { //animazione di apertura del menu + lettura subtank acquisite
     			if (this.width < this.widthMax) {
@@ -1293,7 +1293,13 @@ function newMenuMappa(previousGameStatePassato) {//map menu
     		ctx.fillStyle = "#52b58b";
     		ctx.fillRect((canvasWidth / 2) - this.width / 2, (canvasHeight / 2) - this.height / 2, this.width, this.height); //disegna lo sfondo verde
     		if (this.isOpen) { //qui dentro devo mostrare il testo del menu e gestire cosa succede quando schiaccio i tasti
-			displayFullMap(this.mapCameraMovement); //from script/modules/mapFunction.mjs
+			ctx.textAlign = "center"; ctx.font = "small-caps bold 20px Lucida Console"; //tipo di font per le scritte
+    			disegnaTestoConBordino(("MAP"), canvasWidth/2, 32, "#d2d2d2", "#000000");
+			ctx.font = "small-caps bold 15px Lucida Console"; //tipo di font per le scritte
+    			disegnaTestoConBordino((lkey+" : zoom-        "+rkey+" : zoom+"), canvasWidth/2, canvasHeight-18, "#d2d2d2", "#000000");
+			ctx.textAlign = "left";
+    			disegnaTestoConBordino(("ZOOM:"+this.zoomMultiplier+"x"), 17, canvasHeight-18, "#d2d2d2", "#000000");
+			displayFullMap(this.mapCameraMovement, this.zoomMultiplier); //from script/modules/mapFunction.mjs
 			this.calcolaInput();
     		}//fine di if this.isOpen()
     		if (this.isClosing) { //animazione di chiusura del menu + regolazione delle subtanks
@@ -1321,6 +1327,8 @@ function newMenuMappa(previousGameStatePassato) {//map menu
 		if(keys[giukey]){ this.mapCameraMovement.y+=currentSpeed;}
 		if(keys[sinistrakey]){this.mapCameraMovement.x-=currentSpeed;}
 		if(keys[destrakey]) { this.mapCameraMovement.x+=currentSpeed;}
+		if(keys[lkey] && !tastoGiaSchiacciato){if(this.zoomMultiplier>1){this.zoomMultiplier=this.zoomMultiplier/2;}}
+		if(keys[rkey] && !tastoGiaSchiacciato){if(this.zoomMultiplier<8){this.zoomMultiplier=this.zoomMultiplier*2;}}
  		if ((keys[jumpkey] || keys[mapkey]) && !tastoGiaSchiacciato) { //chiude il menu
  			this.isOpen = false;
 			lvlNumber=this.startingConfig.lvlNumber;
@@ -1330,7 +1338,7 @@ function newMenuMappa(previousGameStatePassato) {//map menu
 			entity=this.startingConfig.entity;
     			this.isClosing = true;
     		}
-    		if (keys[startkey] || keys[sukey] || keys[giukey] || keys[sinistrakey] || keys[destrakey] || keys[dashkey] || keys[jumpkey] || keys[mapkey]) {
+    		if (keys[startkey] || keys[sukey] || keys[giukey] || keys[sinistrakey] || keys[destrakey] || keys[dashkey] || keys[lkey] || keys[rkey] || keys[jumpkey] || keys[mapkey]) {
     			tastoGiaSchiacciato = true;
     		} else {
     			tastoGiaSchiacciato = false;

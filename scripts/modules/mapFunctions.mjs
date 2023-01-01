@@ -15,9 +15,9 @@ function aggiornaMappaEsplorata(){ //aggiorna la mappa con le stanze nuove
 	}
 }
 
-function displayFullMap(mapCameraMovement){
+function displayFullMap(mapCameraMovement,zoomMultiplier){
 	var indexGiaDisegnato=[];
-	blockDimension=2;
+	blockDimension=zoomMultiplier;
 	disegnaMappa(lvlNumber, indexGiaDisegnato, null, canvas.width/2+mapCameraMovement.x, canvas.height/2+mapCameraMovement.y);
 	drawPlayerLocationOnMap("#00ffff", "#000000",canvas.width/2+mapCameraMovement.x,canvas.height/2+mapCameraMovement.y); //draw a signal in the room where the player is
 }

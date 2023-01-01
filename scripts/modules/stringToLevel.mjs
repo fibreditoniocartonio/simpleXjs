@@ -354,6 +354,7 @@ function stringToLevel(lvlString) {
 		lettera: "a"
 	};
 	rightWall['x'] = level.maxWidth - rightWall.width;
+	if(gamestate==7){ground.color="#00000000"; ceiling.color="#00000000"; leftWall.color="#00000000"; rightWall.color="#00000000"; }//disattivo i bordi nella mappa
 	level.push(ground, ceiling, leftWall, rightWall); //this pushes all of the static objects into the level				   
 
 	// ora definisco le funzioni interne di stringToLevel()
