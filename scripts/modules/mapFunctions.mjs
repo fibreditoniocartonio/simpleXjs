@@ -96,16 +96,16 @@ function disegnaMappa(stanza,indexGiaDisegnato,previousDir,offsetX,offsetY){
 		for(let j=0; j<changeRoomEntities.length; j++){//now i cicle changeRoomEntities that doesn't reset like entity[] does
 			switch(changeRoomEntities[j].letter){
 				case "→":
-					disegnaMappa(stanza+changeRoomEntities[j].deltaLevelNumber,indexGiaDisegnato,changeRoomEntities[j],offsetX+changeRoomEntities[j].x,offsetY);
+					disegnaMappa(stanza+changeRoomEntities[j].deltaLevelNumber,indexGiaDisegnato,changeRoomEntities[j],offsetX+changeRoomEntities[j].x+blockDimension*2,offsetY);
 					break;
 				case "←": 
-					disegnaMappa(stanza+changeRoomEntities[j].deltaLevelNumber,indexGiaDisegnato,changeRoomEntities[j],offsetX+changeRoomEntities[j].x,offsetY);
+					disegnaMappa(stanza+changeRoomEntities[j].deltaLevelNumber,indexGiaDisegnato,changeRoomEntities[j],offsetX+changeRoomEntities[j].x-blockDimension,offsetY);
 					break;
 				case "↓": 
-					disegnaMappa(stanza+changeRoomEntities[j].deltaLevelNumber,indexGiaDisegnato,changeRoomEntities[j],offsetX,offsetY+changeRoomEntities[j].y);
+					disegnaMappa(stanza+changeRoomEntities[j].deltaLevelNumber,indexGiaDisegnato,changeRoomEntities[j],offsetX,offsetY+changeRoomEntities[j].y+blockDimension*2);
 					break;
 				case "↑": 
-					disegnaMappa(stanza+changeRoomEntities[j].deltaLevelNumber,indexGiaDisegnato,changeRoomEntities[j],offsetX,offsetY+changeRoomEntities[j].y);
+					disegnaMappa(stanza+changeRoomEntities[j].deltaLevelNumber,indexGiaDisegnato,changeRoomEntities[j],offsetX,offsetY+changeRoomEntities[j].y-blockDimension);
 					break;
 			}
 		}
