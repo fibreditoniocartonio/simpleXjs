@@ -374,7 +374,8 @@ function stringToLevel(lvlString) {
 	if(gamestate==7){ground.color="#00000000"; ceiling.color="#00000000"; leftWall.color="#00000000"; rightWall.color="#00000000"; }//disattivo i bordi nella mappa
 	level.push(ground, ceiling, leftWall, rightWall); //this pushes all of the static objects into the level
 	if(level.name!=""){ //aggiungo un entita che scrive il nome del livello su schermo
-		entita = new newShowLevelName(level.xStartingPos, level.yStartingPos);
+		entita = new newShowLevelName();
+		entita.type="sparoDelPlayer"; //to make it load everywhere
 		entity.push(entita);
 	}
 

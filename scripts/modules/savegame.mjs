@@ -1,5 +1,5 @@
 function SalvaPartita() {
-      	stringaSalvataggio = jumpkey + "|" + destrakey + "|" + sinistrakey + "|" + sukey + "|" + giukey + "|" + dashkey + "|" + sparokey + "|" + startkey + "|" + lkey + "|" + rkey + "|" + levelDefeated + "|" + heartAcquired;
+      	stringaSalvataggio = currentPlayer + "|" + jumpkey + "|" + destrakey + "|" + sinistrakey + "|" + sukey + "|" + giukey + "|" + dashkey + "|" + sparokey + "|" + startkey + "|" + lkey + "|" + rkey + "|" + mapkey + "|" + levelDefeated + "|" + heartAcquired;
       	for (i = 0; i < 4; i++) {
       		stringaSalvataggio += "|" + subtank[i].life + "|" + subtank[i].acquired;
       	}
@@ -33,7 +33,7 @@ function SalvaPartita() {
 }
 
 function caricaDatiSalvataggio(stringaCaricaPartita) { //carica effettivamente la partita dal risultato della lettura del file
-				let numeroElementoTotale=23;
+				let numeroElementoTotale=25;
     				let numeroElemento = 0;
     				let stringaElemento = "";
     				for (i = 0; i < stringaCaricaPartita.length; i++) {
@@ -58,38 +58,44 @@ function caricaDatiSalvataggio(stringaCaricaPartita) { //carica effettivamente l
     				}
 
     				function caricaElemento() {
-    					switch (numeroElemento) {
-    						case 0: //jumpkey
+    					switch (numeroElemento) { 
+						case 0: //currentPlayer
+    							currentPlayer = parseInt(stringaElemento, 10);
+    							break;
+    						case 1: //jumpkey
     							jumpkey = stringaElemento;
     							break;
-    						case 1: //destrakey
+    						case 2: //destrakey
     							destrakey = stringaElemento;
     							break;
-    						case 2: //sinistrakey
+    						case 3: //sinistrakey
     							sinistrakey = stringaElemento;
     							break;
-    						case 3: //sukey
+    						case 4: //sukey
     							sukey = stringaElemento;
     							break;
-    						case 4: //giukey
+    						case 5: //giukey
     							giukey = stringaElemento;
     							break;
-    						case 5: //dashkey
+    						case 6: //dashkey
     							dashkey = stringaElemento;
     							break;
-    						case 6: //sparokey
+    						case 7: //sparokey
     							sparokey = stringaElemento;
     							break;
-    						case 7: //startkey
+    						case 8: //startkey
     							startkey = stringaElemento;
     							break;
-    						case 8: //lkey
+    						case 9: //lkey
     							lkey = stringaElemento;
     							break;
-    						case 9: //rkey
+    						case 10: //rkey
     							rkey = stringaElemento;
     							break;
-    						case 10: //levelDefeated
+						case 11: //mapkey - select
+    							mapkey = stringaElemento;
+    							break;
+    						case 12: //levelDefeated
     							var nuovoElementino = "";
     							for (k = 0; k < 8; k++) {
     								for (j = 0; j < stringaElemento.length; j++) {
@@ -110,7 +116,7 @@ function caricaDatiSalvataggio(stringaCaricaPartita) { //carica effettivamente l
     								}
     							}
     							break;
-    						case 11: //heartAcquired
+    						case 13: //heartAcquired
     							var nuovoElementino = "";
     							for (k = 0; k < 8; k++) {
     								for (j = 0; j < stringaElemento.length; j++) {
@@ -131,10 +137,10 @@ function caricaDatiSalvataggio(stringaCaricaPartita) { //carica effettivamente l
     								}
     							}
     							break;
-    						case 12: //subtank
+    						case 14: //subtank
     							subtank[0].life = parseInt(stringaElemento, 10);
     							break;
-    						case 13:
+    						case 15:
     							if (stringaElemento == "true") {
     								subtank[0].acquired = true;
     							} else {
@@ -142,10 +148,10 @@ function caricaDatiSalvataggio(stringaCaricaPartita) { //carica effettivamente l
     								subtank[0].life = 0;
     							}
     							break;
-    						case 14:
+    						case 16:
     							subtank[1].life = parseInt(stringaElemento, 10);
     							break;
-    						case 15:
+    						case 17:
     							if (stringaElemento == "true") {
     								subtank[1].acquired = true;
     							} else {
@@ -153,10 +159,10 @@ function caricaDatiSalvataggio(stringaCaricaPartita) { //carica effettivamente l
     								subtank[1].life = 0;
     							}
     							break;
-    						case 16:
+    						case 18:
     							subtank[2].life = parseInt(stringaElemento, 10);
     							break;
-    						case 17:
+    						case 19:
     							if (stringaElemento == "true") {
     								subtank[2].acquired = true;
     							} else {
@@ -164,10 +170,10 @@ function caricaDatiSalvataggio(stringaCaricaPartita) { //carica effettivamente l
     								subtank[2].life = 0;
     							}
     							break;
-    						case 18:
+    						case 20:
     							subtank[3].life = parseInt(stringaElemento, 10);
     							break;
-    						case 19:
+    						case 21:
     							if (stringaElemento == "true") {
     								subtank[3].acquired = true;
     							} else {
@@ -175,7 +181,7 @@ function caricaDatiSalvataggio(stringaCaricaPartita) { //carica effettivamente l
     								subtank[3].life = 0;
     							}
     							break;
-    						case 20: //armaturaAcquired
+    						case 22: //armaturaAcquired
     							var nuovoElementino = "";
     							for (k = 0; k < 4; k++) {
     								for (j = 0; j < stringaElemento.length; j++) {
@@ -196,10 +202,10 @@ function caricaDatiSalvataggio(stringaCaricaPartita) { //carica effettivamente l
     								}
     							}
     							break;
-						case 21: //lvlNumber
+						case 23: //lvlNumber
 						    	lvlNumber = parseInt(stringaElemento, 10);
     							break;
-						case 22: //exploredMapIndex
+						case 24: //exploredMapIndex
     							var nuovoElementino = "";
     							for (j = 0; j < stringaElemento.length; j++) {
     								if (stringaElemento[j] == "," || j+1==stringaElemento.length) {	
