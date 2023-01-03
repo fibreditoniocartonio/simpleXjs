@@ -27,6 +27,7 @@ function newChangeLevelArrow(direzionePassata) { //cambia livello - unicode: →
 			let playerSpawn=this.oppositeDirection;
 			lvlNumber+=this.deltaLevelNumber;
 			leggiLivelloDaFile();
+			var mostraNome=0;
 			for(let i=0; i<entity.length; i++){
 				if(entity[i].letter==playerSpawn){
 					switch(playerSpawn){
@@ -36,7 +37,11 @@ function newChangeLevelArrow(direzionePassata) { //cambia livello - unicode: →
 						case "↑": player.x=entity[i].x; player.y=entity[i].y+blockDimension/3+blockDimension; break;
 					}
 				}
+				if(entity[i].name=="show level.name"){ //sposto l'entita che mostra level.name
+					mostraNome=i;
+				}
 			}
+			if(level.name!=""){entity[mostraNome].x=player.x; entity[mostraNome].y=player.y;}
       		}
       	} //fine di physics
 	function calcolaDeltaLN(direzione){
@@ -74,7 +79,6 @@ function newDisableChangeLevelArrows(blockDimensionPassata) { //cambia livello -
       	this.selfDraw = function (xdisegnata, ydisegnata, indiceDiQuestaEntity) { //funzione per disegnare l'entita
       		if(levelEditor || debugMode){
 			ctx.textAlign = "center"; ctx.font = "small-caps bold "+blockDimension+"px Lucida Console";
-			//ctx.lineWidth=this.width/8; ctx.strokeStyle=this.color1; ctx.strokeRect(xdisegnata, ydisegnata, this.width, this.height);
 			disegnaTestoConBordino(this.letter, xdisegnata + (this.width / 2), (ydisegnata + (this.height-4)/2 + ctx.measureText("O").width/2), this.color2, this.color1);
 			ctx.textAlign = "left";
 		}
@@ -115,5 +119,31 @@ function newExitLevelPickup(blockDimensionPassata) { //cambia livello - unicode:
 			lvlNumber=1;
       			gamestate = 5;
       		}
+      	} //fine di physics
+}
+
+function newShowLevelName(xPass, yPass) { //mostra il nome del livello su schermo (non inseribile con l'editor xke automatico)
+	this.life = 120;
+      	this.type = "level modifier";
+      	this.name = "show level.name";
+      	this.damage = 0;
+      	this.x = xPass;
+      	this.y = yPass;
+      	this.width = 1;
+      	this.height = 1;
+      	this.color1 = '#000000';
+      	this.color2 = '#a9a9a9';
+      	this.canSelfDraw = true;
+      	this.hasPhysics = true;
+      	this.selfDraw = function (xdisegnata, ydisegnata, indiceDiQuestaEntity) { //funzione per disegnare l'entita
+		//non si disegna
+      	} //fine di selfDraw
+      	this.physics = function (xdisegnata, ydisegnata, indiceDiQuestaEntity) {
+		if(this.life>-1){
+			this.x=player.x; this.y=player.y;
+			ctx.textAlign = "left"; ctx.font = "small-caps bold 15px Lucida Console";
+			disegnaTestoConBordino(level.name, 5, canvasHeight-5, this.color1, this.color2);
+			this.life--;
+		}
       	} //fine di physics
 }

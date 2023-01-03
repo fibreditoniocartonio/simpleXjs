@@ -6,7 +6,17 @@ function stringToLevel(lvlString) {
 	var background = []; //crea un vettore tipo level per i blocchi di background
 	var widthTot = 0;
 	var heightTot = 1;
-	for (i = 0; i < lvlString.length; i++) { //ciclo la stringa livello per trasformarlo da stringa a livello vero
+	var i=0; //index
+	for (var levelName=""; i < lvlString.length; i++) { //primo ciclo che legge solo il nome del livello
+		if(lvlString[i]==";"){
+			level["name"]=levelName;
+			lvlString=lvlString.slice(i+1); //rimuovo il nome da lvlString
+			break;
+		}else{
+			levelName+=lvlString[i];
+		}
+	}
+	for (i=0; i < lvlString.length; i++) { //ciclo la stringa livello per trasformarlo da stringa a livello vero continuando da dopo il levelName
 		switch (lvlString[i]) {
 			case 'X': //posizione iniziale del player
 				var currentIndex = i;
@@ -362,7 +372,11 @@ function stringToLevel(lvlString) {
 	};
 	rightWall['x'] = level.maxWidth - rightWall.width;
 	if(gamestate==7){ground.color="#00000000"; ceiling.color="#00000000"; leftWall.color="#00000000"; rightWall.color="#00000000"; }//disattivo i bordi nella mappa
-	level.push(ground, ceiling, leftWall, rightWall); //this pushes all of the static objects into the level				   
+	level.push(ground, ceiling, leftWall, rightWall); //this pushes all of the static objects into the level
+	if(level.name!=""){ //aggiungo un entita che scrive il nome del livello su schermo
+		entita = new newShowLevelName(level.xStartingPos, level.yStartingPos);
+		entity.push(entita);
+	}
 
 	// ora definisco le funzioni interne di stringToLevel()
 	function readNumber() { //compone i vari caratteri di una stringa in numero. Esempio traduce "10.91;" in numeroLetto=10.91
