@@ -27,7 +27,6 @@ function newChangeLevelArrow(direzionePassata) { //cambia livello - unicode: →
 			let playerSpawn=this.oppositeDirection;
 			lvlNumber+=this.deltaLevelNumber;
 			leggiLivelloDaFile();
-			//var mostraNome=0;
 			for(let i=0; i<entity.length; i++){
 				if(entity[i].letter==playerSpawn){
 					switch(playerSpawn){
@@ -37,11 +36,7 @@ function newChangeLevelArrow(direzionePassata) { //cambia livello - unicode: →
 						case "↑": player.x=entity[i].x; player.y=entity[i].y+blockDimension/3+blockDimension; break;
 					}
 				}
-				/*if(entity[i].name=="show level.name"){ //sposto l'entita che mostra level.name
-					mostraNome=i;
-				}*/
 			}
-			//if(level.name!=""){entity[mostraNome].x=player.x; entity[mostraNome].y=player.y;}
       		}
       	} //fine di physics
 	function calcolaDeltaLN(direzione){
