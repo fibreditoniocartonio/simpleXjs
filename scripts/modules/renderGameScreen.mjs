@@ -135,7 +135,7 @@
       									} else {
       										var offsetX = lvl[i].lettera.charCodeAt(0) - 97;
       										var offsetY = 0;
-										var fixForWindows=0.2; //fix for Windows, for some reason both Chrome and Firefox show an orrible outline if i use the full border pixels of the sprite
+										var fixForWindows=0.5; //fix for Windows, for some reason both Chrome and Firefox show an orrible outline if i use the full border pixels of the sprite
       										if (lvl[i].lettera.charCodeAt(0) < 112 && lvl[i].lettera.charCodeAt(0) > 108) {
       											offsetX = lvl[i].lettera.charCodeAt(0) - 109;
       											offsetY = 1;

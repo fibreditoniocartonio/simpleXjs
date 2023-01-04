@@ -947,7 +947,7 @@
       			];
       			this.disegnaPlayer = function (xdisegnata, ydisegnata, stance, sprite, facingRight) {
       				var mostraWhip = 0;
-				var fixForWindows = 0.2; //fix for Windows, for some reason both Chrome and Firefox show an orrible outline if i use the full border pixels of the sprite
+				var fixForWindows = 0.5; //fix for Windows, for some reason both Chrome and Firefox show an orrible outline if i use the full border pixels of the sprite
       				if (player.attackTimer > 14) {
       					mostraWhip = 41;
       				}
