@@ -599,7 +599,7 @@ function newZombie() { //zombie
       		}
 		*/
       	}//fine di physics()
-	this.calculateStance(){
+	this.calculateStance = function (){
 
 	}//fine di calculateStance()
-      }//fine di Pipistrello()
+}
