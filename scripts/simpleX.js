@@ -10,8 +10,6 @@
       }
       var ctx = document.getElementById('canvas').getContext('2d');
 
-      var stringaSalvataggio = "";
-
       //variabili dei tasti - prima o poi faro' un'opzione nel menu per poterli cambiare ingame
       var keys = []; //vettore associativo dei tasti (tiene dentro dei bool)
       var tastoGiaSchiacciato = false; //mi serve per alcune funzioni tipo selectScreen()
@@ -48,7 +46,8 @@
 		const { buttonName } = e.detail;
 		keys[buttonName] = false;
         });
-
+      
+      var stringaSalvataggio = "";
       levelDefeated = [false, false, false, false, false, true, false, true]; //vettore che tiene quanti livelli sono stati superati
       heartAcquired = [false, false, false, false, false, false, false, false]; //vettore che tiene quanti cuori sono stati trovati
       armaturaAcquired = [false, false, false, false]; //vettore che tiene quante armatura e' stata trovata - 0:testa, 1:gambe, 2:buster, 3:corpo
@@ -105,6 +104,10 @@
       var blockDimension = 32; //dimensioni standard dei blocchi
       var objMenuPrincipale = new newMenuPrincipale(); //inizializza il menu principale
 
+      //fps
+      const FPSfilterStrength = 20;
+      var FPSframeTime = 0, FPSlastLoop = new Date, FPSthisLoop;
+
       //start the engine
       window.onload = start;
 
@@ -143,4 +146,9 @@
       		disegnaSchermoDiGioco(true); //ATTENZIONE: se le viene passato true oltre a disegnare le entita' calcola anche le loro physics
       		player.physics(player, level); //chiama la funzione physics del player
       	}
+	//calculate FPS
+	var FPSthisFrameTime = (FPSthisLoop=new Date) - FPSlastLoop;
+  	FPSframeTime+= (FPSthisFrameTime - FPSframeTime) / FPSfilterStrength;
+	FPSlastLoop = FPSthisLoop;
+	ctx.font = "small-caps bold 12px Lucida Console"; disegnaTestoConBordino((1000/FPSframeTime).toFixed(1),canvasWidth-20,9,"#000000","#ffffff");
       }
