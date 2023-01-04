@@ -1270,6 +1270,7 @@ function newMenuMappa(previousGameStatePassato) {//map menu
 	this.mapCameraSpeed=2;
     	this.widthMax = canvasWidth - 30;
     	this.heightMax = canvasHeight - 30;
+	this.currentLocation = level.name;
 	this.zoomMultiplier = 2;
 	this.startingConfig={"lvlNumber":lvlNumber, "blockDimension":blockDimension, "player":player, "level":level, "entity":entity};
     	this.isOpen = false;
@@ -1293,11 +1294,20 @@ function newMenuMappa(previousGameStatePassato) {//map menu
     		ctx.fillStyle = "#52b58b";
     		ctx.fillRect((canvasWidth / 2) - this.width / 2, (canvasHeight / 2) - this.height / 2, this.width, this.height); //disegna lo sfondo verde
     		if (this.isOpen) { //qui dentro devo mostrare il testo del menu e gestire cosa succede quando schiaccio i tasti
+			if(this.currentLocation!=""){
+				ctx.textAlign = "right"; ctx.font = "small-caps bold 12px Lucida Console"; //tipo di font per le scritte
+				disegnaTestoConBordino("currently at", canvasWidth-17, canvasHeight-28, "#e2e2e2", "#000000");
+				disegnaTestoConBordino(this.currentLocation, canvasWidth-17, canvasHeight-18, "#e2e2e2", "#000000");
+			}
 			ctx.textAlign = "center"; ctx.font = "small-caps bold 20px Lucida Console"; //tipo di font per le scritte
     			disegnaTestoConBordino(("MAP"), canvasWidth/2, 32, "#d2d2d2", "#000000");
 			ctx.font = "small-caps bold 15px Lucida Console"; //tipo di font per le scritte
-    			disegnaTestoConBordino((lkey+" : zoom-        "+rkey+" : zoom+"), canvasWidth/2, canvasHeight-18, "#d2d2d2", "#000000");
-			ctx.textAlign = "left";
+    			disegnaTestoConBordino((startkey.toLowerCase()+": center map"), canvasWidth/2, canvasHeight-29, "#d2d2d2", "#000000");
+    			disegnaTestoConBordino((mapkey.toLowerCase()+": exit"), canvasWidth/2, canvasHeight-18, "#d2d2d2", "#000000");
+			ctx.textAlign = "left"; ctx.font = "small-caps bold 12px Lucida Console";
+    			disegnaTestoConBordino((lkey.toLowerCase()+": zoom-"), 17, canvasHeight-41, "#e2e2e2", "#000000");
+    			disegnaTestoConBordino((rkey.toLowerCase()+": zoom+"), 17, canvasHeight-31, "#e2e2e2", "#000000");
+			ctx.font = "small-caps bold 15px Lucida Console";
     			disegnaTestoConBordino(("ZOOM:"+this.zoomMultiplier+"x"), 17, canvasHeight-18, "#d2d2d2", "#000000");
 			displayFullMap(this.mapCameraMovement, this.zoomMultiplier); //from script/modules/mapFunction.mjs
 			this.calcolaInput();
@@ -1329,6 +1339,7 @@ function newMenuMappa(previousGameStatePassato) {//map menu
 		if(keys[destrakey]) { this.mapCameraMovement.x-=currentSpeed;}
 		if(keys[lkey] && !tastoGiaSchiacciato){if(this.zoomMultiplier>1){this.zoomMultiplier=this.zoomMultiplier/2;}}
 		if(keys[rkey] && !tastoGiaSchiacciato){if(this.zoomMultiplier<8){this.zoomMultiplier=this.zoomMultiplier*2;}}
+		if(keys[startkey] && !tastoGiaSchiacciato){this.mapCameraMovement.x=0; this.mapCameraMovement.y=0;}
  		if ((keys[jumpkey] || keys[mapkey]) && !tastoGiaSchiacciato) { //chiude il menu
  			this.isOpen = false;
 			lvlNumber=this.startingConfig.lvlNumber;

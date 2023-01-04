@@ -135,6 +135,7 @@
       									} else {
       										var offsetX = lvl[i].lettera.charCodeAt(0) - 97;
       										var offsetY = 0;
+										var fixForWindows=0.2; //fix for Windows, for some reason both Chrome and Firefox show an orrible outline if i use the full border pixels of the sprite
       										if (lvl[i].lettera.charCodeAt(0) < 112 && lvl[i].lettera.charCodeAt(0) > 108) {
       											offsetX = lvl[i].lettera.charCodeAt(0) - 109;
       											offsetY = 1;
@@ -143,7 +144,7 @@
       											offsetX = lvl[i].lettera.charCodeAt(0) - 112;
       											offsetY = 2;
       										}
-      										ctx.drawImage(level.tileset, 16 * offsetX, 16 * offsetY, 16, 16, xdisegnata + (blockDimension * volteX) - 1, ydisegnata + (blockDimension * volteY) - 1, blockDimension + 1, blockDimension + 1);
+      										ctx.drawImage(level.tileset, 16 * offsetX+fixForWindows, 16 * offsetY+fixForWindows, 16-fixForWindows*2, 16-fixForWindows*2, xdisegnata + (blockDimension * volteX) - 1, ydisegnata + (blockDimension * volteY) - 1, blockDimension + 1, blockDimension + 1);
       									}
       								}
       							}
