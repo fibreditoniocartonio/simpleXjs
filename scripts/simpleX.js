@@ -1,4 +1,4 @@
-      var versioneDiGioco = "v0.20230103"; //Added level name
+      var versioneDiGioco = "v0.20230104"; //Joypad Support
       debugMode = false; //you can enable debugMode with the console (press f12 in the browser)
 
       //crea il canvas
@@ -28,6 +28,8 @@
       var mapkey = "Shift"; //mappa - default SHIFT
 
       var ultimoTastoLetto = "";
+
+	//keyboard events
       document.addEventListener("keydown", function (e) { //events - leggi tasti schiacciati
       	keys[e.key] = true;
       	ultimoTastoLetto = e.key;
@@ -35,6 +37,17 @@
       document.addEventListener("keyup", function (e) { //events - leggi tasti rilasciati
       	keys[e.key] = false;
       });
+
+	//gamepad event - depend on external module joypad.js (https://github.com/ArunMichaelDsouza/joypad.js)
+        joypad.on('button_press', e => {
+		const { buttonName } = e.detail;
+		keys[buttonName] = true;
+		ultimoTastoLetto = buttonName;
+        });
+        joypad.on('button_release', e => {
+		const { buttonName } = e.detail;
+		keys[buttonName] = false;
+        });
 
       levelDefeated = [false, false, false, false, false, true, false, true]; //vettore che tiene quanti livelli sono stati superati
       heartAcquired = [false, false, false, false, false, false, false, false]; //vettore che tiene quanti cuori sono stati trovati
