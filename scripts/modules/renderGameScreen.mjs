@@ -119,10 +119,11 @@
       			}
 		}
       		//ora disegno il livello[i]                    
-      		if (xdisegnata + lvl[i].width > -1 && xdisegnata < canvasWidth + 1) {
+      		if (xdisegnata+lvl[i].width > -1 && xdisegnata < canvasWidth+1 && ydisegnata+lvl[i].height > -1 && ydisegnata < canvasHeight+1) {
       			if (level.tileset == "") {
       				ctx.fillRect(xdisegnata, ydisegnata, lvl[i].width, lvl[i].height);
       			} else {
+				const fixForWindows=0.5; //fix for Windows, for some reason both Chrome and Firefox show an orrible outline if i use the full border pixels of the sprite
       				for (volteX = 0; volteX < (lvl[i].width / blockDimension - 1); volteX++) {
       					if (xdisegnata + (blockDimension * (volteX + 1)) > 0) {
       						if (!(xdisegnata + (blockDimension * volteX) < canvasWidth)) {
@@ -135,7 +136,6 @@
       									} else {
       										var offsetX = lvl[i].lettera.charCodeAt(0) - 97;
       										var offsetY = 0;
-										var fixForWindows=0.5; //fix for Windows, for some reason both Chrome and Firefox show an orrible outline if i use the full border pixels of the sprite
       										if (lvl[i].lettera.charCodeAt(0) < 112 && lvl[i].lettera.charCodeAt(0) > 108) {
       											offsetX = lvl[i].lettera.charCodeAt(0) - 109;
       											offsetY = 1;
