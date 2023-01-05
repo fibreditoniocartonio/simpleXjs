@@ -36,6 +36,17 @@
       	keys[e.key] = false;
       });
 
+      function touchButtonPress(id){ //eventi per i bottoni touch
+      		keys[id] = true;
+ 	     	ultimoTastoLetto = id;
+      }
+      function touchButtonLeave(id){
+      	keys[id] = false;
+      }
+      function setTouchButtonIndex(){ //set touch button z-index
+	
+      }
+
 	//gamepad event - depend on external module joypad.js (https://github.com/ArunMichaelDsouza/joypad.js)
         joypad.on('button_press', e => {
 		const { buttonName } = e.detail;

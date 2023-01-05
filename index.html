@@ -13,6 +13,7 @@ body {background-color:black; overflow: hidden;}
 .canvasDiv {
   display: flex;
   justify-content: center;
+  z-index: 1;
 }
 .caricaPartitaDiv {
   position: absolute;
@@ -23,6 +24,12 @@ body {background-color:black; overflow: hidden;}
 </style>
 <body>
 <title>Simple X Js</title>
+<!--Buttons-->
+<button style = 'font-size: large;' id="btEnabler" onpointerdown='setTouchButtonIndex()'>TouchButtons On/Off</button>
+<button style = 'font-size: large;' id="ArrowUp" onpointerenter='touchButtonPress(id)' onpointerleave='touchButtonLeave(id)'>↑</button>
+<button style = 'font-size: large;' id="ArrowDown" onpointerenter='touchButtonPress(id)' onpointerleave='touchButtonLeave(id)'>↓</button>
+<button style = 'font-size: large;' id="ArrowLeft" onpointerenter='touchButtonPress(id)' onpointerleave='touchButtonLeave(id)'>←</button>
+<button style = 'font-size: large;' id="ArrowRight" onpointerenter='touchButtonPress(id)' onpointerleave='touchButtonLeave(id)'>→</button>
 <!--Internal Modules-->
 <script src="scripts/modules/alert.mjs" type="text/javascript" charset="utf-8"></script>
 <script src="scripts/modules/levelsDefault.mjs" type="text/javascript" charset="utf-8"></script>
