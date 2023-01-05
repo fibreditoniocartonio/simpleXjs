@@ -322,8 +322,11 @@
     			for (i = 0; i < 9; i++) { //disegna le scritte del settore 0 (xbuster e poteri di X)
     				var xdisegnata = (canvasWidth / 2) - this.width / 2 + 13;
     				var ydisegnata = ((canvasHeight / 2) - this.height / 2) + (44 * i) - 7;
-    				if (i - 1 < 0) { //scrive xbuster
-    					disegnaTestoConBordino("X Buster", xdisegnata, ydisegnata + 33, "#d2d2d2", "#000000");
+    				if (i - 1 < 0) { //default weapon
+					switch(currentPlayer){
+    						case 0: disegnaTestoConBordino("X Buster", xdisegnata, ydisegnata + 33, "#d2d2d2", "#000000");break;
+    						case 1: disegnaTestoConBordino("Vampire Killer", xdisegnata, ydisegnata + 33, "#d2d2d2", "#000000");break;
+					}
     				} else {
     					if (levelDefeated[i - 1]) { //disegna i poteri e le loro barre
     						disegnaTestoConBordino(player.power[i - 1].nome, xdisegnata, ydisegnata + 21, player.power[i - 1].color1, "#000000");

@@ -537,7 +537,7 @@ function newZombie() { //zombie
 			if(this.x+this.width/2 > player.x+player.width/2){
 				this.facingRight=false;
 				this.xv+= this.speed;
-			}else{
+			}else if(this.x+this.width/2 < player.x+player.width/3){ //3 and not 2 otherwise the zombie will start flipping left and right because of the decimal part of the x coordinate
 				this.facingRight=true;
 				this.xv+= -this.speed;
 			}
@@ -585,7 +585,7 @@ function newZombie() { //zombie
 			this.stance.timer++;
 		}
 	}//fine di calculateStance()
-}
+}//fine di Zombie
 
 
 function newRedSkeleton() { //red skeleton
@@ -593,25 +593,27 @@ function newRedSkeleton() { //red skeleton
 	this.letter = "⧌";
       	this.type = "monster";
       	this.life = 1;
-      	this.damage = 1;
+      	this.damageDefault = 1;
+      	this.damage = this.damageDefault;
 	this.sprite = new Image();
-      	this.sprite.src = "data:image/png;base64,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";
+      	this.sprite.src = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEAAAAAgCAYAAACinX6EAAAAAXNSR0IArs4c6QAAA7dJREFUaIHNWbuR2zAQXWgYOnQJChA6UHAlXMACLrwiGKgEBirCoQtA4BIcMLgQgUpw6BAzcEA+6nEJEDhJtvRmbsQhsQu8xf6AM0Mf5F44HJuo3w19MAWZu81/DRazX0OAZUPn1hMcm1ir4xGYDZAicHat2AoCkG1OrYiIhM7J2Y3P3kqVjkdhJ7Imf3btgkDKM4DUN8gCJR2PRMO75+11SiAPI2oDPDMWOcB6ucoIZzca7+xasf7y/lqD/k80IrLaPZCoJcCk9ftnN0IjIsndE8kTYwx9MBzfIAzyNToeiWbog7EZAkDonDTTmFw2T3mQ/vaMJXHOAVsE+HuOBErgFp6yJE6dYNz6C52L3kr0dnwWkTj0QfhPj8ezt5ff0LmV/KOxE1m7NfcE3o67a/0lLELnVnWddcAbvBXZtxdd3Cg9S1+ww8PQB8MkvF0SQG5gV8+RCJ2T0DnZt5eOcN+62ZgY8wxGSJ5Eapoabn0BVAT9Hq1xKjnW5I5/iexRjBeWWujZjUb6yMjr1prLIgx8K/mhDzefJlfS2MU565/aJPmi4tP6PKC/P0Of0ByOTTIb65MdJzORtBH4XJHyAAa+D++vi/dfvjfxz/uYi779/hk/vr4WS+Yt1cTkFOgTYs5dkTgxvtRHaF1bPQEbI1d1chtYi115yG1ANRFZhpOuOgATZfIwIPTdq4JUZRB2aQ6NlFfsWydeRi9YyHi6IMnE/eHYRHSL+oIlNedkBHNLIkx6ABaiyXKDkyqBGJOL99LJcOiDgSyqTA6hc3c5aa5yQCmWeQdLLoyFiixL31bcw/j7drnbIItkjCRsvdx0rlh4AMeaJu/tSGaLPJBKeFu7yfMz+dQcfF13D2CCzYyvPaK0g3rXIXvNzmP+1JXdtJ6bPMAIkWeSv34czctbv1pUiQQvWkSq5fT4GkxNW/X4FOYQ4OQ19MG8vPULw+B9SSEOQp/FFnFOoqw7VQqn47cGH+8XWFUBTVJ3gLX4TOxrGdR67h+Qf0p6VVLE/QTrXBhiNgAmY6s2p3Zug2uPr6lSuSWL9+w5uHvg+wfuRVByS4DHZJJmFEkkQY7ZXEzX/KcIC9ANUU6WDcHrYDIcorS23FqiiBiEBBKmtxLpZGrmPkAnIu7xU0bAQmoMoWW1XMo7UoaAEViekmAUERM6F+G1k6wJnYvNqTUYw7+GhOeJUwT1DuXIlMZrvXq8vpXeqg5cBXIk8R6/kweYaa64KIMMHQq5MVtkcrdGnxnPyHzPkt0gH+FNfwHkAVu1gKxGJwAAAABJRU5ErkJggg==";
 	this.stance=[];
 	this.stance["x"]=0;
-	this.stance["y"]=Math.floor(Math.random()*3);
+	this.stance["y"]=0;
 	this.stance["timer"]=0;
 	this.x = 0;
       	this.y = 0;
       	this.xv = 0;
       	this.yv = 0;
-	this.facingRight=!(player.facingRight);
+	this.facingRight=false;
       	this.slope = 0;
       	this.width = 30;
       	this.height = 62;
-      	this.color1 = '#fcc4fc';
-      	this.color2 = '#cc88fc';
-      	this.speed = 0.38;
+      	this.color1 = '#ff3333';
+      	this.color2 = '#333333';
+      	this.speed = 0.43;
 	this.timer=40;
+	this.dying=false;
       	this.hasPhysics = true;
       	this.canSelfDraw = true;
       	this.selfDraw = function (xdisegnata, ydisegnata, indiceDiQuestaEntity) {
@@ -626,23 +628,43 @@ function newRedSkeleton() { //red skeleton
       		}
       	}
       	this.getHit = function (nome, danno) {
-      		this.life -= danno;
+		if(!this.dying && this.timer<1){ //can get hit only when active
+      			this.dying=true;
+			this.timer=60;
+			this.damage=0;
+		}
       	}
       	this.physics = function (xdisegnata, ydisegnata, indiceDiQuestaEntity) {
-		if(this.timer>0){ //activation
+		if(this.dying){
 			this.timer--;
-		}else{ //when active can move to the player
-			if(this.x+this.width/2 > player.x+player.width/2){
-				this.facingRight=false;
-				this.xv+= this.speed;
-			}else{
-				this.facingRight=true;
-				this.xv+= -this.speed;
+			if(this.timer<0){
+				this.dying=false;
+				this.timer=60;
 			}
-			this.xv = this.xv*level.friction;
-			this.x += -this.xv;
+		}else{
+			if(this.timer<1){this.damage=this.damageDefault;}
+			if(this.timer>0){ //activation
+				this.timer--;
+			}else{ //when active can move randomly
+				if(this.timer<0){
+					this.timer++;
+				}
+				if(this.timer==0){
+					var randomDir=Math.floor(Math.random()*3)
+					if(randomDir==0){ //ogni 100 frame ha una possibilita di cambiare direzione
+						this.facingRight=!this.facingRight;
+					}
+					this.timer=-100+randomDir*10;
+				}
+				if(!this.facingRight){
+					this.xv+= this.speed;
+				}else{
+					this.xv+= -this.speed;
+				}
+				this.xv = this.xv*level.friction;
+				this.x += -this.xv;
+			}
 		}
-		this.calculateStance();
 	      	this.yv += level.gravity/2; //get level gravity/2
     		this.y += this.yv; //apply gravity
       		for (var i = 0; i < level.length; i++) {
@@ -652,7 +674,9 @@ function newRedSkeleton() { //red skeleton
 				var latoSx = new rectTest(this.x, this.y + this.height/2 - 2, 2, 4);
 				var latoDx = new rectTest(this.x+this.width-2, this.y + this.height/2 - 2, 2, 4);
       				if (collisionBetween(latoSx, level[i]) || collisionBetween(latoDx, level[i])) { //collisione x
-      					this.x -= -this.xv;
+      					this.x -= -this.xv*2.5;
+					this.facingRight=!this.facingRight;
+					this.timer-=20;
       				}
       			}
       		}
@@ -661,26 +685,34 @@ function newRedSkeleton() { //red skeleton
       			this.xv = 0;
       			this.yv = 0;
       		}
-
+		this.calculateStance();
       	}//fine di physics()
 	this.calculateStance = function (){
 		var previousStance = this.stance.x;
 		var maxTimer=9;
-		if(this.timer>21){
-			this.stance.x=3;
-		}else if(this.timer>1){
-			this.stance.x=2;
-		}else if(this.timer==1){
-			this.stance.timer=-1;
+		if(this.dying){
+			if(this.timer>53){
+				this.stance.x=2;
+			}else{
+				this.stance.x=3;
+			}
 		}else{
-			switch(this.stance.timer){
-				case 0: this.stance.x=0; break;
-				case maxTimer: this.stance.x=1; break;
-				case 2*maxTimer: this.stance.timer=-1; break;
+			if(this.timer>8){
+				this.stance.x=3;
+			}else if(this.timer>1){
+				this.stance.x=2;
+			}else if(this.timer==1){
+				this.stance.timer=-1;
+			}else{
+				switch(this.stance.timer){
+					case 0: this.stance.x=0; break;
+					case maxTimer: this.stance.x=1; break;
+					case 2*maxTimer: this.stance.timer=-1; break;
+				}
+			}
+			if(previousStance==this.stance.x){
+				this.stance.timer++;
 			}
 		}
-		if(previousStance==this.stance.x){
-			this.stance.timer++;
-		}
 	}//fine di calculateStance()
-}
+}//fine di redSkeleton

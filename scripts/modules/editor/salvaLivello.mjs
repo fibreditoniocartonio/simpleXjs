@@ -19,7 +19,7 @@
       		//creo il file simpleXjs.dataDiOggi.savegame da scaricare
       		const dataDiOggi = creaData(); //prende la data di oggi
       		var element = document.createElement('a');
-      		element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(";"+stringaLivello));
+      		element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(stringaLivello));
       		element.setAttribute('download', "simpleXjs." + dataDiOggi + ".level");
       		element.style.display = 'none';
       		document.body.appendChild(element);

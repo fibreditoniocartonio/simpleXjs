@@ -1,11 +1,9 @@
-# I'm currently searching for pixel artists
-
 # simpleXjs
 A simple action platformer in javascript, with the idea to make it become a metroidvania sooner or later.
 
 ## Usage
 Just download all the files and open the .html.<br>
-Load the .savegame file to play with all the implemented functionalities.
+Load the .savegame file to play with all the implemented functionalities.<br>
 You can even play it directly from browser at [https://fibreditoniocartonio.github.io/simpleXjs/](https://fibreditoniocartonio.github.io/simpleXjs/)
 
 ## Assets
