@@ -11,6 +11,7 @@
       var ctx = document.getElementById('canvas').getContext('2d');
 
       //variabili dei tasti - prima o poi faro' un'opzione nel menu per poterli cambiare ingame
+      var touchScreenButton=false;
       var keys = []; //vettore associativo dei tasti (tiene dentro dei bool)
       var tastoGiaSchiacciato = false; //mi serve per alcune funzioni tipo selectScreen()
       var jumpkey = "z"; //salta - default z
@@ -44,7 +45,12 @@
       	keys[id] = false;
       }
       function setTouchButtonIndex(){ //set touch button z-index
-	
+      	touchScreenButton=!touchScreenButton;
+      	if(touchScreenButton){
+		document.getElementById("ButtonLayerDivId").style.zIndex = "5";
+	}else{
+		document.getElementById("ButtonLayerDivId").style.zIndex = "-1";
+	}
       }
 
 	//gamepad event - depend on external module joypad.js (https://github.com/ArunMichaelDsouza/joypad.js)

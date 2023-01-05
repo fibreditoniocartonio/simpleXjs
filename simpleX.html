@@ -21,15 +21,26 @@ body {background-color:black; overflow: hidden;}
   top:48%;
   left:43%
 }
+.buttonLayerDiv {
+  position: fixed;
+  z-index: -1;
+  top:20%;
+  left:50%;
+  width:100%;
+  height:100%;
+}
+
 </style>
 <body>
 <title>Simple X Js</title>
 <!--Buttons-->
 <button style = 'font-size: large;' id="btEnabler" onpointerdown='setTouchButtonIndex()'>TouchButtons On/Off</button>
+<div class='buttonLayerDiv' id='ButtonLayerDivId'>
 <button style = 'font-size: large;' id="ArrowUp" onpointerenter='touchButtonPress(id)' onpointerleave='touchButtonLeave(id)'>↑</button>
 <button style = 'font-size: large;' id="ArrowDown" onpointerenter='touchButtonPress(id)' onpointerleave='touchButtonLeave(id)'>↓</button>
 <button style = 'font-size: large;' id="ArrowLeft" onpointerenter='touchButtonPress(id)' onpointerleave='touchButtonLeave(id)'>←</button>
 <button style = 'font-size: large;' id="ArrowRight" onpointerenter='touchButtonPress(id)' onpointerleave='touchButtonLeave(id)'>→</button>
+</div>
 <!--Internal Modules-->
 <script src="scripts/modules/alert.mjs" type="text/javascript" charset="utf-8"></script>
 <script src="scripts/modules/levelsDefault.mjs" type="text/javascript" charset="utf-8"></script>
