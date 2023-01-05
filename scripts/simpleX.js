@@ -46,11 +46,10 @@
       }
       function setTouchButtonIndex(){ //set touch button z-index
       	touchScreenButton=!touchScreenButton;
-	alert("show button:"+touchScreenButton);
       	if(touchScreenButton){
-		document.getElementById("ButtonLayerDivId").style.zIndex = "5";
+		document.getElementById("ButtonLayerDivId").style.visibility = "visible";
 	}else{
-		document.getElementById("ButtonLayerDivId").style.zIndex = "-1";
+		document.getElementById("ButtonLayerDivId").style.visibility = "hidden";
 	}
       }
 
