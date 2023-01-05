@@ -163,7 +163,7 @@
       			}
       		}
       	}
-      }
+      }//fine di drawLvl()
 
       function drawHUD() {
       	if (debugMode) {

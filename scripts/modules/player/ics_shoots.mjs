@@ -32,6 +32,7 @@
       			for (i = 0; i < level.length; i++) {
       				if (collisionBetween(this, level[i])) {
       					this.life = -1;
+					break;
       				}
       			}
       		} else {
@@ -49,6 +50,7 @@
       						}
       						if (!(entity[i].life < 1 && this.perforation)) {
       							this.life = -1;
+							break;
       						}
       					}
       				}
@@ -121,6 +123,7 @@
       			for (i = 0; i < level.length; i++) {
       				if (collisionBetween(this, level[i])) {
       					this.life = -1;
+					break;
       				}
       			}
       		} else {
@@ -137,6 +140,7 @@
       					}
       					if (!(entity[i].life < 1 && this.perforation)) {
       						this.life = -1;
+						break;
       					}
       				}
       			}
@@ -322,6 +326,7 @@
       			for (i = 0; i < level.length; i++) {
       				if (collisionBetween(this, level[i])) {
       					this.life = -1;
+					break;
       				}
       			}
       		} else {
@@ -338,6 +343,7 @@
       					}
       					if (!(entity[i].life < 1 && this.perforation)) {
       						this.life = -1;
+						break;
       					}
       				}
       			}
@@ -420,6 +426,7 @@
       					}
       					if (!(entity[i].life < 1)) {
       						this.life = -1;
+						break;
       					}
       				}
       			}
@@ -488,6 +495,7 @@
       			for (i = 0; i < level.length; i++) {
       				if (collisionBetween(this, level[i])) {
       					this.life = -1;
+					break;
       				}
       			}
       		} else {
@@ -504,6 +512,7 @@
       					}
       					if (!(entity[i].life < 1 && this.perforation)) {
       						this.life = -1;
+						break;
       					}
       				}
       			}
@@ -632,6 +641,7 @@
       					}
       					if (!(entity[i].life < 1 && this.perforation)) {
       						this.life = -1;
+						break;
       					}
       				}
       			}
@@ -701,6 +711,7 @@
       				if (entity[i].life > 0 && !(this.type == entity[i].type || entity[i].type == "pickup") && collisionBetween(this, entity[i])) { //controlla che l'entita da colpire sia viva, che non siano lo stesso proiettile e infine se c'è una collisione
       					if (!(entity[i].life < this.life)) {
       						this.life = -1;
+						break;
       					}
       					if (entity[i].getHit) {
       						entity[i].getHit("shieldCh3", this.damage);
@@ -892,6 +903,7 @@
       					}
       					if (!(entity[i].life < 1 && this.perforation)) {
       						this.life = -1;
+						break;
       					}
       				}
       			}
@@ -1091,6 +1103,7 @@
       			for (i = 0; i < level.length; i++) {
       				if (collisionBetween(this, level[i])) {
       					this.life = -1;
+					break;
       				}
       			}
       		} else {
@@ -1299,6 +1312,7 @@
       						sparoFiglioDown.speedY = this.speedX;
       						entity.push(sparoFiglioDown);
       					}
+					break;
       				}
       			}
       		} else {
@@ -1315,6 +1329,7 @@
       					}
       					if (!(entity[i].life < 1 && this.perforation)) {
       						this.life = -1;
+						break;
       					}
       				}
       			}
@@ -1511,6 +1526,7 @@
       			for (i = 0; i < level.length; i++) {
       				if (collisionBetween(this, level[i])) {
       					this.life = -1;
+					break;
       				}
       			}
       		} else {
@@ -1528,6 +1544,7 @@
       					this.hitSomething = true;
       					if (!(entity[i].life < 1 && this.perforation)) {
       						this.life = -1;
+						break;
       					}
       				}
       				if (this.entityPickedIndex == -1) { //raccoglie gli oggetti
@@ -1775,6 +1792,7 @@
       					} else {
       						this.x = level[i].x + level[i].width + 1;
       					}
+					break;
       				}
       			}
       		} else {
@@ -1792,6 +1810,7 @@
       					}
       					if (!(entity[i].life < 1 && this.perforation)) {
       						this.isDying = true;
+						break;
       					}
       				}
       			}
@@ -1895,6 +1914,7 @@
       			}
       			if ((((this.x + this.width) > level[i].x) || (this.x < (level[i].x + level[i].width))) && (collisionBetween(this, level[i]))) { //collsion laterale
       				this.life = -1;
+				break;
       			}
       		}
       		if (collisionBetween(this, player) && (((this.x + this.width) > player.x) || (this.x < (player.x + player.width)))) { //collisione laterale player
