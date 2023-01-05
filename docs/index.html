@@ -1,9 +1,46 @@
 <!DOCTYPE html>
 <html>
 <meta charset='utf-8'>
+<style>
+body {background-color:black; overflow: hidden;}
+#canvas {
+  background-color: white;
+  display: block;
+  top:0;
+  position:absolute;
+  height:100%;
+}
+.canvasDiv {
+  display: flex;
+  justify-content: center;
+}
+.caricaPartitaDiv {
+  position: absolute;
+  z-index: -1;
+  top:48%;
+  left:43%
+}
+</style>
 <body>
 <title>Simple X Js</title>
-<h1>SimpleXjs</h1>
-<p>From here you can play the <a href="../simpleX.html">game</a> or use the <a href="../levelEditor.html">level editor</a> to create your costum level!</p>
+<!--Internal Modules-->
+<script src="scripts/modules/alert.mjs" type="text/javascript" charset="utf-8"></script>
+<script src="scripts/modules/levelsDefault.mjs" type="text/javascript" charset="utf-8"></script>
+<script src="scripts/modules/mapFunctions.mjs" type="text/javascript" charset="utf-8"></script>
+<script src="scripts/modules/menus.mjs" type="text/javascript" charset="utf-8"></script>
+<script src="scripts/modules/renderGameScreen.mjs" type="text/javascript" charset="utf-8"></script>
+<script src="scripts/modules/savegame.mjs" type="text/javascript" charset="utf-8"></script>
+<script src="scripts/modules/stringToLevel.mjs" type="text/javascript" charset="utf-8"></script>
+<script src="scripts/modules/usefulFunctions.mjs" type="text/javascript" charset="utf-8"></script>
+<script src="scripts/modules/entities/enemies.mjs" type="text/javascript" charset="utf-8"></script>
+<script src="scripts/modules/entities/lvlModifiers.mjs" type="text/javascript" charset="utf-8"></script>
+<script src="scripts/modules/entities/lvlObstacles.mjs" type="text/javascript" charset="utf-8"></script>
+<script src="scripts/modules/player/ics_shoots.mjs" type="text/javascript" charset="utf-8"></script>
+<script src="scripts/modules/player/pickups_and_upgrades.mjs" type="text/javascript" charset="utf-8"></script>
+<script src="scripts/modules/player/player.mjs" type="text/javascript" charset="utf-8"></script>
+<!--External Modules-->
+<script src="scripts/external_modules/joypad.min.js" type="text/javascript" charset="utf-8"></script>
+<!--Main Script -->
+<script src='scripts/simpleX.js' id='scriptId' charset='utf-8'></script>
 </body>
 </html>
