@@ -6,7 +6,7 @@ A simple action platformer in javascript, with the idea to make it become a metr
 ## Usage
 Just download all the files and open the .html.<br>
 Load the .savegame file to play with all the implemented functionalities.
-You can even play from [here!](https://fibreditoniocartonio.github.io/)
+You can even play it directly from browser at [https://fibreditoniocartonio.github.io/simpleXjs/](https://fibreditoniocartonio.github.io/simpleXjs/)
 
 ## Assets
 I'm not a good artist and to speed up the development of the game engine I'm currently using some assets non-conforming to the GPL3 License.<br>
