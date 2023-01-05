@@ -77,6 +77,14 @@ function stringToLevel(lvlString) {
 				entity.push(spike);
 				checkBackAndForGround(background, foreground, lvlString[i - 1]); //se il blocco prima era un background o foreground lo carica sotto il player
 				break;
+			
+			case 'Z': // Z indica un zombie (ghoul)
+				var entita = new newZombie();
+				entita.x = (i % widthTot) * blockDimension;
+				entita.y = (heightTot - 1) * blockDimension - 2;
+				entity.push(entita);
+				checkBackAndForGround(background, foreground, lvlString[i - 1]); //se il blocco prima era un background o foreground lo carica sotto il player
+				break;
 
 			case '0':
 			case '1':
@@ -373,7 +381,7 @@ function stringToLevel(lvlString) {
 	rightWall['x'] = level.maxWidth - rightWall.width;
 	if(gamestate==7){ground.color="#00000000"; ceiling.color="#00000000"; leftWall.color="#00000000"; rightWall.color="#00000000"; }//disattivo i bordi nella mappa
 	level.push(ground, ceiling, leftWall, rightWall); //this pushes all of the static objects into the level
-	if(level.name!=""){ //aggiungo un entita che scrive il nome del livello su schermo
+	if(!levelEditor && level.name!=""){ //aggiungo un entita che scrive il nome del livello su schermo
 		entita = new newShowLevelName();
 		entita.type="sparoDelPlayer"; //to make it load everywhere
 		entity.push(entita);

@@ -1337,7 +1337,7 @@
       	} //fine di selectAndEraserCode()
       	this.piazzaBloccoCode = function () {
       		if (mouseClick && mouseY > 25 && mouseX > 25 && mouseX < canvasWidth - 25 && mouseY < canvasHeight - 25) {
-      			var indice = (level.maxWidth / blockDimension - 1) * lvlCanvasMouseY;
+      			var indice = (level.maxWidth / blockDimension - 1) * lvlCanvasMouseY+1;
       			if (this.selected == "w") {
       				if (stringaLivello[indice] != "t") {
       					for (i = level.maxWidth / blockDimension - 1; i < level.indiceZ; i++) {
