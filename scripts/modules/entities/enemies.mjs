@@ -593,7 +593,6 @@ function newZombie() { //zombie
 	}//fine di calculateStance()
 }//fine di Zombie
 
-
 function newRedSkeleton() { //red skeleton
       	this.name = "red skeleton";
 	this.letter = "⧌";
@@ -667,8 +666,10 @@ function newRedSkeleton() { //red skeleton
 				}else{
 					this.xv+= -this.speed;
 				}
+				if(this.yv>-0.5 && this.yv<0.5){//puo muoversi attivamente solo se e' a terra
+					this.x += -this.xv;
+				}
 				this.xv = this.xv*level.friction;
-				this.x += -this.xv;
 			}
 		}
 	      	this.yv += level.gravity/2; //get level gravity/2
@@ -720,6 +721,123 @@ function newRedSkeleton() { //red skeleton
 			if(previousStance==this.stance.x){
 				this.stance.timer++;
 			}
+		}
+	}//fine di calculateStance()
+}//fine di redSkeleton
+
+function newArmoredKnight() { //armored Knight
+      	this.name = "armored knight";
+	this.letter = "Ќ";
+      	this.type = "monster";
+      	this.life = 6;
+      	this.damage = 2;
+	this.sprite = new Image();
+      	this.sprite.src = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADAAAABACAYAAABcIPRGAAAAAXNSR0IArs4c6QAABVJJREFUaIHFWTtu6kwYPWN5QY6UgoIKNsEaSEoKluBfShlYAzu4VagoKCLFO7m6vaX5C3PM8ecZP0iUOdJVuMycb773PHDbcwEAOK4qvz0XDjccV5WvLzWqC1AsgXyZQ8ctUvEzTv4saxxXlef/gYb0vM9RXYD6ch8PLZ6Kn/FDsbwL43f1pUZ9qVshdlyRip/RegDgXxLzZUP8LBshHFek5mfbc+Ge9zkAgH/nIDU/oxAtknyZI1/2hcUW+Cn+9bSfzc+Be8Xny9wDTQgBoLp0SbEukpLfM+nmjU4hAY1XtIBiynyXfz3tZ/FbA1jlxGdZt52B4aSw23edvp2K34sAu4KSWf2alwy59eR3+YtNOYvf7gOaayQrOK4hZdE9ylflH+VnLCAND8GwkvxZ1u2uSKTmOwBeN4ixXsxNxX6Xiu8AdLZmHqDUaitcw2jx2/yMeRjapllMmpPao4F7O3uUzzp6lN+6wLYstVih48GNZQZfm8Aj/O25cPlxVfUmAW2b6vzfCHDHVQXeJxSxwxcVUsUXm9LSOeattynzJscdVxWykALMQwqgIrrZbM/FJOVtClhcT/v44AC4fjY+9XGEFA+ljRkHAt6PoZdk9D4Q7hJTofnLS8kULDZlUHk9cmvttRH4jrIKbX+2bsa8r7rEitk2jo7W6n3rsbFQhsA6muMcNXpK1DozYgvNuSltz4U7riof4iw2pQfGIxFyFpuDfb3oFLE9j3AizyqhzSZmhC6svM+ybg2ZitDxg5jUhR6pDxrBNkojqEjMiFDqPO/zjgP1YpNZsvWy3nPZ3/UNZwyxdIhBFQ1deKwRwRSKLTA1hRRDm5gi9myiRlCWGjEphYaeBH8SxTIcMT696BiNmLUT29yMnaMUoSeS5333Njdlf9D3o458VWJKsU5tqbxpWdlDynLOUKoyStQj354LHFfV4CbGgtE5t3ke99NjUHktvpjxPD4MbZb6Wk3wOD1I1m4Tm7M9F+55NfxMEgNfIcaUB8J3Ecfj7GJTenNO9/7D4/ULeH8C3NoNhj8VP+fklzePxcb562nvuMm49W3+m4f/8HBr50NCUvLbLvT+dBfG7/xHQzzsHF6/+uOKVPyM1gMA/5Lo1g3x5a0RwnFFan52Pe3dYddEhX/d2sGtXWv9EFLzMwoJFUmbgzfEhKXku+tp31Y8Cf6jCdXr1/Ci/JyS39tZbt5ok415xxxkscU6ym/zWwNY5ZaoZJ2nbS8lvxcBhpNwa9d2gZDw1PzWgLFqV+Jh54A/f5t///5Lys9osbUauIerJ/zP3/Zjar4D4G2+DcGGk9+l4vd+H+ABipNCwukt26dT8DN2gVBhsW2xdSmZ4U3N73Uh9cph53AYGA/18d/m/8yDqIHmaSgFxu7AoTqJIXip9x++F1LbKWJKWOU1/FOhua66vLzdP3P9wVcJe8y1u+UYVPmp3ue4zfUYeinELqCLPgrm69DOa6E7sdUj5IQ2At9V1srRlJvqfYL3gZBeVkYnAkPeHzrahkA5ekyeAu3xU9brGBBbaI7ivJS3YZexqb8PhPI+1pk6RRzrNLYbTDFCF1Zecwye9/uAKt+71NvJoSjMSQGCRrATdU6SAUV0Levpw851HKjczJKtx6gIBXN8jhftXjAUSVVUI6kXGTWil0JDmNMO5yL2bKJG2GguNuW03wemtr/v4v0pXMB8etExGhE0INZ1HtkrtKernLm/D+j7kWJSG7WLE/ZBNgR7vh+aP2XnZpQor40Ai8cWMRW1bXSsHvhkaIsvNlfXH5pjUszlkYEoMVZo+kSi751jsIbG5gC9DHEA8D/a1JJiZRbXNAAAAABJRU5ErkJggg==";
+	this.stance=[];
+	this.stance["x"]=0;
+	this.stance["y"]=Math.floor(Math.random()*2);
+	this.stance["timer"]=0;
+	this.x = 0;
+      	this.y = 0;
+      	this.xv = 0;
+      	this.yv = 0;
+	this.facingRight=false;
+      	this.slope = 0;
+      	this.width = 30;
+      	this.height = 62;
+      	this.color1 = '#6b8cff';
+      	this.color2 = '#333333';
+      	this.speed = 0.33;
+	this.timer=-60;
+      	this.hasPhysics = true;
+      	this.canSelfDraw = true;
+      	this.selfDraw = function (xdisegnata, ydisegnata, indiceDiQuestaEntity){
+		if(this.timer<1){
+			var fixForWindows=0.5;
+			if (!this.facingRight) {
+      				ctx.drawImage(this.sprite, 16*this.stance.x+fixForWindows, 32*this.stance.y+fixForWindows, 16-fixForWindows*2, 32-fixForWindows*2, xdisegnata, ydisegnata-1, (16)*2, 32*2);
+      			} else {
+      				ctx.save(); //salvo il canvas attuale
+	      			ctx.scale(-1, 1); //flippa il canvas per fare lo sprite mirrorato
+	      			ctx.drawImage(this.sprite, 16*this.stance.x+fixForWindows, 32*this.stance.y+fixForWindows, 16-fixForWindows*2, 32-fixForWindows*2, -xdisegnata, ydisegnata-1, -(16)*2, 32*2);
+      				ctx.restore(); //faccio tornare come prima al punto di save() altrimenti rimane buggato
+      			}
+		}
+      	}
+      	this.getHit = function (nome, danno) {
+      		this.life -= danno;
+		this.timer=6;
+      	}
+      	this.physics = function (xdisegnata, ydisegnata, indiceDiQuestaEntity) {
+		if(this.timer>0){ //when hit can't move
+			this.timer--;
+		}else{
+			if(this.timer==0){
+				var randomDir=Math.floor(Math.random()*3)
+				if(randomDir==0){ //ogni tot frame ha una possibilita di cambiare direzione
+					this.facingRight=!this.facingRight;
+				}
+				this.timer=-90+randomDir*10;
+			}else{
+				this.timer++;
+			}
+			if(!this.facingRight){
+				this.xv+= this.speed;
+			}else{
+				this.xv+= -this.speed;
+			}
+		}
+		this.xv = this.xv*level.friction;
+		this.x += -this.xv;
+	      	this.yv += level.gravity/2; //get level gravity/2
+    		this.y += this.yv; //apply gravity
+		//collision with level + prevent fall
+		var latoSx = new rectTest(this.x, this.y + this.height/2 - 2, 2, 4);
+		var latoDx = new rectTest(this.x+this.width-2, this.y + this.height/2 - 2, 2, 4);
+		var nextCollision = new rectTest(this.x+this.width/2-2, this.y+this.height-1, 4, 2);
+		nextCollision["collided"]=false;
+		if(this.facingRight){ nextCollision.x+=this.width;
+		}else{		 nextCollision.x-=this.width;}
+      		for (var i = 0; i < level.length; i++){
+      			if (collisionBetween(this, level[i])) {
+				this.y += -this.yv;
+      				this.yv = 0;
+      				if (collisionBetween(latoSx, level[i]) || collisionBetween(latoDx, level[i])) { //collisione x
+      					this.x -= -this.xv*2.5;
+					this.facingRight=!this.facingRight;
+					this.timer-=20;
+      				}
+
+      			}
+			if(!nextCollision.collided){
+				if(collisionBetween(nextCollision, level[i])){
+					nextCollision.collided=true;
+				}
+			}
+      		}
+		if(!nextCollision.collided){ //previene la caduta
+			this.facingRight=!this.facingRight;
+			this.timer-=20;	
+		}
+      		//collision col player
+      		if (collisionBetween(this, player)) {
+      			this.xv = 0;
+      			this.yv = 0;
+      		}
+		this.calculateStance();
+      	}//fine di physics()
+	this.calculateStance = function (){
+		var previousStance = this.stance.x;
+		var maxTimer=11;
+		switch(this.stance.timer){
+			case 0: this.stance.x=0; break;
+			case maxTimer: this.stance.x=1; break;
+			case 2*maxTimer: this.stance.x=2; break;
+			case 3*maxTimer: this.stance.x=1; break;
+			case 4*maxTimer: this.stance.timer=-1; break;
+		}
+		if(previousStance==this.stance.x){
+			this.stance.timer++;
 		}
 	}//fine di calculateStance()
 }//fine di redSkeleton

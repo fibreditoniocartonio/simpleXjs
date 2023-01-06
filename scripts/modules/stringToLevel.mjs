@@ -94,6 +94,14 @@ function stringToLevel(lvlString) {
 				checkBackAndForGround(background, foreground, lvlString[i - 1]); //se il blocco prima era un background o foreground lo carica sotto il player
 				break;
 
+			case 'Ќ': // Ќ indica un armored knight
+				var entita = new newArmoredKnight();
+				entita.x = (i % widthTot) * blockDimension;
+				entita.y = (heightTot - 1) * blockDimension - 2;
+				entity.push(entita);
+				checkBackAndForGround(background, foreground, lvlString[i - 1]); //se il blocco prima era un background o foreground lo carica sotto il player
+				break;
+
 			case '0':
 			case '1':
 			case '2':

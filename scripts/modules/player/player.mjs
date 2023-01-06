@@ -857,7 +857,7 @@
       			this.width = 30;
       			this.standingHeight = 57;
       			this.crouchedHeight = 33;
-			this.damageWhip=2;
+			this.damageWhip=[2,3];
 			this.damageSliding=1;
 			this.damageUppercut=3;
 			this.entityWhippedIndex=[];
@@ -1141,8 +1141,12 @@
       						}
       					}
       					if (player.attackTimer > 14) {
-      						let corda = [];
-      						corda["damage"] = player.damageWhip;
+      						var corda = [];
+						if(armaturaAcquired[2]){
+      							corda["damage"] = player.damageWhip[1];
+						}else{
+      							corda["damage"] = player.damageWhip[0];
+						}
       						corda["width"] = 84;
       						corda["height"] = 24;
       						if (player.facingRight) {
@@ -1151,10 +1155,13 @@
       							corda["x"] = player.x - corda.width;
       						}
       						corda["y"] = player.y + 2;
-      						for (let i = 0; i < entity.length; i++) { //contatto con entita'
+      						for (var i = 0;; i++) { //contatto con entita'
 							for(let j=0; j < player.entityWhippedIndex.length; j++){ //skippa le entita' gia' whippate con questo colpo
-								if(i==player.entityWhippedIndex[j] && i+1<entity.length){i++; j=-1;}
+								if(i==player.entityWhippedIndex[j]){
+									i++; j=-1; 
+								}
 							}
+							if(!(i<entity.length)){break;}//the cycle check is mid cycle because i can change the i with the previous for.
       							if (entity[i].life > 0 && !(entity[i].type == "sparoDelPlayer" || entity[i].type == "pickup" || entity[i].type == "enemyShot")) {
       								if (collisionBetween(corda, entity[i])) {
       									if (entity[i].getHit) {
