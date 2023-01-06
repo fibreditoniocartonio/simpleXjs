@@ -1,4 +1,3 @@
-      var versioneDiGioco = "v1.20230105"; //Added Zombie
       debugMode = false; //you can enable debugMode with the console (press f12 in the browser)
       showMouseBox = false; //you can enable showMouseBox with the console (press f12 in the browser)
 

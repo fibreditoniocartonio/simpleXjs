@@ -547,12 +547,13 @@ function newZombie() { //zombie
 		this.calculateStance();
 	      	this.yv += level.gravity/2; //get level gravity/2
     		this.y += this.yv; //apply gravity
+		//level collision
+		var latoSx = new rectTest(this.x, this.y + this.height/2 - 2, 2, 4);
+		var latoDx = new rectTest(this.x+this.width-2, this.y + this.height/2 - 2, 2, 4);
       		for (var i = 0; i < level.length; i++) {
       			if (collisionBetween(this, level[i])) {
 				this.y += -this.yv;
       				this.yv = 0;
-				var latoSx = new rectTest(this.x, this.y + this.height/2 - 2, 2, 4);
-				var latoDx = new rectTest(this.x+this.width-2, this.y + this.height/2 - 2, 2, 4);
       				if (collisionBetween(latoSx, level[i]) || collisionBetween(latoDx, level[i])) { //collisione x
       					this.x -= -this.xv;
       				}
@@ -575,10 +576,15 @@ function newZombie() { //zombie
 		}else if(this.timer==1){
 			this.stance.timer=-1;
 		}else{
-			switch(this.stance.timer){
-				case 0: this.stance.x=0; break;
-				case maxTimer: this.stance.x=1; break;
-				case 2*maxTimer: this.stance.timer=-1; break;
+			if(this.xv>0.1 || this.xv<-0.1){ //in movimento
+				switch(this.stance.timer){
+					case 0: this.stance.x=0; break;
+					case maxTimer: this.stance.x=1; break;
+					case 2*maxTimer: this.stance.timer=-1; break;
+				}
+			}else{ //fermo
+				this.stance.x=0;
+				this.stance.timer=-1;
 			}
 		}
 		if(previousStance==this.stance.x){
@@ -667,12 +673,13 @@ function newRedSkeleton() { //red skeleton
 		}
 	      	this.yv += level.gravity/2; //get level gravity/2
     		this.y += this.yv; //apply gravity
-      		for (var i = 0; i < level.length; i++) {
+		//collision with level
+		var latoSx = new rectTest(this.x, this.y + this.height/2 - 2, 2, 4);
+		var latoDx = new rectTest(this.x+this.width-2, this.y + this.height/2 - 2, 2, 4);
+      		for (var i = 0; i < level.length; i++){
       			if (collisionBetween(this, level[i])) {
 				this.y += -this.yv;
       				this.yv = 0;
-				var latoSx = new rectTest(this.x, this.y + this.height/2 - 2, 2, 4);
-				var latoDx = new rectTest(this.x+this.width-2, this.y + this.height/2 - 2, 2, 4);
       				if (collisionBetween(latoSx, level[i]) || collisionBetween(latoDx, level[i])) { //collisione x
       					this.x -= -this.xv*2.5;
 					this.facingRight=!this.facingRight;

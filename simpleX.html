@@ -25,7 +25,7 @@ body {background-color:black; overflow: hidden;}
   position: absolute;
   visibility:hidden;
   z-index: 3;
-  top:3%;
+  top:4%;
   left:0%;
   width:100%;
   height:100%;
@@ -33,8 +33,8 @@ body {background-color:black; overflow: hidden;}
 
 .buttonDiv {
   position: absolute;
-  width:7%;
-  height:11%;
+  width:12%;
+  height:23%;
 }
 
 .buttonClass {
@@ -49,23 +49,24 @@ body {background-color:black; overflow: hidden;}
 <body>
 <title>Simple X Js</title>
 <!--Buttons-->
-<button style = 'font-size: large; background-color: #00000000; color: #ffffff;' id="btEnabler" onpointerdown='setTouchButtonIndex()'>TouchButtons On/Off</button>
+<div style='position:absolute; width:10%; height:4%; z-index:4;'><button class="buttonClass" id="btEnabler" onpointerdown='setTouchButtonIndex()'>TouchButtons Toggle</button></div>
 <div class='buttonLayerDiv' id='ButtonLayerDivId'>
-<div class='buttonDiv' style='left:7%; top:44%;'><button class="buttonClass" id="ArrowUp" onpointerenter='touchButtonPress(id)' onpointerleave='touchButtonLeave(id)'>↑</button></div>
-<div class='buttonDiv' style='left:7%; top:66%;'><button class="buttonClass" id="ArrowDown" onpointerenter='touchButtonPress(id)' onpointerleave='touchButtonLeave(id)'>↓</button></div>
-<div class='buttonDiv' style='left:0%; top:55%;'><button class="buttonClass" id="ArrowLeft" onpointerenter='touchButtonPress(id)' onpointerleave='touchButtonLeave(id)'>←</button></div>
-<div class='buttonDiv' style='left:14%; top:55%;'><button class="buttonClass" id="ArrowRight" onpointerenter='touchButtonPress(id)' onpointerleave='touchButtonLeave(id)'>→</button></div>
-<div class='buttonDiv' style='right:14%; top:55%;'><button class="buttonClass" id="a" onpointerenter='touchButtonPress(id)' onpointerleave='touchButtonLeave(id)'>A</button></div>
-<div class='buttonDiv' style='right:0%; top:55%;'><button class="buttonClass" id="x" onpointerenter='touchButtonPress(id)' onpointerleave='touchButtonLeave(id)'>X</button></div>
-<div class='buttonDiv' style='right:7%; top:66%;'><button class="buttonClass" id="z" onpointerenter='touchButtonPress(id)' onpointerleave='touchButtonLeave(id)'>Z</button></div>
-<div class='buttonDiv' style='width:11%; left:0%; top:17%;'><button class="buttonClass" id="d" onpointerenter='touchButtonPress(id)' onpointerleave='touchButtonLeave(id)'>L</button></div>
-<div class='buttonDiv' style='width:11%; right:0%; top:17%;'><button class="buttonClass" id="c" onpointerenter='touchButtonPress(id)' onpointerleave='touchButtonLeave(id)'>R</button></div>
-<div class='buttonDiv' style='height:7%; left:0%; top:2%;'><button class="buttonClass" id="Enter" onpointerenter='touchButtonPress(id)' onpointerleave='touchButtonLeave(id)'>Start</button></div>
-<div class='buttonDiv' style='height:7%; right:0%; top:0%;'><button class="buttonClass" id="Shift" onpointerenter='touchButtonPress(id)' onpointerleave='touchButtonLeave(id)'>Map</button></div>
+<div class='buttonDiv' style='height:18%; left:8%; top:34%;'><button class="buttonClass" id="ArrowUp" onpointerenter='touchButtonPress(id)' onpointerleave='touchButtonLeave(id)'>↑</button></div>
+<div class='buttonDiv' style='height:18%; left:8%; top:75%;'><button class="buttonClass" id="ArrowDown" onpointerenter='touchButtonPress(id)' onpointerleave='touchButtonLeave(id)'>↓</button></div>
+<div class='buttonDiv' style='width:14%; left:0%; top:52%;'><button class="buttonClass" id="ArrowLeft" onpointerenter='touchButtonPress(id)' onpointerleave='touchButtonLeave(id)'>←</button></div>
+<div class='buttonDiv' style='width:14%; left:14%; top:52%;'><button class="buttonClass" id="ArrowRight" onpointerenter='touchButtonPress(id)' onpointerleave='touchButtonLeave(id)'>→</button></div>
+<div class='buttonDiv' style='right:12%; top:49%;'><button class="buttonClass" id="a" onpointerenter='touchButtonPress(id)' onpointerleave='touchButtonLeave(id)'>Shoot</button></div>
+<div class='buttonDiv' style='right:0%; top:49%;'><button class="buttonClass" id="x" onpointerenter='touchButtonPress(id)' onpointerleave='touchButtonLeave(id)'>Dash / Confirm</button></div>
+<div class='buttonDiv' style='width:16%; right:4%; top:72%;'><button class="buttonClass" id="z" onpointerenter='touchButtonPress(id)' onpointerleave='touchButtonLeave(id)'>Jump / Cancel</button></div>
+<div class='buttonDiv' style='height:9%; left:0%; top:7%;'><button class="buttonClass" id="d" onpointerenter='touchButtonPress(id)' onpointerleave='touchButtonLeave(id)'>L</button></div>
+<div class='buttonDiv' style='height:9%; right:0%; top:7%;'><button class="buttonClass" id="c" onpointerenter='touchButtonPress(id)' onpointerleave='touchButtonLeave(id)'>R</button></div>
+<div class='buttonDiv' style='height:4%; left:0%; top:2%;'><button class="buttonClass" id="Enter" onpointerenter='touchButtonPress(id)' onpointerleave='touchButtonLeave(id)'>Start</button></div>
+<div class='buttonDiv' style='height:4%; right:0%; top:2%;'><button class="buttonClass" id="Shift" onpointerenter='touchButtonPress(id)' onpointerleave='touchButtonLeave(id)'>Map</button></div>
 </div>
 <!--Internal Modules-->
 <script src="scripts/modules/alert.mjs" type="text/javascript" charset="utf-8"></script>
 <script src="scripts/modules/levelsDefault.mjs" type="text/javascript" charset="utf-8"></script>
+<script src="scripts/modules/gameVersion.mjs" type="text/javascript" charset="utf-8"></script>
 <script src="scripts/modules/mapFunctions.mjs" type="text/javascript" charset="utf-8"></script>
 <script src="scripts/modules/menus.mjs" type="text/javascript" charset="utf-8"></script>
 <script src="scripts/modules/renderGameScreen.mjs" type="text/javascript" charset="utf-8"></script>

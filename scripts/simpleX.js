@@ -1,4 +1,3 @@
-      var versioneDiGioco = "v0.20230105"; //Added Zombies
       debugMode = false; //you can enable debugMode with the console (press f12 in the browser)
 
       //crea il canvas
