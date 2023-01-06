@@ -8,7 +8,7 @@ You can even play it directly from browser at [https://fibreditoniocartonio.gith
 
 ## Assets
 I'm not a good artist and to speed up the development of the game engine I'm currently using some assets non-conforming to the GPL3 License.<br>
-If you are an artist and want to contribute with some beautiful free assets you can contact me on the [Discord Server](https://discord.gg/7dEmHX39bA).
+If you are an artist and want to contribute with some beautiful free assets you can contact me on the [Discord Server](https://discord.gg/7dEmHX39bA), when I'll have enough free assets I will remove all the non-conforming ones.
 
 ## Discord Server
 You can join the dedicated Discord Server from [here](https://discord.gg/7dEmHX39bA).
