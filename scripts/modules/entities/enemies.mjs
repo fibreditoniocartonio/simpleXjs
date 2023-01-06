@@ -13,8 +13,8 @@
       	this.slope = 0;
       	this.width = 34;
       	this.height = 16;
-      	this.color1 = '#8500b5';
-      	this.color2 = '#d7b600';
+      	this.color1 = '#000000';
+      	this.color2 = '#ff4a8c';
       	this.speed = 0.5;
       	this.hasPhysics = true;
       	this.canSelfDraw = true;
@@ -727,7 +727,7 @@ function newRedSkeleton() { //red skeleton
 
 function newArmoredKnight() { //armored Knight
       	this.name = "armored knight";
-	this.letter = "Ќ";
+	this.letter = "K";
       	this.type = "monster";
       	this.life = 6;
       	this.damage = 2;
@@ -840,4 +840,169 @@ function newArmoredKnight() { //armored Knight
 			this.stance.timer++;
 		}
 	}//fine di calculateStance()
-}//fine di redSkeleton
+}//fine di armoredKnight
+
+function newSpearKnight() { //spear armored Knight
+      	this.name = "spear armored knight";
+	this.letter = "Ќ";
+      	this.type = "monster";
+      	this.life = 6;
+      	this.damage = 2;
+	this.sprite = new Image();
+      	this.sprite.src = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEgAAABACAYAAAC5vjEqAAAAAXNSR0IArs4c6QAABJJJREFUeJztWttt6zAMpQxPlK8gkwTuCsH9TjfIAF4hQSYx0p8OcRfR/XCOzNCibPnRSs49gNGmTkmK4kOkaB73M2nYHy/WNpY+vomuOyJzMPS4n436D5HIgX4xhvjtZMgcjPv7TLmzou9VEIiAuG0s2cb23k9FTvRVC6pqS7eToapud8Ec+ozmIBf6JVGnUc0/sQsw01jkTL+Ar3JGIMohiY8109zpF0Str1Z1nwlnVNX2xUSr2o5mkjP94nE/m9vJ0HVHZBvrGEl/RSaINdPc6RsisiDKAb9FJggJGGKwP16ypl9Kohzm0GYBZARfBvj6+xmi3xM6N/oFCCMlarvBmfJHwufXWdN/lhrWNtZWdfsQkXv4Z9tY97eqtu4zaMjvP+7n7OmTRsz3+BhIAfD4aGVKv3vBGfmYTdyBrOmXROSqXX7avO6I6OnPY7JAlw0+6Y/oEORMv3zcz2Z/NBbEEPFvKskOz/ZB8Du50y+DbxcE30WeaUK7mwKcgkKCYlemAuYrUyjcYAklSRpVbVv61K/DYlAQvZ4mUbNUzGSXAvjwxWARS9CV56CP7/bnnBaK2g8C1nSBodooZmGoySAvfkJJUzGooBCm7Iy0oiWbZLKuAg9tE8bw7QXp28m49CgZLQ0Uk2tiruzeLLaWQmSQ9u0sb5VOxdykwtFzMdlYkmY7lblsS/gKS3Mws4I2NiCk4Fj51Rjk292pC+CCE3WZEbS0nkxMegYPbLBPCVPkL0Cc900g2FAzKWYBckeloPKoEbPLXDlEr5krtIYx8ntdzAfpHmvFKezy2BgklcMVL5XOfx8rv+piIbOPWUAMwNMcTNQGyMPh7aRfMcfK70/zHiDwcRccC1dQCkG170YRFwgpZ4r8pQygQ8yB2IXwegzKxkDBXHB6oSp+ivwl0atPMsGt5sO+9zHgwbS9n5pOq7XO7i7+2ROy1N7YvLQzeJwaK79zMenHYOQjMvQ+FssoqXXhpwUF6cRsjBlqGP0m9sfLb4sw3DDjd99Eyw85pY6ggnCAXLugTBmqgnjtxFsTNDNe5AanIG3GZumUnBtcLTY0Y8MntGzTjY7wn0vNF6YEV2qEZmyI2nfyTpsrZ6muYGooibpzhG0sXdnICBY91LI0B7PZQO5mFGW2gsVwiJOo+z5O4lsM3KOLVf5uzK3lVhC8OJQHRB/4/+2Pl82lfxaD2kArFYHPviCMd7yOwxlpaDRXQ3JK5qMf8sF4CB8tGXowPjI0q8Mfbfxk7bWPgXMxmbGkxcjPPuuRTXlA695dd+3xApU4eLBM6toWvwbsHh8oImE9GDiSg0ealWgDTNqTsgW5dgdSPa+7cHqWZ5xQZ44fMufGkmTaHT7lSEj30RafVIBdAK7U8M0Y/8TdeerozQf5wK1nqydmDbPGX94BvVLDF5zXuCTMBVEWhAp/i30fDdEu9m5dRVVB2tlnq40xDT0FIf6kPr/8U3A96dCXeJr/72IC0pLe1sV4Koeb8WGkd031LxYklcSvmd81JhlS2gq8nNBi1NolRwrVfEHUn9/zHQYx5In374Ik5oNSxj+u8llavCujJQAAAABJRU5ErkJggg==";
+	this.stance=[];
+	this.stance["x"]=0;
+	this.stance["y"]=0;
+	this.stance["timer"]=0;
+	this.x = 0;
+      	this.y = 0;
+      	this.xv = 0;
+      	this.yv = 0;
+	this.facingRight=true;
+	this.attacking=false;
+      	this.slope = 0;
+      	this.width = 30;
+      	this.height = 62;
+      	this.color1 = '#6b8cff';
+      	this.color2 = '#333333';
+      	this.speed = 0.33;
+	this.timer=-60;
+      	this.hasPhysics = true;
+      	this.canSelfDraw = true;
+      	this.selfDraw = function (xdisegnata, ydisegnata, indiceDiQuestaEntity){
+		if(this.timer<1){
+			var fixForWindows=0.5;
+			var mostraSpear=8;
+			if(this.attacking){
+				mostraSpear=24;
+			}
+			if (this.facingRight) {
+      				ctx.drawImage(this.sprite, 24*this.stance.x+fixForWindows, 32*this.stance.y+fixForWindows, 16+mostraSpear-fixForWindows*2, 32-fixForWindows*2, xdisegnata, ydisegnata-1, (16+mostraSpear)*2, 32*2);
+      			} else {
+      				ctx.save(); //salvo il canvas attuale
+	      			ctx.scale(-1, 1); //flippa il canvas per fare lo sprite mirrorato
+	      			ctx.drawImage(this.sprite, 24*this.stance.x+fixForWindows, 32*this.stance.y+fixForWindows, 16+mostraSpear-fixForWindows*2, 32-fixForWindows*2, -xdisegnata+(mostraSpear*2), ydisegnata-1, -(16+mostraSpear)*2, 32*2);
+      				ctx.restore(); //faccio tornare come prima al punto di save() altrimenti rimane buggato
+      			}
+			if(debugMode){ //show attack hitbox and timer
+				if(this.attacking){
+					disegnaTestoConBordino(this.timer, xdisegnata, ydisegnata, "#000000", "#ffffff");
+					var attackHitbox = new rectTest(this.x-(24*2), this.y+(9*2), (24*2), (8*2));
+					if(this.facingRight){ attackHitbox.x=this.x+2+this.width;}
+					ctx.fillStyle="#00ff0080";
+					ctx.fillRect(attackHitbox.x, attackHitbox.y, attackHitbox.width, attackHitbox.height);
+				}else{
+					var potentialAttack = new rectTest(xdisegnata-(24*2)-this.width/2, ydisegnata+(9*2), ((24+this.width/4)*2), (8*2));
+					if(this.facingRight){ potentialAttack.x=xdisegnata+2+this.width;}
+					ctx.fillStyle="#ff000080";
+					ctx.fillRect(potentialAttack.x, potentialAttack.y, potentialAttack.width, potentialAttack.height);
+				}
+			}
+		}
+      	}
+      	this.getHit = function (nome, danno) {
+      		this.life -= danno;
+		this.timer=6;
+      	}
+      	this.physics = function (xdisegnata, ydisegnata, indiceDiQuestaEntity) {
+		if(this.timer>0){ //when hit can't move
+			this.timer--;
+		}else{
+			if(this.attacking){
+				this.timer++;
+				var attackHitbox = new rectTest(this.x-(24*2), this.y+(9*2), (24*2), (8*2));
+				if(this.facingRight){ attackHitbox.x=this.x+2+this.width;}
+				attackHitbox["damage"]=this.damage*2;
+				if(collisionBetween(attackHitbox, player)){
+					player.getHit(attackHitbox.damage);
+				}
+				if(this.timer>-1){
+					this.attacking=false;
+				}
+			}else{
+				//can attack player
+				var potentialAttack = new rectTest(this.x-(24*2)-this.width/2, this.y+(9*2), ((24+this.width/4)*2), (8*2));
+				if(this.facingRight){ potentialAttack.x=this.x+2+this.width;}
+				if(collisionBetween(potentialAttack,player)){ //if can hit the player start the attack
+					this.attacking=true;
+					this.timer=-45;
+				}else{ //if cannat attack, it will move
+					if(this.timer==0){
+						var randomDir=Math.floor(Math.random()*3)
+						if(randomDir==0){ //ogni tot frame ha una possibilita di cambiare direzione
+							this.facingRight=!this.facingRight;
+						}
+						this.timer=-90+randomDir*10;
+					}else{
+						this.timer++;
+					}
+					if(!this.facingRight){
+						this.xv+= this.speed;
+					}else{
+						this.xv+= -this.speed;
+					}
+				}
+			}
+		}
+		this.xv = this.xv*level.friction;
+		this.x += -this.xv;
+	      	this.yv += level.gravity/2; //get level gravity/2
+    		this.y += this.yv; //apply gravity
+		//collision with level + prevent fall
+		var latoSx = new rectTest(this.x, this.y + this.height/2 - 2, 2, 4);
+		var latoDx = new rectTest(this.x+this.width-2, this.y + this.height/2 - 2, 2, 4);
+		var nextCollision = new rectTest(this.x+this.width/2-2, this.y+this.height-1, 4, 2);
+		nextCollision["collided"]=false;
+		if(this.facingRight){ nextCollision.x+=this.width;
+		}else{ nextCollision.x-=this.width;}
+      		for (var i = 0; i < level.length; i++){
+      			if (collisionBetween(this, level[i])) {
+				this.y += -this.yv;
+      				this.yv = 0;
+      				if (collisionBetween(latoSx, level[i]) || collisionBetween(latoDx, level[i])) { //collisione x
+      					this.x -= -this.xv*2.5;
+					if(!this.attacking){
+						this.facingRight=!this.facingRight;
+						this.timer-=20;
+					}
+      				}
+
+      			}
+			if(!nextCollision.collided){
+				if(this.attacking || collisionBetween(nextCollision, level[i])){
+					nextCollision.collided=true;
+				}
+			}
+      		}
+		if(!nextCollision.collided){ //previene la caduta
+			this.facingRight=!this.facingRight;
+			this.timer-=20;	
+		}
+      		//collision col player
+      		if (collisionBetween(this, player)) {
+      			this.xv = 0;
+      			this.yv = 0;
+      		}
+		this.calculateStance();
+      	}//fine di physics()
+	this.calculateStance = function (){
+		var previousStance = this.stance.x;
+		var maxTimer=11;
+		if(this.attacking){
+			this.stance.x=0; this.stance.y=1;
+			this.stance.timer=0;
+		}else{
+			this.stance.y=0;
+			switch(this.stance.timer){
+				case 0: this.stance.x=0; break;
+				case maxTimer: this.stance.x=1; break;
+				case 2*maxTimer: this.stance.x=2; break;
+				case 3*maxTimer: this.stance.x=1; break;
+				case 4*maxTimer: this.stance.timer=-1; break;
+			}
+			if(previousStance==this.stance.x){
+				this.stance.timer++;
+			}
+		}
+	}//fine di calculateStance()
+}//fine di spearKnight

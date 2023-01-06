@@ -110,6 +110,20 @@
       					nome: 'Shotgun Ice'
       				},
       			];
+			this.getHit = function(damage){
+      				if (this.invulnerability < 1) { //entity collison								            		
+      					this.color1 = this.damagedColor;
+      					this.color2 = this.damagedColor;
+      					this.coloreArmatura = this.damagedColor;
+      				if (armaturaAcquired[3] && (damage > 1)) {
+      					this.life = this.life - (damage - 1);
+      				} else {
+      					this.life = this.life - damage;
+      				}
+      					this.invulnerability = 40;
+      					this.canMove = false;
+      				}
+			}
       			this.disegnaPlayer = function (xdisegnata, ydisegnata, larghezza, altezza, dettagli, colore1, colore2, coloreArmatura) {
       				var coloreTemp = colore2;
       				ctx.fillStyle = colore1;
@@ -659,19 +673,8 @@
       					if (entity[i].life > 0 && !(entity[i].type == "sparoDelPlayer")) {
       						if (collisionBetween(player, entity[i])) {
       							if (entity[i].damage > 0) {
-      								if (player.invulnerability < 1) { //entity collison								            		
-      									player.color1 = player.damagedColor;
-      									player.color2 = player.damagedColor;
-      									player.coloreArmatura = player.damagedColor;
-      									if (armaturaAcquired[3] && (entity[i].damage > 1)) {
-      										player.life = player.life - (entity[i].damage - 1);
-      									} else {
-      										player.life = player.life - entity[i].damage;
-      									}
-      									player.invulnerability = 40;
-      									player.canMove = false;
-      									break;
-      								}
+								player.getHit(entity[i].damage);
+								break;
       							} else { //qui stiamo parlando delle entita' con danno<1, praticamente i pickup (se hanno il danno in negativo restituiscono la vita a X)
       								if ((player.life - entity[i].damage) > player.lifeMax) {
       									var vitaRecuperabile = (0 - entity[i].damage) - (player.lifeMax - player.life);
@@ -695,6 +698,7 @@
       						}
       					}
       				}
+
       				if (player.invulnerability > 0) { //se l'invulnerabilita' e' >=1 la riduce e colora x in base a che punto e'
       					player.invulnerability--;
       					if (player.invulnerability == 90000) {
@@ -967,22 +971,24 @@
       			}
 			
 			this.getHit = function (damage){
-      				if (armaturaAcquired[3] && (damage > 1)) {
-      					player.life = player.life - (damage - 1);
-      				} else {
-      					player.life = player.life - damage;
-      				}
-				player.invulnerability = 40;
-      				player.stun = true;
-				if(player.attacking){player.attackTimer=player.attackTimerMax+1;}//disable attacks
-				if(player.crouching){ //stop crouching
-					player.sliding = false;
-					player.crouching = false;
-      					player.y -= (player.standingHeight - player.crouchedHeight);
-					player.height = player.standingHeight; //stop crouching and make the player stand up
+				if(player.invulnerability<1){
+      					if (armaturaAcquired[3] && (damage > 1)) {
+      						player.life = player.life - (damage - 1);
+      					} else {
+      						player.life = player.life - damage;
+      					}
+					player.invulnerability = 40;
+      					player.stun = true;
+					if(player.attacking){player.attackTimer=player.attackTimerMax+1;}//disable attacks
+					if(player.crouching){ //stop crouching
+						player.sliding = false;
+						player.crouching = false;
+      						player.y -= (player.standingHeight - player.crouchedHeight);
+						player.height = player.standingHeight; //stop crouching and make the player stand up
+					}
+					player.xv=player.xv/3; //riduco il movimento x
+					if(player.yv<0){ player.yv=player.yv/2; } //riduco il salto
 				}
-				player.xv=player.xv/3; //riduco il movimento x
-				if(player.yv<0){ player.yv=player.yv/2; } //riduco il salto
 			}
 
       			this.physics = function (player, lvl) { //this function handles the platformer physics - in realta' solo del player
