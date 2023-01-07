@@ -1168,12 +1168,16 @@
 								}
 							}
 							if(!(i<entity.length)){break;}//the cycle check is mid cycle because i can change the i with the previous for.
-      							if (entity[i].life > 0 && !(entity[i].type == "sparoDelPlayer" || entity[i].type == "pickup" || entity[i].type == "enemyShot")) {
+      							if (entity[i].life > 0 && !(entity[i].type == "sparoDelPlayer" || entity[i].type == "pickup" )) {
       								if (collisionBetween(corda, entity[i])) {
       									if (entity[i].getHit) {
       										entity[i].getHit("corda", corda.damage);
 										player.entityWhippedIndex.push(i);
-      									}
+      									}else{
+										if(entity[i].type = "enemyShot"){ //shot eraser
+											entity[i].life=-1;
+										}
+									}
       								}
       							}
       						}

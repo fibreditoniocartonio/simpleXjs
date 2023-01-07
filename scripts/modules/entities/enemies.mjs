@@ -601,10 +601,10 @@ function newRedSkeleton() { //red skeleton
       	this.damageDefault = 1;
       	this.damage = this.damageDefault;
 	this.sprite = new Image();
-      	this.sprite.src = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEAAAAAgCAYAAACinX6EAAAAAXNSR0IArs4c6QAAA7dJREFUaIHNWbuR2zAQXWgYOnQJChA6UHAlXMACLrwiGKgEBirCoQtA4BIcMLgQgUpw6BAzcEA+6nEJEDhJtvRmbsQhsQu8xf6AM0Mf5F44HJuo3w19MAWZu81/DRazX0OAZUPn1hMcm1ir4xGYDZAicHat2AoCkG1OrYiIhM7J2Y3P3kqVjkdhJ7Imf3btgkDKM4DUN8gCJR2PRMO75+11SiAPI2oDPDMWOcB6ucoIZzca7+xasf7y/lqD/k80IrLaPZCoJcCk9ftnN0IjIsndE8kTYwx9MBzfIAzyNToeiWbog7EZAkDonDTTmFw2T3mQ/vaMJXHOAVsE+HuOBErgFp6yJE6dYNz6C52L3kr0dnwWkTj0QfhPj8ezt5ff0LmV/KOxE1m7NfcE3o67a/0lLELnVnWddcAbvBXZtxdd3Cg9S1+ww8PQB8MkvF0SQG5gV8+RCJ2T0DnZt5eOcN+62ZgY8wxGSJ5Eapoabn0BVAT9Hq1xKjnW5I5/iexRjBeWWujZjUb6yMjr1prLIgx8K/mhDzefJlfS2MU565/aJPmi4tP6PKC/P0Of0ByOTTIb65MdJzORtBH4XJHyAAa+D++vi/dfvjfxz/uYi779/hk/vr4WS+Yt1cTkFOgTYs5dkTgxvtRHaF1bPQEbI1d1chtYi115yG1ANRFZhpOuOgATZfIwIPTdq4JUZRB2aQ6NlFfsWydeRi9YyHi6IMnE/eHYRHSL+oIlNedkBHNLIkx6ABaiyXKDkyqBGJOL99LJcOiDgSyqTA6hc3c5aa5yQCmWeQdLLoyFiixL31bcw/j7drnbIItkjCRsvdx0rlh4AMeaJu/tSGaLPJBKeFu7yfMz+dQcfF13D2CCzYyvPaK0g3rXIXvNzmP+1JXdtJ6bPMAIkWeSv34czctbv1pUiQQvWkSq5fT4GkxNW/X4FOYQ4OQ19MG8vPULw+B9SSEOQp/FFnFOoqw7VQqn47cGH+8XWFUBTVJ3gLX4TOxrGdR67h+Qf0p6VVLE/QTrXBhiNgAmY6s2p3Zug2uPr6lSuSWL9+w5uHvg+wfuRVByS4DHZJJmFEkkQY7ZXEzX/KcIC9ANUU6WDcHrYDIcorS23FqiiBiEBBKmtxLpZGrmPkAnIu7xU0bAQmoMoWW1XMo7UoaAEViekmAUERM6F+G1k6wJnYvNqTUYw7+GhOeJUwT1DuXIlMZrvXq8vpXeqg5cBXIk8R6/kweYaa64KIMMHQq5MVtkcrdGnxnPyHzPkt0gH+FNfwHkAVu1gKxGJwAAAABJRU5ErkJggg==";
+      	this.sprite.src = " data:image/png;base64,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";
 	this.stance=[];
 	this.stance["x"]=0;
-	this.stance["y"]=0;
+	this.stance["y"]=Math.floor(Math.random()*2);
 	this.stance["timer"]=0;
 	this.x = 0;
       	this.y = 0;
@@ -1006,3 +1006,97 @@ function newSpearKnight() { //spear armored Knight
 		}
 	}//fine di calculateStance()
 }//fine di spearKnight
+
+function newDragonCannon() { //bone dragon tower/cannon
+      	this.name = "dragon cannon";
+	this.letter = "ɖ";
+      	this.type = "monster";
+      	this.life = 16;
+      	this.damage = 1;
+	this.sprite = new Image();
+      	this.sprite.src = "data:image/png;base64,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";
+	this.stance=[];
+	this.stance["x"]=0;
+	this.stance["y"]=Math.floor(Math.random()*2);
+	this.stance["timer"]=0;
+	this.x = 0;
+      	this.y = 0;
+	this.facingRight=true;
+	this.attacking=false;
+	this.shootNumber=0;
+      	this.width = 30;
+      	this.height = 62;
+      	this.color1 = '#6b8cff';
+      	this.color2 = '#ee0000';
+	this.timer=-200-Math.floor(Math.random()*120);//timer for next attack
+      	this.hasPhysics = true;
+      	this.canSelfDraw = true;
+      	this.selfDraw = function (xdisegnata, ydisegnata, indiceDiQuestaEntity){
+		if(this.stance.timer>-1){
+			var fixForWindows=0.5;
+      			ctx.drawImage(this.sprite, 16*this.stance.x+fixForWindows, 32*this.stance.y+fixForWindows, 16-fixForWindows*2, 32-fixForWindows*2, xdisegnata, ydisegnata-1, (16)*2, 32*2);
+		}	
+		if(debugMode){ //show attack timer
+			disegnaTestoConBordino(this.timer, xdisegnata, ydisegnata, "#000000", "#ffffff");
+		}
+      	}
+      	this.getHit = function (nome, danno) {
+      		this.life -= danno;
+		this.stance.timer=-6;
+      	}
+      	this.physics = function (xdisegnata, ydisegnata, indiceDiQuestaEntity) {
+		if(this.x+this.width/2 > player.x+player.width/2){
+			this.facingRight=false;
+		}else if(this.x+this.width/2 < player.x+player.width/3){ 
+			this.facingRight=true;
+		}
+		if(this.stance.timer>-1){ //when hit can't do nothing
+			if(this.attacking){
+				if(this.timer==0){
+					if(this.shootNumber>0){
+      						var sparo = new newSparo(15, 10);
+      						if (this.facingRight) {
+		      					sparo.x = this.x + this.width - sparo.width/2;
+							sparo.y = this.y+ this.height/2 + sparo.height;
+      						} else {
+      							sparo.x = this.x - sparo.width/2;
+							sparo.y = this.y + sparo.height;
+		      				}
+	      					sparo.facingRight = this.facingRight;
+	      					sparo.type = "enemyShot";
+      						sparo.color = this.color2;
+      						sparo.damage = this.damage*3;
+      						sparo.speed = sparo.speed / 3.5;
+		      				entity.push(sparo);
+						this.stance.timer=8; //make it red
+						this.shootNumber--;
+					}
+					if(this.shootNumber==0){
+						this.attacking=false;
+						this.timer=-180-Math.floor(Math.random()*120);//timer for next attack
+					}else{
+						this.timer=-90;
+					}
+				}	
+				this.timer++;
+			}else{
+				if(this.timer==0){
+					this.shootNumber=2+Math.floor(Math.random()*2);
+					this.attacking=true;
+				}else{
+					this.timer++;
+				}
+			}
+		}
+		this.calculateStance();
+      	}//fine di physics()
+	this.calculateStance = function (){
+		if(this.stance.timer==0){
+			this.stance.x=0; //gray
+		}else{
+			this.stance.x=1; //red
+		}
+		if(this.stance.timer>0){ this.stance.timer--;}
+		if(this.stance.timer<0){ this.stance.timer++;}
+	}//fine di calculateStance()
+}//fine di dragonCannon 
