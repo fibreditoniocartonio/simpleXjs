@@ -749,13 +749,13 @@ function newGraySkeletonBone(stanceYP, damageP, xP, yP, xvP, yvP) { //the bone t
       	}//fine di physics()
 	this.calculateStance = function (){
 		var previousStance = this.stance.x;
-		var maxTimer=9;
+		var maxTimer=4;
 		switch(this.stance.timer){
 			case 0: this.stance.x=0; break;
 			case maxTimer: this.stance.x=1; break;
-			case 2*maxTimer: this.stance.x=0; break;
-			case 3*maxTimer: this.stance.x=2; break;
-			case 4*maxTimer: this.stance.timer=-1; break;
+			case 2*maxTimer: this.stance.x=2; break;
+			//case 3*maxTimer: this.stance.x=2; break;
+			case 3*maxTimer: this.stance.timer=-1; break;
 		}
 		if(previousStance==this.stance.x){
 			this.stance.timer++;
@@ -1270,3 +1270,108 @@ function newDragonCannon() { //bone dragon tower/cannon
 		if(this.stance.timer<0){ this.stance.timer++;}
 	}//fine di calculateStance()
 }//fine di dragonCannon 
+
+function newBlackLeopard() { //black leopard
+      	this.name = "black leopard";
+	this.letter = "ȴ";
+      	this.type = "monster";
+      	this.life = 1;
+      	this.damage = 2;
+	this.sprite = new Image();
+      	this.sprite.src = " data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAIAAAAAQCAYAAADeWHeIAAAAAXNSR0IArs4c6QAAA8VJREFUaIHFWcuR6jAQHL8igA2Cg0IgCAVAIHvg6CMHAiEAB8FhA9CBIDYAqvwO3jbt9kiWvfBeV1EF9khqzU8zorH/iNv1tCjz0Z57M7Pv9tS8cu3D8Zx95/ECD+BVfA7Hc5UeSlxCen5P4fl9iePheLadPsxt/pUbLiG3uZThwPKv4oj98tz72NnuEkeZJDw9vNppGWx0M7PHZzf5vbvEkWOJx8wBFB/tuQ8pb4BXAcoOadgMKzsnC/kRx3OfwnbFp2C92WDsext7zO3xUQO48/0ie2kgLK3N/B6f3egQ9y6vR7OCA7BB/hWwlio7hcEo9jUYaFfgBGc1W6f4ifG7qTJLzshyyn0pe3lQ507hOU8tl90ljny84KU1mj85EiFNjR9S2SsxDp9Fliuwj0/legrgc89s4FrDl8b3+9iNaR7jaxUO5GTBRfl4vz29mz0dTFN9DR/WBdYYZXSQCuhGknPmavo2M7u3cVUUfrenxo55g60xhPItcUDkb12DUXIYzgb6DPrbx84sxcm734IzyHicU8C4GaAERMo+dqNXc8Sw3JooNDO7XU/N7To11pLH8wY91HDQAg/r4lkK8yyDZ/hA1uPLctCVGiKkegcs6QRzTgpWWhdAUKxyAF2YJ+UzUM/BtUeCOoFuZolXSdbjovN74/gdCk3+lJxA2zSew19pjhrnYN7MAfxUxsxsRuB2PWVbMa/Q0QVzRLFhbgNr7wE0wuHRKA6X6gKONiqsGpKd7JfnXGMo1dusdfzhwPPhHiAXJLl2j/kBaF21flGjY333HkAJmg3nFhdiOfz2DFVAKWpoTZ8KVrR2M964kKxJwSaK84y1BJW9t7Fn7pj/3sZZXZJbJwl/dShvntSee83COUdevAcYBam12AIqIKujCU6H9QFs5oM2uuQQs/OPMhG6gEcc+uYtxveA8XAEs2F+3DP8iFWtoRnt8dkVe3yVz6HqImgULqT3dwHR6KU6VM3eZjULFM71nnv/UrRshZcZzKZVfwm8J47wXDbBmBq7ZO8BuG+tbUk0Q5QKqhrA+Ci0mF/uPVfb3v8IqiwYPyRrfo6Ct17hgsN3e2qWbukYGgAoOtGNbeXi3gN45z3Oxlxxgc1wkVLrhbXgM92LHr2X8N4pdpc4eR6STY6HN6PoaNy3l856zQR4V0PAPQK8VI9nbHzt/b3xW53A24Q6JyvGu0J9dyS/C5x5S/uAjlBX2Jf19y7OMmbJGarawFdhSxvI8HhxBQ9ITdB4ay39K/kvwdzg5OrgioMUsfjO7W1pHczxF0nFMERWN/VPAAAAAElFTkSuQmCC";
+	this.sprite["larg"]=32;
+	this.sprite["alt"]=16;
+	this.stance=[];
+	this.stance["x"]=0;
+	this.stance["y"]=0;
+	this.stance["timer"]=0;
+	this.x = 0;
+      	this.y = 0;
+      	this.xv = 0;
+      	this.yv = 0;
+	this.facingRight=false;
+      	this.slope = 0;
+      	this.width = 56;
+      	this.height = 32;
+      	this.color1 = '#330000';
+      	this.color2 = '#ff0000';
+      	this.speed = 1.3;
+      	this.hasPhysics = true;
+      	this.canSelfDraw = true;
+      	this.selfDraw = function (xdisegnata, ydisegnata, indiceDiQuestaEntity) {
+		var fixForWindows=0.5;
+		if (!this.facingRight) {
+      			ctx.drawImage(this.sprite, this.sprite.larg*this.stance.x+fixForWindows, this.sprite.alt*this.stance.y+fixForWindows, this.sprite.larg-fixForWindows*2, this.sprite.alt-fixForWindows*2, (xdisegnata-2), ydisegnata, (this.sprite.larg)*2, (this.sprite.alt)*2);
+      		} else {
+      			ctx.save(); //salvo il canvas attuale
+      			ctx.scale(-1, 1); //flippa il canvas per fare lo sprite mirrorato
+      			ctx.drawImage(this.sprite, this.sprite.larg*this.stance.x+fixForWindows, this.sprite.alt*this.stance.y+fixForWindows, this.sprite.larg-fixForWindows*2, this.sprite.alt-fixForWindows*2, -(xdisegnata-2), ydisegnata, -(this.sprite.larg)*2, (this.sprite.alt)*2);
+      			ctx.restore(); //faccio tornare come prima al punto di save() altrimenti rimane buggato
+      		}
+		if(debugMode){
+			ctx.fillStyle="#00ff0080"; ctx.fillRect(xdisegnata, ydisegnata, this.width, this.height);
+			if(this.stance.x==0){
+			var activatorBox = new rectTest(xdisegnata+this.width/2-3*this.width, ydisegnata-2*this.height, this.width*6, this.height*4);
+			ctx.fillStyle="#ffff0080"; ctx.fillRect(activatorBox.x, activatorBox.y, activatorBox.width, activatorBox.height);
+			}
+
+		}
+      	}
+      	this.getHit = function (nome, danno) {
+      		this.life -= danno;
+      	}
+      	this.physics = function (xdisegnata, ydisegnata, indiceDiQuestaEntity) {
+		if(this.stance.x==0){ //waiting
+			var activatorBox = new rectTest(this.x+this.width/2-3*this.width, this.y-2*this.height, this.width*6, this.height*4);
+			if(collisionBetween(activatorBox, player)){
+				this.stance.x=1;
+			}
+		}else{ //active
+			if(this.facingRight){
+				this.xv+= -this.speed;
+				if(this.x+this.width/2 > player.x+player.width/2+canvasWidth/2){
+					this.facingRight=false;
+				}
+			}else{
+				this.xv+= this.speed;
+				if(this.x+this.width/2 < player.x+player.width/2-canvasWidth/2){
+					this.facingRight=true;
+				}
+			}
+		}
+		this.xv = this.xv*level.friction;
+		this.x += -this.xv;
+	      	this.yv += level.gravity/2; //get level gravity/2
+    		this.y += this.yv; //apply gravity
+		//level collision
+		var latoSx = new rectTest(this.x, this.y + this.height/2 - 2, 2, 4);
+		var latoDx = new rectTest(this.x+this.width-2, this.y + this.height/2 - 2, 2, 4);
+      		for (var i = 0; i < level.length; i++) {
+      			if (collisionBetween(this, level[i])) {
+				this.y += -this.yv;
+      				this.yv = 0;
+      				if (collisionBetween(latoSx, level[i]) || collisionBetween(latoDx, level[i])) { //collisione x
+      					this.x -= -this.xv;
+					this.facingRight=!this.facingRight;
+					this.xv = 0;
+      				}
+      			}
+      		}
+		this.calculateStance();
+      	}//fine di physics()
+	this.calculateStance = function (){
+		var previousStance = this.stance.x;
+		var maxTimer=5;
+		if(this.stance.x!=0){
+			switch(this.stance.timer){
+				case 0: this.stance.x=1; break;
+				case maxTimer: this.stance.x=2; break;
+				case 3*maxTimer: this.stance.x=3; break;
+				case 4*maxTimer: this.stance.timer=-1; break;
+			}
+			if(previousStance==this.stance.x){
+				this.stance.timer++;
+			}
+		}
+	}//fine di calculateStance()
+}//fine di blackLeopard

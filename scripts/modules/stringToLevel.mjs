@@ -129,10 +129,18 @@ function stringToLevel(lvlString) {
 				checkBackAndForGround(background, foreground, lvlString[i - 1]); //se il blocco prima era un background o foreground lo carica sotto il player
 				break;
 
-			case 'ɖ': // ɖ indica un armored knight with spear
+			case 'ɖ': // ɖ indica un dragon cannon
 				var entita = new newDragonCannon();
 				entita.x = (i % widthTot) * blockDimension;
 				entita.y = (heightTot - 1) * blockDimension+1;
+				entity.push(entita);
+				checkBackAndForGround(background, foreground, lvlString[i - 1]); //se il blocco prima era un background o foreground lo carica sotto il player
+				break;
+
+			case 'ȴ': // ȴ indica un black Leopard
+				var entita = new newBlackLeopard();
+				entita.x = (i % widthTot) * blockDimension;
+				entita.y = (heightTot - 1) * blockDimension - 2;
 				entity.push(entita);
 				checkBackAndForGround(background, foreground, lvlString[i - 1]); //se il blocco prima era un background o foreground lo carica sotto il player
 				break;
