@@ -91,6 +91,7 @@ function stringToLevel(lvlString) {
 				entita.x = (i % widthTot) * blockDimension;
 				entita.y = (heightTot - 1) * blockDimension - 2;
 				entita.letter=lvlString[i];
+				entita.name="mudman";
 				entita.stance.y=3; //skin mudman
 				entita.color1="#ad7b00";
 				entity.push(entita);
