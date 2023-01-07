@@ -1174,7 +1174,7 @@
       										entity[i].getHit("corda", corda.damage);
 										player.entityWhippedIndex.push(i);
       									}else{
-										if(entity[i].type = "enemyShot"){ //shot eraser
+										if(entity[i].type == "enemyShot"){ //shot eraser
 											entity[i].life=-1;
 										}
 									}
