@@ -593,6 +593,118 @@ function newZombie() { //zombie
 	}//fine di calculateStance()
 }//fine di Zombie
 
+function newGraySkeleton() { //gray skeleton - throw newSkeletonBone()
+      	this.name = "skeleton";
+	this.letter = "§";
+      	this.type = "monster";
+      	this.life = 1;
+      	this.damage = 1;
+	this.sprite = new Image();
+      	this.sprite.src = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAABACAYAAAB7jnWuAAAAAXNSR0IArs4c6QAABHhJREFUaIGtWDuO4zAMpQwdYw+RAVKkcJdL5A6ZMoUHmHILFyknd8gl0rnIAgEmh5hur2BAW8RPoWhSlp0lMMDG0nuk+JXWXc8N/S/Z7Nogv13Pjcth/KsEHNt3/VhB7UOOIxqgEdw7ovUuT8Cxvn7Q9V1P9+6xdmv7LEelKb93lBBonuHK5TdgITmOilvPFc8R4PuuJy0MOan4j3XjrX1ZuXePU947Il97Wje+mMsTUbQeZADf2rLTWMrWjZ/kcEQUsClndS4ReXw5163tE06Nw1/PjVvvvEoAGWIccoZoHpRrWkl6uUkjmCIZvmt2JaKVZExCX/uYQJqgQvpuXFLSIBiLMKDCVvUYX+UIYLXM7Ckj4I1b29Oqfu7hjQr4ihNwklvbJwTIDe5qq7mgH6zqZ19Z1c/DcCNUf8uytJTIuF/Pjdvs2iC/ozVryWlmDifRlCEfbj+fpoF8Ly9LHNDXfmwATsGyXlU+JRIjG5KvhwSdIoD7eDJZRvC5onmAC9addSGRE9KqcyQu9k/1Ecm1bPrMEO56rhiGV2PIWLRRa41dlBv2rGqKiScNIjI8sNm1ATULxdx6Xs/8RJgXUoDXJuPIA1rspXLEWHbQ0aARRsIb6iyQymUi3dqHJyzlXLSEs0IW74TrX7+T2tcI8b3kpgwMKsPXnm4/n05iHREF3nb5CZELq7pMOZ8NpUbHo8oS4XWNpjPn5KUySkKpRHbAUpmK/cgAlAh3Y+4iMaVYG73afnc9NySHD9EzDNgo1t2wRzUCOJQsx0oPxxuR5jLtljOsh+FPFVxukNA5T8Qy5Bv5N35T4kRTIcEab+HaQEvKkIsMhbVHqwyuXGvZiQE8jvxEBrEkUxVbeE2S53m4PD3qti77EFGMW4T3Gvj9m2h/DAOxK/r/gaV4D7DbugiaI6/ik054OhR525Ql+IqIyG0dhUsguBFEp4MryoFX8I6IAlxXcAJ5AaHNri3Gm8/zzc7F4GlkONmQ2aNb0By82oqxSbpQyrCuZlopXnZPj1OgbjUQz/Dhd+KJJXh4YvQwmYopc6fZhufg1XfB6eAiOFxCUt9uO11qc/Dqu2B/DPT19vj3+7d9Ei2p5uLVt6E2ZvfHkBBByZ+/H+Y0LMGbb0NseP9+/JZlhe+v4s1xbAkHy063BI+ZHogohEsI+2PAdSv5C5cwWr+eG8LfUg7iCxooAwxc+RKO67l5dkJeHtYAOR3yI3cJR9KKAczF8nRwca8UyWHt47lTDW00Wg/lWvPgXYzGrTh2N0255IjfZRUIJQRjRDNRHyYwXuPgkrw3NOW8xqPFTyOyvXiOciL2MOHKeR8HWYlyCJ9+UGglb8UvlUR63y69bCIXiIi+3h44mdDqfYBbzq3mM167B1hGABsuIYYO5ScPGKtAjk1OBhnWi9wBXnjCkuRGBIv5Y8I4ERgnvSE9IaUSm83Y8XV4q2T4QKx7YnIjkko0BbxplYoVYiL2NsQHVATvWNIQ3huIPkak5n5FvNY298cwas3y8Tkl2n7tpfQPZjfaVi+v2BYAAAAASUVORK5CYII=";
+	this.stance=[];
+	this.stance["x"]=0;
+	this.stance["y"]=Math.floor(Math.random()*2);
+	this.stance["timer"]=0;
+	this.x = 0;
+      	this.y = 0;
+      	this.xv = 0;
+      	this.yv = 0;
+	this.facingRight=false;
+	this.goingRight=false;
+      	this.slope = 0;
+      	this.width = 30;
+      	this.height = 62;
+      	this.color1 = '#cc88fc';
+      	this.color2 = '#fcc4fc';
+	this.jumpHeight = 10.5;
+      	this.speed = 0.4;
+	this.timer=-40;
+      	this.hasPhysics = true;
+      	this.canSelfDraw = true;
+      	this.selfDraw = function (xdisegnata, ydisegnata, indiceDiQuestaEntity) {
+		var fixForWindows=0.5;
+		if (!this.facingRight) {
+      			ctx.drawImage(this.sprite, 16*this.stance.x+fixForWindows, 32*this.stance.y+fixForWindows, 16-fixForWindows*2, 32-fixForWindows*2, xdisegnata, ydisegnata-1, (16)*2, 32*2);
+      		} else {
+      			ctx.save(); //salvo il canvas attuale
+      			ctx.scale(-1, 1); //flippa il canvas per fare lo sprite mirrorato
+      			ctx.drawImage(this.sprite, 16*this.stance.x+fixForWindows, 32*this.stance.y+fixForWindows, 16-fixForWindows*2, 32-fixForWindows*2, -xdisegnata, ydisegnata-1, -(16)*2, 32*2);
+      			ctx.restore(); //faccio tornare come prima al punto di save() altrimenti rimane buggato
+      		}
+      	}
+      	this.getHit = function (nome, danno) {
+		this.life-=danno;
+      	}
+      	this.physics = function (xdisegnata, ydisegnata, indiceDiQuestaEntity) {
+		if(this.x+this.width/2 > player.x+player.width/2){
+			this.facingRight=false;
+		}else if(this.x+this.width/2 < player.x+player.width/3){ //3 and not 2 otherwise the zombie will start flipping left and right because of the decimal part of the x coordinate
+			this.facingRight=true;
+		}
+		if(this.timer<0){
+			this.timer++;
+		}
+		if(this.timer==0){
+			var randomDir=Math.floor(Math.random()*3)
+			if(randomDir==0){ //ogni 100 frame ha una possibilita di cambiare direzione
+				if(this.yv>-0.5 && this.yv<0.5){ //puo cambiare direzione solo se e' a terra
+					this.goingRight=!this.goingRight;
+				}
+			}
+			this.timer=-100+randomDir*10;
+		}
+		if(!this.goingRight){ //movement
+			this.xv+= this.speed;
+		}else{
+			this.xv+= -this.speed;
+		}
+		this.x += -this.xv;
+		this.xv = this.xv*level.friction;
+	      	this.yv += level.gravity/1.5; //get level gravity
+    		this.y += this.yv; //apply gravity
+		//collision with level
+		var latoSx = new rectTest(this.x, this.y+4, 2, this.height-8);
+		var latoDx = new rectTest(this.x+this.width-2, this.y+4, 2, this.height-8);
+		var latoSotto = new rectTest(this.x+4, this.y+this.height-2, this.width-8, 2);
+		var latoSopra = new rectTest(this.x+4, this.y, this.width-8, 2);
+      		for (var i = 0; i < level.length; i++){
+      			if (collisionBetween(this, level[i])) {
+      				if (collisionBetween(latoSx, level[i]) || collisionBetween(latoDx, level[i])) { //collisione x
+      					this.x -= -this.xv*2.5;
+					this.xv = 0;
+					this.goingRight=!this.goingRight;
+					this.timer-=20;
+      				}
+      				if (collisionBetween(latoSopra, level[i])) { //collisione y top
+					this.y = level[i].y+level[i].height;
+      					this.yv = 0;
+				}
+      				if (collisionBetween(latoSotto, level[i])) { //collisione y bottom
+					this.y = level[i].y-this.height;
+      					this.yv = 0;
+					var randJumping=Math.floor(Math.random()*70);
+					if(randJumping==1){
+						this.yv = -this.jumpHeight; //jump
+					}
+      				}
+      			}
+      		}
+		this.calculateStance();
+      	}//fine di physics()
+	this.calculateStance = function (){
+		var previousStance = this.stance.x;
+		var maxTimer=9;
+		switch(this.stance.timer){
+			case 0: this.stance.x=0; break;
+			case maxTimer: this.stance.x=1; break;
+			case 2*maxTimer: this.stance.timer=-1; break;
+		}
+		if(previousStance==this.stance.x){
+			this.stance.timer++;
+		}
+	}//fine di calculateStance()
+}//fine di graySkeleton
+
 function newRedSkeleton() { //red skeleton
       	this.name = "red skeleton";
 	this.letter = "⧌";
