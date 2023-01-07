@@ -86,6 +86,17 @@ function stringToLevel(lvlString) {
 				checkBackAndForGround(background, foreground, lvlString[i - 1]); //se il blocco prima era un background o foreground lo carica sotto il player
 				break;
 
+			case 'ʍ': // ʍ indica un mudman (reskin dello zombie)
+				var entita = new newZombie();
+				entita.x = (i % widthTot) * blockDimension;
+				entita.y = (heightTot - 1) * blockDimension - 2;
+				entita.letter=lvlString[i];
+				entita.stance.y=3; //skin mudman
+				entita.color1="#ad7b00";
+				entity.push(entita);
+				checkBackAndForGround(background, foreground, lvlString[i - 1]); //se il blocco prima era un background o foreground lo carica sotto il player
+				break;
+
 			case '§': // § indica un gray skeleton
 				var entita = new newGraySkeleton();
 				entita.x = (i % widthTot) * blockDimension;
