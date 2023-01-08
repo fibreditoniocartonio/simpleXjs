@@ -8,6 +8,9 @@
       	document.body.innerHTML += "".concat("<div class='caricaPartitaDiv' id='caricaPartitaDiv'><input type='file' id='fileCaricaPartita' disabled></div><div class='canvasDiv' id='canvasDivId' tabIndex='1'><canvas id='canvas' width=", canvasWidth, " height=", canvasHeight, "></canvas></div>");
       }
       var ctx = document.getElementById('canvas').getContext('2d');
+	ctx.webkitImageSmoothingEnabled = false;
+	ctx.mozImageSmoothingEnabled = false;
+	ctx.imageSmoothingEnabled = false;
 
       //variabili dei tasti - prima o poi faro' un'opzione nel menu per poterli cambiare ingame
       var touchScreenButton=false;
