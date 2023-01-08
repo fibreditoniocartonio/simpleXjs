@@ -951,16 +951,15 @@
       			];
       			this.disegnaPlayer = function (xdisegnata, ydisegnata, stance, sprite, facingRight) {
       				var mostraWhip = 0;
-				var fixForWindows = 0.5; //fix for Windows, for some reason both Chrome and Firefox show an orrible outline if i use the full border pixels of the sprite
       				if (player.attackTimer > 14) {
       					mostraWhip = 41;
       				}
       				if (facingRight) {
-      					ctx.drawImage(sprite, 16 * stance[0]+fixForWindows, 32 * stance[1]+fixForWindows, 16 - fixForWindows*2  + mostraWhip, 32-fixForWindows*2, xdisegnata, ydisegnata - 6, (16 + mostraWhip) * 2, 32 * 2);
+      					ctx.drawImage(sprite, 16 * stance[0], 32 * stance[1], 16+mostraWhip, 32, xdisegnata, ydisegnata-6, (16+mostraWhip)*2, 32*2);
       				} else {
       					ctx.save(); //salvo il canvas attuale
       					ctx.scale(-1, 1); //flippa il canvas per fare lo sprite mirrorato
-      					ctx.drawImage(sprite, 16 * stance[0]+fixForWindows, 32 * stance[1]+fixForWindows, 16 - fixForWindows*2  + mostraWhip, 32-fixForWindows*2, -xdisegnata + (mostraWhip * 2), ydisegnata - 6, (-16 - mostraWhip) * 2, 32 * 2); //uso -xdisegnata perche' le coordinate del canvas sono mirrorate in negativo
+      					ctx.drawImage(sprite, 16 * stance[0], 32 * stance[1], 16+mostraWhip, 32, -xdisegnata+(mostraWhip*2), ydisegnata-6, (-16-mostraWhip)*2, 32*2); //uso -xdisegnata perche' le coordinate del canvas sono mirrorate in negativo
       					ctx.restore(); //faccio tornare come prima al punto di save() altrimenti rimane buggato
       				}
 				if(debugMode){

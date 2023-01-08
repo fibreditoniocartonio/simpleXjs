@@ -85,6 +85,7 @@
       				}
       			}
       		}
+		ydisegnata=Math.round(ydisegnata);
       		ctx.fillRect(0, ydisegnata, canvasWidth, canvasHeight);
       	}
       }
@@ -118,12 +119,12 @@
       				}
       			}
 		}
+		xdisegnata=Math.round(xdisegnata); ydisegnata=Math.round(ydisegnata); //round them to not have non-integer coordinates (causes only problems)
       		//ora disegno il livello[i]                    
       		if (xdisegnata+lvl[i].width > -1 && xdisegnata < canvasWidth+1 && ydisegnata+lvl[i].height > -1 && ydisegnata < canvasHeight+1) {
       			if (level.tileset == "") {
       				ctx.fillRect(xdisegnata, ydisegnata, lvl[i].width, lvl[i].height);
       			} else {
-				const fixForWindows=0.5; //fix for Windows, for some reason both Chrome and Firefox show an orrible outline if i use the full border pixels of the sprite
       				for (volteX = 0; volteX < (lvl[i].width / blockDimension - 1); volteX++) {
       					if (xdisegnata + (blockDimension * (volteX + 1)) > 0) {
       						if (!(xdisegnata + (blockDimension * volteX) < canvasWidth)) {
@@ -144,7 +145,7 @@
       											offsetX = lvl[i].lettera.charCodeAt(0) - 112;
       											offsetY = 2;
       										}
-      										ctx.drawImage(level.tileset, 16 * offsetX+fixForWindows, 16 * offsetY+fixForWindows, 16-fixForWindows*2, 16-fixForWindows*2, xdisegnata + (blockDimension * volteX) - 1, ydisegnata + (blockDimension * volteY) - 1, blockDimension + 1, blockDimension + 1);
+      										ctx.drawImage(level.tileset, 16*offsetX, 16*offsetY, 16, 16, xdisegnata+(blockDimension*volteX), ydisegnata+(blockDimension*volteY), blockDimension, blockDimension);
       									}
       								}
       							}
@@ -158,7 +159,7 @@
       				}
       				ctx.font = "bold 10px Lucida Console";
       				ctx.textAlign = "center";
-      				disegnaTestoConBordino(lvl[i].lettera, xdisegnata + lvl[i].width / 2, ydisegnata + lvl[i].height / 2 + ctx.measureText("O").width / 2, "#000000", "#cccccc");
+      				disegnaTestoConBordino(lvl[i].lettera, xdisegnata+lvl[i].width/2, ydisegnata+(lvl[i].height/2)+(ctx.measureText("O").width/2), "#000000", "#cccccc");
       				ctx.textAlign = "left";
       			}
       		}
@@ -291,6 +292,7 @@
       				xdisegnata = i - player.x - (player.width / 2) + canvasWidth / 2;
       			}
       		}
+		xdisegnata=Math.round(xdisegnata);
       		ctx.fillRect(xdisegnata, 0, 1, canvasHeight);
       	}
       	for (var i = 0; i < level.maxHeight; i += blockDimension) {
@@ -304,6 +306,7 @@
       				ydisegnata = i - player.y + canvasHeight / 2;
       			}
       		}
+		ydisegnata=Math.round(ydisegnata);
       		ctx.fillRect(0, ydisegnata, canvasWidth, 1);
       	}
       }
@@ -346,6 +349,7 @@
       					ydisegnata = entity[i].y - player.y + canvasHeight / 2;
       				}
       			}
+			xdisegnata=Math.round(xdisegnata); ydisegnata=Math.round(ydisegnata);
       			//ora disegno l'entita e chiamo physics se e' dentro il canvas disegnato+unQuartoDiCanvas (questa roba non si applica se è uno sparo del player - se no si bugga tutto)                    
       			if ((xdisegnata + entity[i].width > (-canvasWidth / 8) && xdisegnata < (canvasWidth + (canvasWidth / 8))) && (ydisegnata > (-canvasHeight / 8) && ydisegnata < (canvasHeight + (canvasHeight / 8))) || entity[i].type == "sparoDelPlayer") { //questo if fa i controlli spiegati sopra 
       				if (entity[i].canSelfDraw == true) {

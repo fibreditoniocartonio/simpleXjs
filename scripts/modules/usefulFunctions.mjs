@@ -26,7 +26,7 @@
       			xdisegnata = canvasWidth / 2 - (player.width / 2);
       		}
       	}
-      	return xdisegnata;
+      	return Math.round(xdisegnata);
       }
 
       function yDisegnata() {
@@ -39,7 +39,7 @@
       			ydisegnata = canvasHeight / 2;
       		}
       	}
-      	return ydisegnata;
+      	return Math.round(ydisegnata);
       }
 
       function disegnaTestoConBordino(stringaDiTesto, xdisegnata, ydisegnata, coloreTesto, coloreBordino) {

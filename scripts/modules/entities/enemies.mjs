@@ -517,13 +517,12 @@ function newZombie() { //zombie
       	this.hasPhysics = true;
       	this.canSelfDraw = true;
       	this.selfDraw = function (xdisegnata, ydisegnata, indiceDiQuestaEntity) {
-		var fixForWindows=0.5;
 		if (!this.facingRight) {
-      			ctx.drawImage(this.sprite, 16*this.stance.x+fixForWindows, 32*this.stance.y+fixForWindows, 16-fixForWindows*2, 32-fixForWindows*2, xdisegnata, ydisegnata-1, (16)*2, 32*2);
+      			ctx.drawImage(this.sprite, 16*this.stance.x, 32*this.stance.y, 16, 32, xdisegnata, ydisegnata-1, (16)*2, 32*2);
       		} else {
       			ctx.save(); //salvo il canvas attuale
       			ctx.scale(-1, 1); //flippa il canvas per fare lo sprite mirrorato
-      			ctx.drawImage(this.sprite, 16*this.stance.x+fixForWindows, 32*this.stance.y+fixForWindows, 16-fixForWindows*2, 32-fixForWindows*2, -xdisegnata, ydisegnata-1, -(16)*2, 32*2);
+      			ctx.drawImage(this.sprite, 16*this.stance.x, 32*this.stance.y, 16, 32, -xdisegnata, ydisegnata-1, -(16)*2, 32*2);
       			ctx.restore(); //faccio tornare come prima al punto di save() altrimenti rimane buggato
       		}
       	}
@@ -624,13 +623,12 @@ function newGraySkeleton() { //gray skeleton - throw newSkeletonBone()
       	this.hasPhysics = true;
       	this.canSelfDraw = true;
       	this.selfDraw = function (xdisegnata, ydisegnata, indiceDiQuestaEntity) {
-		var fixForWindows=0.5;
 		if (!this.facingRight) {
-      			ctx.drawImage(this.sprite, 16*this.stance.x+fixForWindows, 32*this.stance.y+fixForWindows, 16-fixForWindows*2, 32-fixForWindows*2, xdisegnata, ydisegnata-1, (16)*2, 32*2);
+      			ctx.drawImage(this.sprite, 16*this.stance.x, 32*this.stance.y, 16, 32, xdisegnata, ydisegnata-1, (16)*2, 32*2);
       		} else {
       			ctx.save(); //salvo il canvas attuale
       			ctx.scale(-1, 1); //flippa il canvas per fare lo sprite mirrorato
-      			ctx.drawImage(this.sprite, 16*this.stance.x+fixForWindows, 32*this.stance.y+fixForWindows, 16-fixForWindows*2, 32-fixForWindows*2, -xdisegnata, ydisegnata-1, -(16)*2, 32*2);
+      			ctx.drawImage(this.sprite, 16*this.stance.x, 32*this.stance.y, 16, 32, -xdisegnata, ydisegnata-1, -(16)*2, 32*2);
       			ctx.restore(); //faccio tornare come prima al punto di save() altrimenti rimane buggato
       		}
       	}
@@ -737,8 +735,7 @@ function newGraySkeletonBone(stanceYP, damageP, xP, yP, xvP, yvP) { //the bone t
       	this.hasPhysics = true;
       	this.canSelfDraw = true;
       	this.selfDraw = function (xdisegnata, ydisegnata, indiceDiQuestaEntity) {
-		var fixForWindows=0.5;
-      		ctx.drawImage(this.sprite, 16*this.stance.x+fixForWindows, 16*this.stance.y+fixForWindows, 16-fixForWindows*2, 16-fixForWindows*2, xdisegnata-3, ydisegnata-3, 16*2, 16*2);
+      		ctx.drawImage(this.sprite, 16*this.stance.x, 16*this.stance.y, 16, 16, xdisegnata-3, ydisegnata-3, 16*2, 16*2);
 		if(debugMode){ctx.fillStyle="#ffee0080"; ctx.fillRect(xdisegnata, ydisegnata, this.width, this.height);}
       	}
       	this.physics = function (xdisegnata, ydisegnata, indiceDiQuestaEntity) {
@@ -792,13 +789,12 @@ function newRedSkeleton() { //red skeleton
       	this.hasPhysics = true;
       	this.canSelfDraw = true;
       	this.selfDraw = function (xdisegnata, ydisegnata, indiceDiQuestaEntity) {
-		var fixForWindows=0.5;
 		if (!this.facingRight) {
-      			ctx.drawImage(this.sprite, 16*this.stance.x+fixForWindows, 32*this.stance.y+fixForWindows, 16-fixForWindows*2, 32-fixForWindows*2, xdisegnata, ydisegnata-1, (16)*2, 32*2);
+      			ctx.drawImage(this.sprite, 16*this.stance.x, 32*this.stance.y, 16, 32, xdisegnata, ydisegnata-1, (16)*2, 32*2);
       		} else {
       			ctx.save(); //salvo il canvas attuale
       			ctx.scale(-1, 1); //flippa il canvas per fare lo sprite mirrorato
-      			ctx.drawImage(this.sprite, 16*this.stance.x+fixForWindows, 32*this.stance.y+fixForWindows, 16-fixForWindows*2, 32-fixForWindows*2, -xdisegnata, ydisegnata-1, -(16)*2, 32*2);
+      			ctx.drawImage(this.sprite, 16*this.stance.x, 32*this.stance.y, 16, 32, -xdisegnata, ydisegnata-1, -(16)*2, 32*2);
       			ctx.restore(); //faccio tornare come prima al punto di save() altrimenti rimane buggato
       		}
       	}
@@ -923,13 +919,12 @@ function newArmoredKnight() { //armored Knight
       	this.canSelfDraw = true;
       	this.selfDraw = function (xdisegnata, ydisegnata, indiceDiQuestaEntity){
 		if(this.timer<1){
-			var fixForWindows=0.5;
 			if (!this.facingRight) {
-      				ctx.drawImage(this.sprite, 16*this.stance.x+fixForWindows, 32*this.stance.y+fixForWindows, 16-fixForWindows*2, 32-fixForWindows*2, xdisegnata, ydisegnata-1, (16)*2, 32*2);
+      				ctx.drawImage(this.sprite, 16*this.stance.x, 32*this.stance.y, 16, 32, xdisegnata, ydisegnata-1, (16)*2, 32*2);
       			} else {
       				ctx.save(); //salvo il canvas attuale
 	      			ctx.scale(-1, 1); //flippa il canvas per fare lo sprite mirrorato
-	      			ctx.drawImage(this.sprite, 16*this.stance.x+fixForWindows, 32*this.stance.y+fixForWindows, 16-fixForWindows*2, 32-fixForWindows*2, -xdisegnata, ydisegnata-1, -(16)*2, 32*2);
+	      			ctx.drawImage(this.sprite, 16*this.stance.x, 32*this.stance.y, 16, 32, -xdisegnata, ydisegnata-1, -(16)*2, 32*2);
       				ctx.restore(); //faccio tornare come prima al punto di save() altrimenti rimane buggato
       			}
 		}
@@ -1041,17 +1036,16 @@ function newSpearKnight() { //spear armored Knight
       	this.canSelfDraw = true;
       	this.selfDraw = function (xdisegnata, ydisegnata, indiceDiQuestaEntity){
 		if(this.timer<1){
-			var fixForWindows=0.5;
 			var mostraSpear=8;
 			if(this.attacking){
 				mostraSpear=24;
 			}
 			if (this.facingRight) {
-      				ctx.drawImage(this.sprite, 24*this.stance.x+fixForWindows, 32*this.stance.y+fixForWindows, 16+mostraSpear-fixForWindows*2, 32-fixForWindows*2, xdisegnata, ydisegnata-1, (16+mostraSpear)*2, 32*2);
+      				ctx.drawImage(this.sprite, 24*this.stance.x, 32*this.stance.y, 16+mostraSpear, 32, xdisegnata, ydisegnata-1, (16+mostraSpear)*2, 32*2);
       			} else {
       				ctx.save(); //salvo il canvas attuale
 	      			ctx.scale(-1, 1); //flippa il canvas per fare lo sprite mirrorato
-	      			ctx.drawImage(this.sprite, 24*this.stance.x+fixForWindows, 32*this.stance.y+fixForWindows, 16+mostraSpear-fixForWindows*2, 32-fixForWindows*2, -xdisegnata+(mostraSpear*2), ydisegnata-1, -(16+mostraSpear)*2, 32*2);
+	      			ctx.drawImage(this.sprite, 24*this.stance.x, 32*this.stance.y, 16+mostraSpear, 32, -xdisegnata+(mostraSpear*2), ydisegnata-1, -(16+mostraSpear)*2, 32*2);
       				ctx.restore(); //faccio tornare come prima al punto di save() altrimenti rimane buggato
       			}
 			if(debugMode){ //show attack hitbox and timer
@@ -1203,8 +1197,7 @@ function newDragonCannon() { //bone dragon tower/cannon
       	this.canSelfDraw = true;
       	this.selfDraw = function (xdisegnata, ydisegnata, indiceDiQuestaEntity){
 		if(this.stance.timer>-1){
-			var fixForWindows=0.5;
-      			ctx.drawImage(this.sprite, 16*this.stance.x+fixForWindows, 32*this.stance.y+fixForWindows, 16-fixForWindows*2, 32-fixForWindows*2, xdisegnata, ydisegnata-1, (16)*2, 32*2);
+      			ctx.drawImage(this.sprite, 16*this.stance.x, 32*this.stance.y, 16, 32, xdisegnata, ydisegnata-1, (16)*2, 32*2);
 		}	
 		if(debugMode){ //show attack timer
 			disegnaTestoConBordino(this.timer, xdisegnata, ydisegnata, "#000000", "#ffffff");
@@ -1299,13 +1292,12 @@ function newBlackLeopard() { //black leopard
       	this.hasPhysics = true;
       	this.canSelfDraw = true;
       	this.selfDraw = function (xdisegnata, ydisegnata, indiceDiQuestaEntity) {
-		var fixForWindows=0.5;
 		if (!this.facingRight) {
-      			ctx.drawImage(this.sprite, this.sprite.larg*this.stance.x+fixForWindows, this.sprite.alt*this.stance.y+fixForWindows, this.sprite.larg-fixForWindows*2, this.sprite.alt-fixForWindows*2, (xdisegnata-2), ydisegnata, (this.sprite.larg)*2, (this.sprite.alt)*2);
+      			ctx.drawImage(this.sprite, this.sprite.larg*this.stance.x, this.sprite.alt*this.stance.y, this.sprite.larg, this.sprite.alt, (xdisegnata-2), ydisegnata, (this.sprite.larg)*2, (this.sprite.alt)*2);
       		} else {
       			ctx.save(); //salvo il canvas attuale
       			ctx.scale(-1, 1); //flippa il canvas per fare lo sprite mirrorato
-      			ctx.drawImage(this.sprite, this.sprite.larg*this.stance.x+fixForWindows, this.sprite.alt*this.stance.y+fixForWindows, this.sprite.larg-fixForWindows*2, this.sprite.alt-fixForWindows*2, -(xdisegnata-2), ydisegnata, -(this.sprite.larg)*2, (this.sprite.alt)*2);
+      			ctx.drawImage(this.sprite, this.sprite.larg*this.stance.x, this.sprite.alt*this.stance.y, this.sprite.larg, this.sprite.alt, -(xdisegnata-2), ydisegnata, -(this.sprite.larg)*2, (this.sprite.alt)*2);
       			ctx.restore(); //faccio tornare come prima al punto di save() altrimenti rimane buggato
       		}
 		if(debugMode){
