@@ -13,7 +13,6 @@
 	ctx.imageSmoothingEnabled = false;
 
       //variabili dei tasti - prima o poi faro' un'opzione nel menu per poterli cambiare ingame
-      var touchScreenButton=false;
       var keys = []; //vettore associativo dei tasti (tiene dentro dei bool)
       var tastoGiaSchiacciato = false; //mi serve per alcune funzioni tipo selectScreen()
       var jumpkey = "z"; //salta - default z
@@ -27,35 +26,18 @@
       var lkey = "d"; //power- - default e
       var rkey = "c"; //power+ - default c
       var mapkey = "Shift"; //mappa - default SHIFT
-
       var ultimoTastoLetto = "";
 
-	//keyboard events
-      document.addEventListener("keydown", function (e) { //events - leggi tasti schiacciati
-      	keys[e.key] = true;
-      	ultimoTastoLetto = e.key;
-      });
-      document.addEventListener("keyup", function (e) { //events - leggi tasti rilasciati
-      	keys[e.key] = false;
-      });
+	//keyboard events initialization
+	document.addEventListener("keydown", function (e) { //events - leggi tasti schiacciati
+      		keys[e.key] = true;
+	      	ultimoTastoLetto = e.key;
+	});
+	document.addEventListener("keyup", function (e) { //events - leggi tasti rilasciati
+      		keys[e.key] = false;
+	});
 
-      function touchButtonPress(id){ //eventi per i bottoni touch
-      		keys[id] = true;
- 	     	ultimoTastoLetto = id;
-      }
-      function touchButtonLeave(id){
-      	keys[id] = false;
-      }
-      function setTouchButtonIndex(){ //set touch button z-index
-      	touchScreenButton=!touchScreenButton;
-      	if(touchScreenButton){
-		document.getElementById("ButtonLayerDivId").style.visibility = "visible";
-	}else{
-		document.getElementById("ButtonLayerDivId").style.visibility = "hidden";
-	}
-      }
-
-	//gamepad event - depend on external module joypad.js (https://github.com/ArunMichaelDsouza/joypad.js)
+	//gamepad event initialization - depend on external module joypad.js (https://github.com/ArunMichaelDsouza/joypad.js)
         joypad.on('button_press', e => {
 		const { buttonName } = e.detail;
 		keys[buttonName] = true;
@@ -65,7 +47,34 @@
 		const { buttonName } = e.detail;
 		keys[buttonName] = false;
         });
-      
+
+	//touchscreen buttons events initialization
+	var touchScreenButton=false;
+	for(var k=1; k<document.getElementsByClassName("buttonClass").length; k++){ //assign event to all the button in the buttonClass
+		document.getElementsByClassName("buttonClass")[k].onmousedown=function(){touchButtonPress(this.id)}
+		document.getElementsByClassName("buttonClass")[k].onmouseup=function(){touchButtonLeave(this.id)}
+		document.getElementsByClassName("buttonClass")[k].onmouseleave=function(){touchButtonLeave(this.id)}
+		document.getElementsByClassName("buttonClass")[k].ontouchstart=function(){touchButtonPress(this.id)}
+		document.getElementsByClassName("buttonClass")[k].ontouchend=function(){touchButtonLeave(this.id)}
+		document.getElementsByClassName("buttonClass")[k].ontouchcancel=function(){touchButtonLeave(this.id)}
+	}
+      	function touchButtonPress(id){ //eventi per i bottoni touch
+      		keys[id] = true;
+ 	     	ultimoTastoLetto = id;
+      	}
+      	function touchButtonLeave(id){
+      		keys[id] = false;
+      	}
+     	function setTouchButtonIndex(){ //set touch button z-index
+      		touchScreenButton=!touchScreenButton;
+	      	if(touchScreenButton){
+			document.getElementById("ButtonLayerDivId").style.visibility = "visible";
+		}else{
+			document.getElementById("ButtonLayerDivId").style.visibility = "hidden";
+		}
+	}
+
+      //game unlockable variables
       var stringaSalvataggio = "";
       levelDefeated = [false, false, false, false, false, true, false, true]; //vettore che tiene quanti livelli sono stati superati
       heartAcquired = [false, false, false, false, false, false, false, false]; //vettore che tiene quanti cuori sono stati trovati
@@ -93,6 +102,7 @@
       	},
       ];
 
+      //player initialization
       var currentPlayer = 0; //variabile che indica il personaggio scelto
       var maxCurrentPlayer = 2; //numero di personaggi
       function getCurrentPlayerName(currentPlayer) {
