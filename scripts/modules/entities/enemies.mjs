@@ -1375,7 +1375,7 @@ function newAxeArmor() { //axe armor - throw axeArmorAxe()
       	this.life = 16;
       	this.damage = 2;
 	this.sprite = new Image();
-      	this.sprite.src = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEIAAABACAYAAACunKHjAAAAAXNSR0IArs4c6QAAByVJREFUeJzNWzGS4zgMBL16xj1iggkU+BkX+A+uq00mUHDhBQpcVzXB/MEPUeDAwTzinsEpXiBBboIASUnW7HaVa0cS2QRBAAQhrbtdO6pBe+oDXvvBU3NsiIhcFYENlfd27VTe9tRvHC4Gz/9Qatie+oBK8IOfhfWDJxITWYCAfSWvVLw2gdpFzIEV2xQahWmyRET0OdAs6L0fhb73nl67JtAyy6jjPTXhOyyjPfV5RbCQNfeWYitvyRosV7YUW3SNHCZroHu/yUWyvCUXkSi5ssVXtAjGa9eof2vXS7CG17KGaldWXK6RGpINNGFwMCLi3YNotAoHfyNW87anfha85BJrXa7BwWFC+U5Gu8kEAxG5PXgt/64Fupy0ioYFYMFR+0KQuQ0LPMUGejk+JgLKiPpQbC2reWuVsdTlDiWzgcQpuoeEyMFt9+LlYCiDIuO1a5KJcsDkHwP7m7sGN2IBWHC8JkpXTfq5gk282oRKYH4ch7lmZfjBBxoTHM70ot+S+/feB8n3HbyQZSZtsN299zOX5Eks4t7H2hZ+Ht3HPkSjWVou8SzevVxOjRF8D4NYzhRfjvnBnslrYbMr33vdhDUT5XtsYnjfD9G9XXhv1243V07ULLcyBGxjybMak92D9957ejk+eC0u6XK8u7D7bTpr5MAmKAXRXIHTX/mMlYBusZfLHb5TYI2bV0Tj1nICCW4jrQC57r2fx5HzIRqPFY0lMJ7aLIH52YJDl2uOTUBuXAhtPDZ7K6N8lsupM7hdu0RgObglMFUUaOTKaZCWujeyS4lCWqtuCZyZiKOpQsXHYonXrqlWkGa9DM16iXRXTmKEhPQvTozQJGXqioOV8HLUlcauYMUjxDNiT/bQJRXAguM9vq8FV8s/rQlJTC5aVczNBXnpypjlssKbnMCsNVSINTFxBHccyS0wt7ZaiNu1c/f//iaqKAWucWUuAkf+Cpjv4wBY2GDCzyEe1KoxUBxEA3NZsHaJ1z/+CdZugAumLaIxniMiOshVkwJ8DvHhh2jU6ueQKoHosXMUTN9J5flB3+slcoc6DVYMFAUjaj4Hu3HODTQhcHIV26mjyTIYuIq5dxq52IMy5SxOWFVwfvDBEDhILQOxo0mTfvDadjQ/V3glIt8XStX6SlfGsRJo7o2yzqfUnGbZBbBjqR0La0xCQxSPSjxWAMYFQXm1+gb2qSksq8dZemg/93zpy575yC2O8wkPHp1rZJV8eNTHZ5Y6AmoYj7kwMMlVXPmiJ8jVzEGRZYa1Q7wc46M3kfIORb4w4bdFtfWFje9Bi2NJ+ZTt2HKrub0ffKSM1cJqP8U8fxfep8MUVCmX/Q68m5C1E/Sjn7cfY4ejIz94Ol8CNUdH50ugjze3ZJfYjXcLqkp1LKx1vRZ78a5BVhF8vP540xdlWjU6XwLRAlPei3dPmOXxzO9X8q5Gdfo7rQ4RUbSS0t+nZ7+KdzUiYtyzuRBiHavl6zuix6RQaMl5u3YOubH/Et49oJri+RKSf8+XYL5glf1ynHiNnJW8q+ZT2pKjAw9DprBovkRE7+1X1Eas2AxtdUuceBDSeDOfG6qTlC99rFcDDdFj2/p4c0kOLgXm9kyqPcd2yCsnaHFabUqozU/ak0s/JiMaV8Paw2EbU6H0nc8AFm+JM8db86FpTX7CPBjDsv5rXVPqe9KPVT+v4SzwWjDH4r9l3GNF3K7do7pzvgTTMqzEB+EHL7e5gPfXcBq8OWiF6Cyicv4ScNaHgm6FFhTX8moxJpeftKfxPHPAh82xoff2KyKWK1e7ksxrcf7517/R9RolsFnD91Nz3/f2i97br5lXeztHRFEaH/zgI1/la+nP/Azby2uQM2mXizOVnCT7SvnW5j2Ja8hM8qOwKrhF5qBxSjer5dTyHm4rdyS5LfO43Jb7HXBgSa4FnZ+3H0l7S2BsN5fNlRTd4rS2WG6vyZfLUaznRCJYguaSdxyocUvg3AoK3kiaHKeGZ+Y9aJVazo8o5gPwi/oZvLVcVu7w9LznfAlmOT+CPDMYK7+oVMe5gbZbQN7AEzdf/UnL4BW2rBNd8+dtvPfx5h4pNjRKDyTQueQGCIvXOlThfSuQLkVN3nO7dmMeAUHM1Dxqv1ZAixcVqo2DY2jluj3ynsMkJP+yyJmcAovX8cpLPrxP9LCYXO1SUwb2ZeVKxbP7LUmx3fQVTDLIBtN1U6nedI9abM17uGqWvPKzBMf/OMZBRvjf0v9q5LCYwlxcyhvH0rdJK+/RUDrwcX2i+hNk/rCLiBJTXFNEqR1LjJHECksBmPegC2KegXJv+hbbSrK2cEmw0ktjcBzgnwbphrigi4/h1gpYJTAL7BbaBOX/vdgil8xZrPhWPVIcIx5+t8YamEs7X8hSvzaWyE9mWDWI9/aLSCRaMp+ocg1LCWtgKQFRqkfIAyHmH1pbolEZuVj2P2KHVIVmAC4OAAAAAElFTkSuQmCC";
+      	this.sprite.src = "data:image/png;base64,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";
 	this.sprite.larg=22;
 	this.sprite.alt=32;
 	this.stance=[];
@@ -1387,9 +1387,9 @@ function newAxeArmor() { //axe armor - throw axeArmorAxe()
       	this.xv = 0;
       	this.yv = 0;
 	this.canThrow=true;
+	this.lowAxe=false;
 	this.axeIndex=null;
 	this.facingRight=false;
-	this.moving=false;
       	this.slope = 0;
       	this.width = 42;
       	this.height = 62;
@@ -1410,41 +1410,75 @@ function newAxeArmor() { //axe armor - throw axeArmorAxe()
       				ctx.restore(); //faccio tornare come prima al punto di save() altrimenti rimane buggato
       			}
 		}
+		if(debugMode){
+			disegnaTestoConBordino(this.timer, xdisegnata, ydisegnata, "#000000", "#ffffff");
+			ctx.fillStyle="#00ff0080";
+			if(this.facingRight){
+				ctx.fillRect(xdisegnata+this.width/2, this.y-this.height/2, this.width*6, this.height*2);
+				ctx.fillStyle="#ff000080";
+				ctx.fillRect(xdisegnata+this.width/2, this.y-this.height/2, this.width*2, this.height*2);
+			}else{
+				ctx.fillRect(xdisegnata+this.width/2-this.width*6, this.y-this.height/2, this.width*6, this.height*2);
+				ctx.fillStyle="#ff000080";
+				ctx.fillRect(xdisegnata+this.width/2-this.width*5, this.y-this.height/2, this.width*5, this.height*2);
+			}
+		}
       	}
       	this.getHit = function (nome, danno) {
 		this.life-=danno;
 		this.timer=-6;
       	}
       	this.physics = function (xdisegnata, ydisegnata, indiceDiQuestaEntity) {
-		if(this.x+this.width/2 > player.x+player.width/2){
-			this.facingRight=false;
-		}else if(this.x+this.width/2 < player.x+player.width/3){ //3 and not 2 otherwise the it will start flipping left and right because of the decimal part of the x coordinate
-			this.facingRight=true;
-		}
 		if(this.timer<0){ //got hit
 			this.timer++;
 		}else{
-			if(this.timer%30==0){ //throwing
+			var throwing=false; var moving=false;
+			var maxThrowX=0; //max distance for the axe - i use it when i call newAxeArmorAxe()
+			if(this.x+this.width/2 > player.x+player.width/2){ //facing direction
+				this.facingRight=false;
+				maxThrowX=this.x+this.width/2-this.width*6;
+				if(collisionBetween(player, new rectTest(maxThrowX, this.y-this.height/2, this.width*6, this.height*2))){throwing=true;}
+				if(collisionBetween(player, new rectTest(this.x+this.width/2-this.width*5, this.y-this.height/2, this.width*5, this.height*2))){moving=true;}
+			}else if(this.x+this.width/2 < player.x+player.width/3){ //3 and not 2 otherwise the it will start flipping left and right because of the decimal part of the x coordinate
+				this.facingRight=true;
+				maxThrowX=this.x+this.width/2+this.width*6;
+				if(collisionBetween(player, new rectTest(this.x+this.width/2, this.y-this.height/2, this.width*6, this.height*2))){throwing=true;}
+				if(collisionBetween(player, new rectTest(this.x+this.width/2, this.y-this.height/2, this.width*5, this.height*2))){moving=true;}
+			}
+			if(throwing && this.timer==0){ //throwing
 				if (this.canThrow){
-					var altoObasso=this.sprite.alt*Math.floor(Math.random());
-					var axe = new newAxeArmorAxe(this.stance.y, this.damage*(2.5), this.x+this.width/2, this.y+altoObasso, this.facingRight, indiceDiQuestaEntity);
+					var altoObasso=this.sprite.alt*Math.floor(Math.random()*2);
+					if(altoObasso==this.sprite.alt){ this.lowAxe=true;} //crouch
+					var axe = new newAxeArmorAxe(this.stance.y, this.damage*(2.5), this.x+this.width/2, this.y+altoObasso, this.facingRight, indiceDiQuestaEntity, maxThrowX);
 					if(this.axeIndex){
-						entity[this.axeArmorAxe]=axe;
+						entity.splice(this.axeIndex,1,axe); //sostituisce il vecchio axe con la nuova appena creata
 					}else{
 						entity.push(axe);
 						this.axeIndex=entity.length-1;
 					}
+					this.canThrow=false;
+					this.timer=65;
+				}	
+			}
+			if(this.axeIndex && this.timer==0){ //check if can throw again (only 1 axe should be on screen per axeArmor)
+				this.lowAxe=false; //stop crouching
+				var myaxe=entity[this.axeIndex];
+				if(collisionBetween(this,myaxe) && myaxe.returning){
+					myaxe.life=-1;
+					this.timer=30;
+				}
+				if(entity[this.axeIndex].life<1){
+					this.canThrow=true;
 				}
 			}
-			if(this.axeIndex){if(entity[this.axeIndex].life<1){this.canThrow=true;}}
-			if(this.moving){ //movement
+			if(moving && !this.lowAxe){ //movement
 				if(this.facingRight){ 
 					this.xv+= this.speed;
 				}else{
 					this.xv+= -this.speed;
 				}
-				this.moving=false;
 			}
+			if(this.timer>0){this.timer--}
 		}
 		this.x += -this.xv;
 		this.xv = this.xv*level.friction;
@@ -1454,41 +1488,41 @@ function newAxeArmor() { //axe armor - throw axeArmorAxe()
 		var latoSx = new rectTest(this.x, this.y+4, 2, this.height-8);
 		var latoDx = new rectTest(this.x+this.width-2, this.y+4, 2, this.height-8);
 		var latoSotto = new rectTest(this.x+4, this.y+this.height-2, this.width-8, 2);
-		var latoSopra = new rectTest(this.x+4, this.y, this.width-8, 2);
       		for (var i = 0; i < level.length; i++){
       			if (collisionBetween(this, level[i])) {
-      				if (collisionBetween(latoSx, level[i]) || collisionBetween(latoDx, level[i])) { //collisione x
-      					this.x -= -this.xv*2.5;
+      				if(collisionBetween(latoSx, level[i])){ //collisione x sx
+      					this.x = level[i].x+level[i].width;
 					this.xv = 0;
-					this.goingRight=!this.goingRight;
-					this.timer-=20;
-      				}
-      				if (collisionBetween(latoSopra, level[i])) { //collisione y top
-					this.y = level[i].y+level[i].height;
-      					this.yv = 0;
+      				}else if(collisionBetween(latoDx, level[i])) { //collisione x dx
+      					this.x = level[i].x-this.width;
+					this.xv = 0;
 				}
       				if (collisionBetween(latoSotto, level[i])) { //collisione y bottom
 					this.y = level[i].y-this.height;
       					this.yv = 0;
-					var randJumping=Math.floor(Math.random()*70);
-					if(randJumping==1){
-						this.yv = -this.jumpHeight; //jump
-					}
       				}
       			}
       		}
 		this.calculateStance();
       	}//fine di physics()
 	this.calculateStance = function (){
-		var previousStance = this.stance.x;
-		var maxTimer=9;
-		switch(this.stance.timer){
-			case 0: this.stance.x=0; break;
-			case maxTimer: this.stance.x=1; break;
-			case 2*maxTimer: this.stance.timer=-1; break;
-		}
-		if(previousStance==this.stance.x){
-			this.stance.timer++;
+		if(this.xv > 0.3 || this.xv < -0.3 && !this.lowAxe){
+			var previousStance = this.stance.x;
+			var maxTimer=9;
+			switch(this.stance.timer){
+				case 0: this.stance.x=0; break;
+				case maxTimer: this.stance.x=1; break;
+				case 2*maxTimer: this.stance.timer=-1; break;
+			}
+			if(previousStance==this.stance.x){
+				this.stance.timer++;
+			}
+		}else{
+			if(this.lowAxe && this.timer>0 && !this.canThrow){
+				this.stance.x=2;
+			}else{
+				this.stance.x=0;
+			}
 		}
 	}//fine di calculateStance()
 }//fine di axeArmor
@@ -1515,7 +1549,7 @@ function newAxeArmorAxe(stanceYP, damageP, xP, yP, facingRightP, armorIndexP, xM
 	this.armorThrower=armorIndexP;
 	this.x = this.startingX;
       	this.y = yP-this.height/2;
-      	this.xv = 2;
+      	this.xv = 4;
       	this.hasPhysics = true;
       	this.canSelfDraw = true;
       	this.selfDraw = function (xdisegnata, ydisegnata, indiceDiQuestaEntity) {
@@ -1525,20 +1559,19 @@ function newAxeArmorAxe(stanceYP, damageP, xP, yP, facingRightP, armorIndexP, xM
       	this.physics = function (xdisegnata, ydisegnata, indiceDiQuestaEntity) {
 		if(this.facingRight){
 			if(this.returning){
-				this.x += this.xv;
-			}else{
 				this.x += -this.xv;
+			}else{
+				this.x += this.xv;
 				if(this.x+this.width/2 > this.xMax){this.returning=true;}
 			}
 		}else{
 			if(this.returning){
-				this.x += -this.xv;
-			}else{
 				this.x += this.xv;
-				if(this.x+this.width/2 > this.xMax){this.returning=true;}
+			}else{
+				this.x += -this.xv;
+				if(this.x+this.width/2 < this.xMax){this.returning=true;}
 			}
 		}
-		if(this.returning && collisionBetween(this, entity[this.armorThrower])){this.life=-1;}
 		this.calculateStance();
       	}//fine di physics()
 	this.calculateStance = function (){
