@@ -2,7 +2,7 @@
       showMouseBox = false; //you can enable showMouseBox with the console (press f12 in the browser)
 
       //elenco entita' - da aggiornare tutte le volte
-      const listaEntityStringa = "01234567⁰¹²³⁴⁵⁶⁷àÀèÈPSBA→←↓↑⊘⟑Zʍ§⧌KЌɖȴǺ";
+      const listaEntityStringa = "01234567⁰¹²³⁴⁵⁶⁷àÀèÈPSBA→←↓↑⊘↹⟑Zʍ§⧌KЌɖȴǺ";
 
       //crea il canvas
       const levelEditor = true;
@@ -16,7 +16,6 @@
       }
       var ctx = document.getElementById('canvas').getContext('2d');
 	ctx.webkitImageSmoothingEnabled = false;
-	ctx.mozImageSmoothingEnabled = false;
 	ctx.imageSmoothingEnabled = false;
 
       //variabili dei tasti - prima o poi faro' un'opzione nel menu per poterli cambiare ingame

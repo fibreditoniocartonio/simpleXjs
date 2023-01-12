@@ -9,7 +9,6 @@
       }
       var ctx = document.getElementById('canvas').getContext('2d');
 	ctx.webkitImageSmoothingEnabled = false;
-	ctx.mozImageSmoothingEnabled = false;
 	ctx.imageSmoothingEnabled = false;
 
       //variabili dei tasti - prima o poi faro' un'opzione nel menu per poterli cambiare ingame
@@ -53,7 +52,7 @@
 	for(var k=1; k<document.getElementsByClassName("buttonClass").length; k++){ //assign event to all the button in the buttonClass
 		document.getElementsByClassName("buttonClass")[k].onmousedown=function(){touchButtonPress(this.id)}
 		document.getElementsByClassName("buttonClass")[k].onmouseup=function(){touchButtonLeave(this.id)}
-		document.getElementsByClassName("buttonClass")[k].onmouseleave=function(){touchButtonLeave(this.id)}
+		document.getElementsByClassName("buttonClass")[k].onpointerleave=function(){touchButtonLeave(this.id)}
 		document.getElementsByClassName("buttonClass")[k].ontouchstart=function(){touchButtonPress(this.id)}
 		document.getElementsByClassName("buttonClass")[k].ontouchend=function(){touchButtonLeave(this.id)}
 		document.getElementsByClassName("buttonClass")[k].ontouchcancel=function(){touchButtonLeave(this.id)}

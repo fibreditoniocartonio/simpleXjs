@@ -3,9 +3,6 @@
       	drawBackgroundImage();
       	drawLvl(level.background); //disegna i blocchi non materiali che colorano lo sfondo (passa false come isDrawingWater - non disegna l'acqua)
       	drawLvl(level); //disegna i blocchi fisici del livello (passa false come isDrawingWater - non disegna l'acqua)
-      	if (!levelEditor) {
-      		drawHUD();
-      	} //if you move drawHUD() under playerPhysics() the HUD will always be drawn on top of everything, but i like it this way. Entities and the player are more important then the hud lol
       	drawEntity(doEntityPhysics); //in questa funzione viene chiamata anche il metodo entity[i].physics per le entità che vengono disegnate su schermo (le uniche che carico)
       	if (levelEditor) {
       		drawPlayerCamera();
@@ -13,6 +10,7 @@
       		drawPlayer(); //disegna il player
       	}
       	drawLvl(level.foreground); //disegna i blocchi non materiali che stanno sopra tutto il resto (effetto grafico) e il waterlevel (passa true a isDrawingWater)
+      	if (!levelEditor){drawHUD();}//draw HUD over everything but water 
       	drawWater();
       	if (levelEditor) {
       		if (player.showGrid) {
@@ -183,7 +181,7 @@
       		disegnaTestoConBordino("player.invulnerability:" + player.invulnerability, 3, canvasHeight - 3 - altezzaTesto * 3, "#d2d2d2", "#000000");
       		disegnaTestoConBordino("player.x:" + Math.round(player.x) + " player.y:" + Math.round(player.y), 3, canvasHeight - 3, "#d2d2d2", "#000000");
       	} //fine debugMode       
-      	var barLenght = 16 * 6 + 40;
+      	var barLenght = 16*6+40;
       	var barHeight = 30;
       	var barAccentColor = player.defaultColor1;
       	if (player.activePower != 0) { //barra potere - la disegno prima cosi' va sotto
@@ -193,7 +191,7 @@
       		ctx.fillStyle = '#3d3b3b';
       		ctx.fillRect(10, 10 + barHeight - 5, barLenght - 4, 16);
       		lineWidth = ((barLenght - 10) / player.power[player.activePower - 1].usageMax) - 1;
-      		for (i = 0; i < player.power[player.activePower - 1].usageMax; i++) { //disegno le barre della vita
+      		for (i = 0; i < player.power[player.activePower - 1].usageMax; i++) {
       			if (i < player.power[player.activePower - 1].usage) {
       				ctx.fillStyle = player.power[player.activePower - 1].color1;
       			} else {
@@ -202,22 +200,13 @@
       			ctx.fillRect(13 + (i * (lineWidth + 1)), 15 + barHeight - 5, lineWidth, 8);
       		}
       	}
-      	ctx.fillStyle = barAccentColor;
-      	ctx.fillRect(8, 8, barLenght - 1, barHeight - 1);
-      	ctx.fillStyle = '#3d3b3b';
-      	ctx.fillRect(10, 10, barLenght, barHeight);
-      	var barLeng = 6;
-      	var barWidth = 5;
-      	var barColor1 = "#ffc000";
-      	var barColor2 = "#14dfff"
       	switch (currentPlayer) {
       		case 1: //riccardo
-      			barWidth = 6;
-      			barColor1 = "#ca0000";
-      			barColor2 = player.defaultColor1;
+      			drawLifeBar(false, 8, 8, barAccentColor, player.life, player.lifeMax, "#ca0000", player.defaultColor1, 6, 6);
       			ctx.drawImage(player.subWeaponImg, 15 * player.activePower, 0, 15 - 0.2, 15, 10, 10, 30, 30);
       			break;
       		default: //X
+      			drawLifeBar(false, 8, 8, barAccentColor, player.life, player.lifeMax, "#ffc000", "#14dfff", 6, 5);
       			ctx.beginPath(); //ora inizio a disegnare la x che sara' del colore del player attivo
       			ctx.lineWidth = "7";
       			ctx.strokeStyle = player.color2;
@@ -231,53 +220,67 @@
       			ctx.stroke(); // Disegna la parte interna della X
       			break;
       	} //fine switch currentPlayer
-      	if (player.lifeMax > 16) {
-      		if (player.life > 16) {
-      			for (i = 16; i < player.lifeMax; i++) { //disegno le barre della vita
-      				if (i < player.life) {
-      					ctx.fillStyle = barColor2;
+      } //fine drawHUD
+
+      function drawLifeBar(isEnemy, xP, yP, barAccentColor, life, lifeMax, miniBarColor1, miniBarColor2, miniBarLeng, miniBarWidth){
+      	var barLenght = 136;
+      	var barHeight = 30;
+	var coo={"x": xP, "y": yP}
+      	ctx.fillStyle = barAccentColor;
+      	ctx.fillRect(coo.x, coo.y, barLenght-1, barHeight-1);
+      	ctx.fillStyle = '#3d3b3b';
+      	ctx.fillRect(coo.x+2, coo.y+2, barLenght, barHeight);
+      	if (lifeMax > 16) {
+      		if (life > 16) {
+      			for (i = 16; i < lifeMax; i++) { //disegno le barre della vita
+      				if (i < life) {
+      					ctx.fillStyle = miniBarColor2;
       				} else {
       					ctx.fillStyle = '#909090';
       				}
-      				ctx.fillRect((i - 16) * barLeng + 43, 14, barWidth, 21);
+      				ctx.fillRect(coo.x+(i-16)*miniBarLeng+35, coo.y+6, miniBarWidth, 21);
       			}
       			for (i = 0; i < 16; i++) { //disegno le barre della vita
-      				if (i + 16 > player.lifeMax - 1) {
-      					ctx.fillStyle = barColor1;
-      					ctx.fillRect(i * barLeng + 43, 17, barWidth, 18);
+      				if (i + 16 > lifeMax - 1) {
+      					ctx.fillStyle = miniBarColor1;
+      					ctx.fillRect(coo.x+i*miniBarLeng+35, coo.y+9, miniBarWidth, 18);
       				} else {
-      					if (i + 16 > player.life - 1) {
-      						ctx.fillStyle = barColor1;
-      						ctx.fillRect(i * barLeng + 43, 17, barWidth, 18);
+      					if (i + 16 > life - 1) {
+      						ctx.fillStyle = miniBarColor1;
+      						ctx.fillRect(coo.x+i*miniBarLeng+35, coo.y+9, miniBarWidth, 18);
       					}
       				}
       			}
       		} else {
-      			for (i = 16; i < player.lifeMax; i++) {
+      			for (i = 16; i < lifeMax; i++) {
       				ctx.fillStyle = '#707070';
-      				ctx.fillRect((i - 16) * barLeng + 43, 14, barWidth, 21);
+      				ctx.fillRect(coo.x+(i-16)*miniBarLeng+35, coo.y+6, miniBarWidth, 21);
       			}
       			for (i = 0; i < 16; i++) { //disegno le barre della vita
-      				if (i < player.life) {
-      					ctx.fillStyle = barColor1;
+      				if (i < life) {
+      					ctx.fillStyle = miniBarColor1;
       				} else {
       					ctx.fillStyle = '#909090';
       				}
-      				//ctx.fillRect(i*6+43, 15, 5, 20);
-      				ctx.fillRect(i * barLeng + 43, 17, barWidth, 18);
+      				ctx.fillRect(coo.x+i*miniBarLeng+35, coo.y+9, miniBarWidth, 18);
       			}
       		}
       	} else {
-      		for (i = 0; i < player.lifeMax; i++) { //disegno le barre della vita
-      			if (i < player.life) {
-      				ctx.fillStyle = barColor1;
+      		for (i = 0; i < lifeMax; i++) { //disegno le barre della vita
+      			if (i < life) {
+      				ctx.fillStyle = miniBarColor1;
       			} else {
       				ctx.fillStyle = '#808080';
       			}
-      			ctx.fillRect(i * barLeng + 43, 15, barWidth, 20);
+      			ctx.fillRect(coo.x+i*miniBarLeng+35, coo.y+7, miniBarWidth, 20);
       		}
       	}
-      } //fine drawHUD   
+	if(isEnemy){
+		var enemyImg=new Image();
+		enemyImg.src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAcAAAAHCAMAAADzjKfhAAAAAXNSR0IArs4c6QAAAGBQTFRFAAAAIiA0RSg8Zjkxj1Y733Em2aBm7sOa+/I2meVQar4wN5RuS2kvUkskMjw5Pz90MGCCW27hY5v/X83ky9v8////m623hH6HaWpqWVZSdkKKrDIy2Vdj13u6j5dKim8w+2O8zwAAACB0Uk5TAP////////////////////////////////////////+Smq12AAAAGElEQVQImWMQhQAGOM0AQejiDFAKJAWEAGGsAzTZEdPwAAAAAElFTkSuQmCC";
+      		ctx.drawImage(enemyImg, 0, 0, 7, 7, coo.x+8, coo.y+7, 21, 21);
+	}
+      }//fine di drawEnemyBar
 
       function drawGrid() {
       	ctx.fillStyle = "#dcdcdc80";
@@ -350,8 +353,8 @@
       				}
       			}
 			xdisegnata=Math.round(xdisegnata); ydisegnata=Math.round(ydisegnata);
-      			//ora disegno l'entita e chiamo physics se e' dentro il canvas disegnato+unQuartoDiCanvas (questa roba non si applica se è uno sparo del player - se no si bugga tutto)                    
-      			if ((xdisegnata + entity[i].width > (-canvasWidth / 8) && xdisegnata < (canvasWidth + (canvasWidth / 8))) && (ydisegnata > (-canvasHeight / 8) && ydisegnata < (canvasHeight + (canvasHeight / 8))) || entity[i].type == "sparoDelPlayer") { //questo if fa i controlli spiegati sopra 
+      			//ora disegno l'entita e chiamo physics se e' dentro il canvas disegnato+unQuartoDiCanvas (questa roba non si applica se è uno sparo del player e a enemyShot, che vengono caricati sempre)                    
+      			if ((xdisegnata + entity[i].width > (-canvasWidth / 8) && xdisegnata < (canvasWidth + (canvasWidth / 8))) && (ydisegnata > (-canvasHeight / 8) && ydisegnata < (canvasHeight + (canvasHeight / 8))) || entity[i].type == "sparoDelPlayer" || entity[i].type=="enemyShot") { //questo if fa i controlli spiegati sopra 
       				if (entity[i].canSelfDraw == true) {
       					entity[i].selfDraw(xdisegnata, ydisegnata, i);
       				} else {

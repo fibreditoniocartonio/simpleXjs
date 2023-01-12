@@ -258,6 +258,13 @@ function stringToLevel(lvlString) {
 				entity.push(entita);
 				break;
 
+			case '↹': //↹ Disable scrolling for square room (for boss rooms)
+				var entita = new newDisableSquareRoomScrolling(blockDimension);
+				entita.x = (i % widthTot) * blockDimension + (blockDimension / 2 - entita.width / 2);
+				entita.y = (heightTot - 1) * blockDimension + 1;
+				entity.push(entita);
+				break;
+
 			case '⟑': //Exit Level Block
 				var exitLevelBlock = new newExitLevelPickup(blockDimension);
 				exitLevelBlock.x = (i % widthTot) * blockDimension + (blockDimension / 2 - exitLevelBlock.width / 2);

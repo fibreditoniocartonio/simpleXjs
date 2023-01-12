@@ -766,7 +766,7 @@ function newRedSkeleton() { //red skeleton
       	this.type = "monster";
       	this.life = 1;
       	this.damageDefault = 1;
-      	this.damage = this.damageDefault;
+      	this.damage = 0;
 	this.sprite = new Image();
       	this.sprite.src = " data:image/png;base64,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";
 	this.stance=[];
@@ -1372,7 +1372,8 @@ function newAxeArmor() { //axe armor - throw axeArmorAxe()
       	this.name = "axe armor";
 	this.letter = "Ǻ";
       	this.type = "monster";
-      	this.life = 16;
+	this.lifeMax = 16;
+      	this.life = this.lifeMax;
       	this.damage = 2;
 	this.sprite = new Image();
       	this.sprite.src = "data:image/png;base64,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";
@@ -1395,11 +1396,14 @@ function newAxeArmor() { //axe armor - throw axeArmorAxe()
       	this.height = 62;
       	this.color1 = '#cc88fc';
       	this.color2 = '#fcc4fc';
-      	this.speed = 0.2;
+      	this.speed = 0.12;
 	this.timer=0;
       	this.hasPhysics = true;
       	this.canSelfDraw = true;
       	this.selfDraw = function (xdisegnata, ydisegnata, indiceDiQuestaEntity) {
+		if(!levelEditor){ //draw boss bar even if not a boss, just for testing and giggles
+	      		drawLifeBar(true, (canvasWidth-(136+8)), 8, this.color1, this.life, this.lifeMax, this.color1, this.color2, 6, 5);
+		}
 		if(this.timer>-1){
 		if (!this.facingRight) {
       				ctx.drawImage(this.sprite, this.sprite.larg*this.stance.x, this.sprite.alt*this.stance.y, this.sprite.larg, this.sprite.alt, xdisegnata, ydisegnata-1, (this.sprite.larg)*2, (this.sprite.alt)*2);
@@ -1427,6 +1431,12 @@ function newAxeArmor() { //axe armor - throw axeArmorAxe()
       	this.getHit = function (nome, danno) {
 		this.life-=danno;
 		this.timer=-6;
+		if(this.life<1){ //make the player exit the level even if not a boss, just for testing and giggles
+			var exitLevelBlock = new newExitLevelPickup(2);
+			exitLevelBlock.x = player.x+player.width/2;
+			exitLevelBlock.y = player.y+player.height/2;
+			entity.push(exitLevelBlock);
+		}
       	}
       	this.physics = function (xdisegnata, ydisegnata, indiceDiQuestaEntity) {
 		if(this.timer<0){ //got hit
@@ -1489,18 +1499,20 @@ function newAxeArmor() { //axe armor - throw axeArmorAxe()
 		var latoDx = new rectTest(this.x+this.width-2, this.y+4, 2, this.height-8);
 		var latoSotto = new rectTest(this.x+4, this.y+this.height-2, this.width-8, 2);
       		for (var i = 0; i < level.length; i++){
-      			if (collisionBetween(this, level[i])) {
-      				if(collisionBetween(latoSx, level[i])){ //collisione x sx
+      			if (collisionBetween(this, level[i])) { 
+				if (collisionBetween(latoSotto, level[i])) { //collisione y bottom
+					this.y = level[i].y-this.height;
+					latoSx.y=this.y+4; latoDx.y=this.y+4; //reset y for collisionBoxeses
+      					this.yv = 0;
+      				}
+				if(collisionBetween(latoSx, level[i])){ //collisione x sx
       					this.x = level[i].x+level[i].width;
 					this.xv = 0;
       				}else if(collisionBetween(latoDx, level[i])) { //collisione x dx
       					this.x = level[i].x-this.width;
 					this.xv = 0;
 				}
-      				if (collisionBetween(latoSotto, level[i])) { //collisione y bottom
-					this.y = level[i].y-this.height;
-      					this.yv = 0;
-      				}
+
       			}
       		}
 		this.calculateStance();
@@ -1508,7 +1520,7 @@ function newAxeArmor() { //axe armor - throw axeArmorAxe()
 	this.calculateStance = function (){
 		if(this.xv > 0.3 || this.xv < -0.3 && !this.lowAxe){
 			var previousStance = this.stance.x;
-			var maxTimer=9;
+			var maxTimer=13;
 			switch(this.stance.timer){
 				case 0: this.stance.x=0; break;
 				case maxTimer: this.stance.x=1; break;
