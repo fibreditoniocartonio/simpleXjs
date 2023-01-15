@@ -1,9 +1,8 @@
-      function disegnaSchermoDiGioco(doEntityPhysics) {
-      	ctx.clearRect(0, 0, canvas.width, canvas.height); //pulisci tutto il canvas
-      	drawBackgroundImage();
+      function disegnaSchermoDiGioco() {
+      	drawBackgroundImage(); //disegna lo sfondo se esiste, altrimenti pulisce il canvas
       	drawLvl(level.background); //disegna i blocchi non materiali che colorano lo sfondo (passa false come isDrawingWater - non disegna l'acqua)
       	drawLvl(level); //disegna i blocchi fisici del livello (passa false come isDrawingWater - non disegna l'acqua)
-      	drawEntity(doEntityPhysics); //in questa funzione viene chiamata anche il metodo entity[i].physics per le entità che vengono disegnate su schermo (le uniche che carico)
+      	drawEntity(); //disegna entita'
       	if (levelEditor) {
       		drawPlayerCamera();
       	} else {
@@ -59,7 +58,9 @@
       function drawBackgroundImage() { //disegna immagine di sfondo
       	if (level.backGroundImg != "" && level.backGroundImg != null && level.backGroundImg != ";") { //se esiste disegna lo sfondo
       		ctx.drawImage(level.backGroundImg, 0, 0, canvasWidth, canvasHeight);
-      	}
+      	}else{
+ 	     	ctx.clearRect(0, 0, canvas.width, canvas.height); //pulisci tutto il canvas
+	}
       }
 
       function drawWater() { //disegna l'acqua
@@ -328,7 +329,7 @@
       	}
       }
 
-      function drawEntity(doEntityPhysics) { //disegna le entità a schermo e chiama la entity[i].physics
+      function drawEntity() { //disegna le entità a schermo e chiama la entity[i].physics
       	for (var i = 0; i < entity.length; i++) {
       		if (entity[i].life > 0) { //calcola la entita solo se la sua vita è maggiore di zero
       			//variabili per disegnare il livello rispetto alla posizione di x (rispetto ai bordi del canvas) - visuale
@@ -360,9 +361,6 @@
       				} else {
       					ctx.fillStyle = entity[i].color;
       					ctx.fillRect(xdisegnata, ydisegnata, entity[i].width, entity[i].height);
-      				}
-      				if (doEntityPhysics && entity[i].hasPhysics) {
-      					entity[i].physics(xdisegnata, ydisegnata, i);
       				}
       			}
       		}

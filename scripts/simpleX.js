@@ -153,7 +153,7 @@
       }
 
       function update() { //this function is called every frame
-      	requestAnimationFrame(update); //credo che sia la roba che crea il ciclo del gioco
+      	requestAnimationFrame(update); //call update() every possible frame update (sync with monitor hz)
       	if (gamestate == 1) {
       		stageSelect();
       	} else if (gamestate == 2) {
@@ -171,8 +171,8 @@
       	} else if (gamestate == 5) {
       		objAlert.drawMenu();
       	} else {
-      		disegnaSchermoDiGioco(true); //ATTENZIONE: se le viene passato true oltre a disegnare le entita' calcola anche le loro physics
-      		player.physics(player, level); //chiama la funzione physics del player
+      		disegnaSchermoDiGioco(); //rendering
+		doPhysics(true); //player and entity physics
       	}
 	//calculate FPS
 	var FPSthisFrameTime = (FPSthisLoop=new Date) - FPSlastLoop;
