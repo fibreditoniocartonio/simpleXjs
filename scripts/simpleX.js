@@ -134,7 +134,9 @@
 
       //fps
       const FPSfilterStrength = 20;
+      const desiredTicPerSecond=60;
       var FPSframeTime = 0, FPSlastLoop = new Date, FPSthisLoop;
+      var TicframeTime = 0, TiclastLoop = new Date, TicthisLoop;
 
       //start the engine
       window.onload = start;
@@ -143,17 +145,18 @@
       function start() {
       	var player = nuovoPlayer(currentPlayer);
 	//start both game cycles
-	doCpuSyncedCycle(); //computation
+	setInterval(doCpuSyncedCycle, 1000/desiredTicPerSecond); //computation
       	doGpuSyncedCycle(); //rendering
       }
 
       function doCpuSyncedCycle(){ //this function is called desiredFps times every second (60 times per second)
-	const desiredFps=60;
-	setInterval(function(){
-		if(gamestate==-1){
- 	     		doInGamePhysics(); //calculate both player and entities physics
-		}
-	},1000/desiredFps);
+	if(gamestate==-1){
+ 		doInGamePhysics(); //calculate both player and entities physics
+	}
+	//calculate tic per second (a tic is a physics cycle)
+	var TicthisFrameTime = (TicthisLoop=new Date) - TiclastLoop;
+	TicframeTime+= (TicthisFrameTime - TicframeTime) / FPSfilterStrength;
+	TiclastLoop = TicthisLoop;
       }
 
       function doGpuSyncedCycle() { //this function is called whenever the gpu can render another frame
@@ -181,5 +184,8 @@
 	var FPSthisFrameTime = (FPSthisLoop=new Date) - FPSlastLoop;
   	FPSframeTime+= (FPSthisFrameTime - FPSframeTime) / FPSfilterStrength;
 	FPSlastLoop = FPSthisLoop;
-	ctx.font = "small-caps bold 12px Lucida Console"; disegnaTestoConBordino((1000/FPSframeTime).toFixed(1),canvasWidth-20,9,"#000000","#ffffff");
+    	ctx.textAlign = "right"; ctx.font = "small-caps bold 12px Lucida Console"; 
+	disegnaTestoConBordino((1000/FPSframeTime).toFixed()+"fps",canvasWidth,9,"#00bb00","#005500");
+	disegnaTestoConBordino((1000/TicframeTime).toFixed()+"tic",canvasWidth,18,"#bb0000","#550000"); //from calculation cycle
+    	ctx.textAlign = "left";
       }
