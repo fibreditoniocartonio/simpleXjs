@@ -194,6 +194,31 @@
       							}
       						}
       					}
+					//pallini della carica del colpo
+					if (player.carica > 80) { //level 2 charge and 3
+      						if (player.carica > 150 && armaturaAcquired[2]) { //charge 3 - richiede armaturaAcquired[2]
+      							var xdisegnata = xDisegnata();
+      							var ydisegnata = yDisegnata();
+      							var xrandom = ((-player.width / 4) + Math.floor(Math.random() * (player.width / 2))) * 3;
+      							var yrandom = ((-player.height / 4) + Math.floor(Math.random() * (player.height / 2))) * 2;
+      							ctx.fillStyle = player.charge3color;
+      							ctx.fillRect(xdisegnata + (player.width / 2) + xrandom, ydisegnata + (player.height / 2) + yrandom, 8, 8);
+      						} else { //charge 2
+      							var xdisegnata = xDisegnata();
+      							var ydisegnata = yDisegnata();
+      							var xrandom = ((-player.width / 4) + Math.floor(Math.random() * (player.width / 2))) * 3;
+      							var yrandom = ((-player.height / 4) + Math.floor(Math.random() * (player.height / 2))) * 2;
+      							ctx.fillStyle = player.charge0color;
+      							ctx.fillRect(xdisegnata + (player.width / 2) + xrandom, ydisegnata + (player.height / 2) + yrandom, 8, 8);
+      						}
+      					} else if (player.carica > 25) { //level 1 charge
+      						var xdisegnata = xDisegnata();
+      						var ydisegnata = yDisegnata();
+      						var xrandom = ((-player.width / 4) + Math.floor(Math.random() * (player.width / 2))) * 3;
+      						var yrandom = ((-player.height / 4) + Math.floor(Math.random() * (player.height / 2))) * 2;
+      						ctx.fillStyle = player.charge1color;
+      						ctx.fillRect(xdisegnata + (player.width / 2) + xrandom, ydisegnata + (player.height / 2) + yrandom, 8, 8);
+      					}
       					//corpo
       					if (armaturaAcquired[3]) {
       						ctx.fillStyle = coloreArmatura;
@@ -435,31 +460,7 @@
       						}
       					} else {
       						if (player.activePower == 0 || armaturaAcquired[2]) {
-      							player.carica++; //disegna i pallini del colore della carica intorno al player
-      							if (player.carica > 80) { //level 2 charge and 3
-      								if (player.carica > 150 && armaturaAcquired[2]) { //charge 3 - richiede armaturaAcquired[2]
-      									var xdisegnata = xDisegnata();
-      									var ydisegnata = yDisegnata();
-      									var xrandom = ((-player.width / 4) + Math.floor(Math.random() * (player.width / 2))) * 3;
-      									var yrandom = ((-player.height / 4) + Math.floor(Math.random() * (player.height / 2))) * 2;
-      									ctx.fillStyle = player.charge3color;
-      									ctx.fillRect(xdisegnata + (player.width / 2) + xrandom, ydisegnata + (player.height / 2) + yrandom, 8, 8);
-      								} else { //charge 2
-      									var xdisegnata = xDisegnata();
-      									var ydisegnata = yDisegnata();
-      									var xrandom = ((-player.width / 4) + Math.floor(Math.random() * (player.width / 2))) * 3;
-      									var yrandom = ((-player.height / 4) + Math.floor(Math.random() * (player.height / 2))) * 2;
-      									ctx.fillStyle = player.charge0color;
-      									ctx.fillRect(xdisegnata + (player.width / 2) + xrandom, ydisegnata + (player.height / 2) + yrandom, 8, 8);
-      								}
-      							} else if (player.carica > 25) { //level 1 charge
-      								var xdisegnata = xDisegnata();
-      								var ydisegnata = yDisegnata();
-      								var xrandom = ((-player.width / 4) + Math.floor(Math.random() * (player.width / 2))) * 3;
-      								var yrandom = ((-player.height / 4) + Math.floor(Math.random() * (player.height / 2))) * 2;
-      								ctx.fillStyle = player.charge1color;
-      								ctx.fillRect(xdisegnata + (player.width / 2) + xrandom, ydisegnata + (player.height / 2) + yrandom, 8, 8);
-      							}
+      							player.carica++; 
       						}
       					}
       				} else {
