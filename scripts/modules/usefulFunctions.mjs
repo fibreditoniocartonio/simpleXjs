@@ -53,3 +53,10 @@
       	ctx.fillStyle = coloreTesto;
       	ctx.fillText(stringaDiTesto, xdisegnata, ydisegnata);
       }
+
+      function nuovoLivello() { //azzera i dati del player e carica un nuovo livello
+      	player = nuovoPlayer(currentPlayer);
+      	leggiLivelloDaFile();
+      	player.x = level.xStartingPos;
+      	player.y = level.yStartingPos;
+      }

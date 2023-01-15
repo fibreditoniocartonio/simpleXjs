@@ -160,13 +160,10 @@ function newShowLevelName() { //mostra il nome del livello su schermo (non inser
       	this.canSelfDraw = true;
       	this.hasPhysics = true;
       	this.selfDraw = function (xdisegnata, ydisegnata, indiceDiQuestaEntity) { //funzione per disegnare l'entita
-		//non si disegna
+		ctx.textAlign = "left"; ctx.font = "small-caps bold 15px Lucida Console";
+		disegnaTestoConBordino(level.name, 5, canvasHeight-5, this.color1, this.color2);
       	} //fine di selfDraw
       	this.physics = function (xdisegnata, ydisegnata, indiceDiQuestaEntity) {
-		if(this.life>-1){
-			ctx.textAlign = "left"; ctx.font = "small-caps bold 15px Lucida Console";
-			disegnaTestoConBordino(level.name, 5, canvasHeight-5, this.color1, this.color2);
-			this.life--;
-		}
+		this.life--;
       	} //fine di physics
 }

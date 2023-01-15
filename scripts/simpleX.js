@@ -142,19 +142,25 @@
       //this function is called at the start
       function start() {
       	var player = nuovoPlayer(currentPlayer);
-      	update();
+	//start both game cycles
+	doCpuSyncedCycle(); //computation
+      	doGpuSyncedCycle(); //rendering
       }
 
-      function nuovoLivello() { //azzera i dati del player e carica un nuovo livello (da stringa e non da file...)
-      	player = nuovoPlayer(currentPlayer);
-      	leggiLivelloDaFile();
-      	player.x = level.xStartingPos;
-      	player.y = level.yStartingPos;
+      function doCpuSyncedCycle(){ //this function is called desiredFps times every second (60 times per second)
+	const desiredFps=60;
+	setInterval(function(){
+		if(gamestate==-1){
+ 	     		doInGamePhysics(); //calculate both player and entities physics
+		}
+	},1000/desiredFps);
       }
 
-      function update() { //this function is called every frame
-      	requestAnimationFrame(update); //call update() every possible frame update (sync with monitor hz)
-      	if (gamestate == 1) {
+      function doGpuSyncedCycle() { //this function is called whenever the gpu can render another frame
+      	requestAnimationFrame(doGpuSyncedCycle); //call doGpuSyncedCicle() every possible frame update (sync with monitor hz)
+	if (gamestate == -1){
+      		disegnaSchermoDiGioco(); //rendering
+      	}else if (gamestate == 1) {
       		stageSelect();
       	} else if (gamestate == 2) {
       		objMenuDiPausa.drawMenuDiPausa();
@@ -170,10 +176,7 @@
       		objMenuMappa.selfDraw();
       	} else if (gamestate == 5) {
       		objAlert.drawMenu();
-      	} else {
-      		disegnaSchermoDiGioco(); //rendering
-		doPhysics(true); //player and entity physics
-      	}
+      	}	
 	//calculate FPS
 	var FPSthisFrameTime = (FPSthisLoop=new Date) - FPSlastLoop;
   	FPSframeTime+= (FPSthisFrameTime - FPSframeTime) / FPSfilterStrength;
