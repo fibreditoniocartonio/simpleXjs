@@ -629,6 +629,7 @@
       		}
 
       		function caricaTilesNuovi(lvlString, tilesNuovi) {
+			//carico il tileset nella stringa livello
       			var indice = level.indiceZ; //parti da dopo la  z
       			if (tilesNuovi == "") {
       				tilesNuovi += ";";
@@ -646,6 +647,48 @@
       				}
       			}
       			lvlString = lvlString.slice(0, tilesetStart + 1) + tilesNuovi + lvlString.slice(indice, lvlString.length);
+			//ora aggiorno i colori dei blocchi in base al colore dominante dei tileset
+			if(!(tilesNuovi=="" || tilesNuovi==";")){
+				var tempCanvas = document.createElement('canvas').getContext('2d');
+				tempCanvas.imageSmoothingEnabled = true;
+				var tilesetCaricati = new Image ();
+				tilesetCaricati.src=tilesNuovi;
+				var newColors=[];
+				for(var k=0; k<17; k++){ //per ogni colore dei blocchi
+					if(k<12){
+						tempCanvas.drawImage(tilesetCaricati, 16 * k, 16 * 0, 16, 16, 0, 0, 1, 1);
+					}else if(k>11 && k<15){
+						tempCanvas.drawImage(tilesetCaricati, 16 * (k-12), 16 * 1, 16, 16, 0, 0, 1, 1);
+					}else{
+						tempCanvas.drawImage(tilesetCaricati, 16 * (k-15), 16 * 2, 16, 16, 0, 0, 1, 1);
+					}
+					newColors[k]="#";
+					for(var i=0; i<3; i++){
+						var x=parseInt(tempCanvas.getImageData(0, 0, 1, 1).data.slice(0,3)[i]).toString(16);
+						if(x.length==1){x="0"+x;}
+						newColors[k]+=x;
+					}
+					var puntoVirgolaPrima=2+k;
+					var puntoVirgolaLetti=0; 
+					var inizioColore=0, fineColore=0;
+      					for (colorIndex = level.indiceZ; colorIndex < lvlString.length; colorIndex++) {
+      						if (stringaLivello[colorIndex] == " ") { //interrompo prima dei tileset e background per ottimizzare il ciclo
+      							break;
+      						}
+      						if (stringaLivello[colorIndex] == ";") {
+      							puntoVirgolaLetti++;
+      						}
+      						if (puntoVirgolaLetti == puntoVirgolaPrima && inizioColore==0) {
+      							inizioColore = colorIndex + 1;
+      						}
+      						if (puntoVirgolaLetti == puntoVirgolaPrima + 1) {
+      							fineColore = colorIndex;
+      							break;
+      						}
+      					}
+	      				lvlString = lvlString.slice(0, inizioColore) + newColors[k] + lvlString.slice(fineColore);
+				}
+			}
       			return lvlString;
       		}
       		async function controllaFile() { //controlla che il file sia caricato correttamente
