@@ -1,13 +1,26 @@
-      function getCurrentPlayerName(currentPlayer) {
+function getCurrentPlayerName(currentPlayer) {
       	switch (currentPlayer) {
       		case 1:
       			return "riccardo belmonte";
       		default:
       			return "ics";
       	}
-      }
+}
 
-      function nuovoPlayer(currentPlayer) {
+function switchToNextPlayableCharacter(){
+	if(currentPlayer<maxCurrentPlayer-1){
+		currentPlayer++;
+	}else{	currentPlayer=0;}
+	var tempPlayer=player;
+	player=nuovoPlayer(currentPlayer);
+	player.x=tempPlayer.x-(player.width-tempPlayer.width)/2;
+	player.y=tempPlayer.y-(player.height-tempPlayer.height);
+	player.facingRight=tempPlayer.facingRight;
+	player.life=tempPlayer.life;
+	player.power=tempPlayer.power;
+}
+
+function nuovoPlayer(currentPlayer) {
       	if (currentPlayer == 0) {
       		var player = new Player();
       		return player;
@@ -1470,4 +1483,4 @@
       		} //fine di new Riccardo()
 
       	}
-      } //fine di nuovoPlayer()
+} //fine di nuovoPlayer()

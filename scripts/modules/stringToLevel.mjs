@@ -272,8 +272,22 @@ function stringToLevel(lvlString) {
 				entity.push(exitLevelBlock);
 				break;
 
-			case 'ṧ': //Save Game Block
+			case 'ṧ': //Save Game Block↺
 				var entita = new newSaveGamePickup(blockDimension);
+				entita.x = (i % widthTot) * blockDimension + (blockDimension / 2 - entita.width / 2);
+				entita.y = (heightTot - 1) * blockDimension + 1;
+				entity.push(entita);
+				break;
+
+			case '↺': //Save Game Block
+				var entita = new newSwitchToNextPlayableCharacterBlock(blockDimension);
+				entita.x = (i % widthTot) * blockDimension + (blockDimension / 2 - entita.width / 2);
+				entita.y = (heightTot - 1) * blockDimension + 1;
+				entity.push(entita);
+				break;
+
+			case '@': //Load Costum Level Block
+				var entita = new newLoadCostumLevelBlock(blockDimension);
 				entita.x = (i % widthTot) * blockDimension + (blockDimension / 2 - entita.width / 2);
 				entita.y = (heightTot - 1) * blockDimension + 1;
 				entity.push(entita);

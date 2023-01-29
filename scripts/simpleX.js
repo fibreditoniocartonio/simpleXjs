@@ -74,7 +74,8 @@
 	}
 
       //game unlockable variables
-      var stringaSalvataggio = "0|z|ArrowRight|ArrowLeft|ArrowUp|ArrowDown|x|a|Enter|d|c|Shift|false,false,false,false,false,false,false,false|false,false,false,false,false,false,false,false|0|false|0|false|0|false|0|false|false,false,false,false|1|";
+      const stringaSalvataggioDefault = "1|z|ArrowRight|ArrowLeft|ArrowUp|ArrowDown|x|a|Enter|d|c|Shift|false,false,false,false,false,false,false,false|false,false,false,false,false,false,false,false|0|false|0|false|0|false|0|false|false,false,false,false|1|";
+      var stringaSalvataggio = stringaSalvataggioDefault;
       levelDefeated = [false, false, false, false, false, true, false, true]; //vettore che tiene quanti livelli sono stati superati
       heartAcquired = [false, false, false, false, false, false, false, false]; //vettore che tiene quanti cuori sono stati trovati
       armaturaAcquired = [false, false, false, false]; //vettore che tiene quante armatura e' stata trovata - 0:testa, 1:gambe, 2:buster, 3:corpo
@@ -102,8 +103,8 @@
       ];
 
       //player initialization
-      var currentPlayer = 0; //variabile che indica il personaggio scelto
-      var maxCurrentPlayer = 2; //numero di personaggi
+      var currentPlayer = 1; //variabile che indica il personaggio scelto
+      const maxCurrentPlayer = 2; //numero di personaggi
       function getCurrentPlayerName(currentPlayer) {
       	switch (currentPlayer) {
       		case 1:

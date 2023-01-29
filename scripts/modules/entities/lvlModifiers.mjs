@@ -42,8 +42,8 @@ function newChangeLevelArrow(direzionePassata) { //cambia livello - unicode: →
       	} //fine di physics
 	function calcolaDeltaLN(direzione){
 		switch(direzione){
-			case "→": return 100 
-			case "←": return -100
+			case "→": return 1 
+			case "←": return -1
 			case "↓": return 10000
 			case "↑": return -10000
 		}
@@ -117,7 +117,7 @@ function newDisableSquareRoomScrolling(blockDimensionPassata) { //disable room s
       	} //fine di physics
 }
 
-function newExitLevelPickup(blockDimensionPassata) { //cambia livello - unicode: →←↓↑
+function newExitLevelPickup(blockDimensionPassata) { //termina il livello e torna all'ultimo salvataggio (da usare nei costum level)
 	this.life = 9999999999;
 	this.letter= "⟑";
       	this.type = "level modifier";
@@ -151,7 +151,7 @@ function newExitLevelPickup(blockDimensionPassata) { //cambia livello - unicode:
       	} //fine di physics
 }
 
-function newSaveGamePickup(blockDimensionPassata) { //cambia livello - unicode: →←↓↑
+function newSaveGamePickup(blockDimensionPassata) { //blocco che salva la partita e scarica il file di salvataggio
 	this.life = 9999999999;
 	this.letter= "ṧ";
       	this.type = "level modifier";
@@ -159,8 +159,8 @@ function newSaveGamePickup(blockDimensionPassata) { //cambia livello - unicode: 
       	this.damage = 0;
       	this.x = 0;
       	this.y = 0;
-      	this.width = blockDimensionPassata;
-      	this.height = blockDimensionPassata;
+      	this.width = blockDimensionPassata*2;
+      	this.height = blockDimensionPassata*2;
       	this.color1 = '#ee0000';
       	this.color2 = '#000000';
 	this.color3 = "#ffffff";
@@ -169,9 +169,9 @@ function newSaveGamePickup(blockDimensionPassata) { //cambia livello - unicode: 
       	this.selfDraw = function (xdisegnata, ydisegnata, indiceDiQuestaEntity) { //funzione per disegnare l'entita
 			ctx.fillStyle=this.color2; ctx.fillRect(xdisegnata-1, ydisegnata-1, this.width+2, this.height+2);
 			ctx.fillStyle=this.color1; ctx.fillRect(xdisegnata+1, ydisegnata+1, this.width-2, this.height-2);
-			ctx.textAlign = "center"; ctx.font = "small-caps bold "+blockDimension/2+"px Lucida Console";
+			ctx.textAlign = "center"; ctx.font = "small-caps bold "+blockDimension+"px Lucida Console";
 			disegnaTestoConBordino("save", xdisegnata + (this.width / 2), (ydisegnata + (this.height-4)/4 + ctx.measureText("O").width/2), this.color3, this.color2);
-			ctx.font = "small-caps bold "+(blockDimension/2-3)+"px Lucida Console";
+			ctx.font = "small-caps bold "+(blockDimension-5)+"px Lucida Console";
 			disegnaTestoConBordino("game", xdisegnata + (this.width / 2), (ydisegnata + 3*(this.height-4)/4 + ctx.measureText("O").width/2), this.color3, this.color2);
 			ctx.textAlign = "left";
       	} //fine di selfDraw
@@ -187,6 +187,85 @@ function newSaveGamePickup(blockDimensionPassata) { //cambia livello - unicode: 
       			gamestate = 5;
 			this.life=-1;
       		}
+      	} //fine di physics
+}
+
+function newSwitchToNextPlayableCharacterBlock(blockDimensionPassata) { //blocco che cambia il player nel successivo personaggio giocabile
+	this.life = 9999999999;
+	this.letter= "↺";
+      	this.type = "level modifier";
+      	this.name = "switch player";
+      	this.damage = 0;
+      	this.x = 0;
+      	this.y = 0;
+	this.timer=0;
+      	this.width = blockDimensionPassata*2;
+      	this.height = blockDimensionPassata*2;
+      	this.color1 = '#00eeee';
+      	this.color2 = '#000000';
+	this.color3 = "#ffffff";
+      	this.canSelfDraw = true;
+      	this.hasPhysics = true;
+      	this.selfDraw = function (xdisegnata, ydisegnata, indiceDiQuestaEntity) { //funzione per disegnare l'entita
+		if(this.timer==0){		
+			ctx.fillStyle=this.color2; ctx.fillRect(xdisegnata-1, ydisegnata-1, this.width+2, this.height+2);
+			ctx.fillStyle=this.color1; ctx.fillRect(xdisegnata+1, ydisegnata+1, this.width-2, this.height-2);
+			ctx.textAlign = "center"; ctx.font = "small-caps bold "+2*blockDimension/3+"px Lucida Console";
+			disegnaTestoConBordino("switch", xdisegnata + (this.width / 2), (ydisegnata + (this.height-4)/4 + ctx.measureText("O").width/2), this.color3, this.color2);
+			disegnaTestoConBordino("player", xdisegnata + (this.width / 2), (ydisegnata + 3*(this.height-4)/4 + ctx.measureText("O").width/2), this.color3, this.color2);
+			ctx.textAlign = "left";
+		}
+      	} //fine di selfDraw
+      	this.physics = function (xdisegnata, ydisegnata, indiceDiQuestaEntity) {
+      		if(this.timer==0){
+			if (collisionBetween(this, player)) { //quando il player lo raccoglie
+				this.timer=120;
+				switchToNextPlayableCharacter();
+      			}
+		}else{
+			this.timer--;
+		}
+      	} //fine di physics
+}
+
+function newLoadCostumLevelBlock(blockDimensionPassata) { //blocco che cambia il player nel successivo personaggio giocabile
+	this.life = 9999999999;
+	this.letter= "@";
+      	this.type = "level modifier";
+      	this.name = "load costum level";
+      	this.damage = 0;
+      	this.x = 0;
+      	this.y = 0;
+	this.timer=0;
+      	this.width = blockDimensionPassata*2;
+      	this.height = blockDimensionPassata*2;
+      	this.color1 = '#ffbb00';
+      	this.color2 = '#000000';
+	this.color3 = "#ffffff";
+      	this.canSelfDraw = true;
+      	this.hasPhysics = true;
+      	this.selfDraw = function (xdisegnata, ydisegnata, indiceDiQuestaEntity) { //funzione per disegnare l'entita
+		if(this.timer==0){
+			ctx.fillStyle=this.color2; ctx.fillRect(xdisegnata-1, ydisegnata-1, this.width+2, this.height+2);
+			ctx.fillStyle=this.color1; ctx.fillRect(xdisegnata+1, ydisegnata+1, this.width-2, this.height-2);
+			ctx.textAlign = "center"; ctx.font = "small-caps bold "+(2*blockDimension/3 - 3)+"px Lucida Console";
+			disegnaTestoConBordino("load", xdisegnata + (this.width / 2), (ydisegnata + (this.height-4)/6 + ctx.measureText("O").width/2), this.color3, this.color2);
+			disegnaTestoConBordino("costum", xdisegnata + (this.width / 2), (ydisegnata + 3*(this.height-4)/6 + ctx.measureText("O").width/2), this.color3, this.color2);
+			disegnaTestoConBordino("level", xdisegnata + (this.width / 2), (ydisegnata + 5*(this.height-4)/6 + ctx.measureText("O").width/2), this.color3, this.color2);
+			ctx.textAlign = "left";
+		}
+      	} //fine di selfDraw
+      	this.physics = function (xdisegnata, ydisegnata, indiceDiQuestaEntity) {
+      		if(this.timer==0){
+			if (collisionBetween(this, player)) { //quando il player lo raccoglie
+				this.timer=120;
+    				objMenuOpzioniStageSelect = new newMenuCaricaCostumLevel();
+		    		tastogiaschiacciato = true;
+    				gamestate = 4;
+      			}
+		}else{
+			this.timer--;
+		}
       	} //fine di physics
 }
 

@@ -7,7 +7,7 @@ function SalvaPartita() {
 
 	{ //creo il file simpleXjs.dataDiOggi.savegame da scaricare
       		const dataDiOggi = creaData(); //prende la data di oggi
-      		let element = document.createElement('a');
+      		var element = document.createElement('a');
       		element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(stringaSalvataggio));
       		element.setAttribute('download', "simpleXjs." + dataDiOggi + ".savegame");
       		element.style.display = 'none';
@@ -17,8 +17,8 @@ function SalvaPartita() {
       		document.getElementById('canvasDivId').focus();
 
       		function creaData() {
-      			let temp = new Date();
-      			let dateStr = padStr(temp.getFullYear()) + "." +
+      			var temp = new Date();
+      			var dateStr = padStr(temp.getFullYear()) + "." +
       				padStr(1 + temp.getMonth()) + "." +
       				padStr(temp.getDate()) + "-" +
       				padStr(temp.getHours()) + "." +
@@ -41,9 +41,9 @@ function CaricaPartita(stringaSalvataggioDaCaricare){
 function caricaDatiSalvataggio(stringaCaricaPartita) { //carica effettivamente la partita dal risultato della lettura del file
 				stringaSalvataggio=stringaCaricaPartita;
 				exploredMapIndex = []; //azzero l'esplorazione mappa
-				let numeroElementoTotale=25;
-    				let numeroElemento = 0;
-    				let stringaElemento = "";
+				var numeroElementoTotale=25;
+    				var numeroElemento = 0;
+    				var stringaElemento = "";
     				for (i = 0; i < stringaCaricaPartita.length; i++) {
     					if (stringaCaricaPartita[i] == "|") {
     						caricaElemento();

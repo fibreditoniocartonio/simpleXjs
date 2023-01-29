@@ -2,7 +2,7 @@
       showMouseBox = false; //you can enable showMouseBox with the console (press f12 in the browser)
 
       //elenco entita' - da aggiornare tutte le volte
-      const listaEntityStringa = "01234567⁰¹²³⁴⁵⁶⁷àÀèÈPSBA→←↓↑⊘↹⟑ṧZʍ§⧌KЌɖȴǺ";
+      const listaEntityStringa = "01234567⁰¹²³⁴⁵⁶⁷àÀèÈPSBA→←↓↑⊘↹⟑ṧ↺@Zʍ§⧌KЌɖȴǺ";
 
       //crea il canvas
       const levelEditor = true;
