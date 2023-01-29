@@ -24,16 +24,16 @@ function newChangeLevelArrow(direzionePassata) { //cambia livello - unicode: →
       	} //fine di selfDraw
       	this.physics = async function (xdisegnata, ydisegnata, indiceDiQuestaEntity) {
       		if (collisionBetween(this, player)) { //quando il player lo raccoglie
-			let playerSpawn=this.oppositeDirection;
+			var playerSpawn=this.oppositeDirection;
 			lvlNumber+=this.deltaLevelNumber;
 			if(player.activeShot){player.activeShot=0;} //reset player shot otherwise the player will not be able to shoot anymore
 			leggiLivelloDaFile();
-			for(let i=0; i<entity.length; i++){
+			for(var i=0; i<entity.length; i++){
 				if(entity[i].letter==playerSpawn){
 					switch(playerSpawn){
 						case "→": player.x=entity[i].x-blockDimension/3-player.width; player.y=entity[i].y; break;
 						case "←": player.x=entity[i].x+blockDimension+blockDimension/3; player.y=entity[i].y; break;
-						case "↓": player.x=entity[i].x; player.y=entity[i].y-blockDimension-player.height; break;
+						case "↓": player.x=entity[i].x; player.y=entity[i].y-blockDimension-player.height; player.yv=-player.jumpheight/2; break;
 						case "↑": player.x=entity[i].x; player.y=entity[i].y+blockDimension/3+blockDimension; break;
 					}
 				}

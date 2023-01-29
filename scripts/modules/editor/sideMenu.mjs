@@ -650,21 +650,29 @@
 			//ora aggiorno i colori dei blocchi in base al colore dominante dei tileset
 			if(!(tilesNuovi=="" || tilesNuovi==";")){
 				var tempCanvas = document.createElement('canvas').getContext('2d');
-				tempCanvas.imageSmoothingEnabled = true;
+				//tempCanvas.imageSmoothingEnabled = true;
 				var tilesetCaricati = new Image ();
 				tilesetCaricati.src=tilesNuovi;
 				var newColors=[];
 				for(var k=0; k<17; k++){ //per ogni colore dei blocchi
 					if(k<12){
-						tempCanvas.drawImage(tilesetCaricati, 16 * k, 16 * 0, 16, 16, 0, 0, 1, 1);
+						tempCanvas.drawImage(tilesetCaricati, 16 * k, 16 * 0, 16, 16, 0, 0, 16, 16);
 					}else if(k>11 && k<15){
-						tempCanvas.drawImage(tilesetCaricati, 16 * (k-12), 16 * 1, 16, 16, 0, 0, 1, 1);
+						tempCanvas.drawImage(tilesetCaricati, 16 * (k-12), 16 * 1, 16, 16, 0, 0, 16, 16);
 					}else{
-						tempCanvas.drawImage(tilesetCaricati, 16 * (k-15), 16 * 2, 16, 16, 0, 0, 1, 1);
+						tempCanvas.drawImage(tilesetCaricati, 16 * (k-15), 16 * 2, 16, 16, 0, 0, 16, 16);
+					}
+					var rgb=[0,0,0]; 
+					var count=0;
+					for(var i=0; i<(tempCanvas.getImageData(0, 0, 16, 16).data.length-9); i+=4){
+						count++;
+						rgb[0]+=tempCanvas.getImageData(0, 0, 16, 16).data[i];
+						rgb[1]+=tempCanvas.getImageData(0, 0, 16, 16).data[i+1];
+						rgb[2]+=tempCanvas.getImageData(0, 0, 16, 16).data[i+2];
 					}
 					newColors[k]="#";
 					for(var i=0; i<3; i++){
-						var x=parseInt(tempCanvas.getImageData(0, 0, 1, 1).data.slice(0,3)[i]).toString(16);
+						var x=parseInt(Math.floor(rgb[i]/count)).toString(16);
 						if(x.length==1){x="0"+x;}
 						newColors[k]+=x;
 					}
@@ -672,22 +680,23 @@
 					var puntoVirgolaLetti=0; 
 					var inizioColore=0, fineColore=0;
       					for (colorIndex = level.indiceZ; colorIndex < lvlString.length; colorIndex++) {
-      						if (stringaLivello[colorIndex] == " ") { //interrompo prima dei tileset e background per ottimizzare il ciclo
+      						if (lvlString[colorIndex] == " ") { //interrompo prima dei tileset e background per ottimizzare il ciclo (non dovrebbe entrare mai in questo if)
       							break;
       						}
-      						if (stringaLivello[colorIndex] == ";") {
+      						if (lvlString[colorIndex] == ";") {
       							puntoVirgolaLetti++;
       						}
       						if (puntoVirgolaLetti == puntoVirgolaPrima && inizioColore==0) {
-      							inizioColore = colorIndex + 1;
+      							inizioColore = colorIndex+1;
       						}
-      						if (puntoVirgolaLetti == puntoVirgolaPrima + 1) {
+      						if (puntoVirgolaLetti == (puntoVirgolaPrima+1)) {
       							fineColore = colorIndex;
       							break;
       						}
       					}
 	      				lvlString = lvlString.slice(0, inizioColore) + newColors[k] + lvlString.slice(fineColore);
 				}
+				console.log("automatic block color replacement: "+newColors);
 			}
       			return lvlString;
       		}
