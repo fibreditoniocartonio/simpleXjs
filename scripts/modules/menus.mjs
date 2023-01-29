@@ -56,33 +56,9 @@
     				switch (this.indice) {
     					case 0: //nuovo gioco 
     						this.isClosing = true;
-    						this.isGoingToStageSelection = true;
-						exploredMapIndex = []; //azzero l'esplorazione mappa
-    						//azzero tutto
-    						levelDefeated = [false, false, false, false, false, false, false, false];
-    						heartAcquired = [false, false, false, false, false, false, false, false];
-    						armaturaAcquired = [false, false, false, false];
-    						subtank = [{
-    								lifeMax: 20,
-    								life: parseInt(0, 10),
-    								acquired: false
-    							},
-    							{
-    								lifeMax: 20,
-    								life: parseInt(0, 10),
-    								acquired: false
-    							},
-    							{
-    								lifeMax: 20,
-    								life: parseInt(0, 10),
-    								acquired: false
-    							},
-    							{
-    								lifeMax: 20,
-    								life: parseInt(0, 10),
-    								acquired: false
-    							},
-    						];
+    						//this.isGoingToStageSelection = true;
+ 						stringaSalvataggio = "0|z|ArrowRight|ArrowLeft|ArrowUp|ArrowDown|x|a|Enter|d|c|Shift|false,false,false,false,false,false,false,false|false,false,false,false,false,false,false,false|0|false|0|false|0|false|0|false|false,false,false,false|1|";
+						CaricaPartita(stringaSalvataggio);
     						break;
     					case 1: //carica partita
     						objMenuCaricaPartita = new newMenuCaricaPartita();
@@ -113,7 +89,7 @@
     				if (this.isGoingToStageSelection) {
     					gamestate = 1;
     				} else {
-    					//boh...
+    					gamestate = -1;
     				}
     			}
     		}
@@ -286,7 +262,7 @@
     	this.isOpen = false;
     	this.isClosing = false;
     	this.canInput = true;
-    	this.tornaStageSelection = false;
+    	this.tornaMenuPrecedente = false;
     	this.indice = player.activePower;
     	this.settore = 0;
     	this.usingSubtank = 4; //4 vuol dire che non sto usando la subtank (da 0 a 3 e' l'indice della subtank usata)
@@ -381,7 +357,7 @@
 
     					case 2:
     						disegnaTestoConBordino("return to the", xdisegnata + 5, ydisegnata - 2 - ((canvasHeight - this.height + 30) / 3) / 2, "#d2d2d2", "#000000");
-    						disegnaTestoConBordino("level selection", xdisegnata + 5, ydisegnata + 15 - ((canvasHeight - this.height + 30) / 3) / 2, "#d2d2d2", "#000000");
+    						disegnaTestoConBordino("main menu", xdisegnata + 5, ydisegnata + 15 - ((canvasHeight - this.height + 30) / 3) / 2, "#d2d2d2", "#000000");
     						break;
     				}
     			}
@@ -463,7 +439,7 @@
     									gamestate = 3;
     									break;
     								case 6: //torna alla selezione del livello
-    									this.tornaStageSelection = true;
+    									this.tornaMenuPrecedente = true;
     									lvlNumber = 1;
     									this.isClosing = true;
     									this.isOpen = false;
@@ -577,8 +553,9 @@
     			ctx.fillRect((canvasWidth / 2) - this.width / 2, (canvasHeight / 2) - this.height / 2, this.width, this.height); //disegna lo sfondo verde
     			if (this.height - 1 < 0 && this.width - 1 < 0) { //quando il menu e' tutto chiuso:
     				gamestate = -1;
-    				if (this.tornaStageSelection) {
-    					gamestate = 1;
+    				if (this.tornaMenuPrecedente) {
+					objMenuPrincipale = new newMenuPrincipale();
+    					gamestate = 0;
     				}
     				var sommaSubtank = 0; //aggiusto la vita delle subtank (la metto tutta nelle prime subtank disponibili)
     				for (var j = 0; j < 4; j++) { //azzero tutte le subtank e carico tutta la vita per ridistribuirla nel prossimo for
@@ -1235,7 +1212,8 @@
     			if (this.height - 1 < 0 && this.width - 1 < 0) { //quando il menu e' tutto chiuso:
     				nelMenuCaricaPartita = false;
     				if (this.fileLetto) {
-    					gamestate = 1;
+    					//gamestate = 1; //stage select
+					CaricaPartita(stringaSalvataggio);
     				} else {
     					gamestate = 0;
     					objMenuPrincipale.drawMenuPrincipale(false);

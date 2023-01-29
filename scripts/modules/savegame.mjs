@@ -32,7 +32,15 @@ function SalvaPartita() {
       	}
 }
 
+function CaricaPartita(stringaSalvataggioDaCaricare){
+	caricaDatiSalvataggio(stringaSalvataggioDaCaricare);
+    	nuovoLivello();
+	gamestate = -1;
+}
+
 function caricaDatiSalvataggio(stringaCaricaPartita) { //carica effettivamente la partita dal risultato della lettura del file
+				stringaSalvataggio=stringaCaricaPartita;
+				exploredMapIndex = []; //azzero l'esplorazione mappa
 				let numeroElementoTotale=25;
     				let numeroElemento = 0;
     				let stringaElemento = "";

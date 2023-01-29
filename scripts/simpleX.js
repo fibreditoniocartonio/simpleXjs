@@ -74,7 +74,7 @@
 	}
 
       //game unlockable variables
-      var stringaSalvataggio = "";
+      var stringaSalvataggio = "0|z|ArrowRight|ArrowLeft|ArrowUp|ArrowDown|x|a|Enter|d|c|Shift|false,false,false,false,false,false,false,false|false,false,false,false,false,false,false,false|0|false|0|false|0|false|0|false|false,false,false,false|1|";
       levelDefeated = [false, false, false, false, false, true, false, true]; //vettore che tiene quanti livelli sono stati superati
       heartAcquired = [false, false, false, false, false, false, false, false]; //vettore che tiene quanti cuori sono stati trovati
       armaturaAcquired = [false, false, false, false]; //vettore che tiene quante armatura e' stata trovata - 0:testa, 1:gambe, 2:buster, 3:corpo
@@ -132,7 +132,7 @@
       var blockDimension = 32; //dimensioni standard dei blocchi
       var objMenuPrincipale = new newMenuPrincipale(); //inizializza il menu principale
 
-      //fps
+      //fps and tics
       const FPSfilterStrength = 20;
       const desiredTicPerSecond=60;
       var FPSframeTime = 0, FPSlastLoop = new Date, FPSthisLoop;

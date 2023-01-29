@@ -723,12 +723,13 @@
       						player.coloreArmatura = player.defaultColoreArmatura;
       					}
       				}
-
-      				if (player.life < 1) { //gameover
+				
+				if(player.dead){CaricaPartita(stringaSalvataggio);}
+      				if (player.life < 1 && !player.dead) { //gameover
       					disegnaSchermoDiGioco(false);
-      					objAlert = new newAlert("Gameover", 1);
-					lvlNumber=1;
+      					objAlert = new newAlert("Gameover", gamestate, 30);
       					gamestate = 5;
+					player.dead=true;
       				}
 
       				if (keys[startkey]) { //menu di pausa
@@ -1297,12 +1298,13 @@
       					}
       				}
 
-      				if (player.life < 1) { //gameover
+				if(player.dead){CaricaPartita(stringaSalvataggio);}
+      				if (player.life < 1 && !player.dead) { //gameover
 					player.calculateStance(player); //calcolo lo sprite del player
       					disegnaSchermoDiGioco(false);
-					lvlNumber=1;
-      					objAlert = new newAlert("Gameover", 1);
+      					objAlert = new newAlert("Gameover", gamestate, 30);
       					gamestate = 5;
+					player.dead=true;
       				}
 
       				if (keys[startkey]) { //menu di pausa

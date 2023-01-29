@@ -271,6 +271,13 @@ function stringToLevel(lvlString) {
 				exitLevelBlock.y = (heightTot - 1) * blockDimension + 1;
 				entity.push(exitLevelBlock);
 				break;
+
+			case 'ṧ': //Save Game Block
+				var entita = new newSaveGamePickup(blockDimension);
+				entita.x = (i % widthTot) * blockDimension + (blockDimension / 2 - entita.width / 2);
+				entita.y = (heightTot - 1) * blockDimension + 1;
+				entity.push(entita);
+				break;
 			
 			//i blocchi
 			case 'a':

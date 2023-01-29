@@ -125,6 +125,7 @@ function newExitLevelPickup(blockDimensionPassata) { //cambia livello - unicode:
       	this.damage = 0;
       	this.x = 0;
       	this.y = 0;
+	this.loadGame=false;
       	this.width = blockDimensionPassata;
       	this.height = blockDimensionPassata;
       	this.color1 = '#00ee00';
@@ -138,10 +139,53 @@ function newExitLevelPickup(blockDimensionPassata) { //cambia livello - unicode:
 			ctx.textAlign = "left";
       	} //fine di selfDraw
       	this.physics = function (xdisegnata, ydisegnata, indiceDiQuestaEntity) {
+		if(this.loadGame){
+			CaricaPartita(stringaSalvataggio);
+		}else{
+      			if (collisionBetween(this, player)) { //quando il player lo raccoglie
+			      	objAlert = new newAlert("congrats, level ended", gamestate, 45);
+      				gamestate = 5;
+				this.loadGame=true;
+   	   		}
+		}
+      	} //fine di physics
+}
+
+function newSaveGamePickup(blockDimensionPassata) { //cambia livello - unicode: →←↓↑
+	this.life = 9999999999;
+	this.letter= "ṧ";
+      	this.type = "level modifier";
+      	this.name = "save game";
+      	this.damage = 0;
+      	this.x = 0;
+      	this.y = 0;
+      	this.width = blockDimensionPassata;
+      	this.height = blockDimensionPassata;
+      	this.color1 = '#ee0000';
+      	this.color2 = '#000000';
+	this.color3 = "#ffffff";
+      	this.canSelfDraw = true;
+      	this.hasPhysics = true;
+      	this.selfDraw = function (xdisegnata, ydisegnata, indiceDiQuestaEntity) { //funzione per disegnare l'entita
+			ctx.fillStyle=this.color2; ctx.fillRect(xdisegnata-1, ydisegnata-1, this.width+2, this.height+2);
+			ctx.fillStyle=this.color1; ctx.fillRect(xdisegnata+1, ydisegnata+1, this.width-2, this.height-2);
+			ctx.textAlign = "center"; ctx.font = "small-caps bold "+blockDimension/2+"px Lucida Console";
+			disegnaTestoConBordino("save", xdisegnata + (this.width / 2), (ydisegnata + (this.height-4)/4 + ctx.measureText("O").width/2), this.color3, this.color2);
+			ctx.font = "small-caps bold "+(blockDimension/2-3)+"px Lucida Console";
+			disegnaTestoConBordino("game", xdisegnata + (this.width / 2), (ydisegnata + 3*(this.height-4)/4 + ctx.measureText("O").width/2), this.color3, this.color2);
+			ctx.textAlign = "left";
+      	} //fine di selfDraw
+      	this.physics = function (xdisegnata, ydisegnata, indiceDiQuestaEntity) {
       		if (collisionBetween(this, player)) { //quando il player lo raccoglie
-		      	objAlert = new newAlert("congrats, level ended", 1);
-			lvlNumber=1;
+			//save game
+			SalvaPartita();
+			//refill player's life and subweapon
+			player.life=player.lifeMax;
+			for(var i=0; i<8; i++){player.power[i].usage=player.power[i].usageMax;}
+			//show alert
+		      	objAlert = new newAlert("save file downloaded.", gamestate, 45);
       			gamestate = 5;
+			this.life=-1;
       		}
       	} //fine di physics
 }

@@ -1,8 +1,10 @@
-      function newAlert(stringaDiTesto, gameStatePrecedente) {
+      function newAlert(stringaDiTesto, gameStatePrecedente, waitTime) {
       	this.isOpen = false;
       	this.text = stringaDiTesto;
       	this.width = 0;
       	this.height = 0;
+	this.timer = 0;
+	if(waitTime){this.timer = waitTime;}
       	this.prevGameState = gameStatePrecedente;
       	ctx.font = "small-caps bold 16px Lucida Console"; //tipo di font per le scritte
       	this.widthMax = ctx.measureText(stringaDiTesto + "aa").width;
@@ -31,14 +33,18 @@
       			disegnaTestoConBordino(this.text, canvasWidth / 2, canvasHeight / 2 + textHeight / 2, "#d2d2d2", "#000000");
       			ctx.textAlign = "left"; //lo reimposto left se no si bugga tutto
       			//ora gestisco gli input
-      			if (keys[startkey] || keys[sukey] || keys[giukey] || keys[sinistrakey] || keys[destrakey] || keys[dashkey] || keys[jumpkey]) {
-      				if (!tastoGiaSchiacciato) {
-      					tastoGiaSchiacciato = true;
-      					gamestate = this.prevGameState;
+			if(this.timer==0){
+	      			if (keys[startkey] || keys[sukey] || keys[giukey] || keys[sinistrakey] || keys[destrakey] || keys[dashkey] || keys[jumpkey]) {
+      					if (!tastoGiaSchiacciato) {
+      						tastoGiaSchiacciato = true;
+      						gamestate = this.prevGameState;
+      					}
+      				} else {
+      					tastoGiaSchiacciato = false;
       				}
-      			} else {
-      				tastoGiaSchiacciato = false;
-      			}
+			}else{
+				this.timer--;
+			}
       		} //fine di if(is.Open)           
       	}
       }
