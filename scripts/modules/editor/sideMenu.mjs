@@ -655,24 +655,27 @@
 				tilesetCaricati.src=tilesNuovi;
 				var newColors=[];
 				for(var k=0; k<17; k++){ //per ogni colore dei blocchi
-					if(k<12){
+					tempCanvas.clearRect(0,0,16,16);
+					if(k<11){
 						tempCanvas.drawImage(tilesetCaricati, 16 * k, 16 * 0, 16, 16, 0, 0, 16, 16);
-					}else if(k>11 && k<15){
-						tempCanvas.drawImage(tilesetCaricati, 16 * (k-12), 16 * 1, 16, 16, 0, 0, 16, 16);
+					}else if(k>10 && k<14){
+						tempCanvas.drawImage(tilesetCaricati, 16 * (k-11), 16 * 1, 16, 16, 0, 0, 16, 16);
 					}else{
-						tempCanvas.drawImage(tilesetCaricati, 16 * (k-15), 16 * 2, 16, 16, 0, 0, 16, 16);
+						tempCanvas.drawImage(tilesetCaricati, 16 * (k-14), 16 * 2, 16, 16, 0, 0, 16, 16);
 					}
-					var rgb=[0,0,0]; 
+					var rgb=[0,0,0,0]; 
 					var count=0;
 					for(var i=0; i<(tempCanvas.getImageData(0, 0, 16, 16).data.length-9); i+=4){
 						count++;
-						rgb[0]+=tempCanvas.getImageData(0, 0, 16, 16).data[i];
-						rgb[1]+=tempCanvas.getImageData(0, 0, 16, 16).data[i+1];
-						rgb[2]+=tempCanvas.getImageData(0, 0, 16, 16).data[i+2];
+						rgb[0]+=tempCanvas.getImageData(0, 0, 16, 16).data[i];   //red
+						rgb[1]+=tempCanvas.getImageData(0, 0, 16, 16).data[i+1]; //green
+						rgb[2]+=tempCanvas.getImageData(0, 0, 16, 16).data[i+2]; //blu
+						rgb[3]+=tempCanvas.getImageData(0, 0, 16, 16).data[i+3]; //alpha
 					}
 					newColors[k]="#";
-					for(var i=0; i<3; i++){
+					for(var i=0; i<4; i++){
 						var x=parseInt(Math.floor(rgb[i]/count)).toString(16);
+						if(i==3 && x=="ff"){break;}
 						if(x.length==1){x="0"+x;}
 						newColors[k]+=x;
 					}
