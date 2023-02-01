@@ -877,8 +877,8 @@ function nuovoPlayer(currentPlayer) {
       			this.standingHeight = 57;
       			this.crouchedHeight = 33;
 			this.damageWhip=[2,3];
-			this.damageSliding=1;
-			this.damageUppercut=3;
+			this.damageSliding=[2,2];
+			this.damageUppercut=[4,4];
 			this.entityWhippedIndex=[];
       			this.height = this.standingHeight;
       			this.crouching = false;
@@ -889,7 +889,7 @@ function nuovoPlayer(currentPlayer) {
 			this.attackTimerMax = 32; //whip frames
       			this.subWeaponHeart = 0;
       			this.speed = 0.7;
-      			this.stance = [0, 0]; //colonna, riga
+      			this.stance = [0, 0]; //colonna, riga (x,y)
       			this.defaultspeed = 0.7;
       			this.jumpheight = 13.5;
       			this.giasaltato = false;
@@ -984,8 +984,8 @@ function nuovoPlayer(currentPlayer) {
 				}
       			}
 			
-			this.getHit = function (damage){
-				if(player.invulnerability<1){
+			this.getHit = function (damage, skipInvulnerability){
+				if(player.invulnerability<1 || skipInvulnerability){
       					if (armaturaAcquired[3] && (damage > 1)) {
       						player.life = player.life - (damage - 1);
       					} else {
@@ -997,7 +997,7 @@ function nuovoPlayer(currentPlayer) {
 					if(player.crouching){ //stop crouching
 						player.sliding = false;
 						player.crouching = false;
-      						player.y -= (player.standingHeight - player.crouchedHeight);
+	      					player.y -= (player.standingHeight - player.crouchedHeight);
 						player.height = player.standingHeight; //stop crouching and make the player stand up
 					}
 					player.xv=player.xv/3; //riduco il movimento x
@@ -1100,6 +1100,7 @@ function nuovoPlayer(currentPlayer) {
 
       				if (player.crouching && keys[jumpkey] && armaturaAcquired[1] && !player.stun && !player.attacking && !tastoGiaSchiacciato) { //sliding
       					player.sliding = true;
+					player.damageSliding[0]=player.damageSliding[1];
       					tastoGiaSchiacciato = true;
       					player.invulnerability = 825; //800-825 range per lo sliding (fa anche da timer)
       				}
@@ -1176,7 +1177,7 @@ function nuovoPlayer(currentPlayer) {
       						}
       						corda["y"] = player.y + 2;
       						for (var i = 0;; i++) { //contatto con entita'
-							for(let j=0; j < player.entityWhippedIndex.length; j++){ //skippa le entita' gia' whippate con questo colpo
+							for(var j=0; j < player.entityWhippedIndex.length; j++){ //skippa le entita' gia' whippate con questo colpo
 								if(i==player.entityWhippedIndex[j]){
 									i++; j=-1; 
 								}
@@ -1241,14 +1242,16 @@ function nuovoPlayer(currentPlayer) {
       									break;
       								}else if (player.sliding){ //sliding
 								      	if (entity[i].getHit) {
-      										entity[i].getHit("playerSlide", player.damageSliding);
+      										entity[i].getHit("playerSlide", player.damageSliding[0]);
       									}
 									if(entity[i].life>0 || !entity[i].getHit){ //se l'entita e' viva o non puo essere colpita (tipo Spike)
-										player.getHit(entity[i].damage);
+										player.getHit(entity[i].damage,true);
+										player.damageSliding[0]=0;
 									}
 								}else if (player.uppercut){
 									if (entity[i].getHit) {
-      										entity[i].getHit("playerUppercut", player.damageUppercut);
+      										entity[i].getHit("playerUppercut", player.damageUppercut[0]);
+										if(enitity[i].life>0){ player.damageUppercut[0]=0;}
       									}
 								}
       							} else { //qui stiamo parlando delle entita' con danno<1, praticamente i pickup (se hanno il danno in negativo restituiscono la vita a X)
@@ -1466,9 +1469,10 @@ function nuovoPlayer(currentPlayer) {
 							if(keys[jumpkey] && !keys[sukey] && !keys[giukey]){
 								player.inputBuffer="";
 								player.bufferTimer=0;
-								if(player.canMove && armaturaAcquired[1]){
+								if(player.canMove && armaturaAcquired[1]){//uppercut
 									player.yv=player.yv/100;
 									player.uppercut=true;
+									player.damageUppercut[0]=player.damageUppercut[1];
 									player.invulnerability = 625;
 								}
 							}

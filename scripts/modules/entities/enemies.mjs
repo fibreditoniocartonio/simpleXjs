@@ -517,11 +517,11 @@ function newZombie() { //zombie
       	this.canSelfDraw = true;
       	this.selfDraw = function (xdisegnata, ydisegnata, indiceDiQuestaEntity) {
 		if (!this.facingRight) {
-      			ctx.drawImage(this.sprite, 16*this.stance.x, 32*this.stance.y, 16, 32, xdisegnata, ydisegnata-1, (16)*2, 32*2);
+      			ctx.drawImage(this.sprite, 16*this.stance.x, 32*this.stance.y, 16, 32, xdisegnata, ydisegnata-2, (16)*2, 32*2);
       		} else {
       			ctx.save(); //salvo il canvas attuale
       			ctx.scale(-1, 1); //flippa il canvas per fare lo sprite mirrorato
-      			ctx.drawImage(this.sprite, 16*this.stance.x, 32*this.stance.y, 16, 32, -xdisegnata, ydisegnata-1, -(16)*2, 32*2);
+      			ctx.drawImage(this.sprite, 16*this.stance.x, 32*this.stance.y, 16, 32, -xdisegnata, ydisegnata-2, -(16)*2, 32*2);
       			ctx.restore(); //faccio tornare come prima al punto di save() altrimenti rimane buggato
       		}
       	}
@@ -631,7 +631,7 @@ function newGraySkeleton() { //gray skeleton - throw newSkeletonBone()
       	this.physics = function (xdisegnata, ydisegnata, indiceDiQuestaEntity) {
 		if(this.x+this.width/2 > player.x+player.width/2){
 			this.facingRight=false;
-		}else if(this.x+this.width/2 < player.x+player.width/3){ //3 and not 2 otherwise the zombie will start flipping left and right because of the decimal part of the x coordinate
+		}else if(this.x+this.width/2 < player.x+player.width/3){ //3 and not 2 otherwise he will start flipping left and right because of the decimal part of the x coordinate
 			this.facingRight=true;
 		}
 		if(this.timer<0){
@@ -1293,6 +1293,11 @@ function newBlackLeopard() { //black leopard
       	}
       	this.physics = function (xdisegnata, ydisegnata, indiceDiQuestaEntity) {
 		if(this.stance.x==0){ //waiting
+			if(this.x+this.width/2 > player.x+player.width/2){
+				this.facingRight=false;
+			}else if(this.x+this.width/2 < player.x+player.width/3){ //3 and not 2 otherwise he will start flipping left and right because of the decimal part of the x coordinate
+				this.facingRight=true;
+			}
 			var activatorBox = new rectTest(this.x+this.width/2-3*this.width, this.y-2*this.height, this.width*6, this.height*4);
 			if(collisionBetween(activatorBox, player)){
 				this.stance.x=1;
@@ -1315,8 +1320,8 @@ function newBlackLeopard() { //black leopard
 	      	this.yv += level.gravity/2; //get level gravity/2
     		this.y += this.yv; //apply gravity
 		//level collision
-		var latoSx = new rectTest(this.x, this.y + this.height/2 - 2, 2, 4);
-		var latoDx = new rectTest(this.x+this.width-2, this.y + this.height/2 - 2, 2, 4);
+		var latoSx = new rectTest(this.x+1, this.y + this.height/2 - 1, 2, 2);
+		var latoDx = new rectTest(this.x+this.width-3, this.y + this.height/2 - 1, 2, 2);
       		for (var i = 0; i < level.length; i++) {
       			if (collisionBetween(this, level[i])) {
 				this.y += -this.yv;
