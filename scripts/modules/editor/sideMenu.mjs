@@ -664,20 +664,26 @@
 						tempCanvas.drawImage(tilesetCaricati, 16 * (k-14), 16 * 2, 16, 16, 0, 0, 16, 16);
 					}
 					var rgb=[0,0,0,0]; 
-					var count=0;
+					var countRGB=0; var countAlpha=0;
 					for(var i=0; i<(tempCanvas.getImageData(0, 0, 16, 16).data.length-9); i+=4){
-						count++;
+						if(tempCanvas.getImageData(0, 0, 16, 16).data[i+3]==0 && tempCanvas.getImageData(0, 0, 16, 16).data[i+2]==0 && tempCanvas.getImageData(0, 0, 16, 16).data[i+1]==0 && tempCanvas.getImageData(0, 0, 16, 16).data[i]==0 && countRGB!=0){
+							countRGB--;
+						}
+						countRGB++; countAlpha++;	
 						rgb[0]+=tempCanvas.getImageData(0, 0, 16, 16).data[i];   //red
 						rgb[1]+=tempCanvas.getImageData(0, 0, 16, 16).data[i+1]; //green
 						rgb[2]+=tempCanvas.getImageData(0, 0, 16, 16).data[i+2]; //blu
-						rgb[3]+=tempCanvas.getImageData(0, 0, 16, 16).data[i+3]; //alpha
+						rgb[3]+=tempCanvas.getImageData(0, 0, 16, 16).data[i+3]; //alpha channel
 					}
 					newColors[k]="#";
-					for(var i=0; i<4; i++){
-						var x=parseInt(Math.floor(rgb[i]/count)).toString(16);
-						if(i==3 && x=="ff"){break;}
-						if(x.length==1){x="0"+x;}
-						newColors[k]+=x;
+					for(var i=0; i<4; i++){ //register RGB
+						var x="";
+						if(i==3){x=parseInt(Math.floor(rgb[i]/countAlpha)).toString(16);
+						} else { x=parseInt(Math.floor(rgb[i]/countRGB)).toString(16);}
+						if(!(i==3 && x=="ff")){
+							if(x.length==1){x="0"+x;}
+							newColors[k]+=x;
+						}
 					}
 					var puntoVirgolaPrima=2+k;
 					var puntoVirgolaLetti=0; 

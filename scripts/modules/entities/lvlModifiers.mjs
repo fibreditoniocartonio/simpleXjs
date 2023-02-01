@@ -229,7 +229,7 @@ function newSwitchToNextPlayableCharacterBlock(blockDimensionPassata) { //blocco
 }
 
 function newLoadCostumLevelBlock(blockDimensionPassata) { //blocco che cambia il player nel successivo personaggio giocabile
-	this.life = 9999999999;
+	this.life = 99999999999999;
 	this.letter= "@";
       	this.type = "level modifier";
       	this.name = "load costum level";

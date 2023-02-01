@@ -916,7 +916,6 @@
     		ctx.fillStyle = "#52b58b";
     		ctx.fillRect((canvasWidth / 2) - this.width / 2, (canvasHeight / 2) - this.height / 2, this.width, this.height); //disegna lo sfondo verde
     		if (this.isOpen) { //quando il menu e' tutto aperto
-    				this.indiceUscita = 0;
     				this.loadCostumLevel = true;
     				ctx.textAlign = "center";
     				ctx.font = "small-caps bold 25px Lucida Console"; //tipo di font per le scritte
@@ -937,15 +936,9 @@
     					ctx.textAlign = "left"; //lo reimposto left se no si bugga tutto
     				} { //disegno il quadrato intorno all'opzione selezionata - uso le {} per ridurre lo scope di xdisegnata e ydisegnata
     					ctx.fillStyle = "#ffc000";
+    					var xdisegnata = (canvasWidth / 2);
     					var ydisegnata = 25 + canvasHeight / 2;
-    					switch (this.indiceUscita) {
-    						case 0:
-    							xdisegnata = (canvasWidth / 2) - (this.width / 2);
-    							break;
-    						case 1:
-    							xdisegnata = (canvasWidth / 2);
-    							break;
-    					}
+					if(this.indiceUscita==0){xdisegnata-=this.width/2;}
     					ctx.fillRect(xdisegnata, ydisegnata, this.width / 2, 9);
     					ctx.fillRect(xdisegnata, ydisegnata - 9 + (this.height) / 3, this.width / 2, 9);
     					ctx.fillRect(xdisegnata, ydisegnata, 9, (this.height) / 3 - 8);
@@ -1027,6 +1020,8 @@
     			if (this.height - 1 < 0 && this.width - 1 < 0) { //quando il menu e' tutto chiuso:
     				if (this.apriLivello) {
     					if (this.costumLevelString != "") {
+						lvlNumber=99999999999999; //dedicated to the costum level
+						allLevelStrings[lvlNumber]=this.costumLevelString; //associate the costumlevel string to the lvlNumber, so that it can show the map
     						player = nuovoPlayer(currentPlayer);
     						stringToLevel(this.costumLevelString);
     						player.x = level.xStartingPos;
