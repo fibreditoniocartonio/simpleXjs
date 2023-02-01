@@ -1375,15 +1375,16 @@ function newAxeArmor() { //axe armor - throw axeArmorAxe()
       	this.height = 62;
       	this.color1 = '#cc88fc';
       	this.color2 = '#fcc4fc';
-      	this.speed = 0.12;
+      	this.speed = 0.18;
 	this.timer=0;
+	this.attackedTimer=0;
       	this.hasPhysics = true;
       	this.canSelfDraw = true;
       	this.selfDraw = function (xdisegnata, ydisegnata, indiceDiQuestaEntity) {
 		if(!levelEditor){ //draw boss bar even if not a boss, just for testing and giggles
 	      		drawLifeBar(true, (canvasWidth-(136+8)), 8, this.color1, this.life, this.lifeMax, this.color1, this.color2, 6, 5);
 		}
-		if(this.timer>-1){
+		if(this.attackedTimer>-1){
 		if (!this.facingRight) {
       				ctx.drawImage(this.sprite, this.sprite.larg*this.stance.x, this.sprite.alt*this.stance.y, this.sprite.larg, this.sprite.alt, xdisegnata, ydisegnata-1, (this.sprite.larg)*2, (this.sprite.alt)*2);
 	      		} else {
@@ -1394,50 +1395,60 @@ function newAxeArmor() { //axe armor - throw axeArmorAxe()
       			}
 		}
 		if(debugMode){
-			disegnaTestoConBordino(this.timer, xdisegnata, ydisegnata, "#000000", "#ffffff");
+			disegnaTestoConBordino(this.timer+" "+this.attackedTimer, xdisegnata, ydisegnata, "#000000", "#ffffff");
 			ctx.fillStyle="#00ff0080";
 			if(this.facingRight){
 				ctx.fillRect(xdisegnata+this.width/2, this.y-this.height/2, this.width*6, this.height*2);
 				ctx.fillStyle="#ff000080";
-				ctx.fillRect(xdisegnata+this.width/2, this.y-this.height/2, this.width*2, this.height*2);
+				ctx.fillRect(xdisegnata+this.width/2, this.y-this.height/2, this.width*4, this.height*2);
 			}else{
 				ctx.fillRect(xdisegnata+this.width/2-this.width*6, this.y-this.height/2, this.width*6, this.height*2);
 				ctx.fillStyle="#ff000080";
-				ctx.fillRect(xdisegnata+this.width/2-this.width*5, this.y-this.height/2, this.width*5, this.height*2);
+				ctx.fillRect(xdisegnata+this.width/2-this.width*4, this.y-this.height/2, this.width*4, this.height*2);
 			}
 		}
       	}
       	this.getHit = function (nome, danno) {
-		this.life-=danno;
-		this.timer=-6;
-		if(this.life<1){ //make the player exit the level even if not a boss, just for testing and giggles
+		if((this.life-danno)<1){ //make the player exit the level even if not a boss, just for testing and giggles
+			disegnaSchermoDiGioco();
+	      		drawLifeBar(true, (canvasWidth-(136+8)), 8, this.color1, this.life-danno, this.lifeMax, this.color1, this.color2, 6, 5);
 			var exitLevelBlock = new newExitLevelPickup(2);
 			exitLevelBlock.x = player.x+player.width/2;
 			exitLevelBlock.y = player.y+player.height/2;
 			entity.push(exitLevelBlock);
 		}
+		this.life-=danno;
+		this.attackedTimer=-8;
       	}
       	this.physics = function (xdisegnata, ydisegnata, indiceDiQuestaEntity) {
-		if(this.timer<0){ //got hit
-			this.timer++;
+		var throwing=false; var moving=false; var moveForward=false;
+		if(this.attackedTimer<0){ //got hit
+			this.attackedTimer++;
 		}else{
-			var throwing=false; var moving=false;
 			var maxThrowX=0; //max distance for the axe - i use it when i call newAxeArmorAxe()
 			if(this.x+this.width/2 > player.x+player.width/2){ //facing direction
 				this.facingRight=false;
 				maxThrowX=this.x+this.width/2-this.width*6;
 				if(collisionBetween(player, new rectTest(maxThrowX, this.y-this.height/2, this.width*6, this.height*2))){throwing=true;}
-				if(collisionBetween(player, new rectTest(this.x+this.width/2-this.width*5, this.y-this.height/2, this.width*5, this.height*2))){moving=true;}
+				//if(collisionBetween(player, new rectTest(this.x+this.width/2-this.width*4, this.y-this.height/2, this.width*4, this.height*2))){moving=true;}
+				if(this.x+this.width/2 < player.x+player.width/2+this.width*4){moving=true;}
+				if(!(throwing || moving)){
+					if(this.x+this.width/2 > player.x+player.width/2+this.width*6){ moveForward=true;}
+				}
 			}else if(this.x+this.width/2 < player.x+player.width/3){ //3 and not 2 otherwise the it will start flipping left and right because of the decimal part of the x coordinate
 				this.facingRight=true;
 				maxThrowX=this.x+this.width/2+this.width*6;
 				if(collisionBetween(player, new rectTest(this.x+this.width/2, this.y-this.height/2, this.width*6, this.height*2))){throwing=true;}
-				if(collisionBetween(player, new rectTest(this.x+this.width/2, this.y-this.height/2, this.width*5, this.height*2))){moving=true;}
+				//if(collisionBetween(player, new rectTest(this.x+this.width/2, this.y-this.height/2, this.width*4, this.height*2))){moving=true;}
+				if(this.x+this.width/2 > player.x+player.width/2-this.width*4){moving=true;}
+				if(!(throwing || moving)){
+					if(this.x+this.width/2 < player.x+player.width/2-this.width*6){ moveForward=true;}
+				}
 			}
 			if(throwing && this.timer==0){ //throwing
 				if (this.canThrow){
 					var altoObasso=this.sprite.alt*Math.floor(Math.random()*2);
-					if(altoObasso==this.sprite.alt){ this.lowAxe=true;} //crouch
+					if(altoObasso==this.sprite.alt){ this.lowAxe=true; altoObasso+=this.sprite.alt/2;} //crouch
 					var axe = new newAxeArmorAxe(this.stance.y, this.damage*(2.5), this.x+this.width/2, this.y+altoObasso, this.facingRight, indiceDiQuestaEntity, maxThrowX);
 					if(this.axeIndex){
 						entity.splice(this.axeIndex,1,axe); //sostituisce il vecchio axe con la nuova appena creata
@@ -1446,7 +1457,7 @@ function newAxeArmor() { //axe armor - throw axeArmorAxe()
 						this.axeIndex=entity.length-1;
 					}
 					this.canThrow=false;
-					this.timer=65;
+					this.timer=100;
 				}	
 			}
 			if(this.axeIndex && this.timer==0){ //check if can throw again (only 1 axe should be on screen per axeArmor)
@@ -1460,13 +1471,6 @@ function newAxeArmor() { //axe armor - throw axeArmorAxe()
 					this.canThrow=true;
 				}
 			}
-			if(moving && !this.lowAxe){ //movement
-				if(this.facingRight){ 
-					this.xv+= this.speed;
-				}else{
-					this.xv+= -this.speed;
-				}
-			}
 			if(this.timer>0){this.timer--}
 		}
 		this.x += -this.xv;
@@ -1477,7 +1481,16 @@ function newAxeArmor() { //axe armor - throw axeArmorAxe()
 		var latoSx = new rectTest(this.x, this.y+4, 2, this.height-8);
 		var latoDx = new rectTest(this.x+this.width-2, this.y+4, 2, this.height-8);
 		var latoSotto = new rectTest(this.x+4, this.y+this.height-2, this.width-8, 2);
-      		for (var i = 0; i < level.length; i++){
+		var nextCollision = new rectTest(this.x+this.width/2-2, this.y+this.height-1, 4, 2);
+		nextCollision["collided"]=false;
+		if(moveForward){
+			if(this.facingRight){ nextCollision.x+=this.width;
+			} else {	      nextCollision.x-=this.width;}
+		}else{
+			if(this.facingRight){ nextCollision.x-=this.width;
+			} else {	      nextCollision.x+=this.width;}
+		}
+      		for (var i = 0; i < level.length; i++){ //collision with level
       			if (collisionBetween(this, level[i])) { 
 				if (collisionBetween(latoSotto, level[i])) { //collisione y bottom
 					this.y = level[i].y-this.height;
@@ -1491,9 +1504,28 @@ function newAxeArmor() { //axe armor - throw axeArmorAxe()
       					this.x = level[i].x-this.width;
 					this.xv = 0;
 				}
-
+				if(!nextCollision.collided){
+					if(collisionBetween(nextCollision, level[i])){
+						nextCollision.collided=true;
+					}
+				}
       			}
       		}
+		if(this.attackedTimer>-1 && !this.lowAxe && nextCollision.collided){ //movement
+			if(moving){
+				if(this.facingRight){ 
+					this.xv+= this.speed;
+				}else{
+					this.xv+= -this.speed;
+				}
+			}else if(moveForward){
+				if(this.facingRight){ 
+					this.xv-= this.speed;
+				}else{
+					this.xv-= -this.speed;
+				}
+			}
+		}
 		this.calculateStance();
       	}//fine di physics()
 	this.calculateStance = function (){
