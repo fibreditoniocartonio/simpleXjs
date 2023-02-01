@@ -1403,6 +1403,7 @@ function newMenuMappa(previousGameStatePassato) {//map menu
     	this.widthMax = canvasWidth - 30;
     	this.heightMax = canvasHeight - 30;
 	this.currentLocation = level.name;
+	this.requestNewRender=true;
 	this.zoomMultiplier = 2;
 	this.startingConfig={"lvlNumber":lvlNumber, "blockDimension":blockDimension, "player":player, "level":level, "entity":entity};
     	this.isOpen = false;
@@ -1421,27 +1422,32 @@ function newMenuMappa(previousGameStatePassato) {//map menu
     				this.isOpen = true;
     			}
     		}
-    		ctx.fillStyle = "#d2d2d2";
-    		ctx.fillRect((canvasWidth / 2) - this.width / 2 - 15, (canvasHeight / 2) - this.height / 2 - 15, this.width + 30, this.height + 30); //disegna il bordo grigio 
-    		ctx.fillStyle = "#52b58b";
-    		ctx.fillRect((canvasWidth / 2) - this.width / 2, (canvasHeight / 2) - this.height / 2, this.width, this.height); //disegna lo sfondo verde
+		if(this.requestNewRender){ //ridisegna lo sfondo solo se richiesto
+	    		ctx.fillStyle = "#d2d2d2";
+    			ctx.fillRect((canvasWidth / 2) - this.width / 2 - 15, (canvasHeight / 2) - this.height / 2 - 15, this.width + 30, this.height + 30); //disegna il bordo grigio 
+	    		ctx.fillStyle = "#52b58b";
+    			ctx.fillRect((canvasWidth / 2) - this.width / 2, (canvasHeight / 2) - this.height / 2, this.width, this.height); //disegna lo sfondo verde
+		}
     		if (this.isOpen) { //qui dentro devo mostrare il testo del menu e gestire cosa succede quando schiaccio i tasti
-			if(this.currentLocation!=""){
-				ctx.textAlign = "right"; ctx.font = "small-caps bold 12px Lucida Console"; //tipo di font per le scritte
-				disegnaTestoConBordino("currently at", canvasWidth-17, canvasHeight-28, "#e2e2e2", "#000000");
-				disegnaTestoConBordino(this.currentLocation, canvasWidth-17, canvasHeight-18, "#e2e2e2", "#000000");
+			if(this.requestNewRender){ //disegna mappa solo se necessario (se aggiornato input)
+				displayFullMap(this.mapCameraMovement, this.zoomMultiplier); //from script/modules/mapFunction.mjs
+				if(this.currentLocation!=""){
+					ctx.textAlign = "right"; ctx.font = "small-caps bold 12px Lucida Console"; //tipo di font per le scritte
+					disegnaTestoConBordino("currently at", canvasWidth-17, canvasHeight-28, "#e2e2e2", "#000000");
+					disegnaTestoConBordino(this.currentLocation, canvasWidth-17, canvasHeight-18, "#e2e2e2", "#000000");
+				}
+				ctx.textAlign = "center"; ctx.font = "small-caps bold 20px Lucida Console"; //tipo di font per le scritte
+	    			disegnaTestoConBordino(("MAP"), canvasWidth/2, 32, "#d2d2d2", "#000000");
+				ctx.font = "small-caps bold 15px Lucida Console"; //tipo di font per le scritte
+	    			disegnaTestoConBordino((startkey.toLowerCase()+": center map"), canvasWidth/2, canvasHeight-29, "#d2d2d2", "#000000");
+	    			disegnaTestoConBordino((mapkey.toLowerCase()+": exit"), canvasWidth/2, canvasHeight-18, "#d2d2d2", "#000000");
+				ctx.textAlign = "left"; ctx.font = "small-caps bold 12px Lucida Console";
+	    			disegnaTestoConBordino((lkey.toLowerCase()+": zoom-"), 17, canvasHeight-41, "#e2e2e2", "#000000");
+	    			disegnaTestoConBordino((rkey.toLowerCase()+": zoom+"), 17, canvasHeight-31, "#e2e2e2", "#000000");
+				ctx.font = "small-caps bold 15px Lucida Console";
+    				disegnaTestoConBordino(("ZOOM:"+this.zoomMultiplier+"x"), 17, canvasHeight-18, "#d2d2d2", "#000000");
+				this.requestNewRender=false;
 			}
-			ctx.textAlign = "center"; ctx.font = "small-caps bold 20px Lucida Console"; //tipo di font per le scritte
-    			disegnaTestoConBordino(("MAP"), canvasWidth/2, 32, "#d2d2d2", "#000000");
-			ctx.font = "small-caps bold 15px Lucida Console"; //tipo di font per le scritte
-    			disegnaTestoConBordino((startkey.toLowerCase()+": center map"), canvasWidth/2, canvasHeight-29, "#d2d2d2", "#000000");
-    			disegnaTestoConBordino((mapkey.toLowerCase()+": exit"), canvasWidth/2, canvasHeight-18, "#d2d2d2", "#000000");
-			ctx.textAlign = "left"; ctx.font = "small-caps bold 12px Lucida Console";
-    			disegnaTestoConBordino((lkey.toLowerCase()+": zoom-"), 17, canvasHeight-41, "#e2e2e2", "#000000");
-    			disegnaTestoConBordino((rkey.toLowerCase()+": zoom+"), 17, canvasHeight-31, "#e2e2e2", "#000000");
-			ctx.font = "small-caps bold 15px Lucida Console";
-    			disegnaTestoConBordino(("ZOOM:"+this.zoomMultiplier+"x"), 17, canvasHeight-18, "#d2d2d2", "#000000");
-			displayFullMap(this.mapCameraMovement, this.zoomMultiplier); //from script/modules/mapFunction.mjs
 			this.calcolaInput();
     		}//fine di if this.isOpen()
     		if (this.isClosing) { //animazione di chiusura del menu + regolazione delle subtanks
@@ -1483,6 +1489,7 @@ function newMenuMappa(previousGameStatePassato) {//map menu
     		}
     		if (keys[startkey] || keys[sukey] || keys[giukey] || keys[sinistrakey] || keys[destrakey] || keys[dashkey] || keys[lkey] || keys[rkey] || keys[jumpkey] || keys[mapkey]) {
     			tastoGiaSchiacciato = true;
+			this.requestNewRender=true;
     		} else {
     			tastoGiaSchiacciato = false;
     		}
