@@ -156,6 +156,8 @@ function newSaveGamePickup(blockDimensionPassata) { //blocco che salva la partit
 	this.letter= "ṧ";
       	this.type = "level modifier";
       	this.name = "save game";
+	this.sprite=new Image();
+	this.sprite.src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAAAXNSR0IArs4c6QAAAAl2cEFnAAAAgAAAAIAAMOExmgAAAPJJREFUWIXtl0EOhCAMRT/GCw0Zz6RHkjM5qUdyVjUjKVqHKiz8G4k15fdZEN0ILBAU3i8AAE0khdXynQcA9J9ZjDdZ2Q3U8qCPAsF4olR+FQHf+RWltdSvILcXsg2wmAYTka5niKkN/CY8okETqYmpDMTJjqo70y9/LUMNAVMDexXRRPCd30x6pgfa40e2FfFYuhePNapnJ0zpqg2IVS8BSny9rFWcwGMg2QNXnwdY9RJg9Yt4ZFQrOLcbr58AK64klwyrOIHHQDMADrBf92oDAFDSxLoKBsCNwBIg71pWXR9r0wMlSIjbVOqP+TYDd5r4Au1BS0sYqCATAAAAAElFTkSuQmCC";
       	this.damage = 0;
       	this.x = 0;
       	this.y = 0;
@@ -163,17 +165,10 @@ function newSaveGamePickup(blockDimensionPassata) { //blocco che salva la partit
       	this.height = blockDimensionPassata*2;
       	this.color1 = '#ee0000';
       	this.color2 = '#000000';
-	this.color3 = "#ffffff";
       	this.canSelfDraw = true;
       	this.hasPhysics = true;
       	this.selfDraw = function (xdisegnata, ydisegnata, indiceDiQuestaEntity) { //funzione per disegnare l'entita
-			ctx.fillStyle=this.color2; ctx.fillRect(xdisegnata-1, ydisegnata-1, this.width+2, this.height+2);
-			ctx.fillStyle=this.color1; ctx.fillRect(xdisegnata+1, ydisegnata+1, this.width-2, this.height-2);
-			ctx.textAlign = "center"; ctx.font = "small-caps bold "+blockDimension+"px Lucida Console";
-			disegnaTestoConBordino("save", xdisegnata + (this.width / 2), (ydisegnata + (this.height-4)/4 + ctx.measureText("O").width/2), this.color3, this.color2);
-			ctx.font = "small-caps bold "+(blockDimension-5)+"px Lucida Console";
-			disegnaTestoConBordino("game", xdisegnata + (this.width / 2), (ydisegnata + 3*(this.height-4)/4 + ctx.measureText("O").width/2), this.color3, this.color2);
-			ctx.textAlign = "left";
+ 			ctx.drawImage(this.sprite, 0, 0, 32, 32, xdisegnata, ydisegnata, this.width, this.height);
       	} //fine di selfDraw
       	this.physics = function (xdisegnata, ydisegnata, indiceDiQuestaEntity) {
       		if (collisionBetween(this, player)) { //quando il player lo raccoglie

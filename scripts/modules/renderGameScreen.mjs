@@ -6,7 +6,7 @@
       	if (levelEditor) {
       		drawPlayerCamera();
       	} else {
-      		drawPlayer(); //disegna il player
+      		drawPlayer(xDisegnata(), yDisegnata()); //disegna il player
       	}
       	drawLvl(level.foreground); //disegna i blocchi non materiali che stanno sopra tutto il resto (effetto grafico) e il waterlevel (passa true a isDrawingWater)
       	if (!levelEditor){drawHUD();}//draw HUD over everything but water 
@@ -21,9 +21,7 @@
       	}
       }
 
-      function drawPlayer() {
-      	var xdisegnata = xDisegnata(); //mi serve per semplificare le scritture dopo, praticamente gestisce la visuale sull asse x
-      	var ydisegnata = yDisegnata(); //mi serve per semplificare le scritture dopo, praticamente gestisce la visuale sull'asse y
+      function drawPlayer(xdisegnata, ydisegnata) {
       	switch (currentPlayer) {
       		case 1:
       			/*riccardo*/ player.disegnaPlayer(xdisegnata, ydisegnata, player.stance, player.sprite, player.facingRight);
@@ -90,34 +88,29 @@
       }
 
       //this function draws the level (usata anche per level.foreground e level.background - basta che sia un arrey di oggetti blocco)
-      function drawLvl(lvl, perMappa, spostaX, spostaY) {
+      function drawLvl(lvl) {
       	for (var i = 0; i < lvl.length; i++) {
       		ctx.fillStyle = lvl[i].color;
       		//variabili per disegnare il livello rispetto alla posizione di x (rispetto ai bordi del canvas) - visuale
 		var xdisegnata=0; var ydisegnata=0;
-		if(perMappa){ //map menu game render
-			xdisegnata=lvl[i].x+spostaX;
-			ydisegnata=lvl[i].y+spostaY;
-		}else{ //real game render
-      			if (player.x + (player.width / 2) < canvasWidth / 2) {
-      				xdisegnata = lvl[i].x;
+      		if (player.x + (player.width / 2) < canvasWidth / 2) {
+      			xdisegnata = lvl[i].x;
+      		} else {
+      			if (player.x + (player.width / 2) > level.maxWidth - canvasWidth / 2) {
+      				xdisegnata = lvl[i].x - level.maxWidth + canvasWidth;
       			} else {
-      				if (player.x + (player.width / 2) > level.maxWidth - canvasWidth / 2) {
-      					xdisegnata = lvl[i].x - level.maxWidth + canvasWidth;
-      				} else {
-      					xdisegnata = lvl[i].x - player.x - (player.width / 2) + canvasWidth / 2;
-      				}
+      				xdisegnata = lvl[i].x - player.x - (player.width / 2) + canvasWidth / 2;
       			}
-      			if (player.y < canvasHeight / 2) {
-      				ydisegnata = lvl[i].y;
+      		}
+      		if (player.y < canvasHeight / 2) {
+      			ydisegnata = lvl[i].y;
+      		} else {
+      			if (player.y > level.maxHeight - canvasHeight / 2) {
+      				ydisegnata = lvl[i].y - level.maxHeight + canvasHeight;
       			} else {
-      				if (player.y > level.maxHeight - canvasHeight / 2) {
-      					ydisegnata = lvl[i].y - level.maxHeight + canvasHeight;
-      				} else {
-      					ydisegnata = lvl[i].y - player.y + canvasHeight / 2;
-      				}
+      				ydisegnata = lvl[i].y - player.y + canvasHeight / 2;
       			}
-		}
+      		}
 		xdisegnata=Math.round(xdisegnata); ydisegnata=Math.round(ydisegnata); //round them to not have non-integer coordinates (causes only problems)
       		//ora disegno il livello[i]                    
       		if (xdisegnata+lvl[i].width > -1 && xdisegnata < canvasWidth+1 && ydisegnata+lvl[i].height > -1 && ydisegnata < canvasHeight+1) {

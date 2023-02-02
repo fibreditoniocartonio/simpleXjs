@@ -20,20 +20,20 @@ function displayFullMap(mapCameraMovement,zoomMultiplier){
 	blockDimension=zoomMultiplier;
 	disegnaMappa(lvlNumber, indexGiaDisegnato, null, canvas.width/2+mapCameraMovement.x, canvas.height/2+mapCameraMovement.y);
 	drawPlayerLocationOnMap("#00ffff", "#000000",canvas.width/2+mapCameraMovement.x,canvas.height/2+mapCameraMovement.y); //draw a signal in the room where the player is
-}
 
-function disegnaMappa(stanza,indexGiaDisegnato,previousDir,offsetX,offsetY){
-	var giaDis=false;
-	for (var i=0; i<indexGiaDisegnato.length; i++){
-		if(stanza==indexGiaDisegnato[i]){
-			giaDis=true;
-			break;
-		}
+
+ function disegnaMappa(stanza,indexGiaDisegnato,previousDir,offsetX,offsetY){
+  var stanzaEsplorata=false;
+   for (var i=0; i<exploredMapIndex.length; i++){
+	if(stanza==exploredMapIndex[i]){
+		stanzaEsplorata=true;
+		break;
 	}
-	if(!giaDis){
-		indexGiaDisegnato.push(stanza); //set the room as already drawn
+   }
+   if(stanzaEsplorata){
+	if(!indexGiaDisegnato[stanza.toString()]){
+		indexGiaDisegnato[stanza.toString()]=true;
 		stringToLevel(allLevelStrings[stanza.toString()]); //load the room
-		level.tileset="";
 		canvasWidth = canvas.width; canvasHeight = canvas.height; //fix canvas dimension
 		//find all other rooms connections
 		var changeRoomEntities=[];
@@ -41,10 +41,16 @@ function disegnaMappa(stanza,indexGiaDisegnato,previousDir,offsetX,offsetY){
 			if(entity[j].letter=="→" || entity[j].letter=="←" || entity[j].letter=="↓" || entity[j].letter=="↑"){
 				changeRoomEntities.push(entity[j]);
 			}
+			if(entity[j].letter=="ṧ"){//save station
+				entity[j].x-=entity[j].width;
+				entity[j].width*=3; 
+				entity[j].height*=3;
+				level.push(entity[j]);
+			}
 		}
 		if(previousDir){//calculate offsets to make the changeRoomBlocks visually connected
 			switch(previousDir.letter){ //calculate offsets
-				case "→": //offsetX-=blockDimension*2;
+				case "→": 
 					for(var g=0; g<changeRoomEntities.length; g++){ //
 						if(changeRoomEntities[g].oppositeDirection==previousDir.letter){
 							offsetX+=-changeRoomEntities[g].x-blockDimension; 
@@ -53,7 +59,7 @@ function disegnaMappa(stanza,indexGiaDisegnato,previousDir,offsetX,offsetY){
 						}
 					}
 					break; 
-				case "←": //offsetX-=level.maxWidth-blockDimension*2; 
+				case "←":
 					for(var g=0; g<changeRoomEntities.length; g++){
 						if(changeRoomEntities[g].oppositeDirection==previousDir.letter){
 							offsetX+=-changeRoomEntities[g].x; 
@@ -85,14 +91,10 @@ function disegnaMappa(stanza,indexGiaDisegnato,previousDir,offsetX,offsetY){
 			offsetX-=level.maxWidth/2;
 			offsetY-=level.maxHeight/2;
 		}
-		//draw the room on the map if explored
-		for(var k=0; k<exploredMapIndex.length; k++){ 
-			if(stanza==exploredMapIndex[k]){
-				drawLvl(level.background, true, offsetX, offsetY);
-				drawLvl(level, true, offsetX, offsetY);
-				drawLvl(level.foreground, true, offsetX, offsetY);
-			}
-		}
+		//render
+		drawMapRoom(level.background, offsetX, offsetY);
+		drawMapRoom(level, offsetX, offsetY);
+		drawMapRoom(level.foreground, offsetX, offsetY);
 		//recursively do the same with the connected rooms
 		for(var j=0; j<changeRoomEntities.length; j++){//now i cicle changeRoomEntities that doesn't reset like entity[] does
 			switch(changeRoomEntities[j].letter){
@@ -111,13 +113,27 @@ function disegnaMappa(stanza,indexGiaDisegnato,previousDir,offsetX,offsetY){
 			}
 		}
 	}
+    }
+ }
 
-}
-
-function drawPlayerLocationOnMap(color1, color2, xpos, ypos){ //draw the signal of the player
+ function drawPlayerLocationOnMap(color1, color2, xpos, ypos){ //draw the signal of the player
 	signalDimension=blockDimension*8;
 	ctx.fillStyle=color1; ctx.fillRect(xpos-signalDimension/2, ypos-signalDimension/2, signalDimension, signalDimension); 
 	ctx.strokeStyle=color2; ctx.lineWidth = "1"; ctx.strokeRect(xpos-signalDimension/2, ypos-signalDimension/2, signalDimension, signalDimension); 
 	ctx.textAlign = "center"; ctx.font = "small-caps bold "+signalDimension+"px Lucida Console";
 	disegnaTestoConBordino("P", xpos, (ypos + ctx.measureText("O").width/2), color2, color1); ctx.textAlign = "left";
-}
+ }
+
+ function drawMapRoom(lvl, spostaX, spostaY) {
+      	for (var i = 0; i < lvl.length; i++) {
+      		ctx.fillStyle = lvl[i].color;
+		var xdisegnata=Math.round(lvl[i].x+spostaX);
+		var ydisegnata=Math.round(lvl[i].y+spostaY);
+      		if (lvl[i].canSelfDraw == true) { //some pushed entities into level
+      			lvl[i].selfDraw(xdisegnata, ydisegnata, i);
+      		} else {
+      			ctx.fillRect(xdisegnata, ydisegnata, lvl[i].width, lvl[i].height);
+      		}
+      	}
+ }//fine di drawMapRoom()
+}//fine di displayFullMap()

@@ -1475,8 +1475,8 @@ function newMenuMappa(previousGameStatePassato) {//map menu
 		if(keys[giukey]){ this.mapCameraMovement.y-=currentSpeed;}
 		if(keys[sinistrakey]){this.mapCameraMovement.x+=currentSpeed;}
 		if(keys[destrakey]) { this.mapCameraMovement.x-=currentSpeed;}
-		if(keys[lkey] && !tastoGiaSchiacciato){if(this.zoomMultiplier>1){this.zoomMultiplier=this.zoomMultiplier/2;}}
-		if(keys[rkey] && !tastoGiaSchiacciato){if(this.zoomMultiplier<8){this.zoomMultiplier=this.zoomMultiplier*2;}}
+		if(keys[lkey] && !tastoGiaSchiacciato){changeZoom(this, false);}
+		if(keys[rkey] && !tastoGiaSchiacciato){changeZoom(this, true);}
 		if(keys[startkey] && !tastoGiaSchiacciato){this.mapCameraMovement.x=0; this.mapCameraMovement.y=0;}
  		if ((keys[jumpkey] || keys[mapkey]) && !tastoGiaSchiacciato) { //chiude il menu
  			this.isOpen = false;
@@ -1493,5 +1493,21 @@ function newMenuMappa(previousGameStatePassato) {//map menu
     		} else {
     			tastoGiaSchiacciato = false;
     		}
+		
+		function changeZoom(obj, zoomAugment){
+			if(zoomAugment){//augment
+				if(obj.zoomMultiplier<8){
+					obj.zoomMultiplier=obj.zoomMultiplier*2;
+					obj.mapCameraMovement.x=obj.mapCameraMovement.x*2;
+					obj.mapCameraMovement.y=obj.mapCameraMovement.y*2;
+				}
+			}else{ 	 //diminish
+				if(obj.zoomMultiplier>1){
+					obj.zoomMultiplier=obj.zoomMultiplier/2;
+					obj.mapCameraMovement.x=obj.mapCameraMovement.x/2;
+					obj.mapCameraMovement.y=obj.mapCameraMovement.y/2;
+				}
+			}
+		}//fine di changeZoom()
 	}//fine di calcolaInput()
 } //fine menu Mappa   
