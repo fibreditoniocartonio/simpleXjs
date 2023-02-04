@@ -1601,7 +1601,6 @@ function newVampireBat() { //VampireBat
       	this.xv = 0;
       	this.yv = 0;
 	this.facingRight=false;
-      	this.slope = 0;
       	this.width = 30;
       	this.height = 31;
       	this.color1 = '#332222';
@@ -1695,7 +1694,6 @@ function newHomingGhost() { //Ghost
       	this.xv = 0;
       	this.yv = 0;
 	this.facingRight=false;
-      	this.slope = 0;
       	this.width = 30;
       	this.height = 31;
       	this.color1 = '#ffbdff';
@@ -1733,7 +1731,7 @@ function newHomingGhost() { //Ghost
 		}else if(this.y+this.height/2>player.y+player.height/4){
 			this.yv+= this.speed;
 		}
-		if(this.timer>0){ //se colpito rallenta
+	if(this.timer>0){ //se colpito rallenta
 			this.timer--;
 			this.xv=this.xv/2; this.yv=this.yv/2;
 		}
@@ -1756,3 +1754,112 @@ function newHomingGhost() { //Ghost
 		}
 	}//fine di calculateStance()
 }//fine di Ghost()
+
+function newRaven() {
+      	this.name = "raven";
+	this.letter = "R";
+      	this.type = "monster";
+      	this.life = 1;
+      	this.damage = 1;
+	this.sprite = new Image();
+      	this.sprite.src = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAFQAAAAgCAYAAACM2F8WAAAAAXNSR0IArs4c6QAAAtFJREFUaIHtWdtxgzAQXDIpwrTiUqAFl+MWoBRawV0oH/Ex4nwPvZzYJDfDBGy8Wq3uJaXDH7IVQ4ife8xd6zE+WwO+knEBT9Nlu+/G81PGPKSgJGQsILAXccWAHvPPEns3WzGEFUMI0xLCtAQA4sU9t6U1zyG/ZSuGQB4phfOKYbt/Ru48lJFXQvBEuu6f/Ztnmpj8YuL+m2SpYvLrmaIeqsrzyh3nTQDoMdM7Yg6NhS7Ns4cSlBtvizwxe8wI0/L9PO5z7p8pZDzsowKUFepe+khNEx81k3llWzE8hLzxbvCa/Hu6OH5R8zyUnjUh4vc1HAVTtLf30B5zdxuvW+4TvncxtN9yjDAtCNNy/HwaeynzSNer+HupPa3G5e09lBt5E7VIgF7dabvqeSjgezHZ1ja16ME0k1a01Rgkym28xp+hx5x8mnQbr+7pUzeeN1G78UyFTJ6DFB4kQu2WTTv9qamWMSep3REKiolD91BCnn8WpkXH1aockSExTBCDcOtjNKvP5Ngt+SY7RLwy0krw5xySKU13Lh7nVYup8eV/lXF1kgqpas+SJp/T10kTtkK8hCPHhyEk6yZsEI9kiQAORlaIenjs7LMq5DVBXdx41a3dgSKIO/nc4zWrX/T+tVHCUxpD4p0U7oj60Nt4RY+5o94t7uMkO00XsR2KjfduVi9H33ntFLU4qfv0Zxjt68UveagZofhw3VdNxVXeVy+r6EkpIafiG/rs8Go9VAWWSCkTUImRQFL4Z1dPg2ttepLmri1+UU+euPLm77m35YiaRVbHRypfCQesjjBNygiWVnptFXlHYYRVjj1MWhHVNa9vrtkx7gaBMHk4oqYQlnCtvKzYrvrzRYlEyeLHt6QomK84AB4nDuyFzcLjx2xKu1ZilocXC0qfN/VMZXdQJCjhSPfCGLlWmjY2fiVnFsngiAgaopbg7u7ZlrTWqgSt5fAFFH349M9jzc0AAAAASUVORK5CYII=";
+	this.sprite.larg=21;
+	this.sprite.alt=32;
+	this.stance=[];
+	this.stance["x"]=0;
+	this.stance["y"]=0;
+	this.stance["timer"]=0;
+	this.timer=0;
+	this.x = 0;
+      	this.y = 0;
+      	this.xv = 0;
+      	this.yv = 0;
+	this.facingRight=false;
+      	this.width = 30;
+      	this.height = 33;
+      	this.color1 = '#aa0000';
+      	this.color2 = '#aa0000';
+      	this.speedX = 0.75;
+	this.speedY = 0.125;
+      	this.hasPhysics = true;
+      	this.canSelfDraw = true;
+      	this.selfDraw = function (xdisegnata, ydisegnata, indiceDiQuestaEntity) {
+		ydisegnata+=-30;
+		if(this.stance.x==3){ ydisegnata+=15;}
+		if (!this.facingRight) {
+      			ctx.drawImage(this.sprite, this.sprite.larg*this.stance.x, this.sprite.alt*this.stance.y, this.sprite.larg, this.sprite.alt, xdisegnata, ydisegnata-1, this.sprite.larg*2, this.sprite.alt*2);
+	      	} else {
+			xdisegnata+=-10;
+      			ctx.save(); //salvo il canvas attuale
+      			ctx.scale(-1, 1); //flippa il canvas per fare lo sprite mirrorato
+      			ctx.drawImage(this.sprite, this.sprite.larg*this.stance.x, this.sprite.alt*this.stance.y, this.sprite.larg, this.sprite.alt, -xdisegnata, ydisegnata-1, -this.sprite.larg*2, this.sprite.alt*2);
+      			ctx.restore(); //faccio tornare come prima al punto di save() altrimenti rimane buggato
+      		}
+		if(debugMode){
+			ctx.fillStyle="#00ffff80"; ctx.fillRect(xdisegnata, ydisegnata+30, this.width, this.height);
+			if(this.stance.x==0){
+				var activatorBox = new rectTest(xdisegnata+this.width/2-5*this.width, ydisegnata+30+this.height/2-this.width*3, this.width*10, this.width*6);
+				ctx.fillStyle="#ffbf0080"; ctx.fillRect(activatorBox.x, activatorBox.y, activatorBox.width, activatorBox.height);
+			}
+		}
+      	}
+      	this.getHit = function (nome, danno) {
+		this.life-=danno;
+      	}
+      	this.physics = function (xdisegnata, ydisegnata, indiceDiQuestaEntity) { //also contain calculateStance()
+		if(this.stance.x==0){ //waiting
+			if(this.x+this.width/2 > player.x+player.width/2){
+				this.facingRight=false;
+			}else if(this.x+this.width/2 < player.x+player.width/3){ //3 and not 2 otherwise he will start flipping left and right because of the decimal part of the x coordinate
+				this.facingRight=true;
+			}
+			var activatorBox = new rectTest(this.x+this.width/2-6*this.width, this.y-30+this.height/2-this.width*3, this.width*12, this.width*6);
+			if(collisionBetween(activatorBox, player)){
+				this.stance.x=1; //attivazione
+			}
+		}else{ //active
+			if(this.timer==0){
+				if(this.facingRight){ //movement x
+					this.xv+= -this.speedX;
+					if(this.x+this.width/2 > player.x+player.width/2+canvasWidth/4.5){
+						this.facingRight=false;
+						this.timer=60;
+					}
+				}else{
+					this.xv+= this.speedX;
+					if(this.x+this.width/2 < player.x+player.width/2-canvasWidth/4.5){
+						this.facingRight=true;
+						this.timer=60;
+					}
+				}
+				if(this.y+this.height/2<player.y+player.height/2){ //movement y
+					this.yv+= -this.speedY;
+				}else if(this.y+this.height/2>player.y+player.height/3){
+					this.yv+= this.speedY;
+				}
+			}else{
+				this.timer--;
+			}
+			this.x += -this.xv;
+			this.y += -this.yv;
+			this.xv = this.xv*level.friction;
+			this.yv = this.yv*level.friction;
+		}
+		this.calculateStance();
+      	}//fine di physics()
+	this.calculateStance = function (){
+		var previousStance = this.stance.x;
+		var maxTimer=9;
+		if(this.stance.x!=0){
+			switch(this.stance.timer){
+				case 0: this.stance.x=1; break;
+				case maxTimer: this.stance.x=2; break;
+				case 2*maxTimer: this.stance.x=3; break;
+				case 3*maxTimer: this.stance.timer=-1; break;
+			}
+			if(previousStance==this.stance.x){
+				this.stance.timer++;
+			}
+		}
+	}//fine di calculateStance()
+}//fine di Raven()
