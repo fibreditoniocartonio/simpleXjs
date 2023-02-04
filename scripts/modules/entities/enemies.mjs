@@ -1625,7 +1625,7 @@ function newFleaman() { //fleaman
       	this.life = 1;
       	this.damage = 1;
 	this.sprite = new Image();
-      	this.sprite.src = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAAAXNSR0IArs4c6QAAAiFJREFUWIWllsuRgzAMhn88NJEOqGFrSAWkDcrYY1ogFVADNXDInRTBjPawyJFlWfZuNOMZkP3pYQvkDm8h5NIZupLUeDJ08YWOaYnK/vtqOfCCqfLHtOC5XDFsqa2gYSnbkDppcV7in8tV6qKtoCGOfhuAYTODKAXSwmdBBA2yMHxuGbbhdxt1Bq18STo25i22slBnSS283BHmA4DumJZqpI6Qx1vOpQQAxNtnFZOEpBN5FB6vuZLQMS1cYO7YhvfAuxaaeIuNZ1iKTJ2ZpUvqyMvamO/68z0aKQGVio68t93WHH+GMQMeFmgVkRNQ/NtZNnm+l4tKUbaKYrNj0c4B8SOyspQGS8/s7JgW8LCcD1v5K5ER/3Wwc1MvK16sSSTrhtyxZLSii2kuZou8Wza1d8uQCzjy2X2A5vWtvH1ZDtz7QI2necXrdscFj8RW0LCUHWNio8V5iX/d7lJXvg9w9DtGXPCwgnDvAxU+CyJokIXhc8uwYwTNa5ZBK18MmI15i60s1FlSCy93hPkAoKN5rUbqCHm85VxKAEC8fVYxSUg6kUfh8ZrT0uM8BppX8/Np2JmP+Op9QJ2ZpUvqyHNszPv3AQlUKjryXsbWXHIf2DHGYYFWETkBxb+dZZPne7moFGWrKDY7Fu0cED8iK0tpsPTMzmhewcNyfsGj+JXIiP91H6B5NfU7RtoxklqTSNYNuWPJaEUX01zMFnm3bGrvP1fDmkymzoa7AAAAAElFTkSuQmCC";
+      	this.sprite.src = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAAAXNSR0IArs4c6QAAAkRJREFUWIWlVjGO4zAMHBv5RB4QYN9w+cMVVzqdqzxi4WKRJ2zhajsHSJNi/xC/YYE8wNvdE3iFQ5miKFq3GUBITGmGpChbrLCAkKIybDms8cmwhQeiYVyMh1+WAy+YVT4NI74P79jiHGnVmiwxoYk0Spzn+N+Hd2kLWrUmcfQTGmxxtoLIBVLCT4KoNZHB5MeWYUIDGsYkg1J+NmAW8xZbWahaUglf7gjzawAVDeNqpA7I41vOJWoAxNtnHSZJkk5kKTy+5mls8CgDDaP5+hTszFP8UMPcAlUzyxadI8+xMV9tZBYeYeVEB76XsTXHr2HIgIdFtA6RE1D42lmaPL+Ri3JRlkJxk7Jo54D4EFlZSsHcf3ZGwwgelvMtztm3REb8v4Odm/YJDU1oSK2JkNyGfGPJaMUtpnkhW6S3ZdH1bgm5BAdP9gO3+2Lc7ywHfj+wxu9/z7/Hz0ir1uRINbbn+4EyvgzE6Qce0dPtjmq/s4Lw+wGfnwRRa6J8ZpFA4mGd5jV+LmAW+3oBXr4yq7h+EnEtqYh//EzOwtwP3O558jrI5VvOBeZ+QNQtK7BELe1zP+DxNU9h6Qdy9XLIDzzFD5dR7rC0XQ8A+Hg7LoLGVlb7XVgbrV+B2w9IwbbrPdHAdx0buxH1A23XhyHBotruIOoHLE2e38hF0tlPoLghqUyAAMSHyMpSCkbi6VbS9XLC9XLCtbedf7wdeS6LH/cD18vJtLddT23Xk1oToRIi87+/r/hzBMKzsBm8kC3S27Loev8HyE2FbCakFQUAAAAASUVORK5CYII=";
 	this.sprite.larg=16;
 	this.sprite.alt=16;
 	this.stance=[];
@@ -1714,4 +1714,97 @@ function newFleaman() { //fleaman
       			}
       		}
       	}//fine di physics()
+}//fine di fleaman
+
+function newVampireBat() { //VampireBat
+      	this.name = "vampire bat";
+	this.letter = "P";
+      	this.type = "monster";
+      	this.life = 1;
+      	this.damage = 1;
+	this.sprite = new Image();
+      	this.sprite.src = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEAAAAAgCAYAAACinX6EAAAAAXNSR0IArs4c6QAAAv9JREFUaIHFWEGO6yAMNV8caTaVepKse4g5Qg+RdU8SqZscCYlZNO43LzaYhM5YQjMB+/lhG4c0EEie5hwet0BEOU8zERGFx42IKIi1LsnTnK21I3gfk41o5r9ywJoLiwdiwfhTidrklvHmHIoMDurnC+A9ifI0u3C9wv57qkoNwFHnrU2ziM2rRHs3IvSL551fBW9YAMLjFpBIeFb1sWICURlIT+9gfe5X0j+KFtggF73liNmr2VpVQFQGSG5gI9nk4NW1bIuKcDQrbIiFHdrny2vgs5y3GuUb8+Lj4dXX7P91hU6RrfTN9Xx5jfD8n3HsAVjCaK/OKz2kduSacrQCLAzM+K4iIHumLyWrmn/07d3D6Qpg594ewhnlJigrSMu2J6tF46z0HE3UAEhCDGiWaEfz5GOQp/lUCeMb5M2Fg+vAUTFaNzexXthY+kR609MIeW6Ocl07QnjMqrwsLgUgEGqd/R7nGo4WDAiM9Lfj6x3N67zmsGY0ooGeEPN1+qs8vCU81Cmdq4Y8zfkjn6I9d/GRPmv3CYvPjlBaUo7XGIgopyUREVG8RiKiINa6JC3JzPwRvI/JRjTzXzlgzYXFA7Fg/KmoX4NbxptzKDI4qL/eU/H89R0pLcmF6xX231NVw7xvx6OYw02ziM2rRHs3IvSLZxQNr5jQNqE48xD38CbuMZKc5CDXUVDfU02ip+1/D/BsXgJJkJqtVQVEr0pAcizezXh0LdsikY5mhQ2xsEP79Z7yek+7ZzlvNUp+lvY1Hl59zf7012C8xlAr1fWeaL0n+vqO74xjD+AStuw10Y6irCivDPkcjtcYegJhYOz+t3Rx8+i7duwQY0gAuIw9Z5HJbVnPkrxG3JNV6duzeSlqACQhBrSy29M8+RikJZ0qYQ4ezjNXD46K0bq5ifXCxtInaIaaPfp2+t81QPTVGiYXCYiEauSZgNe5hqMFAwIj/e34ekfzOq85rBkdfYUOEvN1+qs8vCU81Cmdq4a0pM/8HtBzFx/ps3afsPj8AL5PCcPa9CibAAAAAElFTkSuQmCC";
+	this.sprite.larg=16;
+	this.sprite.alt=16;
+	this.stance=[];
+	this.stance["x"]=0;
+	this.stance["y"]=Math.floor(Math.random()*2);
+	this.stance["timer"]=0;
+	this.x = 0;
+      	this.y = 0;
+      	this.xv = 0;
+      	this.yv = 0;
+	this.facingRight=false;
+      	this.slope = 0;
+      	this.width = 30;
+      	this.height = 31;
+      	this.color1 = '#332222';
+      	this.color2 = '#aa0000';
+      	this.speedX = 0.9;
+	this.speedY = 0.05;
+      	this.hasPhysics = true;
+      	this.canSelfDraw = true;
+      	this.selfDraw = function (xdisegnata, ydisegnata, indiceDiQuestaEntity) {
+		if (!this.facingRight) {
+      			ctx.drawImage(this.sprite, this.sprite.larg*this.stance.x, this.sprite.alt*this.stance.y, this.sprite.larg, this.sprite.alt, xdisegnata, ydisegnata-1, this.sprite.larg*2, this.sprite.alt*2);
+      		} else {
+      			ctx.save(); //salvo il canvas attuale
+      			ctx.scale(-1, 1); //flippa il canvas per fare lo sprite mirrorato
+      			ctx.drawImage(this.sprite, this.sprite.larg*this.stance.x, this.sprite.alt*this.stance.y, this.sprite.larg, this.sprite.alt, -xdisegnata, ydisegnata-1, -this.sprite.larg*2, this.sprite.alt*2);
+      			ctx.restore(); //faccio tornare come prima al punto di save() altrimenti rimane buggato
+      		}
+		if(debugMode){
+			if(this.stance.x==0){
+				var activatorBox = new rectTest(xdisegnata+this.width/2-10*this.width, ydisegnata-this.height, this.width*20, this.height*3);
+				ctx.fillStyle="#ffbf0080"; ctx.fillRect(activatorBox.x, activatorBox.y, activatorBox.width, activatorBox.height);
+			}
+		}
+      	}
+      	this.getHit = function (nome, danno) {
+		this.life-=danno;
+      	}
+      	this.physics = function (xdisegnata, ydisegnata, indiceDiQuestaEntity) { //also contain calculateStance()
+		if(this.stance.x==0){ //waiting
+			if(this.x+this.width/2 > player.x+player.width/2){
+				this.facingRight=false;
+			}else if(this.x+this.width/2 < player.x+player.width/3){ //3 and not 2 otherwise he will start flipping left and right because of the decimal part of the x coordinate
+				this.facingRight=true;
+			}
+			var activatorBox = new rectTest(this.x+this.width/2-10*this.width, this.y-this.height, this.width*20, this.height*3);
+			if(collisionBetween(activatorBox, player)){
+				this.stance.x=1; //attivazione
+			}
+		}else{ //active
+			if(this.facingRight){ //movement x
+				this.xv+= -this.speedX;
+			}else{
+				this.xv+= +this.speedX;
+			}
+			if(this.y+this.height/2<player.y+player.height/2){ //movement y
+				this.yv+= -this.speedY;
+			}else if(this.y+this.height/2<player.y+player.height/2){
+				this.yv+= -this.speedY;
+			}
+			this.x += -this.xv;
+			this.y += -this.yv;
+			this.xv = this.xv*level.friction;
+			this.yv = this.yv*level.friction;
+		}
+		this.calculateStance();
+      	}//fine di physics()
+	this.calculateStance = function (){
+		var previousStance = this.stance.x;
+		var maxTimer=6;
+		if(this.stance.x!=0){
+			switch(this.stance.timer){
+				case 0: this.stance.x=1; break;
+				case maxTimer: this.stance.x=2; break;
+				case 2*maxTimer: this.stance.x=3; break;
+				case 3*maxTimer: this.stance.timer=-1; break;
+			}
+			if(previousStance==this.stance.x){
+				this.stance.timer++;
+			}
+		}
+	}//fine di calculateStance()
 }//fine di fleaman
