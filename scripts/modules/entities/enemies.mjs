@@ -1782,8 +1782,8 @@ function newVampireBat() { //VampireBat
 			}
 			if(this.y+this.height/2<player.y+player.height/2){ //movement y
 				this.yv+= -this.speedY;
-			}else if(this.y+this.height/2<player.y+player.height/2){
-				this.yv+= -this.speedY;
+			}else if(this.y+this.height/2>player.y+player.height/3){
+				this.yv+= this.speedY;
 			}
 			this.x += -this.xv;
 			this.y += -this.yv;
@@ -1807,4 +1807,86 @@ function newVampireBat() { //VampireBat
 			}
 		}
 	}//fine di calculateStance()
-}//fine di fleaman
+}//fine di VampireBat ()
+
+function newHomingGhost() { //Ghost
+      	this.name = "homing ghost";
+	this.letter = "G";
+      	this.type = "monster";
+      	this.life = 6;
+      	this.damage = 1;
+	this.sprite = new Image();
+      	this.sprite.src = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAAAXNSR0IArs4c6QAAAhVJREFUWIWllT2OgzAQhZ8jH2gjbUm3x2FLij1CCspwHDrKSLsHQpotwpjHMDY4eVIUG/yN588GqNQ8zeKNazhWKC2ITQz8TudnNzhaH5sYIsN/07FRBfW/hleOnyUDfxPw+RMBAI/bvDH00ZQjq+XZTlwi2UEsjuyjcSOr4jmIoN5bff7kjdqIXuVjE0Ow6bM648Q7/KYpYrOtIRv1DDm9Uc1fuKHmaV1kI8pF+C6voAAQAPK4rWOdz9Pzp3N9doZXNsdvjqGmReV1rxf9O3zxJlwWpfrZI8R6lS8U5qnHbU714xrzTVjL8216IU9dY9w8mlJv8xyfK4kyLlRKp0ZR+2HK8aeM1HwVj5zI8m0vIuP21/Yidk3O6BHvsW0vEnRwvwLh6+mYjOva719g6LalUmP6/IhnWVuh7UWGLkBGcQ2Er4C29wMfuvASz45HBizIc29zHZ/leWOdRwas1PuhW6O4X/dpLfEsWzoAuABPg5wmGSV5z5vrWjZ2xLPu1y2bmtB4t6knG2UHCo2Z5b9/txlMNhZYAIiM6xiAHiXhY9b27hE7xSurfLqKNW1ad6dz3drX8loG1a4EFrJqe0lp5DK8yrt1tEa8hipdUGd5YMmAbaCcuLGW4/kWDwBRbzIAO9g721a1PPdGuoj42BxBnmp4dTZlYOhCwP6rV9xQvV+ir+L1nZYv28WlBrPvSrx3/bL+AXwzvY5RrqacAAAAAElFTkSuQmCC";
+	this.sprite.larg=16;
+	this.sprite.alt=16;
+	this.stance=[];
+	this.stance["x"]=0;
+	this.stance["y"]=Math.floor(Math.random()*2);
+	this.stance["timer"]=0;
+	this.timer=0;
+	this.x = 0;
+      	this.y = 0;
+      	this.xv = 0;
+      	this.yv = 0;
+	this.facingRight=false;
+      	this.slope = 0;
+      	this.width = 30;
+      	this.height = 31;
+      	this.color1 = '#ffbdff';
+      	this.color2 = '#aa0000';
+      	this.speed = 0.27;
+      	this.hasPhysics = true;
+      	this.canSelfDraw = true;
+      	this.selfDraw = function (xdisegnata, ydisegnata, indiceDiQuestaEntity) {
+		if(this.timer==0){
+			if (!this.facingRight) {
+      				ctx.drawImage(this.sprite, this.sprite.larg*this.stance.x, this.sprite.alt*this.stance.y, this.sprite.larg, this.sprite.alt, xdisegnata, ydisegnata-1, this.sprite.larg*2, this.sprite.alt*2);
+	      		} else {
+      				ctx.save(); //salvo il canvas attuale
+      				ctx.scale(-1, 1); //flippa il canvas per fare lo sprite mirrorato
+      				ctx.drawImage(this.sprite, this.sprite.larg*this.stance.x, this.sprite.alt*this.stance.y, this.sprite.larg, this.sprite.alt, -xdisegnata, ydisegnata-1, -this.sprite.larg*2, this.sprite.alt*2);
+      				ctx.restore(); //faccio tornare come prima al punto di save() altrimenti rimane buggato
+      			}
+		}
+      	}
+      	this.getHit = function (nome, danno) {
+		this.life-=danno;
+		this.xv=0; this.yv=0;
+		this.timer=6;
+      	}
+      	this.physics = function (xdisegnata, ydisegnata, indiceDiQuestaEntity) { //also contain calculateStance()
+		if(this.x+this.width/2 > player.x+player.width/2){ //movement x
+			this.facingRight=false;
+			this.xv+= +this.speed;
+		}else if(this.x+this.width/2 < player.x+player.width/3){ //3 and not 2 otherwise he will start flipping left and right because of the decimal part of the x coordinate
+			this.facingRight=true;
+			this.xv+= -this.speed;
+		}
+		if(this.y+this.height/2<player.y+player.height/3){ //movement y
+			this.yv+= -this.speed;
+		}else if(this.y+this.height/2>player.y+player.height/4){
+			this.yv+= this.speed;
+		}
+		if(this.timer>0){ //se colpito rallenta
+			this.timer--;
+			this.xv=this.xv/2; this.yv=this.yv/2;
+		}
+		this.x += -this.xv;
+		this.y += -this.yv;
+		this.xv = this.xv*level.friction;
+		this.yv = this.yv*level.friction;
+		this.calculateStance();
+      	}//fine di physics()
+	this.calculateStance = function (){
+		var previousStance = this.stance.x;
+		const maxTimer=12;
+		switch(this.stance.timer){
+			case 0: this.stance.x=0; break;
+			case maxTimer: this.stance.x=1; break;
+			case 2*maxTimer: this.stance.timer=-1; break;
+		}
+		if(previousStance==this.stance.x){
+			this.stance.timer++;
+		}
+	}//fine di calculateStance()
+}//fine di Ghost()

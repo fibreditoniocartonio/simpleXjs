@@ -162,6 +162,14 @@ function stringToLevel(lvlString) {
 				checkBackAndForGround(background, foreground, lvlString[i - 1]);
 				break;
 
+			case 'G': // G indica un Honing Ghost
+				var entita = new newHomingGhost();
+				entita.x = (i % widthTot) * blockDimension;
+				entita.y = (heightTot - 1) * blockDimension - 2;
+				entity.push(entita);
+				checkBackAndForGround(background, foreground, lvlString[i - 1]);
+				break;
+
 			case '0':
 			case '1':
 			case '2':
