@@ -59,7 +59,7 @@ function stringToLevel(lvlString) {
 				entita.x = (i % widthTot) * blockDimension;
 				entita.y = (heightTot - 1) * blockDimension - 2;
 				entity.push(entita);
-				checkBackAndForGround(background, foreground, lvlString[i - 1]); //se il blocco prima era un background o foreground lo carica sotto il player
+				checkBackAndForGround(background, foreground, lvlString[i - 1]);
 				break;
 
 			case 'A': // A indica un ape (bomb bee)
@@ -67,7 +67,7 @@ function stringToLevel(lvlString) {
 				entita.x = (i % widthTot) * blockDimension;
 				entita.y = (heightTot - 1) * blockDimension - 2;
 				entity.push(entita);
-				checkBackAndForGround(background, foreground, lvlString[i - 1]); //se il blocco prima era un background o foreground lo carica sotto il player
+				checkBackAndForGround(background, foreground, lvlString[i - 1]);
 				break;
 
 			case 'S': //S sono le spike (le spine che instaKillano)
@@ -75,7 +75,7 @@ function stringToLevel(lvlString) {
 				spike.x = (i % widthTot) * blockDimension;
 				spike.y = (heightTot - 1) * blockDimension;
 				entity.push(spike);
-				checkBackAndForGround(background, foreground, lvlString[i - 1]); //se il blocco prima era un background o foreground lo carica sotto il player
+				checkBackAndForGround(background, foreground, lvlString[i - 1]);
 				break;
 			
 			case 'Z': // Z indica un zombie (ghoul)
@@ -83,7 +83,7 @@ function stringToLevel(lvlString) {
 				entita.x = (i % widthTot) * blockDimension;
 				entita.y = (heightTot - 1) * blockDimension - 2;
 				entity.push(entita);
-				checkBackAndForGround(background, foreground, lvlString[i - 1]); //se il blocco prima era un background o foreground lo carica sotto il player
+				checkBackAndForGround(background, foreground, lvlString[i - 1]);
 				break;
 
 			case 'ʍ': // ʍ indica un mudman (reskin dello zombie)
@@ -95,7 +95,7 @@ function stringToLevel(lvlString) {
 				entita.stance.y=3; //skin mudman
 				entita.color1="#ad7b00";
 				entity.push(entita);
-				checkBackAndForGround(background, foreground, lvlString[i - 1]); //se il blocco prima era un background o foreground lo carica sotto il player
+				checkBackAndForGround(background, foreground, lvlString[i - 1]);
 				break;
 
 			case '§': // § indica un gray skeleton
@@ -103,7 +103,7 @@ function stringToLevel(lvlString) {
 				entita.x = (i % widthTot) * blockDimension;
 				entita.y = (heightTot - 1) * blockDimension - 2;
 				entity.push(entita);
-				checkBackAndForGround(background, foreground, lvlString[i - 1]); //se il blocco prima era un background o foreground lo carica sotto il player
+				checkBackAndForGround(background, foreground, lvlString[i - 1]);
 				break;
 
 			case '⧌': // ⧌ indica un red skeleton
@@ -111,7 +111,7 @@ function stringToLevel(lvlString) {
 				entita.x = (i % widthTot) * blockDimension;
 				entita.y = (heightTot - 1) * blockDimension - 2;
 				entity.push(entita);
-				checkBackAndForGround(background, foreground, lvlString[i - 1]); //se il blocco prima era un background o foreground lo carica sotto il player
+				checkBackAndForGround(background, foreground, lvlString[i - 1]);
 				break;
 
 			case 'K': // K indica un armored knight
@@ -119,7 +119,7 @@ function stringToLevel(lvlString) {
 				entita.x = (i % widthTot) * blockDimension;
 				entita.y = (heightTot - 1) * blockDimension - 2;
 				entity.push(entita);
-				checkBackAndForGround(background, foreground, lvlString[i - 1]); //se il blocco prima era un background o foreground lo carica sotto il player
+				checkBackAndForGround(background, foreground, lvlString[i - 1]);
 				break;
 
 			case 'Ќ': // Ќ indica un armored knight with spear
@@ -127,7 +127,7 @@ function stringToLevel(lvlString) {
 				entita.x = (i % widthTot) * blockDimension;
 				entita.y = (heightTot - 1) * blockDimension - 2;
 				entity.push(entita);
-				checkBackAndForGround(background, foreground, lvlString[i - 1]); //se il blocco prima era un background o foreground lo carica sotto il player
+				checkBackAndForGround(background, foreground, lvlString[i - 1]);
 				break;
 
 			case 'ɖ': // ɖ indica un dragon cannon
@@ -135,7 +135,7 @@ function stringToLevel(lvlString) {
 				entita.x = (i % widthTot) * blockDimension;
 				entita.y = (heightTot - 1) * blockDimension+1;
 				entity.push(entita);
-				checkBackAndForGround(background, foreground, lvlString[i - 1]); //se il blocco prima era un background o foreground lo carica sotto il player
+				checkBackAndForGround(background, foreground, lvlString[i - 1]);
 				break;
 
 			case 'ȴ': // ȴ indica un black Leopard
@@ -143,7 +143,7 @@ function stringToLevel(lvlString) {
 				entita.x = (i % widthTot) * blockDimension;
 				entita.y = (heightTot - 1) * blockDimension - 2;
 				entity.push(entita);
-				checkBackAndForGround(background, foreground, lvlString[i - 1]); //se il blocco prima era un background o foreground lo carica sotto il player
+				checkBackAndForGround(background, foreground, lvlString[i - 1]);
 				break;
 
 			case 'Ǻ': // Ǻ indica un axeArmor
@@ -151,7 +151,15 @@ function stringToLevel(lvlString) {
 				entita.x = (i % widthTot) * blockDimension;
 				entita.y = (heightTot - 1) * blockDimension - 2;
 				entity.push(entita);
-				checkBackAndForGround(background, foreground, lvlString[i - 1]); //se il blocco prima era un background o foreground lo carica sotto il player
+				checkBackAndForGround(background, foreground, lvlString[i - 1]);
+				break;
+
+			case 'F': // F indica un fleaman
+				var entita = new newFleaman();
+				entita.x = (i % widthTot) * blockDimension;
+				entita.y = (heightTot - 1) * blockDimension - 2;
+				entity.push(entita);
+				checkBackAndForGround(background, foreground, lvlString[i - 1]);
 				break;
 
 			case '0':
@@ -163,7 +171,7 @@ function stringToLevel(lvlString) {
 				armatura.x = (i % widthTot) * blockDimension + (blockDimension / 2 - armatura.width / 2);
 				armatura.y = (heightTot - 1) * blockDimension + (blockDimension / 2 - armatura.height / 2);
 				entity.push(armatura);
-				checkBackAndForGround(background, foreground, lvlString[i - 1]); //se il blocco prima era un background o foreground lo carica sotto il player
+				checkBackAndForGround(background, foreground, lvlString[i - 1]);
 				break;
 
 			case '4':
@@ -175,7 +183,7 @@ function stringToLevel(lvlString) {
 				subtankLetta.x = (i % widthTot) * blockDimension+(blockDimension / 2 - subtankLetta.width / 2);
 				subtankLetta.y = (heightTot - 1) * blockDimension+(blockDimension / 2 - subtankLetta.height / 2);
 				entity.push(subtankLetta);
-				checkBackAndForGround(background, foreground, lvlString[i - 1]); //se il blocco prima era un background o foreground lo carica sotto il player
+				checkBackAndForGround(background, foreground, lvlString[i - 1]);
 				break;
 
 			case '⁰':

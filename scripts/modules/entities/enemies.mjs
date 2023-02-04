@@ -1617,3 +1617,101 @@ function newAxeArmorAxe(stanceYP, damageP, xP, yP, facingRightP, armorIndexP, xM
 		}
 	}//fine di calculateStance()
 }//fine di axeArmorAxe
+
+function newFleaman() { //fleaman
+      	this.name = "fleaman";
+	this.letter = "F";
+      	this.type = "monster";
+      	this.life = 1;
+      	this.damage = 1;
+	this.sprite = new Image();
+      	this.sprite.src = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAAAXNSR0IArs4c6QAAAiFJREFUWIWllsuRgzAMhn88NJEOqGFrSAWkDcrYY1ogFVADNXDInRTBjPawyJFlWfZuNOMZkP3pYQvkDm8h5NIZupLUeDJ08YWOaYnK/vtqOfCCqfLHtOC5XDFsqa2gYSnbkDppcV7in8tV6qKtoCGOfhuAYTODKAXSwmdBBA2yMHxuGbbhdxt1Bq18STo25i22slBnSS283BHmA4DumJZqpI6Qx1vOpQQAxNtnFZOEpBN5FB6vuZLQMS1cYO7YhvfAuxaaeIuNZ1iKTJ2ZpUvqyMvamO/68z0aKQGVio68t93WHH+GMQMeFmgVkRNQ/NtZNnm+l4tKUbaKYrNj0c4B8SOyspQGS8/s7JgW8LCcD1v5K5ER/3Wwc1MvK16sSSTrhtyxZLSii2kuZou8Wza1d8uQCzjy2X2A5vWtvH1ZDtz7QI2necXrdscFj8RW0LCUHWNio8V5iX/d7lJXvg9w9DtGXPCwgnDvAxU+CyJokIXhc8uwYwTNa5ZBK18MmI15i60s1FlSCy93hPkAoKN5rUbqCHm85VxKAEC8fVYxSUg6kUfh8ZrT0uM8BppX8/Np2JmP+Op9QJ2ZpUvqyHNszPv3AQlUKjryXsbWXHIf2DHGYYFWETkBxb+dZZPne7moFGWrKDY7Fu0cED8iK0tpsPTMzmhewcNyfsGj+JXIiP91H6B5NfU7RtoxklqTSNYNuWPJaEUX01zMFnm3bGrvP1fDmkymzoa7AAAAAElFTkSuQmCC";
+	this.sprite.larg=16;
+	this.sprite.alt=16;
+	this.stance=[];
+	this.stance["x"]=0;
+	this.stance["y"]=Math.floor(Math.random()*2);
+	this.x = 0;
+      	this.y = 0;
+      	this.xv = 0;
+      	this.yv = 0;
+	this.facingRight=false;
+      	this.slope = 0;
+      	this.width = 30;
+      	this.height = 31;
+      	this.color1 = '#ff2288';
+      	this.color2 = '#fcc4fc';
+	this.jumpHeight = 11;
+      	this.speed = 0.6;
+	this.timer=-8;
+      	this.hasPhysics = true;
+      	this.canSelfDraw = true;
+      	this.selfDraw = function (xdisegnata, ydisegnata, indiceDiQuestaEntity) {
+		if (!this.facingRight) {
+      			ctx.drawImage(this.sprite, this.sprite.larg*this.stance.x, this.sprite.alt*this.stance.y, this.sprite.larg, this.sprite.alt, xdisegnata, ydisegnata-1, this.sprite.larg*2, this.sprite.alt*2);
+      		} else {
+      			ctx.save(); //salvo il canvas attuale
+      			ctx.scale(-1, 1); //flippa il canvas per fare lo sprite mirrorato
+      			ctx.drawImage(this.sprite, this.sprite.larg*this.stance.x, this.sprite.alt*this.stance.y, this.sprite.larg, this.sprite.alt, -xdisegnata, ydisegnata-1, -this.sprite.larg*2, this.sprite.alt*2);
+      			ctx.restore(); //faccio tornare come prima al punto di save() altrimenti rimane buggato
+      		}
+		if(debugMode){ //show attack timer
+			disegnaTestoConBordino(this.timer, xdisegnata, ydisegnata, "#000000", "#ffffff");
+		}
+      	}
+      	this.getHit = function (nome, danno) {
+		this.life-=danno;
+      	}
+      	this.physics = function (xdisegnata, ydisegnata, indiceDiQuestaEntity) { //also contain calculateStance()
+		if(Math.round(this.yv)!=0){ //si muove solo se e' in salto
+			if(this.facingRight){ //movement
+				this.xv+= -this.speed;
+			}else{
+				this.xv+= +this.speed;
+			}
+		}
+		this.x += -this.xv;
+		this.xv = this.xv*level.friction;
+	      	this.yv += level.gravity*1.2; //get level gravity
+    		this.y += this.yv; //apply gravity
+		//collision with level
+		var latoSx = new rectTest(this.x, this.y+4, 2, this.height-8);
+		var latoDx = new rectTest(this.x+this.width-2, this.y+4, 2, this.height-8);
+		var latoSotto = new rectTest(this.x+4, this.y+this.height-2, this.width-8, 2);
+		var latoSopra = new rectTest(this.x+4, this.y, this.width-8, 2);
+      		for (var i = 0; i < level.length; i++){
+      			if (collisionBetween(this, level[i])) {
+      				if (collisionBetween(latoSx, level[i]) || collisionBetween(latoDx, level[i])) { //collisione x
+      					this.x -= -this.xv*2.5;
+					this.xv = 0;
+					this.goingRight=!this.goingRight;
+      				}
+      				if (collisionBetween(latoSopra, level[i])) { //collisione y top
+					this.y = level[i].y+level[i].height;
+      					this.yv = 0;
+				}
+      				if (collisionBetween(latoSotto, level[i])) { //collisione y bottom
+					this.y = level[i].y-this.height;
+      					this.yv = 0;
+					this.xv = 0;
+					this.stance.x=0; //standing stance
+					if(this.x+this.width/2 > player.x+player.width/2){ //change direction
+						this.facingRight=false;
+					}else if(this.x+this.width/2 < player.x+player.width/3){
+						this.facingRight=true;
+					}
+					if(this.timer<0){
+						this.timer++;
+					}else if(this.timer==0){ //jumping
+						this.timer=-8;
+						this.stance.x=1; //jumping stance
+						this.yv = -this.jumpHeight; //jump
+						if(Math.floor(Math.random()*4)==1){
+							this.yv -= this.jumpHeight/3; //double jump speed
+						}
+					}
+      				}
+      			}
+      		}
+      	}//fine di physics()
+}//fine di fleaman
