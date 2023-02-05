@@ -2024,7 +2024,7 @@ function newFishman() {
 	this.letter = "₣";
       	this.type = "monster";
       	this.life = 2;
-      	this.damage = 2;
+      	this.damage = 1;
 	this.sprite = new Image();
       	this.sprite.src = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADAAAABACAYAAABcIPRGAAAAAXNSR0IArs4c6QAABWRJREFUaIG1WMmN6zAMpYI0MsAc3EJ6SAU5u4SUMSX4nArcw7TgwwBpJAD/waLMVV7kT8BAYulxJ0U5gSUEAPg8RwAA+Bvv0E1iPTmYM7CnEH6eI04dYFYGp25+Ps+xvGPPWdjDxD2Cn+dYvPZ5jnD9ucPUxeDs3dSIbaKLfvF9n8PvKdBNy7pKjWYso8ORKiBKBXr0GoBYa8XC5zmaNY3dZQBXhDOt5PJhLL3nRmyUCQAsB/NGQTwVvu9zXhPR+26C1ILlClHtrNUQS0FRQyZ05IHACyICLVh6vAgQT93hQEXCGFEJn5vHrVhtxIb6cY0oXuO5GRSVUaIF60Wh9o6U133YWOTlYZCDR7ECR/kf/Wf1AwD2HEjEmMYBj6auMOLCW7BG2amzypPi7BBM11ASA9RO1FZsZGw3AcA0dyLyNufVTYAAkKKjHHWoOClGJg13YjFaB5hbsDMUEq1HoDYS6PC2YqNofd9HmOBuItFNAJEBqZsWT+6kvVi3mIn+Rmsoj4YZ5ojZXuVVC61S9n51EqVIBbLoJ/6PCADAoeJP2bPzjHRfeJAxHxuMuQaiWWYPXX/u5V5ARHcDIqUAgh+FBABIsxB1o6ynTikUwxxf9FoXV6qSBm4KcUOYcmEX9PBav6lzplHP816vZvvc05z3b45XLTEsYI33nAvAupBOAS6IlNWGcCGMzIhMPDieYdFz0N+4pJAeLSildHaULhLdpvg6W9MU4oNJ0h3Wtky1XH6knFCeK0JCNhoAXDH9PppYNz7rym/w4i4jlPGhAZVxXAqLlI+8sscAtlesq99G0a3KJ7DDV+kMXgvlVGmFArvx65zBbOFxgeUENHO6pzCnSh9PHja6B0SYiuzCI5qFAPKFgV0gqozWaOVjVpHJnUmyg0MVAZgBNOoGN63IiE0nKfX5LUboC4y+W/B3JGetaNY6g1ZcFHBlr2f05od4pqCXmyLi46061kUjqNHa7FMr4ojMVwV8DPO/dw/p190XUSu+iRAfA+JtCRHe8vMY1nr+GfiTlc9CixI3Nw/PwgN/j4/B8KspnzJo/pfDjje2Qf2nd8AOvFPw756vLZivAdKr5/oKugAApFc/b/oajHBiUqNWvN6Pj2HBvnvO042KCC0Pn85jFtYz8RDinP+ax7WEX3lChxBv+f28H9OrT+StFjxB0qtHfAyA0As+xINSzCNTaOQ11UGiQmzFS11yJIT3KxFcCskvNMmdeRUAgHmxFV+20L4SRT+CBesqYDpBoBAtnYAvBpSOtBgZAjlWFqJThCKsS3qchSfldaoYvio97ScR8prp31/uiGA9eAyP+JCpArAtgv59IPdzAXr3JbSMsT/j7MMj72Q8zzU/wuFjoD3x53XyoPFGbmd5DSMj9uDTq0exRxOrCYSe14XpZDJPnVzU+Xwi3tZJBU9Yk0Le7GK8UaEGfEq/2/F5DxoDqPd6g9kGEulUGeRC2is/vNQfUF7iX3K63I0/IH8tV00/hmAc0HwEz0oNHJFPEZgHKcdi7kHWvrZ5hHo74Sj/vwYdmcPyLwT2iM/nKwq4yhc+r94tXirEFvkXfptiTMUMsqJArDy7jHgGi0ProPwLgSOPrimgt2uFxB411/PDrUV+7eLtHi5q6NIGiGGu8CGMM7C1yg+va4KJUoA94O33lPGUO0u+5wWxVlFAk3unVXy1soflh6MwBGOyWo+GObPf4Y15oDOXqj3ya5/XOSXRj3P7C5R39ztFmHac0qH86oXGUTDyhEdiRK5cgprkhxFgVkrJeWLUH7FCojl+71yzUf6Vb6oIkXvq32lQ7FNKeWdHi3zzRYGTLrjKuhBW8/Zage6V/w8K+gpfFw1/1AAAAABJRU5ErkJggg==";
 	this.stance=[];
@@ -2079,7 +2079,6 @@ function newFishman() {
 				if(this.timer==0){
 					if(this.shootNumber>0){
       						var sparo = new newSparo(15, 10);
-						//sparo.y = this.y+ this.height/16 + sparo.height;
 						sparo.y = this.y+sparo.height;
       						if (this.facingRight) {
 		      					sparo.x = this.x + this.width - sparo.width/2;
@@ -2167,3 +2166,172 @@ function newFishman() {
 		}
 	}//fine di calculateStance()
 }//fine di Fishman
+
+function newMedusaHeadSpawner() {
+      	this.name = "medusa head spawner";
+	this.letter = "M";
+	if(levelEditor){
+      		this.type = "monster";
+	}else{
+		this.type="enemyShot"; //always loaded
+	}
+      	this.life = 999999;
+      	this.damage = 0;
+	this.sprite = new Image();
+      	this.sprite.src = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAAUCAYAAACNiR0NAAAAAXNSR0IArs4c6QAAASVJREFUOI2VVMGRgzAQEx6XQAN8mBSSIlICT6gEnimBIiiE4UMDlOCZ5BEvWa9l7qIPsF4krXag2of2BYJm3M77fWhZC4UrkYV1RlhnoD/QjNspoIUYPHMU1hn+9igKyRlz7nRjCeI2EYrOLSrJsBk3oD+AqU47+gOhWz5E/fGtTzV1WOmliGJYZ/jnPScnsKT5UsTFVH/utasodtbI2HTLbCFCojOk79pC6Bb4KW9M6iqKv0eO6nbr/nnPz8jIicN9aPNtCsTVVMPjm/P/HGpHQmRFChlSwtAtKVmsnaMqkcuRATU20sD97ZHmGkntyFXpb8Ngvyb6pQB4yaHY/+V3ZeEsgSbW+disSj2OFYVUk19B9zg7nn5mZKymhd2VAxaFvrLeN1WtvJcArt70AAAAAElFTkSuQmCC";
+	this.stance=[];
+	this.stance["x"]=0;
+	this.stance["y"]=0;
+	this.stance["timer"]=0;
+	this.sprite.larg=20;
+	this.sprite.alt=20;
+	this.headIndex=-1;
+	this.x = 0;
+      	this.y = 0;
+      	this.width = 40;
+      	this.height = 40;
+      	this.color1 = '#002299';
+	this.timer=0;
+      	this.hasPhysics = true;
+      	this.canSelfDraw = true;
+      	this.selfDraw = function (xdisegnata, ydisegnata, indiceDiQuestaEntity){
+		if(levelEditor || debugMode){
+			var activatorBox = new rectTest(xdisegnata+this.width/2-canvasWidth/3*2, ydisegnata+this.height/2-canvasHeight/3*2, 2*canvasWidth/3*2, 2*canvasHeight/3*2);
+			ctx.strokeStyle=this.color1;
+			ctx.strokeRect(activatorBox.x, activatorBox.y, activatorBox.width, activatorBox.height);
+			ctx.strokeRect(activatorBox.x, activatorBox.y+activatorBox.height/2, activatorBox.width, 1);
+			ctx.strokeRect(activatorBox.x+activatorBox.width/2, activatorBox.y, 1, activatorBox.height);
+	      		ctx.drawImage(this.sprite, this.sprite.larg*this.stance.x, this.sprite.alt*this.stance.y, this.sprite.larg, this.sprite.alt, xdisegnata, ydisegnata-1, this.sprite.larg*2, this.sprite.alt*2);
+		}
+		if(debugMode){ //show attack timer
+			disegnaTestoConBordino(this.timer, xdisegnata, ydisegnata, "#000000", "#ffffff");
+		}
+      	}
+      	this.getHit = function (nome, danno) {}
+      	this.physics = function (xdisegnata, ydisegnata, indiceDiQuestaEntity) {
+		if(this.headIndex==-1){ //inizializza la testa da spawnare
+			var entita = new newMedusaHead(0, false, indiceDiQuestaEntity); entita.life=-1;
+			this.headIndex=entity.length;
+			entity.push(entita);
+		}
+		if(this.timer>0){
+			this.timer--;
+		}else if(this.timer==0 && entity[this.headIndex].life<1){
+			var activatorBox = new rectTest(this.x+this.width/2-canvasWidth/3*2, this.y+this.height/2-canvasHeight/3*2, 2*canvasWidth/3*2, 2*canvasHeight/3*2);
+			if(collisionBetween(activatorBox, player)){
+				var entita = new newMedusaHead(player.y+player.height/2, !player.facingRight, indiceDiQuestaEntity);
+				if(player.facingRight){
+ 	     				if (player.x + (player.width / 2) < canvasWidth / 2) { //player a inizio livello
+						entita.x=canvasWidth-entita.width-1;
+		      			} else if(player.x + (player.width / 2) > level.maxWidth - canvasWidth / 2) { //player a fine livello
+						entita.x=level.maxWidth-entita.width-1;
+      					} else { //player in mezzo al livello
+						entita.x=player.x+player.width/2+canvasWidth/2-entita.width-1;
+ 					}
+				}else{
+ 	     				if (player.x + (player.width / 2) < canvasWidth / 2) { //player a inizio livello
+						entita.x=1;
+		      			} else if(player.x + (player.width / 2) > level.maxWidth - canvasWidth / 2) { //player a fine livello
+						entita.x=level.maxWidth-canvasWidth+1;
+      					} else { //player in mezzo al livello
+						entita.x=player.x+player.width/2-canvasWidth/2+1;
+ 					}
+				}
+				entity[this.headIndex]=entita;
+			}
+		}
+      	}//fine di physics()
+}//fine di medusaHeadSpawner()
+function newMedusaHead(yPass, facingRightPass, parentIndexPass) {
+      	this.name = "medusa head";
+	this.letter = "M";
+      	this.type = "monster";
+      	this.life = 1;
+      	this.damage = 1;
+	this.sprite = new Image();
+      	this.sprite.src = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAAAXNSR0IArs4c6QAAAl5JREFUWIWtVsFtwzAMpAKP0CH6zQzpEN3BfeSRMfzowwE6gpfwDP16iIxggH3YlE8nSlGAEhBQU+TxSJ3UiPyPKf2t5CvaqQLYCqLrMsWcdZlkXSaR6+NlMgio6zKpXB8MUAKy4hh/fB845aIlkMqeS7whL8k9yTFC12yk6zJJ9/65OY/xYgPb/raX5CeW5+4A6bjj6JIx2nJE53bvYEJcZkeAR8ZfwsW9/IxcQRN+xwxkPtwDHxNgciTMyjEgAc+fdlEmVRd2SiAJhCKNAMV8l8g+gfwhuj4y5XY/H/leQc1efvJ9fWzr+02YQIjXjG0Plu+3g8zmCy355o/7hieFp5iKZHc7+27Id96awA6RyjWqnO/T/MIq2nOB1UHc/Jb/B8/M++fUbHsDDUVeL5BNRmfVftAmHBSh6qzSDzGn+dwoL9ruw40My5SoOquES4iAIiJfvyng/RY4LxYwAhajs8rXb5ITSe2+ZCOOzMYHI4zL8XudKeLh8o4mAECTUadJvk3OJonx41nciXSxBRo7BuIeASjHYFHD6QdNSFnM/Ra2X0TemRuInaUB9EMuOCzOuuFmmGAwAi2JDFATHIjNLYxHWBSckHBK4hQQWS3fWds7MJ4ldsJMeSLcJeaZ8bdn9kacMDhcNsEYIRw1kkIdIOlwCa4YLb8fVHTWJKZDcYkc00BS5h9BKzaJu0MK9WRNxcnRNe5EJPSD6njeixWeVL5GQi/Z/RYUC6CN581PR5g+JN5NYJWzX+gh8rTjYeANiADOFckKYBF+CSsNlF7bbKSv/Nhwf3Q4V+6p/QGFqShY3HxVWAAAAABJRU5ErkJggg==";
+	this.stance=[];
+	this.stance["x"]=0;
+	this.stance["y"]=Math.floor(Math.random()*2);
+	this.stance["timer"]=0;
+	this.sprite.larg=16;
+	this.sprite.alt=16;
+      	this.width = 30;
+      	this.height = 30;
+	this.parentIndex=parentIndexPass;
+	this.x = 0;
+      	this.y = yPass-this.height/2;
+	this.yMin = this.y+this.height/2-this.height*2.3; //limite alto su schermo
+	this.yMax = this.y+this.height/2+this.height*2.3; //limite basso su schermo
+      	this.xv = 0;
+      	this.yv = 0;
+	this.facingRight=facingRightPass;
+      	this.speed = 0.62;
+	this.goingUp=true;
+      	this.hasPhysics = true;
+      	this.canSelfDraw = true;
+      	this.selfDraw = function (xdisegnata, ydisegnata, indiceDiQuestaEntity){
+		if (!this.facingRight) {
+      			ctx.drawImage(this.sprite, this.sprite.larg*this.stance.x, this.sprite.alt*this.stance.y, this.sprite.larg, this.sprite.alt, xdisegnata, ydisegnata-1, this.sprite.larg*2, this.sprite.alt*2);
+		} else {
+      			ctx.save(); //salvo il canvas attuale
+      			ctx.scale(-1, 1); //flippa il canvas per fare lo sprite mirrorato
+      			ctx.drawImage(this.sprite, this.sprite.larg*this.stance.x, this.sprite.alt*this.stance.y, this.sprite.larg, this.sprite.alt, -xdisegnata, ydisegnata-1, -this.sprite.larg*2, this.sprite.alt*2);
+      			ctx.restore(); //faccio tornare come prima al punto di save() altrimenti rimane buggato
+      		}
+      	}
+      	this.getHit = function (nome, danno) {
+      		this.life -= danno;
+		if(this.life<1){entity[this.parentIndex].timer=30;}
+      	}
+      	this.physics = function (xdisegnata, ydisegnata, indiceDiQuestaEntity) {
+		if(!this.facingRight){
+			this.xv+= this.speed;
+		}else{
+			this.xv+= -this.speed;
+		}
+		if(this.goingUp){
+			this.yv+= -this.speed;
+		}else{
+			this.yv+= this.speed;
+		}
+		this.xv = this.xv*level.friction;
+		this.yv = this.yv*level.friction;
+		this.x += -this.xv;
+    		this.y += this.yv;
+		if((this.goingUp && (this.y+this.height/2)<this.yMin) || (!this.goingUp && (this.y+this.height/2)>this.yMax)){
+			this.goingUp=!this.goingUp;
+		}
+		var xLimitMin;
+		var xLimitMax;
+		if(this.facingRight){
+ 	     		if (player.x + (player.width / 2) < canvasWidth / 2) { //player a inizio livello
+				xLimitMax=canvasWidth-1;
+		      	} else if(player.x + (player.width / 2) > level.maxWidth - canvasWidth / 2) { //player a fine livello
+				xLimitMax=level.maxWidth-1;
+      			} else { //player in mezzo al livello
+				xLimitMax=player.x+player.width/2+canvasWidth/2-1;
+ 			}
+		}else{
+ 	     		if (player.x + (player.width / 2) < canvasWidth / 2) { //player a inizio livello
+				xLimitMin=1;
+		      	} else if(player.x + (player.width / 2) > level.maxWidth - canvasWidth / 2) { //player a fine livello
+				xLimitMin=level.maxWidth-canvasWidth+1;
+      			} else { //player in mezzo al livello
+				xLimitMin=player.x+player.width/2-canvasWidth/2-1;
+ 			}
+		}
+		if((this.x+this.width/2 > xLimitMax) || (this.x+this.width/2 < xLimitMin)){
+			this.life=-1;
+			entity[this.parentIndex].timer=30;
+		}
+		this.calculateStance();
+      	}//fine di physics()
+	this.calculateStance = function (){
+		if(this.goingUp){
+			this.stance.x=0;
+		}else{
+			this.stance.x=1;
+		}
+	}//fine di calculateStance()
+}//fine di medusaHead()
