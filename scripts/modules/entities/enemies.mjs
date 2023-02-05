@@ -2018,3 +2018,152 @@ function newFiremanFire(xPass, yPass) {
 		}
 	}//fine di calculateStance()
 }//fine di FiremanFire
+
+function newFishman() {
+      	this.name = "fishman";
+	this.letter = "₣";
+      	this.type = "monster";
+      	this.life = 2;
+      	this.damage = 2;
+	this.sprite = new Image();
+      	this.sprite.src = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADAAAABACAYAAABcIPRGAAAAAXNSR0IArs4c6QAABWRJREFUaIG1WMmN6zAMpYI0MsAc3EJ6SAU5u4SUMSX4nArcw7TgwwBpJAD/waLMVV7kT8BAYulxJ0U5gSUEAPg8RwAA+Bvv0E1iPTmYM7CnEH6eI04dYFYGp25+Ps+xvGPPWdjDxD2Cn+dYvPZ5jnD9ucPUxeDs3dSIbaKLfvF9n8PvKdBNy7pKjWYso8ORKiBKBXr0GoBYa8XC5zmaNY3dZQBXhDOt5PJhLL3nRmyUCQAsB/NGQTwVvu9zXhPR+26C1ILlClHtrNUQS0FRQyZ05IHACyICLVh6vAgQT93hQEXCGFEJn5vHrVhtxIb6cY0oXuO5GRSVUaIF60Wh9o6U133YWOTlYZCDR7ECR/kf/Wf1AwD2HEjEmMYBj6auMOLCW7BG2amzypPi7BBM11ASA9RO1FZsZGw3AcA0dyLyNufVTYAAkKKjHHWoOClGJg13YjFaB5hbsDMUEq1HoDYS6PC2YqNofd9HmOBuItFNAJEBqZsWT+6kvVi3mIn+Rmsoj4YZ5ojZXuVVC61S9n51EqVIBbLoJ/6PCADAoeJP2bPzjHRfeJAxHxuMuQaiWWYPXX/u5V5ARHcDIqUAgh+FBABIsxB1o6ynTikUwxxf9FoXV6qSBm4KcUOYcmEX9PBav6lzplHP816vZvvc05z3b45XLTEsYI33nAvAupBOAS6IlNWGcCGMzIhMPDieYdFz0N+4pJAeLSildHaULhLdpvg6W9MU4oNJ0h3Wtky1XH6knFCeK0JCNhoAXDH9PppYNz7rym/w4i4jlPGhAZVxXAqLlI+8sscAtlesq99G0a3KJ7DDV+kMXgvlVGmFArvx65zBbOFxgeUENHO6pzCnSh9PHja6B0SYiuzCI5qFAPKFgV0gqozWaOVjVpHJnUmyg0MVAZgBNOoGN63IiE0nKfX5LUboC4y+W/B3JGetaNY6g1ZcFHBlr2f05od4pqCXmyLi46061kUjqNHa7FMr4ojMVwV8DPO/dw/p190XUSu+iRAfA+JtCRHe8vMY1nr+GfiTlc9CixI3Nw/PwgN/j4/B8KspnzJo/pfDjje2Qf2nd8AOvFPw756vLZivAdKr5/oKugAApFc/b/oajHBiUqNWvN6Pj2HBvnvO042KCC0Pn85jFtYz8RDinP+ax7WEX3lChxBv+f28H9OrT+StFjxB0qtHfAyA0As+xINSzCNTaOQ11UGiQmzFS11yJIT3KxFcCskvNMmdeRUAgHmxFV+20L4SRT+CBesqYDpBoBAtnYAvBpSOtBgZAjlWFqJThCKsS3qchSfldaoYvio97ScR8prp31/uiGA9eAyP+JCpArAtgv59IPdzAXr3JbSMsT/j7MMj72Q8zzU/wuFjoD3x53XyoPFGbmd5DSMj9uDTq0exRxOrCYSe14XpZDJPnVzU+Xwi3tZJBU9Yk0Le7GK8UaEGfEq/2/F5DxoDqPd6g9kGEulUGeRC2is/vNQfUF7iX3K63I0/IH8tV00/hmAc0HwEz0oNHJFPEZgHKcdi7kHWvrZ5hHo74Sj/vwYdmcPyLwT2iM/nKwq4yhc+r94tXirEFvkXfptiTMUMsqJArDy7jHgGi0ProPwLgSOPrimgt2uFxB411/PDrUV+7eLtHi5q6NIGiGGu8CGMM7C1yg+va4KJUoA94O33lPGUO0u+5wWxVlFAk3unVXy1soflh6MwBGOyWo+GObPf4Y15oDOXqj3ya5/XOSXRj3P7C5R39ztFmHac0qH86oXGUTDyhEdiRK5cgprkhxFgVkrJeWLUH7FCojl+71yzUf6Vb6oIkXvq32lQ7FNKeWdHi3zzRYGTLrjKuhBW8/Zage6V/w8K+gpfFw1/1AAAAABJRU5ErkJggg==";
+	this.stance=[];
+	this.stance["x"]=0;
+	this.stance["y"]=Math.floor(Math.random()*2);
+	this.stance["timer"]=0;
+	this.sprite.larg=16;
+	this.sprite.alt=32;
+	this.x = 0;
+      	this.y = 0;
+      	this.xv = 0;
+      	this.yv = 0;
+	this.facingRight=false;
+      	this.slope = 0;
+      	this.width = 30;
+      	this.height = 62;
+      	this.color1 = '#cc0044';
+      	this.color2 = '#dd0000';
+      	this.speed = 0.3;
+	this.timer=-100;
+	this.damageTimer=0;
+	this.attacking=false;
+	this.shootNumber=0;
+      	this.hasPhysics = true;
+      	this.canSelfDraw = true;
+      	this.selfDraw = function (xdisegnata, ydisegnata, indiceDiQuestaEntity){
+		if(this.damageTimer==0){
+			if (!this.facingRight) {
+      				ctx.drawImage(this.sprite, this.sprite.larg*this.stance.x, this.sprite.alt*this.stance.y, this.sprite.larg, this.sprite.alt, xdisegnata, ydisegnata-1, this.sprite.larg*2, this.sprite.alt*2);
+	      		} else {
+      				ctx.save(); //salvo il canvas attuale
+      				ctx.scale(-1, 1); //flippa il canvas per fare lo sprite mirrorato
+      				ctx.drawImage(this.sprite, this.sprite.larg*this.stance.x, this.sprite.alt*this.stance.y, this.sprite.larg, this.sprite.alt, -xdisegnata, ydisegnata-1, -this.sprite.larg*2, this.sprite.alt*2);
+      				ctx.restore(); //faccio tornare come prima al punto di save() altrimenti rimane buggato
+      			}
+		}
+      	}
+      	this.getHit = function (nome, danno) {
+      		this.life -= danno;
+		this.damageTimer=6;
+      	}
+      	this.physics = function (xdisegnata, ydisegnata, indiceDiQuestaEntity) {
+		if(this.damageTimer>0){ //when hit can't move
+			this.damageTimer--;
+		}else{
+			if(this.attacking){
+				if(this.x+this.width/2 > player.x+player.width/2){
+					this.facingRight=false;
+				}else if(this.x+this.width/2 < player.x+player.width/3){
+					this.facingRight=true;
+				}
+				if(this.timer==0){
+					if(this.shootNumber>0){
+      						var sparo = new newSparo(15, 10);
+						//sparo.y = this.y+ this.height/16 + sparo.height;
+						sparo.y = this.y+sparo.height;
+      						if (this.facingRight) {
+		      					sparo.x = this.x + this.width - sparo.width/2;
+      						} else {
+      							sparo.x = this.x - sparo.width/2;
+		      				}
+	      					sparo.facingRight = this.facingRight;
+	      					sparo.type = "enemyShot";
+      						sparo.color = this.color2;
+      						sparo.damage = this.damage*2;
+      						sparo.speed = sparo.speed / 3.5;
+		      				entity.push(sparo);
+					}
+					this.shootNumber--;
+					if(this.shootNumber==0){this.timer=-10;}
+					if(this.shootNumber==-1){
+						this.attacking=false;
+						this.timer=-200;//timer for next attack
+					}else{
+						this.timer=-75;
+					}
+				}	
+				this.timer++;
+			}else{
+				if(this.timer==0){
+					this.shootNumber=2+Math.floor(Math.random()*2);
+					this.attacking=true;
+					this.xv=0;
+				}else{
+					this.timer++;
+				}
+				if(!this.facingRight){
+					this.xv+= this.speed;
+				}else{
+					this.xv+= -this.speed;
+				}
+			}
+		}
+		this.xv = this.xv*level.friction;
+		this.x += -this.xv;
+	      	this.yv += level.gravity/2; 
+    		this.y += this.yv;
+		//collision with level + prevent fall
+		var latoSx = new rectTest(this.x, this.y + this.height/2 - 2, 2, 4);
+		var latoDx = new rectTest(this.x+this.width-2, this.y + this.height/2 - 2, 2, 4);
+		var nextCollision = new rectTest(this.x+this.width/2-2, this.y+this.height-1, 4, 2);
+		nextCollision["collided"]=false;
+		if(this.facingRight){ nextCollision.x+=this.width;
+		}else{ nextCollision.x-=this.width;}
+      		for (var i = 0; i < level.length; i++){
+      			if (collisionBetween(this, level[i])) {
+				this.y += -this.yv;
+      				this.yv = 0;
+      				if (collisionBetween(latoSx, level[i]) || collisionBetween(latoDx, level[i])) { //collisione x
+      					this.x -= -this.xv*2.5;
+					this.facingRight=!this.facingRight;
+      				}
+      			}
+			if(!nextCollision.collided){
+				if(collisionBetween(nextCollision, level[i])){
+					nextCollision.collided=true;
+				}
+			}
+      		}
+		if(!nextCollision.collided){ //previene la caduta
+			this.facingRight=!this.facingRight;
+		}
+		this.calculateStance();
+      	}//fine di physics()
+	this.calculateStance = function (){
+		var previousStance = this.stance.x;
+		var maxTimer=11;
+		if(this.attacking){
+			this.stance.timer=0;
+			this.stance.x=2;
+		}else{
+			switch(this.stance.timer){
+				case 0: this.stance.x=0; break;
+				case maxTimer: this.stance.x=1; break;
+				case 2*maxTimer: this.stance.timer=-1; break;
+			}
+			if(previousStance==this.stance.x){
+				this.stance.timer++;
+			}
+		}
+	}//fine di calculateStance()
+}//fine di Fishman

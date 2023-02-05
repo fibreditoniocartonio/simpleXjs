@@ -186,6 +186,14 @@ function stringToLevel(lvlString) {
 				checkBackAndForGround(background, foreground, lvlString[i - 1]);
 				break;
 
+			case '₣': // fishman
+				var entita = new newFishman();
+				entita.x = (i % widthTot) * blockDimension;
+				entita.y = (heightTot - 1) * blockDimension - 2;
+				entity.push(entita);
+				checkBackAndForGround(background, foreground, lvlString[i - 1]);
+				break;
+
 			case '0':
 			case '1':
 			case '2':
