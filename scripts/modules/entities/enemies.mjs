@@ -1863,3 +1863,158 @@ function newRaven() {
 		}
 	}//fine di calculateStance()
 }//fine di Raven()
+
+function newFireman() {
+      	this.name = "fireman";
+	this.letter = "ℱ";
+      	this.type = "monster";
+      	this.life = 3;
+      	this.damage = 2;
+	this.sprite = new Image();
+      	this.sprite.src = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADAAAAAgCAYAAABU1PscAAAAAXNSR0IArs4c6QAAAr1JREFUWIXFV8uN4zAMpYI05TmmDE8pm6NbscvIMS5Le4ip8C/KPgwBA4Eift4TSVEAA1InqCP7/1RksFeCz+jWCSp+I7ZvkcMRYzKAyEaPnBG/padUdij4X9m/+3sOcW+doHp6TPcxfxdfG7PRBVAnqJYBU0EY9QKgACJAyrdhI5Kbcn5GDP1s3rOFZR12zWtgWT/fWUAYwKHv5TbWisvwkQERCfifWcSX5ASLLWWfv+qvqDYBEADN+eevWwMWY2WHclkfY8BPZEDUpfgJUAbQyGN2U0KJpe8EQdfKDsVMJ+Lbk3v7RVmTSssK8PzssXK37FAqbDY4tHXohtFI33gajxkqbM0vtvayQ9E18Jh5Hr+2D7Od4m6gLNYSjYGBo/uR2Mfcip/q3JhzzykaOda6TNJuliQgJUYq57vQD8c4NLMgCBIEAKjLru39KYz5SO5q5bV98n1ZwxvZklYLR70ou+/agKjg8bRk0JjORosFAGcsQPHQO7NKV39Z20kyADRVI8YFKayIm6F3jYMnyip4qmPpGyyye4SeAg0aP8P/d6j6N/M8lEE4Bs7oW03DrSnZSFwA2R5N0ofeCdmizkyYzR62dHG7Uxt3uejmMRpKBGaOyILB3jvB05U6rI2qOjAcs73eOjKHnyOpUyOkWYB1EYuReERM5p3hrvtKM3LfAnxpnHbThvZuMs+oIHuSGM1tAIdjNupmxwGsFYf5oRtc1pwxxtgAopZHQITByFZKUrMHgt0N7wryouvPQoLlZhAZGRnM6GsLaywx5yufIj7/SYmpMmIwEwgFcubZ6VxoDYB6GhpHHYFg/3kBDg6HTQLA+gQyLCdHXRRVR7Q79fQsUggR+h6QLzJLMnusYK6KAfgG4PRwQ6LbtzeNmpdTkFLMpjPG1AnqXQWPG43ZxQKpAjecNeDJGlA2g5T+D6qHEbXkuZm/AAAAAElFTkSuQmCC";
+	this.stance=[];
+	this.stance["x"]=0;
+	this.stance["y"]=0;
+	this.stance["timer"]=0;
+	this.sprite.larg=16;
+	this.sprite.alt=32;
+	this.x = 0;
+      	this.y = 0;
+      	this.xv = 0;
+      	this.yv = 0;
+	this.firstFlameIndex=-1;
+	this.currentFlame=0;
+	this.maxFlame=0; //definisco nel primo if di physics()
+	this.facingRight=false;
+      	this.slope = 0;
+      	this.width = 30;
+      	this.height = 62;
+      	this.color1 = '#ff8811';
+      	this.color2 = '#333333';
+      	this.speed = 0.35;
+	this.timer=15;
+	this.damageTimer=0;
+      	this.hasPhysics = true;
+      	this.canSelfDraw = true;
+      	this.selfDraw = function (xdisegnata, ydisegnata, indiceDiQuestaEntity){
+		if(this.damageTimer==0){
+			if (!this.facingRight) {
+      				ctx.drawImage(this.sprite, this.sprite.larg*this.stance.x, this.sprite.alt*this.stance.y, this.sprite.larg, this.sprite.alt, xdisegnata, ydisegnata-1, this.sprite.larg*2, this.sprite.alt*2);
+	      		} else {
+      				ctx.save(); //salvo il canvas attuale
+      				ctx.scale(-1, 1); //flippa il canvas per fare lo sprite mirrorato
+      				ctx.drawImage(this.sprite, this.sprite.larg*this.stance.x, this.sprite.alt*this.stance.y, this.sprite.larg, this.sprite.alt, -xdisegnata, ydisegnata-1, -this.sprite.larg*2, this.sprite.alt*2);
+      				ctx.restore(); //faccio tornare come prima al punto di save() altrimenti rimane buggato
+      			}
+		}
+      	}
+      	this.getHit = function (nome, danno) {
+      		this.life -= danno;
+		this.damageTimer=6;
+      	}
+      	this.physics = function (xdisegnata, ydisegnata, indiceDiQuestaEntity) {
+		if(this.firstFlameIndex==-1){ //initialize flames
+			this.firstFlameIndex=entity.length;
+			var entita=new newFiremanFire(this.x+this.width/2, this.y+this.height);
+			entita.life=-1;
+			for(;this.maxFlame<4;this.maxFlame++){entity.push(entita);}
+		}
+		if(this.damageTimer>0){ //when hit can't move
+			this.damageTimer--;
+		}else{
+			if(this.timer==0){
+				this.timer=15;
+				entity[(this.firstFlameIndex+this.currentFlame)]=new newFiremanFire(this.x+this.width/2, this.y+this.height);
+				this.currentFlame++;
+				if(this.currentFlame>this.maxFlame){this.currentFlame=0;}
+			}else{
+				this.timer--;
+			}
+			if(!this.facingRight){
+				this.xv+= this.speed;
+			}else{
+				this.xv+= -this.speed;
+			}
+		}
+		this.xv = this.xv*level.friction;
+		this.x += -this.xv;
+	      	this.yv += level.gravity/2; 
+    		this.y += this.yv;
+		//collision with level + prevent fall
+		var latoSx = new rectTest(this.x, this.y + this.height/2 - 2, 2, 4);
+		var latoDx = new rectTest(this.x+this.width-2, this.y + this.height/2 - 2, 2, 4);
+		var nextCollision = new rectTest(this.x+this.width/2-2, this.y+this.height-1, 4, 2);
+		nextCollision["collided"]=false;
+		if(this.facingRight){ nextCollision.x+=this.width;
+		}else{ nextCollision.x-=this.width;}
+      		for (var i = 0; i < level.length; i++){
+      			if (collisionBetween(this, level[i])) {
+				this.y += -this.yv;
+      				this.yv = 0;
+      				if (collisionBetween(latoSx, level[i]) || collisionBetween(latoDx, level[i])) { //collisione x
+      					this.x -= -this.xv*2.5;
+					this.facingRight=!this.facingRight;
+      				}
+
+      			}
+			if(!nextCollision.collided){
+				if(collisionBetween(nextCollision, level[i])){
+					nextCollision.collided=true;
+				}
+			}
+      		}
+		if(!nextCollision.collided){ //previene la caduta
+			this.facingRight=!this.facingRight;
+		}
+		this.calculateStance();
+      	}//fine di physics()
+	this.calculateStance = function (){
+		var previousStance = this.stance.x;
+		var maxTimer=11;
+		switch(this.stance.timer){
+			case 0: this.stance.x=0; break;
+			case maxTimer: this.stance.x=2; break;
+			case 2*maxTimer: this.stance.x=1; break;
+			case 3*maxTimer: this.stance.x=2; break;
+			case 4*maxTimer: this.stance.timer=-1; break;
+		}
+		if(previousStance==this.stance.x){
+			this.stance.timer++;
+		}
+	}//fine di calculateStance()
+}//fine di Fireman
+function newFiremanFire(xPass, yPass) {
+      	this.name = "fireman fire";
+	this.letter = "ℱ";
+      	this.type = "enemyShot";
+	this.lifeMax = 60;
+      	this.life = this.lifeMax;
+      	this.damage = 3;
+	this.sprite = new Image();
+      	this.sprite.src = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAQCAYAAAAMJL+VAAAAAXNSR0IArs4c6QAAAKtJREFUOI3NU8ERwyAMk7MVfTKGV+mXVegYfYax3EdbLmADgVzv6l+whGTFAP9a4iBncNsvLl2uFYGpCXoirfNpgSsmhiS5s4zIdZ9WXFGyeRZmPiLP/Qg8F59K4Cy5xl36yeIg8AyE2O43DGwmsFchticJUfX1BKOMrfIM7AfKR0QcJAuMYlitvG7Z9S7AjYpVVBk/H29yAln5F5jj2Rds7bl6QJaB2n0CvQCUhl4SB6Br4QAAAABJRU5ErkJggg==";
+	this.stance=[];
+	this.stance["x"]=0;
+	this.stance["y"]=0;
+	this.sprite.larg=8;
+	this.sprite.alt=16;
+      	this.width = 14;
+      	this.height = 30;
+	this.x = xPass-this.width/2;
+      	this.y = yPass-this.height;
+      	this.hasPhysics = true;
+      	this.canSelfDraw = true;
+      	this.selfDraw = function (xdisegnata, ydisegnata, indiceDiQuestaEntity){
+      		ctx.drawImage(this.sprite, this.sprite.larg*this.stance.x, this.sprite.alt*this.stance.y, this.sprite.larg, this.sprite.alt, xdisegnata, ydisegnata-1, this.sprite.larg*2, this.sprite.alt*2);
+      	}
+      	this.getHit = function (nome, danno){}
+      	this.physics = function (xdisegnata, ydisegnata, indiceDiQuestaEntity) {
+		this.life--;
+		this.calculateStance();
+      	}//fine di physics()
+	this.calculateStance = function (){
+		if(this.life%(this.lifeMax/10)==0){
+			this.stance.x++;
+			if(this.stance.x>2){this.stance.x=0;}
+		}
+	}//fine di calculateStance()
+}//fine di FiremanFire
