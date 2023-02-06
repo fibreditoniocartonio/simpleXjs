@@ -39,6 +39,7 @@ function displayFullMap(mapCameraMovement,zoomMultiplier){
 			if(entity[j].letter=="→" || entity[j].letter=="←" || entity[j].letter=="↓" || entity[j].letter=="↑"){
 				changeRoomEntities.push(entity[j]);
 			}
+			if(entity[j].type=="platform"){level.push(entity[j]);} //add all the platform to the level
 			if(entity[j].letter=="ṧ"){//save station
 				entity[j].x-=entity[j].width;
 				entity[j].width*=3; 

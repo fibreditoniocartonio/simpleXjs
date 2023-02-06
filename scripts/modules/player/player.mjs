@@ -291,11 +291,11 @@ function nuovoPlayer(currentPlayer) {
       				}
 
       				for (var i = 0; i < entity.length; i++) { //y collision con entity (piattaforma e ostacolo)
-      					if (entity[i].life > 0 && entity[i].type == "piattaforma") {
+      					if (entity[i].life > 0 && entity[i].type == "platform" && entity[i].enabled) {
       						if (collisionBetween(player, entity[i])) {
       							if (((player.y + player.height) > entity[i].y) && ((player.y + player.height) < entity[i].y + 19)) { //collisione con y
       								player.y = entity[i].y - player.height;
-      								player.yv = entity[i].yv * 1.1;
+								if(entity[i].yv){player.yv = entity[i].yv * 1.1;}else{player.yv=0;}
       								if (keys[dashkey] && player.canMove && armaturaAcquired[1]) { //dash
       									player.speed = player.defaultspeed * 2.25;
       								} else {
@@ -311,7 +311,10 @@ function nuovoPlayer(currentPlayer) {
       								} else {
       									player.giasaltato = false;
       								}
-      								if (entity[i].speed) {
+								if(entity[i].name=="thin platform" && keys[giukey] && keys[jumpkey]){
+									player.y=Math.ceil(player.y)+1; //salta giu dalla platform
+								}
+      								if(entity[i].speed){ //se l'entita si muove, il player si muove con essa
       									player.xv += entity[i].xv;
       									if (entity[i].xv > 0) {
       										if (player.xv > entity[i].xv) {
@@ -1047,11 +1050,11 @@ function nuovoPlayer(currentPlayer) {
       				}
 
       				for (var i = 0; i < entity.length; i++) { //y collision con entity (piattaforma e ostacolo)
-      					if (entity[i].life > 0 && entity[i].type == "piattaforma") {
+      					if (entity[i].life > 0 && entity[i].type == "platform" && entity[i].enabled) {
       						if (collisionBetween(player, entity[i])) {
       							if (((player.y + player.height) > entity[i].y) && ((player.y + player.height) < entity[i].y + 19)) { //collisione con y
       								player.y = entity[i].y - player.height;
-      								player.yv = entity[i].yv * 1.1;
+								if(entity[i].yv){player.yv = entity[i].yv * 1.1;}else{player.yv=0;}
       								if (keys[dashkey] && player.canMove && armaturaAcquired[1]) { //dash
       									player.speed = player.defaultspeed * 2.25;
       								} else {
@@ -1067,7 +1070,10 @@ function nuovoPlayer(currentPlayer) {
       								} else {
       									player.giasaltato = false;
       								}
-      								if (entity[i].speed) {
+								if(entity[i].name=="thin platform" && keys[giukey] && keys[jumpkey]){
+									player.y=Math.ceil(player.y)+1; //salta giu dalla platform
+								}
+      								if(entity[i].speed){ //se l'entita si muove, il player si muove con essa
       									player.xv += entity[i].xv;
       									if (entity[i].xv > 0) {
       										if (player.xv > entity[i].xv) {
