@@ -1930,7 +1930,7 @@
       			if (!(i == indiceDiQuestaEntity)) {
       				if (entity[i].life > 0 && !(this.type == entity[i].type || entity[i].type == "pickup" || entity[i].type == "enemyShot") && collisionBetween(this, entity[i])) { //controlla che l'entita da colpire sia viva, che non siano lo stesso proiettile e infine se c'è una collisione
       					if (entity[i].getHit) {
-      						entity[i].getHit("iceCh3", this.damage);
+      						entity[i].getHit("iceCh3", this.damageToEnemy);
       					}
       				}
       			}

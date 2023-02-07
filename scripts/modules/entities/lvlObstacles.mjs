@@ -58,3 +58,33 @@ function newThinPlatform() {
 		}
 	}
 } //fine newThinPlatform()
+
+function newBreakableBlock() {
+	this.life = 9999999999;
+	this.type = "platform";
+	this.name = "breakable block";
+	this.letter="ƀ";
+	this.sprite = new Image();
+      	this.sprite.src = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAAXNSR0IArs4c6QAAALRJREFUOI2dk0EVxCAMRIe+ukAaEnCAgDiIhFjBBwd0sIddstACy3YuFPIzJOHV4K2CZzIGQBGRJeWcAwC0XIwRzAwjIiWltDQIIYCIdJ9z1u+jArPEUcxa2xsQ0RAkou7mkY5ltDGaVdnNoEK/bgW+c9AKroPa1a2Ff03UYDcxhHB/xhE0G1oVM88NVtUQkSZPDXYq8d4DAM5RsPZYobZnZtZzZsbpnNODFprpyprP+vh3fgHgxVjqK6rXQgAAAABJRU5ErkJggg==";
+	this.stance=[];
+	this.stance["x"]=0;
+	this.stance["y"]=0;
+	this.stance["timer"]=0;
+	this.sprite.larg=16;
+	this.sprite.alt=16;
+	this.damage = 0;
+	this.x = 0;
+	this.y = 0;
+	this.width = blockDimension;
+	this.height = blockDimension;
+	this.color1 = '#868686';
+	this.color2 = "#333333";
+	this.canSelfDraw = true;
+	this.hasPhysics = false;
+      	this.selfDraw = function (xdisegnata, ydisegnata, indiceDiQuestaEntity){
+		ctx.drawImage(this.sprite, this.sprite.larg*this.stance.x, this.sprite.alt*this.stance.y, this.sprite.larg, this.sprite.alt, xdisegnata, ydisegnata, this.width, this.height);
+      	}
+      	this.getHit = function (nome, danno) {
+		if(armaturaAcquired[2]){this.life=-1;}//dies when hit while you have the weapon upgrade
+	}
+} //fine breakableBlock()

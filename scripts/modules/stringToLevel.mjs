@@ -210,6 +210,14 @@ function stringToLevel(lvlString) {
 				checkBackAndForGround(background, foreground, lvlString[i - 1]);
 				break;
 
+			case 'ƀ': // breakable block
+				var entita = new newBreakableBlock();
+				entita.x = (i % widthTot) * blockDimension;
+				entita.y = (heightTot - 1) * blockDimension;
+				entity.push(entita);
+				checkBackAndForGround(background, foreground, lvlString[i - 1]);
+				break;
+
 			case '0':
 			case '1':
 			case '2':

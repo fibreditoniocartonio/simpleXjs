@@ -313,6 +313,7 @@ function nuovoPlayer(currentPlayer) {
       								}
 								if(entity[i].name=="thin platform" && keys[giukey] && keys[jumpkey]){
 									player.y=Math.ceil(player.y)+1; //salta giu dalla platform
+									player.yv=1;
 								}
       								if(entity[i].speed){ //se l'entita si muove, il player si muove con essa
       									player.xv += entity[i].xv;
@@ -1072,6 +1073,7 @@ function nuovoPlayer(currentPlayer) {
       								}
 								if(entity[i].name=="thin platform" && keys[giukey] && keys[jumpkey]){
 									player.y=Math.ceil(player.y)+1; //salta giu dalla platform
+									player.yv=1;
 								}
       								if(entity[i].speed){ //se l'entita si muove, il player si muove con essa
       									player.xv += entity[i].xv;
