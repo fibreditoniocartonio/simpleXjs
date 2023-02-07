@@ -291,7 +291,7 @@ function nuovoPlayer(currentPlayer) {
       				}
 
       				for (var i = 0; i < entity.length; i++) { //y collision con entity (piattaforma e ostacolo)
-      					if (entity[i].life > 0 && entity[i].type == "platform" && entity[i].enabled) {
+      					if (entity[i].life > 0 && entity[i].type == "platform" && !entity[i].disabled) {
       						if (collisionBetween(player, entity[i])) {
       							if (((player.y + player.height) > entity[i].y) && ((player.y + player.height) < entity[i].y + 19)) { //collisione con y
       								player.y = entity[i].y - player.height;
@@ -1050,7 +1050,7 @@ function nuovoPlayer(currentPlayer) {
       				}
 
       				for (var i = 0; i < entity.length; i++) { //y collision con entity (piattaforma e ostacolo)
-      					if (entity[i].life > 0 && entity[i].type == "platform" && entity[i].enabled) {
+      					if (entity[i].life > 0 && entity[i].type == "platform" && !entity[i].disabled) {
       						if (collisionBetween(player, entity[i])) {
       							if (((player.y + player.height) > entity[i].y) && ((player.y + player.height) < entity[i].y + 19)) { //collisione con y
       								player.y = entity[i].y - player.height;

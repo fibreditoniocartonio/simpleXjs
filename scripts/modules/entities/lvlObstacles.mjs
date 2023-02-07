@@ -33,7 +33,7 @@ function newThinPlatform() {
 	this.name = "thin platform";
 	this.letter="T";
 	this.damage = 0;
-	this.enabled=true;
+	this.disabled=false;
 	this.x = 0;
 	this.y = 0;
 	this.width = blockDimension;
@@ -52,9 +52,9 @@ function newThinPlatform() {
 	}
       	this.physics = function (xdisegnata, ydisegnata, indiceDiQuestaEntity) {
 		if(this.y<Math.round(player.y+player.height)){
-			this.enabled=false;
+			this.disabled=true;
 		}else{
-			this.enabled=true;
+			this.disabled=false;
 		}
 	}
 } //fine newThinPlatform()
