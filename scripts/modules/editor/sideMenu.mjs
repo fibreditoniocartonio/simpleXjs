@@ -517,12 +517,12 @@
       					}
       					for (var i = 1; i < differenzaHeight / blockDimension + 1; i++) {
       						var newStringaLivello = "";
-      						newStringaLivello = stringaLivello.slice(0, (level.maxWidth / blockDimension - 1) * (level.maxHeight / blockDimension - 1)) + rigaInPiu + stringaLivello.slice((level.maxWidth / blockDimension - 1) * (level.maxHeight / blockDimension - 1));
+      						newStringaLivello = stringaLivello.slice(0, 1+(level.maxWidth / blockDimension - 1) * (level.maxHeight / blockDimension - 1)) + rigaInPiu + stringaLivello.slice(1+(level.maxWidth / blockDimension - 1) * (level.maxHeight / blockDimension - 1));
       						stringaLivello = newStringaLivello;
       					}
       				} else if (differenzaHeight < 0) {
       					var newStringaLivello = "";
-      					newStringaLivello = stringaLivello.slice(0, (level.maxWidth / blockDimension - 1) * (level.maxHeight / blockDimension - 1 + (differenzaHeight / blockDimension))) + stringaLivello.slice((level.maxWidth / blockDimension - 1) * (level.maxHeight / blockDimension - 1));
+      					newStringaLivello = stringaLivello.slice(0, 1+(level.maxWidth / blockDimension - 1) * (level.maxHeight / blockDimension - 1 + (differenzaHeight / blockDimension))) + stringaLivello.slice(1+(level.maxWidth / blockDimension - 1) * (level.maxHeight / blockDimension - 1));
       					stringaLivello = newStringaLivello;
       				}
       				level.maxHeight += differenzaHeight;
