@@ -202,6 +202,14 @@ function stringToLevel(lvlString) {
 				checkBackAndForGround(background, foreground, lvlString[i - 1]);
 				break;
 
+			case 'ƒ': // frog
+				var entita = new newFrog();
+				entita.x = (i % widthTot) * blockDimension;
+				entita.y = (heightTot - 1) * blockDimension - 2;
+				entity.push(entita);
+				checkBackAndForGround(background, foreground, lvlString[i - 1]);
+				break;
+
 			case 'T': // thin platform
 				var entita = new newThinPlatform();
 				entita.x = (i % widthTot) * blockDimension;

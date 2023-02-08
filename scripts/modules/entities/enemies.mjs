@@ -2335,3 +2335,129 @@ function newMedusaHead(yPass, facingRightPass, parentIndexPass) {
 		}
 	}//fine di calculateStance()
 }//fine di medusaHead()
+
+function newFrog() { //frog
+      	this.name = "frog";
+	this.letter = "ƒ";
+      	this.type = "monster";
+      	this.life = 3;
+      	this.damage = 1;
+	this.sprite = new Image();
+      	this.sprite.src = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAIAAAABACAYAAADS1n9/AAAAAXNSR0IArs4c6QAACL9JREFUeJztXNF16jAMlXu6CP3rCF2hbMA3GzBHN+C7G9AVOgJ/MIrfRyznWpYcmwTS9vmek1PiOEixZEm+cSHq6Ojo6Ojo+B/h1lbgB8GHv3JMvDj/U2P2tLYCPwWX1/jR48Ht4vqfwZ/y5pnwRET+cCIiouvXll7O4UJoIyJyH1u8p4/fH4H3h5P3h5O/vMaZHz/zOX7G8xX1no3uwYPxk5kN4T6Co0Hh2q8cy1+p9B3g/eFE16/BCSxjb94HR7m8Dn3k9d/sCP8zvD+cZOGXpQI+uK9sF2nh8Q8R0hfqiJeDbkl/or4KICJyPKv5wAjAnyWs9svrOLgPRJTHUYqUSMR1DrZ1B1CgOcHLOU0BK8EbR0xfBtzLeewD0cB3Bxjg2MCb92HJh0bmz7JGsBD6LRkFEk6CdeIDdZpwhAzdAQYkxkJHYEhCqLRSWFo3zfAclay2WnQHCLi8ZiRP5ghWbcADf4fU4OWKA2XJ2d8in58VHcCqYLN8cyesJT+he6UTEOkRgaEN/ub9xOdz9E2MXzJ8ctPBli3qACICB1ibC5+SD3Ts3ZyQB9R9bBNH4PPaGXb92t7iBJmj48y3Qj/+bZHNnAUuFdbmwteS7y+vw6xFmWrHQ7mPRhxB/5KukYjiSMPPqS1FNSLKSkHavdAeHcDLgdfyi/Q8+PK5hpiUj3TtPeUTjYOPbaibQDKJZCoQKwdNzyILqaUYi4W0IlSJtXSswAJcOKPVGGvLr4Fn2RMOkPRF1DiAZvzaQq9mfOTsJxpqAOc+trF4sJYTgeGK7fjXH07F4mMCThZeD5ZfBY4GWIQZyIzcsjSzDFgq/DRZWLSW9H0imIGy0pTCrl/baAS+jqEbhC1ihLXlz4BrWJNnE4CIsmfcvJ+ylIR95TnWE0S2E8QIsBQXfiPMsP0g+ZOQDFvFiiA+01x+wH1s6fo1rkzYsIqTOT5ezpT0x3tQN5UIupULF7lmsVmIYW0N+RQG1MBiHIVGP2s1AM7uQkpKHIEjPInJxg4wiwvH2XGvmYkkxhrySXECHvwGjsK6XnKwjPe3+hjf78SRgB3gJi5cMmczQl1x4KDAu5f8WsTcjga7fm3REZJnwX7adQ01hR4/t0IMNUWihAm8lQu/J6w18qNrAECSZ6UjBGRGEIzmpMPLCSgcz5zRrXiimVy4ZoxG4yQMYGwMS7upV7ALyJ+DaAQeH6tSZ1LIfWyd4QTRoTBnv5zJvZzLYXxO5HvGE+TC8WEkA6fBeFHhNYUl2PFw8DTD30v+THhrcgTZyW6dC229+9gm7RJMTWuTMROeU+fNzxv3kV3Src7ZHjnZBz/zNdybVnpITb4m+wHy5yDZTg5brqTcuBVrYruYtafPvsGWWYVnGkKP9++D1/n3ei5cI2JuQJQvI86D5M+G+9i6yyv5EN5VQ4jZbEWmYTVwbnsWaw9gR0dHR0dHR0fHNNTqvdD+J9B3BQ/w/o3Ivw2f+QjnsU/suzvieccfgPdvKffA53539H53HNt3R+ybfIfS1vFLEI1LivGlc1BubHSSjl+GaHR5EOVRIR4QFegHOAA7qtAtXg7Pk/QnEu8C/lf4NyL3nbdhO3+OdcF1P37eHMl97h+lrobRuKMu+X8HB6O7z3281h2AgmGHwm5sCwZlI7MjJE6wORJd94Mz7FZ2gmtRtnPf5D3tiTZHgmjguwMQZcbzu2N0iKJRxaCHKPGIN5CJWCJwzLIjZOgOQJQNGs5+GQHE0jD7jjs7QQz1mh4yjdWg8wAAnvmY/3FQ0RncNw0p4EGq0cg/ZDXLpHMqYCfvDjDkxxSbI+dKvUAspAfou9SKICGksmJUdg4OrMl335REKqLuABH+TTEoOAIRGBdTBkeBzTEaRrCKiyIrQkk4w3WPOpvyw7O4qd8HeBQXrq69lbX42H+5dbfHFYBV9GW1AK4awtIrRgYIyQZrWKWXvM99hqUnOx04YhKlcifw+AyIuC38J3DhMt/y8gwGe8yFjdVuEVoReB0PrAWQB0j681+IGERUNRstaA6FEaflmayUkaQAzQBSJ2PwZ89GXIuj8YlINZCm2606YEGHg54YPjgi91XTASOkDvN6A9hwiePxgf12R21MSquF+N/BsVEzgJiB2uB7SaI0YgxPwK5xTkZ5mF+FzDk6aIxZcg2LvowwGsfCEZFLUgjM1saoGfvJgk+uTCTitc3oyMZkjkqb+UGjRyMw7133iVc1wltULOpgVb/RcefpUKUn6iGg/kaAjGAT+iVrfH4uHONEoFIMEgkGc6OnSqlH8cUHnmM7Xp9R6PCDj2/e5OtXozjklx4L6VClp/HCpbjNm++b6Ju+gcRxl+f6uGcvp5L++VvNiGeieVy4JzUfNyGjYiHET1KxC+lwJxT/ASTB5kj0rT+rrIdUciodJwf3evG9ecrTXm3KmUjSq+zXpq0w37drMrTXtgvo0KQrzqoKeaVNJMn3koi2+Bn3KshoISLSbQ9FMwwQlblNidKGCzP9yAGYqUO9rkKmcpj3FPQy05zWVkqJBRkqXPgCddllFWCSDEGCAkJRSzFWKrDSjlDcoM6KDncvBolILcCEbC/HTdEtFo3xOSYwUTRXP/vwEzFLceFpxdk+CxVyQ112KSSMosO9ooBjPaIuvCdgrF0S2UnONpaDWPGrkwAdTThSjcNYiDwAr7szoRNcuFakNSpkruGxvfSdK2zEiP+qLQmjKQcELqHsoEwmhYP5EJjhLulL7bOfiH8lbCYXroS4eKlKC2WtKqNMVWpA/e70MkbBOAv5hVCNQ49O4LXdRJEE+9y7sIWr+KMQt3Igw4YQhWqV7FNUXOPCles1+VyD5YyJQyh78FQdHwmbm0+WgmBsbYno3Ofei3urEL7Xt9xDFFLALC5cKsHfVb9ZwiHrFRvnhPU2+XPhk0JUn/2xzsINmaQbq+nnX+buRXzSBLVw4dSgbA049Gn6xCIpr7YTPdcAG1YYWPYhIqWwXaCGqa4tBP4BKbBZvWs9k0wAAAAASUVORK5CYII=";
+	this.sprite.larg=32;
+	this.sprite.alt=32;
+	this.stance=[];
+	this.stance["x"]=0;
+	this.stance["y"]=Math.floor(Math.random()*2);
+	this.x = 0;
+      	this.y = 0;
+      	this.xv = 0;
+      	this.yv = 0;
+	this.facingRight=false;
+      	this.width = 46;
+      	this.height = 32;
+      	this.color1 = '#ff2288';
+      	this.color2 = '#fcc4fc';
+	this.jumpHeight = 10;
+      	this.speed = 0.6;
+	this.timer=64;
+	this.damageTimer=0;
+      	this.hasPhysics = true;
+      	this.canSelfDraw = true;
+      	this.selfDraw = function (xdisegnata, ydisegnata, indiceDiQuestaEntity) {
+		if(debugMode){
+		      	ctx.fillStyle = "#ffff0080"; ctx.fillRect(xdisegnata, ydisegnata, this.width, this.height); //hitbox
+			disegnaTestoConBordino(this.timer, xdisegnata, ydisegnata, "#000000", "#ffffff"); //timer
+		}
+		if(this.damageTimer==0){
+			switch(this.stance.x){
+				case 0: case 1: 
+					ydisegnata-=32; 
+					if(this.facingRight){xdisegnata-=18;}
+					break;
+				case 2:	ydisegnata-=8; break;
+				case 3:	ydisegnata-=24; break;
+			}
+			if (!this.facingRight) {
+      				ctx.drawImage(this.sprite, this.sprite.larg*this.stance.x, this.sprite.alt*this.stance.y, this.sprite.larg, this.sprite.alt, xdisegnata, ydisegnata, this.sprite.larg*2, this.sprite.alt*2);
+      			} else {
+      				ctx.save(); //salvo il canvas attuale
+      				ctx.scale(-1, 1); //flippa il canvas per fare lo sprite mirrorato
+      				ctx.drawImage(this.sprite, this.sprite.larg*this.stance.x, this.sprite.alt*this.stance.y, this.sprite.larg, this.sprite.alt, -xdisegnata, ydisegnata, -this.sprite.larg*2, this.sprite.alt*2);
+      				ctx.restore(); //faccio tornare come prima al punto di save() altrimenti rimane buggato
+      			}
+		}
+      	}
+      	this.getHit = function (nome, danno) {
+		this.life-=danno;
+		this.damageTimer=-6;
+      	}
+      	this.physics = function (xdisegnata, ydisegnata, indiceDiQuestaEntity) { //also contain calculateStance()
+		if(this.damageTimer<0){	
+			this.damageTimer++;
+		}else{
+			if(Math.round(this.yv)!=0){ //si muove solo se e' in salto
+				if(this.facingRight){ //movement
+					this.xv+= -this.speed;
+				}else{
+					this.xv+= +this.speed;
+				}
+			}
+		}
+		this.x += -this.xv;
+		this.xv = this.xv*level.friction;
+	      	this.yv += level.gravity; //get level gravity
+    		this.y += this.yv; //apply gravity
+		//collision with level
+		var latoSx = new rectTest(this.x, this.y+4, 2, this.height-8);
+		var latoDx = new rectTest(this.x+this.width-2, this.y+4, 2, this.height-8);
+		var latoSotto = new rectTest(this.x+4, this.y+this.height-2, this.width-8, 2);
+		var latoSopra = new rectTest(this.x+4, this.y, this.width-8, 2);
+      		for (var i = 0; i < level.length; i++){
+      			if (collisionBetween(this, level[i])) {
+      				if (collisionBetween(latoSx, level[i]) || collisionBetween(latoDx, level[i])) { //collisione x
+      					this.x -= -this.xv*2.5;
+					this.xv = 0;
+					this.goingRight=!this.goingRight;
+      				}
+      				if (collisionBetween(latoSopra, level[i])) { //collisione y top
+					this.y = level[i].y+level[i].height;
+      					this.yv = 0;
+				}
+      				if (collisionBetween(latoSotto, level[i])) { //collisione y bottom
+					this.y = level[i].y-this.height;
+      					this.yv = 0;
+					this.xv = 0;
+					if(this.x+this.width/2 > player.x+player.width/2){ //change direction
+						this.facingRight=false;
+					}else if(this.x+this.width/2 < player.x+player.width/3){
+						this.facingRight=true;
+					}
+					if(this.timer>0){
+						this.timer--;
+					}else if(this.timer==0){ //jumping
+						this.timer=60;
+						this.yv = -this.jumpHeight;
+						var rng=1+Math.floor(Math.random()*8);
+						if(rng%3==0){this.timer+=120;} //burp
+						if(rng%4==0){this.yv -= this.jumpHeight/3;} //double jump speed
+					}
+      				}
+      			}
+      		}
+		this.calculateStance();
+      	}//fine di physics()
+	this.calculateStance = function (){
+		if(Math.round(this.yv)==0){
+			if(this.timer>65 && this.timer<116){
+				this.stance.x=1;
+			}else{
+				this.stance.x=0;
+			}
+		}else if(this.yv>0){
+			this.stance.x=3;
+		}else{
+			this.stance.x=2;
+		}
+	}//fine di calculateStance()
+}//fine di frog()
