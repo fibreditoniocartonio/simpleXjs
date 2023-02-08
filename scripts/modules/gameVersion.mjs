@@ -1,1 +1,1 @@
-const versioneDiGioco = 'v0.20230207-189';
+const versioneDiGioco = 'v0.20230208-190';
