@@ -982,6 +982,7 @@ function nuovoPlayer(currentPlayer) {
       					ctx.restore(); //faccio tornare come prima al punto di save() altrimenti rimane buggato
       				}
 				if(debugMode){
+					ctx.fillStyle="#00ff0080"; ctx.fillRect(xdisegnata, ydisegnata, this.width, this.height);
 					ctx.textAlign = "center";
 					disegnaTestoConBordino("t:"+player.bufferTimer+" buffer:"+player.inputBuffer, canvasWidth/2, canvasHeight-40, "#000000"); 
 					ctx.textAlign = "left";
@@ -1386,11 +1387,11 @@ function nuovoPlayer(currentPlayer) {
 				} else if (player.uppercut){
 					player.stance = [6, 2];
       				} else {
-      					if (player.yv < 3) { //se il player e' a terra o in ascesa
-      						if (player.yv > 0 && !player.crouching) {
+      					if (Math.round(player.yv) < 3) { //se il player e' a terra o in ascesa
+      						if (Math.round(player.yv) > 0 && !player.crouching) {
       							player.stance = [0, 0];
-      							player.spriteTimer = 0; //player sta atterando
-      						} else if (player.yv > -1) { //player a terra
+      							player.spriteTimer = -1; //player sta atterando
+      						} else if (Math.round(player.yv) > -1) { //player a terra
       							if ((player.xv > 0.3 || player.xv < -0.3) && !player.crouching) { //se il player si sta muovendo
       								if (player.speed > player.defaultspeed + 0.1) { //running
       									switch (player.spriteTimer) {
@@ -1408,7 +1409,7 @@ function nuovoPlayer(currentPlayer) {
       											break;
       										case 4 * maxTimer:
       											player.stance = [4, 0];
-      											player.spriteTimer = 0;
+      											player.spriteTimer = -1;
       											break;
       									}
       								} else { //walking
@@ -1427,7 +1428,7 @@ function nuovoPlayer(currentPlayer) {
       											break;
       										case 4 * maxTimer:
       											player.stance = [0, 0];
-      											player.spriteTimer = 0;
+      											player.spriteTimer = -1;
       											break;
       									}
       								}
@@ -1441,15 +1442,15 @@ function nuovoPlayer(currentPlayer) {
       								} else {
       									player.stance = [0, 0];
       								}
-      								player.spriteTimer = 0;
+      								player.spriteTimer = -1;
       							}
       						} else { //player in ascesa
       							player.stance = [6, 1];
-      							player.spriteTimer = 0;
+      							player.spriteTimer = -1;
       						}
       					} else { //se invece il player e' in aria (discesa)
       						player.stance = [6, 0];
-      						player.spriteTimer = 0;
+      						player.spriteTimer = -1;
       					}
       				}
       				if (previousStance[0] == player.stance[0] && previousStance[1] == player.stance[1]) {
