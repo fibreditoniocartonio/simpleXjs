@@ -44,7 +44,7 @@ function displayFullMap(mapCameraMovement,zoomMultiplier){
 				entity[j].x-=entity[j].width;
 				entity[j].width*=3; 
 				entity[j].height*=3;
-				level.push(entity[j]);
+				level.foreground.push(entity[j]);
 			}
 		}
 		if(previousDir){//calculate offsets to make the changeRoomBlocks visually connected
@@ -91,7 +91,7 @@ function displayFullMap(mapCameraMovement,zoomMultiplier){
 			offsetY-=level.maxHeight/2;
 			//add player location on map
 			var playerLocationOnMap=new newPlayerLocationOnMap("#00ffff", "#000000", zoomMultiplier);
-			level.push(playerLocationOnMap);
+			level.foreground.push(playerLocationOnMap);
 		}
 		var roomLevel=level; //save the current level array, otherwise it will be overwritten (i need it for the rendering)
 		//recursively do the same with the connected rooms

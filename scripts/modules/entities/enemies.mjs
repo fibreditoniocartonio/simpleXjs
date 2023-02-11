@@ -2453,8 +2453,7 @@ function newMedusaHead(yPass, facingRightPass, parentIndexPass) {
 		if((this.goingUp && (this.y+this.height/2)<this.yMin) || (!this.goingUp && (this.y+this.height/2)>this.yMax)){
 			this.goingUp=!this.goingUp;
 		}
-		var xLimitMin;
-		var xLimitMax;
+		var xLimitMin; var xLimitMax;
 		if(this.facingRight){
  	     		if (player.x + (player.width / 2) < canvasWidth / 2) { //player a inizio livello
 				xLimitMax=canvasWidth-1;
@@ -2469,10 +2468,21 @@ function newMedusaHead(yPass, facingRightPass, parentIndexPass) {
 		      	} else if(player.x + (player.width / 2) > level.maxWidth - canvasWidth / 2) { //player a fine livello
 				xLimitMin=level.maxWidth-canvasWidth+1;
       			} else { //player in mezzo al livello
-				xLimitMin=player.x+player.width/2-canvasWidth/2-1;
+				xLimitMin=player.x+player.width/2-canvasWidth/2+1;
  			}
 		}
-		if((this.x+this.width/2 > xLimitMax) || (this.x+this.width/2 < xLimitMin)){
+ 		var yLimitMin; var yLimitMax;
+      		if (player.y < 0 + canvasHeight/2) { 
+			yLimitMin = 1;
+			yLimitMax = canvasHeight-1;
+      		} else if (player.y > level.maxHeight - canvasHeight / 2) { 
+			yLimitMin = level.maxHeight-canvasHeight+1;
+      			yLimitMax = level.maxHeight-1;
+      		} else {
+			yLimitMin = player.y+player.height/2-canvasHeight/2+1;
+			yLimitMax = player.y+player.height/2+canvasHeight/2-1;
+	      	}
+		if((this.x+this.width/2 > xLimitMax) || (this.x+this.width/2 < xLimitMin) || (this.y+this.height/2 > yLimitMax) || (this.y+this.height/2 < yLimitMin)){
 			this.life=-1;
 			entity[this.parentIndex].timer=30;
 		}
