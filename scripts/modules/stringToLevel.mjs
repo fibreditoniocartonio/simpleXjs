@@ -98,8 +98,16 @@ function stringToLevel(lvlString) {
 				checkBackAndForGround(background, foreground, lvlString[i - 1]);
 				break;
 
-			case '§': // § indica un gray skeleton
+			case '$': // gray skeleton
 				var entita = new newGraySkeleton();
+				entita.x = (i % widthTot) * blockDimension;
+				entita.y = (heightTot - 1) * blockDimension - 2;
+				entity.push(entita);
+				checkBackAndForGround(background, foreground, lvlString[i - 1]);
+				break;
+
+			case '§': // crazy skeleton
+				var entita = new newCrazySkeleton();
 				entita.x = (i % widthTot) * blockDimension;
 				entita.y = (heightTot - 1) * blockDimension - 2;
 				entity.push(entita);

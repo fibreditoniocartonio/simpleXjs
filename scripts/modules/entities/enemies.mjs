@@ -453,7 +453,7 @@ function newZombie() { //zombie
 
 function newGraySkeleton() { //gray skeleton - throw newSkeletonBone()
       	this.name = "skeleton";
-	this.letter = "§";
+	this.letter = "$";
       	this.type = "monster";
       	this.life = 1;
       	this.damage = 1;
@@ -470,11 +470,161 @@ function newGraySkeleton() { //gray skeleton - throw newSkeletonBone()
 	this.boneX=3;
 	this.boneY=11;
 	this.facingRight=false;
-	this.goingRight=false;
       	this.slope = 0;
       	this.width = 30;
       	this.height = 62;
       	this.color1 = '#cc88fc';
+      	this.color2 = '#fcc4fc';
+	this.jumpHeight = 10.5;
+      	this.speed = 0.4;
+	this.timer=120;
+      	this.hasPhysics = true;
+      	this.canSelfDraw = true;
+      	this.selfDraw = function (xdisegnata, ydisegnata, indiceDiQuestaEntity) {
+		if (!this.facingRight) {
+      			ctx.drawImage(this.sprite, 16*this.stance.x, 32*this.stance.y, 16, 32, xdisegnata, ydisegnata-1, (16)*2, 32*2);
+      		} else {
+      			ctx.save(); //salvo il canvas attuale
+      			ctx.scale(-1, 1); //flippa il canvas per fare lo sprite mirrorato
+      			ctx.drawImage(this.sprite, 16*this.stance.x, 32*this.stance.y, 16, 32, -xdisegnata, ydisegnata-1, -(16)*2, 32*2);
+      			ctx.restore(); //faccio tornare come prima al punto di save() altrimenti rimane buggato
+      		}
+		if(debugMode){
+			disegnaTestoConBordino(this.timer, xdisegnata, ydisegnata, "#000000", "#ffffff");
+			var nextCollision = new rectTest(xdisegnata+this.width/2-2, ydisegnata+this.height-1, 4, 3);
+			if(this.xv<0){ nextCollision.x+=this.width/2;
+			}else if(this.xv>0){ nextCollision.x-=this.width/2;}
+			ctx.fillStyle="#ff0000";
+			ctx.fillRect(nextCollision.x, nextCollision.y, nextCollision.width, nextCollision.height);
+		}
+      	}
+      	this.getHit = function (nome, danno) {
+		this.life-=danno;
+      	}
+      	this.physics = function (xdisegnata, ydisegnata, indiceDiQuestaEntity) {
+		if(this.x+this.width/2 > player.x+player.width/2){
+			this.facingRight=false;
+		}else if(this.x+this.width/2 < player.x+player.width/3){ //3 and not 2 otherwise he will start flipping left and right because of the decimal part of the x coordinate
+			this.facingRight=true;
+		}
+		var maxDistance=this.width*7; var minDistance=this.width*6; var goingRight=false; var goingLeft=false;
+		if(this.facingRight){ //calculate where to move
+			if(this.x+this.width/2+minDistance > player.x+player.width/2){
+				goingRight=true;
+			}else if(this.x+this.width/2+maxDistance < player.x+player.width/2){
+				goingLeft=true;
+			}
+		}else{
+			if(this.x+this.width/2-minDistance < player.x+player.width/2){
+				goingLeft=true;
+			}else if(this.x+this.width/2-maxDistance > player.x+player.width/2){
+				goingRight=true;
+			}
+		}
+		//collision with level
+		var latoSx = new rectTest(this.x, this.y+4, 2, this.height-8);
+		var latoDx = new rectTest(this.x+this.width-2, this.y+4, 2, this.height-8);
+		var latoSotto = new rectTest(this.x+4, this.y+this.height-2, this.width-8, 2);
+		var latoSopra = new rectTest(this.x+4, this.y, this.width-8, 2);
+		var nextCollision = new rectTest(this.x+this.width/2-2, this.y+this.height-1, 4, 3);
+		nextCollision["collided"]=false; nextCollision["canJump"]=false;
+		if(this.xv<0){ nextCollision.x+=this.width/2;
+		}else if(this.xv>0){ nextCollision.x-=this.width/2;}
+      		for (var i = 0; i < level.length; i++){
+      			if (collisionBetween(this, level[i])) {
+      				if (collisionBetween(latoSx, level[i]) || collisionBetween(latoDx, level[i])) { //collisione x
+      					this.x -= -this.xv;
+					this.xv = 0;
+      				}
+      				if (collisionBetween(latoSopra, level[i])) { //collisione y top
+					this.y = level[i].y+level[i].height;
+      					this.yv = 0;
+				}
+      				if (collisionBetween(latoSotto, level[i])) { //collisione y bottom
+					this.y = level[i].y-this.height;
+      					this.yv = 0;
+					nextCollision.canJump=true;
+					if(goingRight){ //movement
+						this.xv+= this.speed;
+					}else if(goingLeft){
+						this.xv+= -this.speed;
+					}
+					this.xv = this.xv*level.friction; //friction only when touching the ground
+      				}
+				if(!nextCollision.collided){
+					if(collisionBetween(nextCollision, level[i])){
+						nextCollision.collided=true;
+					}
+				}
+      			}
+      		}
+		if((Math.round(this.xv)!=0) && (!nextCollision.collided) && nextCollision.canJump){ //previene la caduta saltando
+			this.yv = -this.jumpHeight; //jump
+		}
+		//apply movement
+		this.x += -this.xv;
+	      	this.yv += level.gravity/1.5; //get level gravity
+    		this.y += this.yv; //apply gravity
+		if(this.timer>0){
+			this.timer--;
+		}
+		if(this.timer==0){ //throwing bones
+			var bonePassX=this.boneX+(Math.floor(Math.random()*10)-5)/10;
+			if(this.facingRight){ bonePassX=-bonePassX;}
+			var bonePassY=-(this.boneY+(Math.floor(Math.random()*12)-6)/10);
+			bone = new newSkeletonBone(this.stance.y, this.damage*3, this.x+this.width/2, this.y+this.height/2, bonePassX, bonePassY);
+			entity.push(bone);
+			var doubleBone=Math.floor(Math.random()*6);
+			if (doubleBone==0){
+				this.timer=20;
+			}else{
+				this.timer=120;
+			}
+		}
+		this.calculateStance();
+      	}//fine di physics()
+	this.calculateStance = function (){
+		if(Math.round(this.xv)!=0){
+			var previousStance = this.stance.x;
+			var maxTimer=9;
+			switch(this.stance.timer){
+				case 0: this.stance.x=0; break;
+				case maxTimer: this.stance.x=1; break;
+				case 2*maxTimer: this.stance.timer=-1; break;
+			}
+			if(previousStance==this.stance.x){
+				this.stance.timer++;
+			}
+		}else{
+			this.stance.x=0; this.stance.timer=1;
+		}
+	}//fine di calculateStance()
+}//fine di graySkeleton
+
+function newCrazySkeleton() { //gray skeleton - throw newSkeletonBone()
+      	this.name = "crazy skeleton";
+	this.letter = "§";
+      	this.type = "monster";
+      	this.life = 1;
+      	this.damage = 1;
+	this.sprite = new Image();
+      	this.sprite.src = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAABACAYAAAB7jnWuAAAAAXNSR0IArs4c6QAABCpJREFUaIGtWct16kAM1fjQAlnQyMuKOugESsCduA6voIksszBF+C3MNdeaq/FgonNYxKP/bzRKunUX+yv4Pl1H/+3WXVKJZvcpA6Ydf8/Z93S4jiUeCR5QDB59a1+ndSVAmw6tmZmNv2d79O18XuLRKOGPvp0ZDJ32DAv331j4Go8daz90oZFFAD2M8AqUYJEDXyfbpMSjn5RHyAA1vHZmlmkPJrXKsFD/fY1HMrMRSBEjs3IicnyZ19AteSoeu1t3SV8BA8AU4wknUkR50J+pkmwYCYjKEziPsjkdWkuHXDiDqoZZgTUGKE2lhLeKDRm6ifejb21/zI1oSgygNRSDcmtKoCENndn++OLFjQr0DTNgJkO3ZIDcABOzuLkgXPvjqyPuj+fZGFZipxjUNBVuvWzE9+k6+u9ozSo5pQLeUiUM+XDvNb1v7VyWMDAd2lwBWPEqnVYKXwNP4xsSWv+qB+A+TqZICb5XlAcYZgOjgcTfkN4iABIX+EoYC/S8Qg/8FbDrWTAUbzIKAXApW6GmH7NXuQFnfzzPiecVMgs88H26jqhZCGbtuZ7ZItwXHkrzRuYBFXsvHDH2HdT/7ZWENxhvoQAL94k0dJMlkXAGlXBRyOaZ8N9xXNS+YojvNZMyaFAZ6dDavU8p85KZjdx22ULkwv54rhLOd0Ot0nMS+hLhukbTecfyWsiS0AvxHbAW1mKfKYASYTeWBok1werqlfi37mL+8jF7hQGI7jw9caQSoEPJMq2cCacmkrtMTTnP8/H5k4DhBgld8sRchozI33hSYkZrIcEZt3B1oS3KcHHgQhHhqMpg4aplL3hwHNmigLFnJgVH9ArmPpDfAeWHiFBuE334PMdUXFN6n9B//Dz/lH7RCUvPqhrYQt+Y5RMPGNWsZz6lr36eE/4M6KK19EqZBh2LlxI+lmSd3KLV0quErH6eA0cp8Q69V2IHK2oHyuffo1E43qd/LSqyh8laTEs32xZ6+S7wu4DocRHBO/TyXcB7gdJTK1rDvkMv34YqW/3GC0LufQpvwxr68GmGdwDKym/N1qCWPryOI+BFtO90W+hxp482DSbj0M3j1uI3/p6z81t3Mfy28jA+UEQFwpGFb+Fx6y7LPSEgukDWdr9beCxaMQhLseQx24PnEeEtcofjxz/vbuFiUzlQCgl/A11WBWqE9mVkwcOEp2HPg0HuB1g4b8CwZqG4FQeMd4TPCnjh3MfB7PmtakLm2w8Co+Rt/H+8VN+uHTb5iQev+YSW8wBrzlrzHa/mgEgJ0E6t+LVpF7k0jWQYKr2lPl7P89V2C9p0aH3+ZNAoZP/EEsyKr+NICRXeJkJW/5DAObxVc/kAojlxcR17IUqA2p6vQRRis2cS+k2I33Z7RXA2dK39CIERvlTOxH7AjVEZDjeqH9ODqcJXL6X/f8bE/Gt0dIQAAAAASUVORK5CYII=";
+	this.stance=[];
+	this.stance["x"]=0;
+	this.stance["y"]=Math.floor(Math.random()*2);
+	this.stance["timer"]=0;
+	this.x = 0;
+      	this.y = 0;
+      	this.xv = 0;
+      	this.yv = 0;
+	this.boneX=3;
+	this.boneY=11;
+	this.facingRight=false;
+	this.goingRight=false;
+      	this.slope = 0;
+      	this.width = 30;
+      	this.height = 62;
+      	this.color1 = '#ffe677';
       	this.color2 = '#fcc4fc';
 	this.jumpHeight = 10.5;
       	this.speed = 0.4;
@@ -509,7 +659,7 @@ function newGraySkeleton() { //gray skeleton - throw newSkeletonBone()
 				var bonePassX=this.boneX+(Math.floor(Math.random()*10)-5)/10;
 				if(this.facingRight){ bonePassX=-bonePassX;}
 				var bonePassY=-(this.boneY+(Math.floor(Math.random()*12)-6)/10);
-				bone = new newGraySkeletonBone(this.stance.y, this.damage*3, this.x+this.width/2, this.y+this.height/2, bonePassX, bonePassY);
+				bone = new newSkeletonBone(2, this.damage*3, this.x+this.width/2, this.y+this.height/2, bonePassX, bonePassY);
 				entity.push(bone);
 			}
 		}
@@ -572,15 +722,16 @@ function newGraySkeleton() { //gray skeleton - throw newSkeletonBone()
 			this.stance.timer++;
 		}
 	}//fine di calculateStance()
-}//fine di graySkeleton
-function newGraySkeletonBone(stanceYP, damageP, xP, yP, xvP, yvP) { //the bone thrown by graySkeleton
+}//fine di crazySkeleton
+
+function newSkeletonBone(stanceYP, damageP, xP, yP, xvP, yvP) { //the bone thrown by graySkeleton
       	this.name = "skeletonBone";
 	this.letter = "§Bone";
       	this.type = "enemyShot";
       	this.life = 1;
       	this.damage = damageP;
 	this.sprite = new Image();
-      	this.sprite.src = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADAAAAAgCAYAAABU1PscAAAAAXNSR0IArs4c6QAAAlxJREFUWIXVVztuwzAMfSp8oATwoMFbL6E7tGMHHUFDxvgOvkQ2Dx4KtAcSwA4uHdqWFH/kfh4QJDEV6T2+kDYVAugaC20cdY1V/C7j2rjQzzaha+yu3xehi9o4encepSnItx5FVcxE5CKwF0+xwKkCfOuH79o4ynFgap8tZwQdkPhs124ZBpOLOaqNG9wGgJjjUwQd6BqriqqYXdvEXJBjR33rR9nmOMem8RQeOrAHMuvA3c1TFV4v40vdSAr4bOOHPYLMKu9V2vtxktS340PG350f1WCqiRzigCQviacyKWOl6cVIITER2QWEyK+tH15fmoIeiYi20S3IQV6ia6wqbTHURqi4szgQKta95BldY1XICY7tFhAr1hzkGSERQF/cWRyQ7S83eQaL8K0f3VyTAk5VTy7VBXhjoO8aR2Pa1WKZImETCwCAkAAA9zpYkn1t3OaHwEXnfG9OAIg/d42FfP0VJP9CsXlgsiY/qxWIzgMvF4I2iuhGUM8qKeI3Eb2RXc8A3e73jH87D7x+rN0yDCYXc1QbN7gNZJgH1LOaXdvEXJBjR+lGs3lAxqbxFH5kHmBy7Ob1HF4v40vdSAp4/eg3q1cSB8ZZ5b3qt55Hjfk8wGQBABca1WCqiRw2D8isM/Gl84A2imoAL0JITMQh88CU/NZ5QBtFeCAi+zywl7xE11hVv6mhNkLFnXUeyEme0T8NzJ3gWJZ5IFSsueeBqQigL+4sDsj2l5s8g0VcbzS6uSYFXM89uVQXGLIDAJcsTxtJTLtasIjl34IXp8DCjsq+PGdJS/5X88AXbfcuDhURhyUAAAAASUVORK5CYII=";
+      	this.sprite.src = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADAAAAAwCAYAAABXAvmHAAAAAXNSR0IArs4c6QAAA2FJREFUaIHtWTtu6zAQHD7oCnGRUySACxVGmlyCd0jKANIRJCClfQddwk3gQkWA5BQukisI2FfIK60kktZnnc/DGyBIrJWpGQ6X1CAGDpRFithmVBap4d+yHtvM9bVZKIt00fcj18XYZvSaVVjbiKpDhWgTDURoEViKP77CzQaoDlXzObYZaTwwNM6cZzgdkHg/TB3SDSbnczS2WeM2APgc78PpQFmkJtpEg2uzmAty7Gh1qDqzzXWu9eshnHVgCeSsA62bNxv3/bI+1o2ggPeD/2HnIGeVx1qn7eMkqZPjzYy/ZlWnB0ObyEUckOQl8dBMytra1mKkEJ8IdQEu8lP7h+9f24jOifBuo3OgQV6iLFKzTqOmN1zNreKAq1mXkmeURWpcTnBtsQBfs2qQZ7hEAHVzqzggtz9t8gwWUR2qzuEaFHCzqcmFdgEeGKh3jUujv6v5ZoqETSwAAFwCALR9MGb2Y5vNfgkc9ZzT4ASA+O+ySCF/fgqCS8iXB3r36LOaAG8eeHgmxNYQ7Qnm3gRFfCe8B9n2FqB9e2b82jzw+DZ1SDeYnM/R2GaN24BCHjD3ZnBtFnNBjh2lPQ3ygKz16yF8SR5gcuzm9tZ9v6yPdSMo4PGtHmw3kTjQnVUea/dU89hhmAeYLADgmTo9GNpELpYH5Kwz8bF5ILaGdgAehBCfiIvkgT75uXkgtoZwRoR6HlhKXqIsUrN7Mk1vuJpbNQ9okmfUbwNDJ7imkgdczaqdB/oigLq5VRyQ2582eQaL2O6pc7gGBWxva3KhXaCZHQB4VnnbCKK/qzmbWC4LvjkEFnap2ZfPGbMl//t54Cf9f8AbKT8KYGUBOiYw13nvpGwFfLcb3oPs6i4BHZPm86/NA58v+dQxnWgOu2MCc+1clsQ1QCMPXOeDa7OYC3LsKB2TYR4QtX49hK/JAydy7ObVXeK8X9bHuhEU8PmSnx42fRnJWeWxVpY/dTeF2vF2xj+KvNODriU3SsBcSPKS+Ng8sLIZATk+iq4bX5cHeuTn5oGVzUi64RKhnwcWkpcoi9SsbNsbrubWzQOK5Bm1iKETXNPJA45m1c4DfRFA3dwqDsjtT5s8g0XQsXu4Bnvg6i7B50sePFh4ncq1ekmwwzxR3pe51qa8eaHD//8P6OMvg5RKQ2sXieIAAAAASUVORK5CYII=";
 	this.stance=[];
 	this.stance["x"]=0;
 	this.stance["y"]=stanceYP;
@@ -617,7 +768,7 @@ function newGraySkeletonBone(stanceYP, damageP, xP, yP, xvP, yvP) { //the bone t
 			this.stance.timer++;
 		}
 	}//fine di calculateStance()
-}//fine di graySkeletonBone
+}//fine di skeletonBone
 
 function newRedSkeleton() { //red skeleton
       	this.name = "red skeleton";
