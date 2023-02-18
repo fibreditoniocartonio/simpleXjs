@@ -3,7 +3,8 @@
       	this.active = true;
       	this.type = "sparoDelPlayer";
       	this.damage = 1;
-      	this.facingRight = player.facingRight;
+	this.facingRight=player.facingRight;
+      	if (player.touchingWall && Math.round(player.yv)>0){this.facingRight = !player.facingRight;}
       	if (this.facingRight) {
       		this.x = player.x + player.width + 6;
       	} else {
@@ -175,7 +176,9 @@
       	this.activeShotCounter = pesoShot;
       	this.type = "sparoDelPlayer";
       	this.damage = 1;
-      	if (player.facingRight) {
+	this.facingRight=player.facingRight;
+      	if (player.touchingWall && Math.round(player.yv)>0){this.facingRight = !player.facingRight;}
+      	if (this.facingRight) {
       		this.x = player.x + player.width + 6;
       		this.xv = 3;
       	} else {
@@ -398,6 +401,7 @@
       	this.type = "sparoDelPlayer";
       	this.damage = 1;
       	this.facingRight = player.facingRight;
+      	if (player.touchingWall && Math.round(player.yv)>0){this.facingRight = !player.facingRight;}
       	if (this.facingRight) {
       		this.x = player.x + player.width + 17;
       	} else {
@@ -531,6 +535,7 @@
       	this.type = "sparoDelPlayer";
       	this.damage = 1;
       	this.facingRight = player.facingRight;
+      	if (player.touchingWall && Math.round(player.yv)>0){this.facingRight = !player.facingRight;}
       	if (this.facingRight) {
       		this.x = player.x + player.width + 6;
       		this.xv = -10;
@@ -738,7 +743,7 @@
       	this.life = 1;
       	this.type = "sparoDelPlayer";
       	this.damage = 1;
-      	if (player.facingRight) {
+      	if ((player.facingRight && !(player.touchingWall && Math.round(player.yv)>0) || (!player.facingRight && (player.touchingWall && Math.round(player.yv)>0)))){
       		this.x = player.x + player.width + 14;
       	} else {
       		this.x = player.x - 8 - larghezza;
@@ -779,7 +784,7 @@
       	}
       	this.physics = function (xdisegnata, ydisegnata, indiceDiQuestaEntity) {
       		//movimento(insieme al player)
-      		if (player.facingRight) {
+      		if ((player.facingRight && !(player.touchingWall && Math.round(player.yv)>0) || (!player.facingRight && (player.touchingWall && Math.round(player.yv)>0)))){
       			this.x = player.x + player.width + 14;
       		} else {
       			this.x = player.x - 8 - larghezza;
@@ -818,6 +823,7 @@
       	this.type = "sparoDelPlayer";
       	this.damage = 1;
       	this.facingRight = player.facingRight;
+      	if (player.touchingWall && Math.round(player.yv)>0){this.facingRight = !player.facingRight;}
       	if (this.facingRight) {
       		this.x = player.x + player.width + 6;
       		this.xv = -1;
@@ -1244,6 +1250,7 @@
       	this.type = "sparoDelPlayer";
       	this.damage = 1;
       	this.facingRight = player.facingRight;
+      	if (player.touchingWall && Math.round(player.yv)>0){this.facingRight = !player.facingRight;}
       	if (this.facingRight) {
       		this.x = player.x + player.width + 6;
       	} else {
@@ -1430,6 +1437,7 @@
       		this.goUp = true;
       	}
       	this.facingRight = player.facingRight;
+      	if (player.touchingWall && Math.round(player.yv)>0){this.facingRight = !player.facingRight;}
       	if (this.facingRight) {
       		this.x = player.x + player.width + 6;
       	} else {
@@ -1590,7 +1598,7 @@
       		this.goUp = true;
       	}
       	this.facingRight = facingRightPassato;
-      	if (player.facingRight) {
+      	if (this.facingRight) {
       		this.x = player.x + player.width + 6;
       	} else {
       		this.x = player.x - 6 - larghezza;
@@ -1850,6 +1858,7 @@
       	this.damage = 0;
       	this.damageToEnemy = 2;
       	this.facingRight = player.facingRight;
+      	if (player.touchingWall && Math.round(player.yv)>0){this.facingRight = !player.facingRight;}
       	if (this.facingRight) {
       		this.x = player.x + player.width + 3 + larghezza / 2;
       	} else {
