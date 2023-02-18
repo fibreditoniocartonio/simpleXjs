@@ -27,16 +27,7 @@
       			/*riccardo*/ player.disegnaPlayer(xdisegnata, ydisegnata, player.stance, player.sprite, player.facingRight);
       			break;
       		default: //X
-      			if (player.speed > player.defaultspeed) {
-      				if (player.xv < -10) {
-      					player.disegnaPlayer(xdisegnata - 50, ydisegnata + 3, player.width - 3, player.height - 6, false, player.color1 + 'AA', player.color2, player.coloreArmatura);
-      					player.disegnaPlayer(xdisegnata - 26, ydisegnata + 1, player.width - 1, player.height - 2, false, player.color1, player.color2, player.coloreArmatura);
-      				} else if (player.xv > 10) {
-      					player.disegnaPlayer(xdisegnata + 50 + 3, ydisegnata + 3, player.width - 3, player.height - 6, false, player.color1 + 'AA', player.color2, player.coloreArmatura);
-      					player.disegnaPlayer(xdisegnata + 26 + 1, ydisegnata + 1, player.width - 1, player.height - 2, false, player.color1, player.color2, player.coloreArmatura);
-      				}
-      			}
-      			player.disegnaPlayer(xdisegnata, ydisegnata, player.width, player.height, true, player.color1, player.color2, player.coloreArmatura);
+      			player.disegnaPlayer(xdisegnata, ydisegnata);
       			break;
       	}
       }
