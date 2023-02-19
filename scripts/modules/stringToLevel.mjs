@@ -258,6 +258,21 @@ function stringToLevel(lvlString) {
 				checkBackAndForGround(background, foreground, lvlString[i - 1]);
 				break;
 
+			case '①': 
+			case '②':
+			case '③':
+			case '④':
+			case '⑤':
+			case '⑥':
+			case '⑦':
+			case '⑧': //subweapon get
+				var entita = new newPickUp_Subweapon(lvlString[i]);
+				entita.x = (i % widthTot) * blockDimension+(blockDimension / 2 - entita.width / 2);
+				entita.y = (heightTot - 1) * blockDimension+(blockDimension / 2 - entita.height / 2);
+				entity.push(entita);
+				checkBackAndForGround(background, foreground, lvlString[i - 1]);
+				break;
+
 			case '⁰':
 			case '¹':
 			case '²':

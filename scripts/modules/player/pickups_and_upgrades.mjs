@@ -92,26 +92,84 @@
       	this.height = 20;
       	this.color1 = '#003ef0';
       	this.color2 = '#ffc000';
+	this.color3 = "#000000";
       	this.canSelfDraw = true;
       	this.hasPhysics = true;
       	this.selfDraw = function (xdisegnata, ydisegnata, indiceDiQuestaEntity) { //funzione per disegnare l'entita
       		ctx.fillStyle = this.color1;
       		ctx.fillRect(xdisegnata, ydisegnata, this.width, this.height);
       		ctx.textAlign = "center";
-      		ctx.font = "small-caps bold 18px Lucida Console";
-      		var textHeight = ctx.measureText("O").width; //dato che la O normalmente e' alta quanto larga (font monospace) imposto la larghezza di O come altezza approssimativa del testo			
-      		disegnaTestoConBordino("S", xdisegnata + (this.width / 2), (ydisegnata + (this.height - 2) / 2 + textHeight / 2), this.color2, this.color1);
+		var testoDaScrivere="S";
+		if(levelEditor || debugMode){
+      			ctx.font = "small-caps bold 14px Lucida Console";
+			testoDaScrivere+=this.indice;
+		}else{
+      			ctx.font = "small-caps bold 18px Lucida Console";
+		}
+	      	var textHeight = ctx.measureText("O").width;
+      		disegnaTestoConBordino(testoDaScrivere, xdisegnata + (this.width / 2), (ydisegnata + (this.height - 2) / 2 + textHeight / 2), this.color2, this.color1);
       		ctx.textAlign = "left"; //lo azzero se no mi si bugga in alcuni menu
+      		ctx.strokeStyle = this.color3; ctx.lineWidth = "1";
+      		ctx.strokeRect(xdisegnata, ydisegnata, this.width, this.height);
       	} //fine di selfDraw
       	this.physics = function (xdisegnata, ydisegnata, indiceDiQuestaEntity) {
       		if (subtank[this.indice].acquired) { //se il player l'ha gia' trovata disattiva l'entita'
       			this.life = -1;
       		} else { //da qui inizia this.physics vero e proprio
       			if (collisionBetween(this, player)) { //quando il player lo raccoglie
-      				this.life = -1;
+      				subtank[this.indice].acquired = true;
       				objAlert = new newAlert("You have found a Subtank! Store the energy you don't need to use it later.", gamestate);
       				gamestate = 5;
-      				subtank[this.indice].acquired = true;
+      				this.life = -1;
+      			}
+      		}
+      	} //fine di physics              
+      }
+
+      function newPickUp_Subweapon(letteraPassata) { //subweapon - ①②③④⑤⑥⑦⑧
+      	this.life = 9999999999;
+      	this.type = "pickup";
+	this.letter = letteraPassata;
+      	this.name = "subweapon "+letteraPassata;
+      	this.damage = 0;
+      	this.x = 0;
+      	this.y = 0;
+      	this.width = 20;
+      	this.height = 20;
+      	this.color1 = ''; this.color2 = '';
+      	this.levelDefeatedIndex = -1;
+	switch(this.letter){
+		case "①": this.levelDefeatedIndex=0; this.color1=player.power[this.levelDefeatedIndex].color1; this.color2=player.power[this.levelDefeatedIndex].color2; break;
+		case "②": this.levelDefeatedIndex=1; this.color1=player.power[this.levelDefeatedIndex].color1; this.color2=player.power[this.levelDefeatedIndex].color2; break;
+		case "③": this.levelDefeatedIndex=2; this.color1=player.power[this.levelDefeatedIndex].color1; this.color2=player.power[this.levelDefeatedIndex].color2; break;
+		case "④": this.levelDefeatedIndex=3; this.color1=player.power[this.levelDefeatedIndex].color1; this.color2=player.power[this.levelDefeatedIndex].color2; break;
+		case "⑤": this.levelDefeatedIndex=4; this.color1=player.power[this.levelDefeatedIndex].color1; this.color2=player.power[this.levelDefeatedIndex].color2; break;
+		case "⑥": this.levelDefeatedIndex=5; this.color1=player.power[this.levelDefeatedIndex].color1; this.color2=player.power[this.levelDefeatedIndex].color2; break;
+		case "⑦": this.levelDefeatedIndex=6; this.color1=player.power[this.levelDefeatedIndex].color1; this.color2=player.power[this.levelDefeatedIndex].color2; break;
+		case "⑧": this.levelDefeatedIndex=7; this.color1=player.power[this.levelDefeatedIndex].color1; this.color2=player.power[this.levelDefeatedIndex].color2; break;
+	}
+      	this.canSelfDraw = true;
+      	this.hasPhysics = true;
+      	this.selfDraw = function (xdisegnata, ydisegnata, indiceDiQuestaEntity) { //funzione per disegnare l'entita
+      		ctx.fillStyle = this.color1;
+      		ctx.fillRect(xdisegnata, ydisegnata, this.width, this.height);
+      		ctx.textAlign = "center";
+      		ctx.font = "small-caps bold 12px Lucida Console";
+      		var textHeight = ctx.measureText("O").width; //dato che la O normalmente e' alta quanto larga (font monospace) imposto la larghezza di O come altezza approssimativa del testo			
+      		disegnaTestoConBordino("W"+(this.levelDefeatedIndex+1), xdisegnata + (this.width / 2), (ydisegnata + (this.height - 2) / 2 + textHeight / 2), this.color2, this.color1);
+      		ctx.textAlign = "left"; //lo azzero se no mi si bugga in alcuni menu
+      		ctx.strokeStyle = this.color2; ctx.lineWidth = "2";
+      		ctx.strokeRect(xdisegnata, ydisegnata, this.width, this.height);
+      	} //fine di selfDraw
+      	this.physics = function (xdisegnata, ydisegnata, indiceDiQuestaEntity) {
+      		if (levelDefeated[this.levelDefeatedIndex]) { //se il player l'ha gia' trovata disattiva l'entita'
+      			this.life = -1;
+      		} else { 
+      			if (collisionBetween(this, player)) { //quando il player lo raccoglie
+      				levelDefeated[this.levelDefeatedIndex] = true;
+      				objAlert = new newAlert("You have found a new weapon: "+player.power[this.levelDefeatedIndex+1].nome+"!", gamestate);
+      				gamestate = 5;
+      				this.life = -1;
       			}
       		}
       	} //fine di physics              
@@ -147,6 +205,13 @@
       		ctx.lineTo(xdisegnata, ydisegnata);
       		ctx.fill();
       		ctx.stroke();
+		if(debugMode || levelEditor){
+      			ctx.textAlign = "center";
+      			ctx.font = "small-caps bold 12px Lucida Console";
+      			var textHeight = ctx.measureText("O").width; //dato che la O normalmente e' alta quanto larga (font monospace) imposto la larghezza di O come altezza approssimativa del testo			
+      			disegnaTestoConBordino(this.indice, xdisegnata + (this.width / 2), (ydisegnata + (this.height - 2) / 2 + textHeight / 2), "#ffffff", "#000000");
+      			ctx.textAlign = "left"; //lo azzero se no mi si bugga in alcuni menu
+		}
       	} //fine di selfDraw
       	this.physics = function (xdisegnata, ydisegnata, indiceDiQuestaEntity) {
       		if (heartAcquired[this.indice]) { //se il player l'ha gia' trovata disattiva l'entita'

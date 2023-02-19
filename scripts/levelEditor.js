@@ -2,7 +2,7 @@
       showMouseBox = false; //you can enable showMouseBox with the console (press f12 in the browser)
 
       //elenco entita' - da aggiornare tutte le volte
-      const listaEntityStringa = "01234567⁰¹²³⁴⁵⁶⁷àÀèÈPSBATƀ→←↓↑⊘↹⟑ṧ↺@Zʍ$⧌§KЌɖȴǺFGRℱ₣Mƒ";
+      const listaEntityStringa = "01234567⁰¹²³⁴⁵⁶⁷①②③④⑤⑥⑦⑧àÀèÈPSBATƀ→←↓↑⊘↹⟑ṧ↺@Zʍ$⧌§KЌɖȴǺFGRℱ₣Mƒ";
 
       //crea il canvas
       const levelEditor = true;
@@ -72,6 +72,7 @@
       	this.showGrid = true;
       	this.showLevelBar = true;
       	this.permanentLevelBar = false;
+	this.power=[{usageMax:28,usage:28,color1:"#687968",color2:"#d9b289",nome:"Homing Torpedo"},{usageMax:28,usage:28,color1:"#1a914f",color2:"#60d1aa",nome:"Chameleon Sting"},{usageMax:28,usage:28,color1:"#e13e60",color2:"#a1c1aa",nome:"Rolling Shield"},{usageMax:28,usage:28,color1:"#f14f02",color2:"#f8e179",nome:"Fire Wave"},{usageMax:28,usage:28,color1:"#e40097",color2:"#e191c1",nome:"Storm Tornado"},{usageMax:28,usage:28,color1:"#f8b202",color2:"#a1a1a1",nome:"Electric Spark"},{usageMax:28,usage:28,color1:"#606081",color2:"#81aa89",nome:"Boomerang Cutter"},{usageMax:28,usage:28,color1:"#35e1f8",color2:"#f8e14f",nome:"Shotgun Ice"}];
       }
       player = new Player();
 

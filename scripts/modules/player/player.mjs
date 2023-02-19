@@ -12,12 +12,15 @@ function switchToNextPlayableCharacter(){
 		currentPlayer++;
 	}else{	currentPlayer=0;}
 	var tempPlayer=player;
+	objAlert = new newAlert("switched to "+getCurrentPlayerName(currentPlayer), gamestate, 0); gamestate=5;
 	player=nuovoPlayer(currentPlayer);
 	player.x=tempPlayer.x-(player.width-tempPlayer.width)/2;
 	player.y=tempPlayer.y-(player.height-tempPlayer.height);
 	player.facingRight=tempPlayer.facingRight;
-	player.life=tempPlayer.life;
-	player.power=tempPlayer.power;
+	player.life=(0+tempPlayer.life);
+	for(var i=0; i<player.power.length; i++){
+		player.power[i].usage=tempPlayer.power[i].usage;
+	}
 }
 
 function nuovoPlayer(currentPlayer) {
@@ -129,7 +132,7 @@ function nuovoPlayer(currentPlayer) {
       					color1: '#35e1f8',
       					color2: '#f8e14f',
       					nome: 'Shotgun Ice'
-      				},
+      				}
       			];
 			this.getHit = function(damage, ignoreInvulnerability){
       				if (this.invulnerability < 1 || ignoreInvulnerability) { //entity collison								            		
@@ -404,7 +407,8 @@ function nuovoPlayer(currentPlayer) {
       					}
       					this.calcolaPlayerColor(false);
       				}
-
+				
+				var yOffset=8; this.y+=yOffset; //serve per aggiustare l'altezza dei colpi rispetto allo sprite
       				if (keys[sparokey] && this.canMove) { //shooting
       					if (!this.giasparato) {
       						if (this.activeShot < 3) { //se non ci sono piu di 3 colpi attivi contemporaneamente        
@@ -652,7 +656,8 @@ function nuovoPlayer(currentPlayer) {
       							this.carica = -9999999999999;
       						}
       					}
-      				}
+      				}//fine shooting
+				this.y-=yOffset; //riaggiusto l'offset
 
       				if (this.invulnerability > 0) { //se l'invulnerabilita' e' >=1 la riduce e colora x in base a che punto e'
       					this.invulnerability--;
@@ -663,12 +668,12 @@ function nuovoPlayer(currentPlayer) {
       					if (this.invulnerability > 90000) { //potere di sting chameleon charge3
       						this.calcolaPlayerColor(false);
       					}
-      					if (this.invulnerability < 30) {
+      					if (this.invulnerability < 40) {
       						this.calcolaPlayerColor(false);
       						this.color1 = this.color2;
       						this.color2 = this.color2;
       					}
-      					if (this.invulnerability < 20) {
+      					if (this.invulnerability < 21) {
       						this.canMove = true;
       					}
       					if (this.invulnerability < 5) {
@@ -765,7 +770,7 @@ function nuovoPlayer(currentPlayer) {
       			this.calculateStance = function () { //calcola a che animazione della spritesheet e' il player
       				var previousStance = this.stance[0];
       				var maxTimer = 9; //quanti "frame" rimane un animazione. Dico "frame" ma in realta' e' un numero calcolato sui cicli dell'engine
-				if(this.invulnerability>19 && this.invulnerability<31){this.stance=[9,0]; return;} //colpito
+				if(this.invulnerability>21 && this.invulnerability<41){this.stance=[9,0]; return;} //colpito
       				if (this.attackTimer>0 && !this.dead) {
 					this.attackTimer--;
 					this.stance[1]=1;
