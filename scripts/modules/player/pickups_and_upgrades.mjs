@@ -74,6 +74,7 @@
       						break;
       				}
       				armaturaAcquired[this.indice] = true;
+				if(player.calcolaPlayerColor){player.calcolaPlayerColor(true);}
       			}
       		}
       	} //fine di physics              
