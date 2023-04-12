@@ -12,8 +12,8 @@ function switchToNextPlayableCharacter(){
 		currentPlayer++;
 	}else{	currentPlayer=0;}
 	var tempPlayer=player;
-	objAlert = new newAlert("switched to "+getCurrentPlayerName(currentPlayer), gamestate, 0); gamestate=5;
 	player=nuovoPlayer(currentPlayer);
+	objAlert = new newAlert("switched to "+getCurrentPlayerName(currentPlayer), gamestate, 0); gamestate=5;
 	player.x=tempPlayer.x-(player.width-tempPlayer.width)/2;
 	player.y=tempPlayer.y-(player.height-tempPlayer.height);
 	player.facingRight=tempPlayer.facingRight;
